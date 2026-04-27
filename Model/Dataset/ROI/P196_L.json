@@ -1,0 +1,92 @@
+{
+  "project": {
+    "pid": "__VIA_PROJECT_ID__",
+    "rev": "__VIA_PROJECT_REV_ID__",
+    "rev_timestamp": "__VIA_PROJECT_REV_TIMESTAMP__",
+    "pname": "DFU - Diabetic Foot Ulcer Detection",
+    "creator": "VGG Image Annotator (http://www.robots.ox.ac.uk/~vgg/software/via)",
+    "created": 1774460313028,
+    "vid_list": [
+      "1"
+    ]
+  },
+  "config": {
+    "file": {
+      "loc_prefix": {
+        "1": "",
+        "2": "",
+        "3": "",
+        "4": ""
+      }
+    },
+    "ui": {
+      "file_content_align": "center",
+      "file_metadata_editor_visible": true,
+      "spatial_metadata_editor_visible": true,
+      "temporal_segment_metadata_editor_visible": true,
+      "gtimeline_visible_row_count": "4"
+    }
+  },
+  "attribute": {
+    "1": {
+      "aname": "region_type",
+      "anchor_id": "1",
+      "type": 1,
+      "id": 1,
+      "options": {
+        "1": "pressure_ulcer",
+        "2": "at_risk_area",
+        "3": "normal_tissue"
+      },
+      "default_options": []
+    }
+  },
+  "file": {
+    "1": {
+      "fid": "1",
+      "fname": "P196_L.png",
+      "type": 2,
+      "loc": 1,
+      "src": ""
+    }
+  },
+  "metadata": {
+    "1_a6c9950c": {
+      "vid": "1",
+      "flg": 0,
+      "z": [],
+      "xy": [
+        2,
+        162.87804838020574,
+        175.66841116797153,
+        53.649526015368785,
+        34.43753192695701
+      ],
+      "av": {
+        "1": "2"
+      }
+    },
+    "1_b751efdf": {
+      "vid": "1",
+      "flg": 0,
+      "z": [],
+      "xy": [
+        2,
+        139.5348622957929,
+        33.764420134850354,
+        24.762140217884795,
+        15.508832148671164
+      ],
+      "av": {
+        "1": "1"
+      }
+    }
+  },
+  "view": {
+    "1": {
+      "fid_list": [
+        "1"
+      ]
+    }
+  }
+}

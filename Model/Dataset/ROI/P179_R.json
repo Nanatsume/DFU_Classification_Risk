@@ -1,0 +1,107 @@
+{
+  "project": {
+    "pid": "__VIA_PROJECT_ID__",
+    "rev": "__VIA_PROJECT_REV_ID__",
+    "rev_timestamp": "__VIA_PROJECT_REV_TIMESTAMP__",
+    "pname": "DFU - Diabetic Foot Ulcer Detection",
+    "creator": "VGG Image Annotator (http://www.robots.ox.ac.uk/~vgg/software/via)",
+    "created": 1774460313028,
+    "vid_list": [
+      "1"
+    ]
+  },
+  "config": {
+    "file": {
+      "loc_prefix": {
+        "1": "",
+        "2": "",
+        "3": "",
+        "4": ""
+      }
+    },
+    "ui": {
+      "file_content_align": "center",
+      "file_metadata_editor_visible": true,
+      "spatial_metadata_editor_visible": true,
+      "temporal_segment_metadata_editor_visible": true,
+      "gtimeline_visible_row_count": "4"
+    }
+  },
+  "attribute": {
+    "1": {
+      "aname": "region_type",
+      "anchor_id": "1",
+      "type": 1,
+      "id": 1,
+      "options": {
+        "1": "pressure_ulcer",
+        "2": "at_risk_area",
+        "3": "normal_tissue"
+      },
+      "default_options": []
+    }
+  },
+  "file": {
+    "1": {
+      "fid": "1",
+      "fname": "P179_R.png",
+      "type": 2,
+      "loc": 1,
+      "src": ""
+    }
+  },
+  "metadata": {
+    "1_f49b7f32": {
+      "vid": "1",
+      "flg": 0,
+      "z": [],
+      "xy": [
+        2,
+        75.46613951651366,
+        186.94500951681394,
+        22.367716816565505,
+        24.412662172486648
+      ],
+      "av": {
+        "1": "1"
+      }
+    },
+    "1_79c10931": {
+      "vid": "1",
+      "flg": 0,
+      "z": [],
+      "xy": [
+        2,
+        107.2407058142335,
+        87.85903605237368,
+        43.759582257817364,
+        22.67444081304922
+      ],
+      "av": {
+        "1": "1"
+      }
+    },
+    "1_376073e0": {
+      "vid": "1",
+      "flg": 0,
+      "z": [],
+      "xy": [
+        2,
+        150.319787643865,
+        39.07403219814831,
+        47.581377843845075,
+        50.3607508697315
+      ],
+      "av": {
+        "1": "1"
+      }
+    }
+  },
+  "view": {
+    "1": {
+      "fid_list": [
+        "1"
+      ]
+    }
+  }
+}

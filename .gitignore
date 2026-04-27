@@ -1,0 +1,19 @@
+# Windows Zone Identifier metadata
+*:Zone.Identifier
+
+# Dataset files (large — store separately or use Git LFS)
+INAOE_Preprocessed/
+Model/INAOE Dataset/
+Model/Dataset/IMG/
+
+# Conda/virtualenv
+activate
+conda
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Jupyter checkpoints
+.ipynb_checkpoints/

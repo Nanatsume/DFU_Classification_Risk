@@ -1,0 +1,14 @@
+{
+  "total_patients": 300,
+  "total_images": 600,
+  "dm_images": 240,
+  "ct_images": 360,
+  "roi_files": 240,
+  "patient_types": {
+    "all_dm": 43,
+    "all_ct": 103,
+    "mixed": 154
+  },
+  "dm_ratio": "40.0%",
+  "dataset_path": "E:\\DFU\\Model\\Dataset"
+}

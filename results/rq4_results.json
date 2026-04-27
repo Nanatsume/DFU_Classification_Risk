@@ -1,0 +1,4 @@
+{
+  "best_model": "ResNet50",
+  "model": "final_retrain"
+}

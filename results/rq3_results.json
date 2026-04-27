@@ -1,0 +1,17 @@
+{
+  "best_model": "ResNet50",
+  "retrain_epochs": {
+    "phase1": 20,
+    "phase2": 49
+  },
+  "threshold": 0.6999637007713317,
+  "test_metrics": {
+    "accuracy": 0.7313432835820896,
+    "sensitivity": 0.7551020408163265,
+    "specificity": 0.6666666666666666,
+    "ppv": 0.8604651162790697,
+    "npv": 0.5,
+    "f1": 0.8043478260869565,
+    "auc_roc": 0.844671201814059
+  }
+}
