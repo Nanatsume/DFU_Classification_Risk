@@ -1,5 +1,7 @@
 # DFU Classification with Deep Learning
 
+> **Note**: This repository contains **preliminary results** using the publicly available INAOE dataset as a proxy. The full study will use a proprietary dataset captured with a **podoscope**, which provides standardized plantar foot images under controlled conditions. Results here are intended to validate the pipeline and methodology before the podoscope data is collected.
+
 Automated classification of Diabetic Foot Ulcer (DFU) images using deep learning with attention mechanisms (CBAM), compared against a handcrafted-feature baseline (BPNN).
 
 ---
