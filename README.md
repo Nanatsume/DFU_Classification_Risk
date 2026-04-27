@@ -162,6 +162,8 @@ $$J = \text{Sensitivity} + \text{Specificity} - 1 \qquad \text{threshold}^* = \a
 
 Output: 4-panel images (Original / Grad-CAM / Grad-CAM++ / Eigen-CAM) saved to `results/rq4_gradcam/`
 
+> **Note**: The **Top-Region Pointing Game** (which measures whether the highest-activation region overlaps with the true ROI) has not been conducted, as the INAOE dataset does not provide ground-truth ROI annotations. Grad-CAM evaluation here is therefore **qualitative only**.
+
 ---
 
 ### RQ5 — CNN vs BPNN
