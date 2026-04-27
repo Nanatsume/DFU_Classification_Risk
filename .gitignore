@@ -1,3 +1,6 @@
+# Claude Code local settings
+.claude/
+
 # Windows Zone Identifier metadata
 *:Zone.Identifier
 
@@ -5,6 +8,10 @@
 INAOE_Preprocessed/
 Model/INAOE Dataset/
 Model/Dataset/IMG/
+
+# Model checkpoints (large binary files — 241–250 MB each)
+model_checkpoints/*.keras
+model_checkpoints/*.h5
 
 # Conda/virtualenv
 activate

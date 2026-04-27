@@ -1,4 +1,0 @@
-[2026-04-26 00:10:04] === Log file: ./results/rq1_log_20260426_001004.txt ===
-[2026-04-26 00:10:04] Loaded INAOE: 334 images, shape=(334, 224, 224, 3), CT=90, DM=244
-[2026-04-26 00:10:04] ❌ Missing val_preds.npz for: ['ConvNeXt-Tiny']
-[2026-04-26 00:10:04]    Run the corresponding train_*.py scripts first.
