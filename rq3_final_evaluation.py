@@ -7,7 +7,7 @@ Strategy:
      those many epochs — no early stopping.
   4. Evaluate on the held-out test set using the mean Youden's Index threshold (RQ2).
 
-Metrics reported: Sensitivity, Specificity, AUC-ROC, PPV, NPV, F1-Score, Accuracy.
+Metrics reported: Sensitivity, Specificity, AUC-ROC, PPV, NPV, F1-Score.
 Saves results to results/rq3_results.json and results/rq3_test_probs.npy.
 Run after rq2_threshold_optimization.py.
 """
@@ -17,7 +17,7 @@ import json
 import numpy as np
 import tensorflow as tf
 from sklearn.metrics import (
-    accuracy_score, f1_score, confusion_matrix, roc_auc_score,
+    f1_score, confusion_matrix, roc_auc_score,
     classification_report,
 )
 
@@ -34,7 +34,6 @@ def full_metrics(y_true, y_prob, threshold):
     tn = int(np.sum((yb == 0) & (y_true == 0)))
     fp = int(np.sum((yb == 1) & (y_true == 0)))
     return {
-        'accuracy':    float(accuracy_score(y_true, yb)),
         'sensitivity': tp / (tp + fn) if (tp + fn) > 0 else 0.0,
         'specificity': tn / (tn + fp) if (tn + fp) > 0 else 0.0,
         'ppv':         tp / (tp + fp) if (tp + fp) > 0 else 0.0,
@@ -148,7 +147,7 @@ def main():
     np.save(os.path.join(CONFIG['results_dir'], 'rq3_test_probs.npy'), probs)
     metrics = full_metrics(y_test, probs, threshold)
 
-    metric_order = ['sensitivity', 'specificity', 'auc_roc', 'ppv', 'npv', 'f1', 'accuracy']
+    metric_order = ['sensitivity', 'specificity', 'auc_roc', 'ppv', 'npv', 'f1']
     for k in metric_order:
         log(f"  {k:<14}: {metrics[k]:.4f}")
 

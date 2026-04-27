@@ -149,7 +149,6 @@ $$J = \text{Sensitivity} + \text{Specificity} - 1 \qquad \text{threshold}^* = \a
 | PPV | 0.8605 |
 | NPV | 0.5000 |
 | F1-Score | 0.8043 |
-| Accuracy | 0.7313 |
 
 ---
 
@@ -191,7 +190,14 @@ Output: 4-panel images (Original / Grad-CAM / Grad-CAM++ / Eigen-CAM) saved to `
 | NPV | 0.5000 | 0.5789 | +0.0789 |
 | F1-Score | 0.8043 | 0.8454 | +0.0411 |
 
-**Statistical tests**: McNemar's Test + Bootstrap AUC p-value (2,000 samples)
+**Statistical tests** (CNN thr=0.7000, BPNN thr=0.5792):
+
+| Test | Result | p-value | Significance |
+|------|--------|---------|--------------|
+| McNemar's Test (H₀: same error rate) | b=7 (CNN✓/BPNN✗), c=10 (CNN✗/BPNN✓) | 0.6291 | ns |
+| Bootstrap AUC (H₀: AUC_CNN = AUC_BPNN, n=2,000) | ΔAUC = −0.0079 | 0.8745 | ns |
+
+> Neither test reached significance — the two models are statistically equivalent on this test set.
 
 ---
 
