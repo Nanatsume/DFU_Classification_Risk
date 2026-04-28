@@ -320,6 +320,35 @@ def main():
     else:
         log("\n⚠ rq3_results.json not found — CNN comparison skipped.")
 
+    # Save BPNN test probabilities for use in notebook statistical tests
+    bpnn_probs_path = os.path.join(CONFIG['results_dir'], 'rq5_test_probs.npy')
+    np.save(bpnn_probs_path, test_probs)
+    log(f"✓ BPNN test probs → {bpnn_probs_path}")
+
+    # Build statistical test results dict (if CNN probs available)
+    stat_tests = {}
+    if os.path.exists(rq3_path) and os.path.exists(rq3_probs_path):
+        cnn_probs = np.load(rq3_probs_path)
+        cnn_thr   = rq3['threshold']
+        cnn_bin   = (cnn_probs  >= cnn_thr).astype(int)
+        bpnn_bin  = (test_probs >= mean_youden).astype(int)
+
+        p_mc, b, c = mcnemar_test(y_test, cnn_bin, bpnn_bin)
+        p_auc = bootstrap_auc_pvalue(y_test, cnn_probs, test_probs)
+        stat_tests = {
+            'mcnemar': {
+                'b': b, 'c': c,
+                'p_value': round(p_mc, 4),
+                'significance': '***' if p_mc < 0.001 else ('**' if p_mc < 0.01 else ('*' if p_mc < 0.05 else 'ns')),
+            },
+            'bootstrap_auc': {
+                'n_bootstrap': 2000,
+                'delta_auc': round(cnn_m['auc_roc'] - bpnn_metrics['auc_roc'], 4),
+                'p_value': round(p_auc, 4),
+                'significance': '***' if p_auc < 0.001 else ('**' if p_auc < 0.01 else ('*' if p_auc < 0.05 else 'ns')),
+            },
+        }
+
     result = {
         'bpnn_architecture':     f"{best_params['hidden_layer_sizes']}, tanh, alpha={best_params['alpha']}",
         'features':              'GLCM 8-level 4-angle (16-dim) + HOG 8-stats (8-dim) = 24-dim',
@@ -327,6 +356,7 @@ def main():
         'fold_stopping_iters':   fold_iters,
         'mean_youden_threshold': mean_youden,
         'test_metrics':          bpnn_metrics,
+        'statistical_tests':     stat_tests,
     }
     out = os.path.join(CONFIG['results_dir'], 'rq5_results.json')
     with open(out, 'w') as f:

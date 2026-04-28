@@ -20,17 +20,15 @@
   },
   "statistical_tests": {
     "mcnemar": {
-      "h0": "both classifiers make same errors",
-      "b": 7,
-      "c": 10,
-      "p_value": 0.6291,
+      "b": 8,
+      "c": 8,
+      "p_value": 1.0,
       "significance": "ns"
     },
     "bootstrap_auc": {
-      "h0": "AUC_CNN = AUC_BPNN",
       "n_bootstrap": 2000,
-      "delta_auc": -0.0079,
-      "p_value": 0.8745,
+      "delta_auc": -0.0193,
+      "p_value": 0.782,
       "significance": "ns"
     }
   }

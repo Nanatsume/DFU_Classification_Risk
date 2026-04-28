@@ -1,4 +1,4 @@
 {
-  "best_model": "ResNet50",
+  "best_model": "ConvNeXt-Tiny",
   "model": "final_retrain"
 }
