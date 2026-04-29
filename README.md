@@ -1,4 +1,4 @@
-# DFU Risk Classification 
+# DFU Risk Classification
 
 > **Note**: This repository contains **preliminary results** using the publicly available INAOE dataset as a proxy. The full study will use a proprietary dataset captured with a **podoscope**, which provides standardized plantar foot images under controlled conditions. Results here are intended to validate the pipeline and methodology before the podoscope data is collected.
 
@@ -48,7 +48,7 @@ Dense(64, relu)  -> Dropout(0.5)
 Dense(1, sigmoid)
 ```
 
-**Backbones Comparison**: EfficientNetB0, ResNet50, ConvNeXt-Tiny
+**Backbones Compared**: EfficientNetB0, ResNet50, ConvNeXt-Tiny
 
 ### Two-Phase Training
 
@@ -87,21 +87,21 @@ Dense(1, sigmoid)
 **Clinical screening criteria** (all three must be met):
 - AUC-ROC ≥ 0.80 &nbsp;·&nbsp; Sensitivity ≥ 0.85 &nbsp;·&nbsp; Specificity ≥ 0.70
 
-**Results** (mean across 5 folds, threshold = 0.5):
+**Results** (mean across 5 folds, threshold = 0.5, with CBAM):
 
 | Backbone | AUC | Sensitivity | Specificity | Pass All |
 |----------|-----|-------------|-------------|----------|
-| EfficientNetB0 | 0.4500 | 1.0000 | 0.0000 | ✗ |
-| **ResNet50** | **0.8235** | **0.9846** | **0.1981** | ✗ |
-| ConvNeXt-Tiny | 0.8207 | 0.8359 | 0.6257 | ✗ |
+| EfficientNetB0 | 0.4298 | 1.0000 | 0.0000 | ✗ |
+| ResNet50 | 0.7483 | 1.0000 | 0.0000 | ✗ |
+| **ConvNeXt-Tiny** | **0.8277** | **0.8205** | **0.6800** | ✗ |
 
-> No backbone passed all three criteria. **ResNet50** was selected as it achieved the highest AUC (CBAM helped ResNet50 outperform ConvNeXt-Tiny).
+> No backbone passed all three criteria. **ConvNeXt-Tiny** was selected as it achieved the highest AUC and came closest to meeting the specificity threshold (0.68 vs criterion 0.70).
 
 ---
 
 ### RQ2 — Threshold Optimization (Youden's Index)
 
-**Objective**: Compare default threshold (0.5) against Youden's Index threshold on ResNet50+CBAM.
+**Objective**: Compare default threshold (0.5) against Youden's Index threshold on ConvNeXt-Tiny+CBAM.
 
 $$J = \text{Sensitivity} + \text{Specificity} - 1 \qquad \text{threshold}^* = \arg\max(\text{TPR} - \text{FPR})$$
 
@@ -109,21 +109,21 @@ $$J = \text{Sensitivity} + \text{Specificity} - 1 \qquad \text{threshold}^* = \a
 
 | Fold | Youden thr | Sensitivity | Specificity |
 |------|-----------|-------------|-------------|
-| 1 | 0.6754 | 0.9231 | 0.5333 |
-| 2 | 0.6990 | 0.8974 | 0.5333 |
-| 3 | 0.7006 | 0.8462 | 0.8571 |
-| 4 | 0.6401 | 0.9231 | 0.9286 |
-| 5 | 0.7847 | 0.7436 | 0.8571 |
-| **Mean** | **0.7000** | — | — |
+| 1 | 0.8759 | 0.6923 | 0.8667 |
+| 2 | 0.6932 | 0.8205 | 0.8000 |
+| 3 | 0.7001 | 0.7436 | 0.7857 |
+| 4 | 0.8053 | 0.7692 | 0.9286 |
+| 5 | 0.7146 | 0.8718 | 0.8571 |
+| **Mean** | **0.7578** | — | — |
 
-**Default (0.5) vs Youden (0.7000)**:
+**Default (0.5) vs Youden (0.7578)**:
 
-| Metric | Default 0.5 | Youden 0.7000 | Delta |
+| Metric | Default 0.5 | Youden 0.7578 | Delta |
 |--------|------------|--------------|-------|
-| Sensitivity | 0.9846 ± 0.0205 | 0.7795 ± 0.1176 | −0.2051 (−20.8%) |
-| Specificity | 0.1981 ± 0.1779 | 0.7267 ± 0.1492 | +0.5286 (+266.9%) |
+| Sensitivity | 0.8205 ± 0.0429 | 0.7641 ± 0.0470 | −0.0564 (−6.9%) |
+| Specificity | 0.6800 ± 0.0373 | 0.8210 ± 0.0667 | +0.1410 (+20.7%) |
 
-> Youden threshold trades −20.8% Sensitivity for +266.9% Specificity, bringing Specificity above the ≥0.70 criterion.
+> Youden threshold trades −6.9% Sensitivity for +20.7% Specificity, bringing Specificity above the ≥0.70 criterion.
 
 ---
 
@@ -133,26 +133,26 @@ $$J = \text{Sensitivity} + \text{Specificity} - 1 \qquad \text{threshold}^* = \a
 1. Record average stopping epoch from 5-fold CV
 2. Retrain on full training set (267 images) for that fixed number of epochs
 3. No early stopping in the final retrain
-4. Evaluate with Youden threshold (0.7146)
+4. Evaluate with Youden threshold (0.7578)
 
-**Average stopping epochs** (ResNet50+CBAM): Phase 1 = **20**, Phase 2 = **49**
+**Average stopping epochs** (ConvNeXt-Tiny+CBAM): Phase 1 = **50**, Phase 2 = **47**
 
 **Test set results**:
 
 | Metric | Value |
 |--------|-------|
-| AUC-ROC | **0.8447** |
-| Sensitivity | **0.7551** |
+| AUC-ROC | **0.8333** |
+| Sensitivity | **0.8163** |
 | Specificity | **0.6667** |
-| PPV | 0.8605 |
-| NPV | 0.5000 |
-| F1-Score | 0.8043 |
+| PPV | 0.8696 |
+| NPV | 0.5714 |
+| F1-Score | 0.8421 |
 
 ---
 
-### RQ4 — Explainability (Grad-CAM)
+### RQ4 — Localization Evaluation
 
-**Objective**: Visualize which image regions the model attends to.
+**Objective**: Evaluate whether the model correctly localizes lesion regions using three CAM methods, quantified by the Top-Region Pointing Game.
 
 | Method | Concept |
 |--------|---------|
@@ -160,9 +160,11 @@ $$J = \text{Sensitivity} + \text{Specificity} - 1 \qquad \text{threshold}^* = \a
 | **Grad-CAM++** | Weight by alpha coefficients from 2nd-order gradients |
 | **Eigen-CAM** | Gradient-free — uses PC1 from SVD of the feature map |
 
+**Metric**: **Top-Region Pointing Game** — checks whether the highest-activation region (top 5% of CAM, thresholded at 95th percentile) overlaps with the ground-truth lesion bounding box (expanded by τ=15 px).
+
 Output: 4-panel images (Original / Grad-CAM / Grad-CAM++ / Eigen-CAM) saved to `results/rq4_gradcam/`
 
-> **Note**: The **Top-Region Pointing Game** (which measures whether the highest-activation region overlaps with the true ROI) has not been conducted, as the INAOE dataset does not provide ground-truth ROI annotations. Grad-CAM evaluation here is therefore **qualitative only**.
+> **Note**: Top-Region Pointing Game evaluation has not been conducted, as the INAOE dataset does not provide ground-truth ROI annotations. Localization results are therefore **qualitative only**.
 
 ---
 
@@ -181,21 +183,21 @@ Output: 4-panel images (Original / Grad-CAM / Grad-CAM++ / Eigen-CAM) saved to `
 
 **Comparison on test set**:
 
-| Metric | ResNet50+CBAM | BPNN (GLCM+HOG) | Delta |
-|--------|--------------|-----------------|-------|
-| Sensitivity | 0.7551 | 0.8367 | +0.0816 |
+| Metric | ConvNeXt-Tiny+CBAM | BPNN (GLCM+HOG) | Delta |
+|--------|-------------------|-----------------|-------|
+| Sensitivity | 0.8163 | 0.8367 | +0.0204 |
 | Specificity | 0.6667 | 0.6111 | −0.0556 |
-| AUC-ROC | 0.8447 | 0.8526 | +0.0079 |
-| PPV | 0.8605 | 0.8542 | −0.0063 |
-| NPV | 0.5000 | 0.5789 | +0.0789 |
-| F1-Score | 0.8043 | 0.8454 | +0.0411 |
+| AUC-ROC | 0.8333 | 0.8526 | +0.0193 |
+| PPV | 0.8696 | 0.8542 | −0.0154 |
+| NPV | 0.5714 | 0.5789 | +0.0075 |
+| F1-Score | 0.8421 | 0.8454 | +0.0033 |
 
-**Statistical tests** (CNN thr=0.7000, BPNN thr=0.5792):
+**Statistical tests** (CNN thr=0.7578, BPNN thr=0.5792):
 
 | Test | Result | p-value | Significance |
 |------|--------|---------|--------------|
-| McNemar's Test (H₀: same error rate) | b=7 (CNN✓/BPNN✗), c=10 (CNN✗/BPNN✓) | 0.6291 | ns |
-| Bootstrap AUC (H₀: AUC_CNN = AUC_BPNN, n=2,000) | ΔAUC = −0.0079 | 0.8745 | ns |
+| McNemar's Test (H₀: same error pattern) | b=8 (CNN✓/BPNN✗), c=8 (CNN✗/BPNN✓) | 1.0000 | ns |
+| Bootstrap AUC (H₀: AUC_CNN = AUC_BPNN, n=2,000) | ΔAUC = −0.0193 | 0.7820 | ns |
 
 > Neither test reached significance — the two models are statistically equivalent on this test set.
 
@@ -244,27 +246,27 @@ Project/
 
 ```bash
 # 1. Train backbones
-./run_gpu.sh train_resnet.py
-./run_gpu.sh train_efficientnet.py
-./run_gpu.sh train_convnext.py
+bash run_gpu.sh train_resnet.py
+bash run_gpu.sh train_efficientnet.py
+bash run_gpu.sh train_convnext.py
 
 # 2. RQ1 — backbone selection
-./run_gpu.sh rq1_backbone_comparison.py
+bash run_gpu.sh rq1_backbone_comparison.py
 
 # 3. RQ2 — threshold optimization
-./run_gpu.sh rq2_threshold_optimization.py
+bash run_gpu.sh rq2_threshold_optimization.py
 
 # 4. RQ3 — final test evaluation
-./run_gpu.sh rq3_final_evaluation.py
+bash run_gpu.sh rq3_final_evaluation.py
 
 # 5. RQ4 — XAI visualizations
-./run_gpu.sh rq4_gradcam.py
+bash run_gpu.sh rq4_gradcam.py
 
 # 6. RQ5 — BPNN comparison
-./run_gpu.sh rq5_bpnn_comparison.py
+bash run_gpu.sh rq5_bpnn_comparison.py
 
 # 7. RQ6 — BPNN interpretability (run after RQ5)
-./run_gpu.sh rq6_bpnn_interpretability.py
+bash run_gpu.sh rq6_bpnn_interpretability.py
 ```
 
 > `run_gpu.sh` sets `LD_LIBRARY_PATH` from CUDA pip wheels in the `tf_gpu` conda environment.
