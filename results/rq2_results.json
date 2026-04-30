@@ -1,51 +1,51 @@
 {
   "best_model": "ConvNeXt-Tiny",
-  "mean_youden_threshold": 0.7578055024147033,
-  "std_youden_threshold": 0.07152064815196606,
+  "mean_youden_threshold": 0.5859198272228241,
+  "std_youden_threshold": 0.22760236679617488,
   "per_fold_thresholds": [
     {
       "fold": 1,
-      "youden_threshold": 0.8758946657180786,
-      "youden_sens": 0.6923076923076923,
-      "youden_spec": 0.8666666666666667
+      "youden_threshold": 0.3679463863372803,
+      "youden_sens": 0.8974358974358975,
+      "youden_spec": 0.6666666666666667
     },
     {
       "fold": 2,
-      "youden_threshold": 0.6931600570678711,
+      "youden_threshold": 0.5853908061981201,
       "youden_sens": 0.8205128205128205,
-      "youden_spec": 0.8
+      "youden_spec": 0.6666666666666667
     },
     {
       "fold": 3,
-      "youden_threshold": 0.7001276016235352,
-      "youden_sens": 0.7435897435897436,
+      "youden_threshold": 0.6694108247756958,
+      "youden_sens": 0.6923076923076923,
       "youden_spec": 0.7857142857142857
     },
     {
       "fold": 4,
-      "youden_threshold": 0.8052890300750732,
-      "youden_sens": 0.7692307692307693,
-      "youden_spec": 0.9285714285714286
+      "youden_threshold": 0.9660089015960693,
+      "youden_sens": 0.5897435897435898,
+      "youden_spec": 1.0
     },
     {
       "fold": 5,
-      "youden_threshold": 0.7145561575889587,
-      "youden_sens": 0.8717948717948718,
+      "youden_threshold": 0.34084221720695496,
+      "youden_sens": 0.9230769230769231,
       "youden_spec": 0.8571428571428572
     }
   ],
   "default_threshold": {
-    "mean_sens": 0.8205128205128206,
-    "std_sens": 0.04290564238636286,
-    "mean_spec": 0.6799999999999999,
-    "std_spec": 0.03730124957631643
+    "mean_sens": 0.7794871794871796,
+    "std_sens": 0.038375973197681434,
+    "mean_spec": 0.6666666666666667,
+    "std_spec": 0.11368891796488877
   },
   "youden_threshold": {
-    "mean_sens": 0.7641025641025642,
-    "std_sens": 0.047000776358521436,
-    "mean_spec": 0.8209523809523809,
-    "std_spec": 0.06670747050604749
+    "mean_sens": 0.7589743589743589,
+    "std_sens": 0.047557017925618984,
+    "mean_spec": 0.7238095238095238,
+    "std_spec": 0.08329931278350428
   },
-  "delta_sens_pp": -0.05641025641025643,
-  "delta_spec_pp": 0.14095238095238094
+  "delta_sens_pp": -0.020512820512820662,
+  "delta_spec_pp": 0.05714285714285705
 }

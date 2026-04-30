@@ -20,15 +20,15 @@
   },
   "statistical_tests": {
     "mcnemar": {
-      "b": 8,
-      "c": 8,
-      "p_value": 1.0,
+      "b": 9,
+      "c": 7,
+      "p_value": 0.8036,
       "significance": "ns"
     },
     "bootstrap_auc": {
       "n_bootstrap": 2000,
-      "delta_auc": -0.0193,
-      "p_value": 0.782,
+      "delta_auc": 0.0442,
+      "p_value": 0.473,
       "significance": "ns"
     }
   }

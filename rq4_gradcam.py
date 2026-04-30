@@ -18,7 +18,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 from dfu_common import (
-    CONFIG, SEED, make_logger, load_preprocessed_inaoe, create_fold_splits, CBAM,
+    CONFIG, SEED, make_logger, load_preprocessed_inaoe, create_fold_splits,
 )
 
 N_SAMPLES_PER_CLASS = 4
@@ -282,7 +282,7 @@ def main():
         log(f"❌ {ckpt} not found.")
         return
     log(f"Loading proposed model: {ckpt}")
-    model = tf.keras.models.load_model(ckpt, compile=False, custom_objects={'CBAM': CBAM})
+    model = tf.keras.models.load_model(ckpt, compile=False)
 
     log("Building CAM models ...")
     feat_model, clf_model = build_cam_models(model)

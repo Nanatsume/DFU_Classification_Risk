@@ -1,10 +1,10 @@
 {
-  "dropout_rate": 0.29329469651469864,
-  "l2_reg": 9.452571391072311e-05,
+  "dropout_rate": 0.3368209952651108,
+  "l2_reg": 0.0022673986523780395,
   "dense_units_1": 512,
-  "dense_units_2": 256,
-  "batch_size": 16,
+  "dense_units_2": 128,
+  "batch_size": 32,
   "optimizer": "adam",
-  "phase1_lr": 0.003482846706526885,
-  "phase2_lr": 9.71831994481741e-06
+  "phase1_lr": 0.00853618986286683,
+  "phase2_lr": 4.138040112561016e-05
 }

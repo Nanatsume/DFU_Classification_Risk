@@ -1,257 +1,257 @@
-[2026-04-27 13:45:05] === Log file: ./results/train_efficientnet_log_20260427_134505.txt ===
-[2026-04-27 13:45:05] 
+[2026-04-30 00:31:34] === Log file: ./results/train_efficientnet_log_20260430_003134.txt ===
+[2026-04-30 00:31:34] 
 ################################################################################
 # TRAINING EfficientNetB0
 ################################################################################
 
-[2026-04-27 13:45:05] Loaded INAOE: 334 images, shape=(334, 224, 224, 3), CT=90, DM=244
-[2026-04-27 13:45:05] ✓ 5 folds  |  test set: 67
-[2026-04-27 13:45:05] 
+[2026-04-30 00:31:34] Loaded INAOE: 334 images, shape=(334, 224, 224, 3), CT=90, DM=244
+[2026-04-30 00:31:34] ✓ 5 folds  |  test set: 67
+[2026-04-30 00:31:34] 
 ================================================================================
 OPTUNA: EfficientNetB0_HyperparameterSearch (10 trials × fold1 only)
 ================================================================================
-[2026-04-27 13:45:06] 
+[2026-04-30 00:31:36] 
 ================================================================================
 PHASE 1: Frozen Backbone — EfficientNetB0_HyperparameterSearch_trial0_fold1
 ================================================================================
-[2026-04-27 13:45:06] Augmentation: rotation ±10°
-[2026-04-27 13:45:39] Phase 1 done. Best val_loss: 1.540652  (best epoch: 50)
-[2026-04-27 13:45:39] 
+[2026-04-30 00:31:36] Augmentation: rotation ±10°
+[2026-04-30 00:32:07] Phase 1 done. Best val_loss: 2.182273  (best epoch: 50)
+[2026-04-30 00:32:07] 
 ================================================================================
 PHASE 2: Fine-tuning — EfficientNetB0_HyperparameterSearch_trial0_fold1
 ================================================================================
-[2026-04-27 13:45:39] Unfroze 72 layers (from layer 166)
-[2026-04-27 13:46:21] Phase 2 done. Best val_loss: 0.926173  (best epoch: 50)
-[2026-04-27 13:46:23]   Trial 0: fold1 AUC = 0.4256
-[2026-04-27 13:46:24] 
+[2026-04-30 00:32:07] Unfroze 72 layers (from layer 166)
+[2026-04-30 00:32:45] Phase 2 done. Best val_loss: 1.776980  (best epoch: 50)
+[2026-04-30 00:32:48]   Trial 0: fold1 AUC = 0.6274
+[2026-04-30 00:32:48] 
 ================================================================================
 PHASE 1: Frozen Backbone — EfficientNetB0_HyperparameterSearch_trial1_fold1
 ================================================================================
-[2026-04-27 13:46:24] Augmentation: rotation ±10°
-[2026-04-27 13:46:34] Phase 1 done. Best val_loss: 0.699284  (best epoch: 10)
-[2026-04-27 13:46:35] 
+[2026-04-30 00:32:48] Augmentation: rotation ±10°
+[2026-04-30 00:32:57] Phase 1 done. Best val_loss: 0.678921  (best epoch: 8)
+[2026-04-30 00:32:57] 
 ================================================================================
 PHASE 2: Fine-tuning — EfficientNetB0_HyperparameterSearch_trial1_fold1
 ================================================================================
-[2026-04-27 13:46:35] Unfroze 72 layers (from layer 166)
-[2026-04-27 13:46:56] Phase 2 done. Best val_loss: 0.699488  (best epoch: 16)
-[2026-04-27 13:46:59]   Trial 1: fold1 AUC = 0.4402
-[2026-04-27 13:46:59] 
+[2026-04-30 00:32:57] Unfroze 72 layers (from layer 166)
+[2026-04-30 00:33:18] Phase 2 done. Best val_loss: 0.679652  (best epoch: 16)
+[2026-04-30 00:33:20]   Trial 1: fold1 AUC = 0.5624
+[2026-04-30 00:33:21] 
 ================================================================================
 PHASE 1: Frozen Backbone — EfficientNetB0_HyperparameterSearch_trial2_fold1
 ================================================================================
-[2026-04-27 13:46:59] Augmentation: rotation ±10°
-[2026-04-27 13:47:30] Phase 1 done. Best val_loss: 0.682480  (best epoch: 50)
-[2026-04-27 13:47:30] 
+[2026-04-30 00:33:21] Augmentation: rotation ±10°
+[2026-04-30 00:33:50] Phase 1 done. Best val_loss: 0.730493  (best epoch: 50)
+[2026-04-30 00:33:50] 
 ================================================================================
 PHASE 2: Fine-tuning — EfficientNetB0_HyperparameterSearch_trial2_fold1
 ================================================================================
-[2026-04-27 13:47:30] Unfroze 72 layers (from layer 166)
-[2026-04-27 13:48:12] Phase 2 done. Best val_loss: 0.681586  (best epoch: 50)
-[2026-04-27 13:48:15]   Trial 2: fold1 AUC = 0.5000
-[2026-04-27 13:48:16] 
+[2026-04-30 00:33:50] Unfroze 72 layers (from layer 166)
+[2026-04-30 00:34:28] Phase 2 done. Best val_loss: 0.714012  (best epoch: 50)
+[2026-04-30 00:34:31]   Trial 2: fold1 AUC = 0.6214
+[2026-04-30 00:34:32] 
 ================================================================================
 PHASE 1: Frozen Backbone — EfficientNetB0_HyperparameterSearch_trial3_fold1
 ================================================================================
-[2026-04-27 13:48:16] Augmentation: rotation ±10°
-[2026-04-27 13:48:35] Phase 1 done. Best val_loss: 0.684886  (best epoch: 26)
-[2026-04-27 13:48:35] 
+[2026-04-30 00:34:32] Augmentation: rotation ±10°
+[2026-04-30 00:34:41] Phase 1 done. Best val_loss: 0.669516  (best epoch: 10)
+[2026-04-30 00:34:41] 
 ================================================================================
 PHASE 2: Fine-tuning — EfficientNetB0_HyperparameterSearch_trial3_fold1
 ================================================================================
-[2026-04-27 13:48:35] Unfroze 72 layers (from layer 166)
-[2026-04-27 13:48:54] Phase 2 done. Best val_loss: 0.685023  (best epoch: 16)
-[2026-04-27 13:48:56]   Trial 3: fold1 AUC = 0.5145
-[2026-04-27 13:48:57] 
+[2026-04-30 00:34:41] Unfroze 72 layers (from layer 166)
+[2026-04-30 00:34:59] Phase 2 done. Best val_loss: 0.671359  (best epoch: 16)
+[2026-04-30 00:35:02]   Trial 3: fold1 AUC = 0.5897
+[2026-04-30 00:35:03] 
 ================================================================================
 PHASE 1: Frozen Backbone — EfficientNetB0_HyperparameterSearch_trial4_fold1
 ================================================================================
-[2026-04-27 13:48:57] Augmentation: rotation ±10°
-[2026-04-27 13:49:23] Phase 1 done. Best val_loss: 0.693222  (best epoch: 38)
-[2026-04-27 13:49:23] 
+[2026-04-30 00:35:03] Augmentation: rotation ±10°
+[2026-04-30 00:35:17] Phase 1 done. Best val_loss: 0.696325  (best epoch: 21)
+[2026-04-30 00:35:17] 
 ================================================================================
 PHASE 2: Fine-tuning — EfficientNetB0_HyperparameterSearch_trial4_fold1
 ================================================================================
-[2026-04-27 13:49:23] Unfroze 72 layers (from layer 166)
-[2026-04-27 13:49:41] Phase 2 done. Best val_loss: 0.693610  (best epoch: 16)
-[2026-04-27 13:49:45]   Trial 4: fold1 AUC = 0.2769
-[2026-04-27 13:49:46] 
+[2026-04-30 00:35:17] Unfroze 72 layers (from layer 166)
+[2026-04-30 00:35:35] Phase 2 done. Best val_loss: 0.696704  (best epoch: 16)
+[2026-04-30 00:35:38]   Trial 4: fold1 AUC = 0.3009
+[2026-04-30 00:35:39] 
 ================================================================================
 PHASE 1: Frozen Backbone — EfficientNetB0_HyperparameterSearch_trial5_fold1
 ================================================================================
-[2026-04-27 13:49:46] Augmentation: rotation ±10°
-[2026-04-27 13:49:53] Phase 1 done. Best val_loss: 0.661127  (best epoch: 6)
-[2026-04-27 13:49:53] 
+[2026-04-30 00:35:39] Augmentation: rotation ±10°
+[2026-04-30 00:35:46] Phase 1 done. Best val_loss: 0.611655  (best epoch: 6)
+[2026-04-30 00:35:47] 
 ================================================================================
 PHASE 2: Fine-tuning — EfficientNetB0_HyperparameterSearch_trial5_fold1
 ================================================================================
-[2026-04-27 13:49:53] Unfroze 72 layers (from layer 166)
-[2026-04-27 13:50:12] Phase 2 done. Best val_loss: 0.660955  (best epoch: 16)
-[2026-04-27 13:50:16]   Trial 5: fold1 AUC = 0.5060
-[2026-04-27 13:50:17] 
+[2026-04-30 00:35:47] Unfroze 72 layers (from layer 166)
+[2026-04-30 00:36:06] Phase 2 done. Best val_loss: 0.611488  (best epoch: 19)
+[2026-04-30 00:36:10]   Trial 5: fold1 AUC = 0.4923
+[2026-04-30 00:36:11] 
 ================================================================================
 PHASE 1: Frozen Backbone — EfficientNetB0_HyperparameterSearch_trial6_fold1
 ================================================================================
-[2026-04-27 13:50:17] Augmentation: rotation ±10°
-[2026-04-27 13:50:51] Phase 1 done. Best val_loss: 0.734986  (best epoch: 50)
-[2026-04-27 13:50:51] 
+[2026-04-30 00:36:11] Augmentation: rotation ±10°
+[2026-04-30 00:36:44] Phase 1 done. Best val_loss: 0.881341  (best epoch: 50)
+[2026-04-30 00:36:44] 
 ================================================================================
 PHASE 2: Fine-tuning — EfficientNetB0_HyperparameterSearch_trial6_fold1
 ================================================================================
-[2026-04-27 13:50:51] Unfroze 72 layers (from layer 166)
-[2026-04-27 13:51:11] Phase 2 done. Best val_loss: 0.735043  (best epoch: 16)
-[2026-04-27 13:51:15]   Trial 6: fold1 AUC = 0.4410
-[2026-04-27 13:51:16] 
+[2026-04-30 00:36:44] Unfroze 72 layers (from layer 166)
+[2026-04-30 00:37:09] Phase 2 done. Best val_loss: 0.881025  (best epoch: 23)
+[2026-04-30 00:37:13]   Trial 6: fold1 AUC = 0.3197
+[2026-04-30 00:37:14] 
 ================================================================================
 PHASE 1: Frozen Backbone — EfficientNetB0_HyperparameterSearch_trial7_fold1
 ================================================================================
-[2026-04-27 13:51:16] Augmentation: rotation ±10°
-[2026-04-27 13:51:25] Phase 1 done. Best val_loss: 0.666997  (best epoch: 6)
-[2026-04-27 13:51:25] 
+[2026-04-30 00:37:14] Augmentation: rotation ±10°
+[2026-04-30 00:37:25] Phase 1 done. Best val_loss: 0.750489  (best epoch: 9)
+[2026-04-30 00:37:26] 
 ================================================================================
 PHASE 2: Fine-tuning — EfficientNetB0_HyperparameterSearch_trial7_fold1
 ================================================================================
-[2026-04-27 13:51:25] Unfroze 72 layers (from layer 166)
-[2026-04-27 13:51:48] Phase 2 done. Best val_loss: 0.662235  (best epoch: 20)
-[2026-04-27 13:51:53]   Trial 7: fold1 AUC = 0.4632
-[2026-04-27 13:51:54] 
+[2026-04-30 00:37:26] Unfroze 72 layers (from layer 166)
+[2026-04-30 00:37:45] Phase 2 done. Best val_loss: 0.751350  (best epoch: 16)
+[2026-04-30 00:37:51]   Trial 7: fold1 AUC = 0.4402
+[2026-04-30 00:37:52] 
 ================================================================================
 PHASE 1: Frozen Backbone — EfficientNetB0_HyperparameterSearch_trial8_fold1
 ================================================================================
-[2026-04-27 13:51:54] Augmentation: rotation ±10°
-[2026-04-27 13:52:17] Phase 1 done. Best val_loss: 0.711887  (best epoch: 32)
-[2026-04-27 13:52:17] 
+[2026-04-30 00:37:52] Augmentation: rotation ±10°
+[2026-04-30 00:38:00] Phase 1 done. Best val_loss: 0.695145  (best epoch: 7)
+[2026-04-30 00:38:00] 
 ================================================================================
 PHASE 2: Fine-tuning — EfficientNetB0_HyperparameterSearch_trial8_fold1
 ================================================================================
-[2026-04-27 13:52:17] Unfroze 72 layers (from layer 166)
-[2026-04-27 13:52:38] Phase 2 done. Best val_loss: 0.712129  (best epoch: 16)
-[2026-04-27 13:52:43]   Trial 8: fold1 AUC = 0.5530
-[2026-04-27 13:52:44] 
+[2026-04-30 00:38:00] Unfroze 72 layers (from layer 166)
+[2026-04-30 00:38:19] Phase 2 done. Best val_loss: 0.695819  (best epoch: 16)
+[2026-04-30 00:38:25]   Trial 8: fold1 AUC = 0.3444
+[2026-04-30 00:38:26] 
 ================================================================================
 PHASE 1: Frozen Backbone — EfficientNetB0_HyperparameterSearch_trial9_fold1
 ================================================================================
-[2026-04-27 13:52:44] Augmentation: rotation ±10°
-[2026-04-27 13:52:52] Phase 1 done. Best val_loss: 0.644111  (best epoch: 7)
-[2026-04-27 13:52:52] 
+[2026-04-30 00:38:26] Augmentation: rotation ±10°
+[2026-04-30 00:38:35] Phase 1 done. Best val_loss: 0.634739  (best epoch: 8)
+[2026-04-30 00:38:35] 
 ================================================================================
 PHASE 2: Fine-tuning — EfficientNetB0_HyperparameterSearch_trial9_fold1
 ================================================================================
-[2026-04-27 13:52:52] Unfroze 72 layers (from layer 166)
-[2026-04-27 13:53:14] Phase 2 done. Best val_loss: 0.650884  (best epoch: 16)
-[2026-04-27 13:53:19]   Trial 9: fold1 AUC = 0.5179
-[2026-04-27 13:53:19] 
-✓ Best mean CV AUC: 0.552991
-[2026-04-27 13:53:19] Best hyperparameters: {'dropout_rate': 0.3568198488145982, 'l2_reg': 0.00019170041589170651, 'dense_units_1': 256, 'dense_units_2': 64, 'batch_size': 16, 'optimizer': 'adam', 'phase1_lr': 0.000661859559718348, 'phase2_lr': 3.244160088734163e-05}
-[2026-04-27 13:53:19] ✓ best_params → ./model_checkpoints/EfficientNetB0_best_params.json
-[2026-04-27 13:53:19] 
+[2026-04-30 00:38:35] Unfroze 72 layers (from layer 166)
+[2026-04-30 00:38:54] Phase 2 done. Best val_loss: 0.636119  (best epoch: 16)
+[2026-04-30 00:39:00]   Trial 9: fold1 AUC = 0.3949
+[2026-04-30 00:39:00] 
+✓ Best mean CV AUC: 0.627350
+[2026-04-30 00:39:00] Best hyperparameters: {'dropout_rate': 0.3123620356542087, 'l2_reg': 0.0071144760093434225, 'dense_units_1': 128, 'dense_units_2': 256, 'batch_size': 32, 'optimizer': 'adam', 'phase1_lr': 0.00010994335574766199, 'phase2_lr': 8.706020878304853e-05}
+[2026-04-30 00:39:00] ✓ best_params → ./model_checkpoints/EfficientNetB0_best_params.json
+[2026-04-30 00:39:00] 
 ================================================================================
 FOLD 1/5: EfficientNetB0
 ================================================================================
-[2026-04-27 13:53:19] Train: 213  |  Val: 54
-[2026-04-27 13:53:19] 
+[2026-04-30 00:39:00] Train: 213  |  Val: 54
+[2026-04-30 00:39:01] 
 ================================================================================
 PHASE 1: Frozen Backbone — EfficientNetB0_Fold1
 ================================================================================
-[2026-04-27 13:53:19] Augmentation: rotation ±10°
-[2026-04-27 13:53:44] Phase 1 done. Best val_loss: 0.725744  (best epoch: 27)
-[2026-04-27 13:53:44] 
+[2026-04-30 00:39:01] Augmentation: rotation ±10°
+[2026-04-30 00:39:38] Phase 1 done. Best val_loss: 2.019927  (best epoch: 50)
+[2026-04-30 00:39:38] 
 ================================================================================
 PHASE 2: Fine-tuning — EfficientNetB0_Fold1
 ================================================================================
-[2026-04-27 13:53:44] Unfroze 72 layers (from layer 166)
-[2026-04-27 13:54:04] Phase 2 done. Best val_loss: 0.726111  (best epoch: 16)
-[2026-04-27 13:54:08] Model saved to ./model_checkpoints/EfficientNetB0_Fold1_final.keras
-[2026-04-27 13:54:08] ✓ Fold 1 complete  (best epoch: phase1=27, phase2=16)
-[2026-04-27 13:54:11] 
+[2026-04-30 00:39:38] Unfroze 72 layers (from layer 166)
+[2026-04-30 00:40:28] Phase 2 done. Best val_loss: 1.686775  (best epoch: 50)
+[2026-04-30 00:40:30] Model saved to ./model_checkpoints/EfficientNetB0_Fold1_final.keras
+[2026-04-30 00:40:30] ✓ Fold 1 complete  (best epoch: phase1=50, phase2=50)
+[2026-04-30 00:40:32] 
 ================================================================================
 FOLD 2/5: EfficientNetB0
 ================================================================================
-[2026-04-27 13:54:11] Train: 213  |  Val: 54
-[2026-04-27 13:54:12] 
+[2026-04-30 00:40:33] Train: 213  |  Val: 54
+[2026-04-30 00:40:33] 
 ================================================================================
 PHASE 1: Frozen Backbone — EfficientNetB0_Fold2
 ================================================================================
-[2026-04-27 13:54:12] Augmentation: rotation ±10°
-[2026-04-27 13:54:50] Phase 1 done. Best val_loss: 0.708204  (best epoch: 44)
-[2026-04-27 13:54:50] 
+[2026-04-30 00:40:33] Augmentation: rotation ±10°
+[2026-04-30 00:41:12] Phase 1 done. Best val_loss: 2.080437  (best epoch: 50)
+[2026-04-30 00:41:13] 
 ================================================================================
 PHASE 2: Fine-tuning — EfficientNetB0_Fold2
 ================================================================================
-[2026-04-27 13:54:50] Unfroze 72 layers (from layer 166)
-[2026-04-27 13:55:11] Phase 2 done. Best val_loss: 0.708629  (best epoch: 16)
-[2026-04-27 13:55:14] Model saved to ./model_checkpoints/EfficientNetB0_Fold2_final.keras
-[2026-04-27 13:55:14] ✓ Fold 2 complete  (best epoch: phase1=44, phase2=16)
-[2026-04-27 13:55:17] 
+[2026-04-30 00:41:13] Unfroze 72 layers (from layer 166)
+[2026-04-30 00:42:02] Phase 2 done. Best val_loss: 1.695426  (best epoch: 50)
+[2026-04-30 00:42:04] Model saved to ./model_checkpoints/EfficientNetB0_Fold2_final.keras
+[2026-04-30 00:42:04] ✓ Fold 2 complete  (best epoch: phase1=50, phase2=50)
+[2026-04-30 00:42:08] 
 ================================================================================
 FOLD 3/5: EfficientNetB0
 ================================================================================
-[2026-04-27 13:55:18] Train: 214  |  Val: 53
-[2026-04-27 13:55:19] 
+[2026-04-30 00:42:08] Train: 214  |  Val: 53
+[2026-04-30 00:42:09] 
 ================================================================================
 PHASE 1: Frozen Backbone — EfficientNetB0_Fold3
 ================================================================================
-[2026-04-27 13:55:19] Augmentation: rotation ±10°
-[2026-04-27 13:55:43] Phase 1 done. Best val_loss: 0.712761  (best epoch: 28)
-[2026-04-27 13:55:43] 
+[2026-04-30 00:42:09] Augmentation: rotation ±10°
+[2026-04-30 00:42:47] Phase 1 done. Best val_loss: 2.052670  (best epoch: 50)
+[2026-04-30 00:42:47] 
 ================================================================================
 PHASE 2: Fine-tuning — EfficientNetB0_Fold3
 ================================================================================
-[2026-04-27 13:55:43] Unfroze 72 layers (from layer 166)
-[2026-04-27 13:56:05] Phase 2 done. Best val_loss: 0.713420  (best epoch: 16)
-[2026-04-27 13:56:07] Model saved to ./model_checkpoints/EfficientNetB0_Fold3_final.keras
-[2026-04-27 13:56:07] ✓ Fold 3 complete  (best epoch: phase1=28, phase2=16)
-[2026-04-27 13:56:10] 
+[2026-04-30 00:42:47] Unfroze 72 layers (from layer 166)
+[2026-04-30 00:43:40] Phase 2 done. Best val_loss: 1.663223  (best epoch: 50)
+[2026-04-30 00:43:42] Model saved to ./model_checkpoints/EfficientNetB0_Fold3_final.keras
+[2026-04-30 00:43:42] ✓ Fold 3 complete  (best epoch: phase1=50, phase2=50)
+[2026-04-30 00:43:46] 
 ================================================================================
 FOLD 4/5: EfficientNetB0
 ================================================================================
-[2026-04-27 13:56:10] Train: 214  |  Val: 53
-[2026-04-27 13:56:11] 
+[2026-04-30 00:43:46] Train: 214  |  Val: 53
+[2026-04-30 00:43:47] 
 ================================================================================
 PHASE 1: Frozen Backbone — EfficientNetB0_Fold4
 ================================================================================
-[2026-04-27 13:56:11] Augmentation: rotation ±10°
-[2026-04-27 13:56:37] Phase 1 done. Best val_loss: 0.715390  (best epoch: 27)
-[2026-04-27 13:56:37] 
+[2026-04-30 00:43:47] Augmentation: rotation ±10°
+[2026-04-30 00:44:24] Phase 1 done. Best val_loss: 1.992741  (best epoch: 50)
+[2026-04-30 00:44:25] 
 ================================================================================
 PHASE 2: Fine-tuning — EfficientNetB0_Fold4
 ================================================================================
-[2026-04-27 13:56:37] Unfroze 72 layers (from layer 166)
-[2026-04-27 13:56:59] Phase 2 done. Best val_loss: 0.717240  (best epoch: 16)
-[2026-04-27 13:57:01] Model saved to ./model_checkpoints/EfficientNetB0_Fold4_final.keras
-[2026-04-27 13:57:01] ✓ Fold 4 complete  (best epoch: phase1=27, phase2=16)
-[2026-04-27 13:57:04] 
+[2026-04-30 00:44:25] Unfroze 72 layers (from layer 166)
+[2026-04-30 00:45:17] Phase 2 done. Best val_loss: 1.646239  (best epoch: 50)
+[2026-04-30 00:45:19] Model saved to ./model_checkpoints/EfficientNetB0_Fold4_final.keras
+[2026-04-30 00:45:19] ✓ Fold 4 complete  (best epoch: phase1=50, phase2=50)
+[2026-04-30 00:45:22] 
 ================================================================================
 FOLD 5/5: EfficientNetB0
 ================================================================================
-[2026-04-27 13:57:04] Train: 214  |  Val: 53
-[2026-04-27 13:57:05] 
+[2026-04-30 00:45:22] Train: 214  |  Val: 53
+[2026-04-30 00:45:23] 
 ================================================================================
 PHASE 1: Frozen Backbone — EfficientNetB0_Fold5
 ================================================================================
-[2026-04-27 13:57:05] Augmentation: rotation ±10°
-[2026-04-27 13:57:47] Phase 1 done. Best val_loss: 0.703303  (best epoch: 50)
-[2026-04-27 13:57:47] 
+[2026-04-30 00:45:23] Augmentation: rotation ±10°
+[2026-04-30 00:46:01] Phase 1 done. Best val_loss: 2.102666  (best epoch: 50)
+[2026-04-30 00:46:01] 
 ================================================================================
 PHASE 2: Fine-tuning — EfficientNetB0_Fold5
 ================================================================================
-[2026-04-27 13:57:47] Unfroze 72 layers (from layer 166)
-[2026-04-27 13:58:09] Phase 2 done. Best val_loss: 0.703859  (best epoch: 16)
-[2026-04-27 13:58:11] Model saved to ./model_checkpoints/EfficientNetB0_Fold5_final.keras
-[2026-04-27 13:58:11] ✓ Fold 5 complete  (best epoch: phase1=50, phase2=16)
-[2026-04-27 13:58:15] ✓ Val predictions → ./model_checkpoints/EfficientNetB0_val_preds.npz
-[2026-04-27 13:58:15] ✓ Avg stopping epochs (phase1=35, phase2=16, from 5 folds) → ./model_checkpoints/EfficientNetB0_avg_epochs.json
-[2026-04-27 13:58:15] 
+[2026-04-30 00:46:01] Unfroze 72 layers (from layer 166)
+[2026-04-30 00:46:53] Phase 2 done. Best val_loss: 1.710915  (best epoch: 50)
+[2026-04-30 00:46:55] Model saved to ./model_checkpoints/EfficientNetB0_Fold5_final.keras
+[2026-04-30 00:46:55] ✓ Fold 5 complete  (best epoch: phase1=50, phase2=50)
+[2026-04-30 00:46:59] ✓ Val predictions → ./model_checkpoints/EfficientNetB0_val_preds.npz
+[2026-04-30 00:46:59] ✓ Avg stopping epochs (phase1=50, phase2=50, from 5 folds) → ./model_checkpoints/EfficientNetB0_avg_epochs.json
+[2026-04-30 00:46:59] 
 ────────────────────────────────────────────────────────────
   EfficientNetB0 — Validation Metrics Per Fold
 ────────────────────────────────────────────────────────────
-[2026-04-27 13:58:15]   Fold 1:  AUC=0.5641  Sens=1.0000  Spec=0.0000
-[2026-04-27 13:58:15]   Fold 2:  AUC=0.4496  Sens=1.0000  Spec=0.0000
-[2026-04-27 13:58:15]   Fold 3:  AUC=0.4121  Sens=1.0000  Spec=0.0000
-[2026-04-27 13:58:15]   Fold 4:  AUC=0.3333  Sens=1.0000  Spec=0.0000
-[2026-04-27 13:58:15]   Fold 5:  AUC=0.3901  Sens=1.0000  Spec=0.0000
-[2026-04-27 13:58:15]   Mean :  AUC=0.4298  Sens=1.0000  Spec=0.0000
-[2026-04-27 13:58:15] 
+[2026-04-30 00:46:59]   Fold 1:  AUC=0.5111  Sens=1.0000  Spec=0.0000
+[2026-04-30 00:46:59]   Fold 2:  AUC=0.5658  Sens=1.0000  Spec=0.0000
+[2026-04-30 00:46:59]   Fold 3:  AUC=0.5751  Sens=0.8974  Spec=0.0000
+[2026-04-30 00:46:59]   Fold 4:  AUC=0.5256  Sens=1.0000  Spec=0.0000
+[2026-04-30 00:46:59]   Fold 5:  AUC=0.6227  Sens=1.0000  Spec=0.0000
+[2026-04-30 00:46:59]   Mean :  AUC=0.5601  Sens=0.9795  Spec=0.0000
+[2026-04-30 00:46:59] 
 ################################################################################
 # EfficientNetB0 TRAINING COMPLETE
 ################################################################################

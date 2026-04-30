@@ -136,46 +136,6 @@ class ExponentialDecayScheduler(tf.keras.optimizers.schedules.LearningRateSchedu
                 "decay_steps": self.decay_steps}
 
 
-class CBAM(layers.Layer):
-    """Convolutional Block Attention Module (Woo et al., 2018).
-
-    Applies channel attention then spatial attention to spatial feature maps.
-    reduction_ratio: MLP hidden dim = C // reduction_ratio (default 16).
-    """
-
-    def __init__(self, reduction_ratio=16, **kwargs):
-        super().__init__(**kwargs)
-        self.reduction_ratio = reduction_ratio
-
-    def build(self, input_shape):
-        C = input_shape[-1]
-        r = max(1, C // self.reduction_ratio)
-        self._ch_dense1 = layers.Dense(r, activation='relu', use_bias=False)
-        self._ch_dense2 = layers.Dense(C, use_bias=False)
-        self._sp_conv   = layers.Conv2D(1, kernel_size=7, padding='same',
-                                        activation='sigmoid', use_bias=False)
-        super().build(input_shape)
-
-    def call(self, x, training=False):
-        # Channel attention
-        avg    = tf.reduce_mean(x, axis=[1, 2])
-        mx     = tf.reduce_max(x,  axis=[1, 2])
-        avg    = self._ch_dense2(self._ch_dense1(avg))
-        mx     = self._ch_dense2(self._ch_dense1(mx))
-        ch_att = tf.sigmoid(avg + mx)
-        x      = x * ch_att[:, tf.newaxis, tf.newaxis, :]
-
-        # Spatial attention
-        avg_s  = tf.reduce_mean(x, axis=-1, keepdims=True)
-        max_s  = tf.reduce_max(x,  axis=-1, keepdims=True)
-        sp_att = self._sp_conv(tf.concat([avg_s, max_s], axis=-1))
-        return x * sp_att
-
-    def get_config(self):
-        cfg = super().get_config()
-        cfg['reduction_ratio'] = self.reduction_ratio
-        return cfg
-
 
 class DFUModelTrainer:
     def __init__(self, model_name, base_model, dropout_rate=0.5, l2_reg=1e-5,
@@ -214,7 +174,6 @@ class DFUModelTrainer:
         self.base_model.trainable = False
         inputs = layers.Input(shape=(224, 224, 3))
         x = self.base_model(inputs, training=False)
-        x = CBAM(reduction_ratio=16)(x)
         x = layers.GlobalAveragePooling2D()(x)
         x = layers.Dense(self.dense_units[0], activation='relu',
                          kernel_regularizer=keras.regularizers.l2(self.l2_reg))(x)
@@ -535,7 +494,7 @@ def train_one_model(model_name: str, base_model_fn, log):
 
         if os.path.exists(ckpt):
             log(f"✓ Fold {fold_num+1}: loading existing checkpoint")
-            m = tf.keras.models.load_model(ckpt, custom_objects={'CBAM': CBAM})
+            m = tf.keras.models.load_model(ckpt)
             preds = m.predict(X_v, verbose=0).flatten()
             del m
             tf.keras.backend.clear_session(); gc.collect()

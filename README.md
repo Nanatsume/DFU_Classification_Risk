@@ -35,10 +35,6 @@ Input (224×224×3)
     |
 Backbone (ImageNet pretrained, frozen in Phase 1)
     |
-CBAM (reduction_ratio=16)
-    |-- Channel Attention : AvgPool + MaxPool -> Shared MLP -> sigmoid
-    +-- Spatial Attention : AvgPool + MaxPool along C -> Conv2D(7x7) -> sigmoid
-    |
 GlobalAveragePooling2D
     |
 Dense(256, relu) -> Dropout(0.5)
@@ -87,21 +83,21 @@ Dense(1, sigmoid)
 **Clinical screening criteria** (all three must be met):
 - AUC-ROC ≥ 0.80 &nbsp;·&nbsp; Sensitivity ≥ 0.85 &nbsp;·&nbsp; Specificity ≥ 0.70
 
-**Results** (mean across 5 folds, threshold = 0.5, with CBAM):
+**Results** (mean across 5 folds, threshold = 0.5):
 
 | Backbone | AUC | Sensitivity | Specificity | Pass All |
 |----------|-----|-------------|-------------|----------|
-| EfficientNetB0 | 0.4298 | 1.0000 | 0.0000 | ✗ |
-| ResNet50 | 0.7483 | 1.0000 | 0.0000 | ✗ |
-| **ConvNeXt-Tiny** | **0.8277** | **0.8205** | **0.6800** | ✗ |
+| EfficientNetB0 | 0.5601 | 0.9795 | 0.0000 | ✗ |
+| ResNet50 | 0.6558 | 0.9949 | 0.0429 | ✗ |
+| **ConvNeXt-Tiny** | **0.8252** | **0.7795** | **0.6667** | ✗ |
 
-> No backbone passed all three criteria. **ConvNeXt-Tiny** was selected as it achieved the highest AUC and came closest to meeting the specificity threshold (0.68 vs criterion 0.70).
+> No backbone passed all three criteria. **ConvNeXt-Tiny** was selected as it achieved the highest AUC and came closest to meeting the specificity threshold (0.67 vs criterion 0.70).
 
 ---
 
 ### RQ2 — Threshold Optimization (Youden's Index)
 
-**Objective**: Compare default threshold (0.5) against Youden's Index threshold on ConvNeXt-Tiny+CBAM.
+**Objective**: Compare default threshold (0.5) against Youden's Index threshold on ConvNeXt-Tiny.
 
 $$J = \text{Sensitivity} + \text{Specificity} - 1 \qquad \text{threshold}^* = \arg\max(\text{TPR} - \text{FPR})$$
 
@@ -109,21 +105,21 @@ $$J = \text{Sensitivity} + \text{Specificity} - 1 \qquad \text{threshold}^* = \a
 
 | Fold | Youden thr | Sensitivity | Specificity |
 |------|-----------|-------------|-------------|
-| 1 | 0.8759 | 0.6923 | 0.8667 |
-| 2 | 0.6932 | 0.8205 | 0.8000 |
-| 3 | 0.7001 | 0.7436 | 0.7857 |
-| 4 | 0.8053 | 0.7692 | 0.9286 |
-| 5 | 0.7146 | 0.8718 | 0.8571 |
-| **Mean** | **0.7578** | — | — |
+| 1 | 0.3679 | 0.8974 | 0.6667 |
+| 2 | 0.5854 | 0.8205 | 0.6667 |
+| 3 | 0.6694 | 0.6923 | 0.7857 |
+| 4 | 0.9660 | 0.5897 | 1.0000 |
+| 5 | 0.3408 | 0.9231 | 0.8571 |
+| **Mean** | **0.5859** | — | — |
 
-**Default (0.5) vs Youden (0.7578)**:
+**Default (0.5) vs Youden (0.5859)**:
 
-| Metric | Default 0.5 | Youden 0.7578 | Delta |
+| Metric | Default 0.5 | Youden 0.5859 | Delta |
 |--------|------------|--------------|-------|
-| Sensitivity | 0.8205 ± 0.0429 | 0.7641 ± 0.0470 | −0.0564 (−6.9%) |
-| Specificity | 0.6800 ± 0.0373 | 0.8210 ± 0.0667 | +0.1410 (+20.7%) |
+| Sensitivity | 0.7795 ± 0.0384 | 0.7590 ± 0.0476 | −0.0205 (−2.6%) |
+| Specificity | 0.6667 ± 0.1137 | 0.7238 ± 0.0833 | +0.0571 (+8.6%) |
 
-> Youden threshold trades −6.9% Sensitivity for +20.7% Specificity, bringing Specificity above the ≥0.70 criterion.
+> Youden threshold trades −2.6% Sensitivity for +8.6% Specificity, bringing Specificity above the ≥0.70 criterion.
 
 ---
 
@@ -133,20 +129,20 @@ $$J = \text{Sensitivity} + \text{Specificity} - 1 \qquad \text{threshold}^* = \a
 1. Record average stopping epoch from 5-fold CV
 2. Retrain on full training set (267 images) for that fixed number of epochs
 3. No early stopping in the final retrain
-4. Evaluate with Youden threshold (0.7578)
+4. Evaluate with Youden threshold (0.5859)
 
-**Average stopping epochs** (ConvNeXt-Tiny+CBAM): Phase 1 = **50**, Phase 2 = **47**
+**Average stopping epochs** (ConvNeXt-Tiny): Phase 1 = **50**, Phase 2 = **43**
 
 **Test set results**:
 
 | Metric | Value |
 |--------|-------|
-| AUC-ROC | **0.8333** |
-| Sensitivity | **0.8163** |
-| Specificity | **0.6667** |
-| PPV | 0.8696 |
-| NPV | 0.5714 |
-| F1-Score | 0.8421 |
+| AUC-ROC | **0.8968** |
+| Sensitivity | **0.7755** |
+| Specificity | **0.8889** |
+| PPV | 0.9500 |
+| NPV | 0.5926 |
+| F1-Score | 0.8539 |
 
 ---
 
@@ -183,21 +179,21 @@ Output: 4-panel images (Original / Grad-CAM / Grad-CAM++ / Eigen-CAM) saved to `
 
 **Comparison on test set**:
 
-| Metric | ConvNeXt-Tiny+CBAM | BPNN (GLCM+HOG) | Delta |
-|--------|-------------------|-----------------|-------|
-| Sensitivity | 0.8163 | 0.8367 | +0.0204 |
-| Specificity | 0.6667 | 0.6111 | −0.0556 |
-| AUC-ROC | 0.8333 | 0.8526 | +0.0193 |
-| PPV | 0.8696 | 0.8542 | −0.0154 |
-| NPV | 0.5714 | 0.5789 | +0.0075 |
-| F1-Score | 0.8421 | 0.8454 | +0.0033 |
+| Metric | ConvNeXt-Tiny | BPNN (GLCM+HOG) | Delta |
+|--------|--------------|-----------------|-------|
+| Sensitivity | 0.7755 | 0.8367 | +0.0612 |
+| Specificity | 0.8889 | 0.6111 | −0.2778 |
+| AUC-ROC | 0.8968 | 0.8526 | −0.0442 |
+| PPV | 0.9500 | 0.8542 | −0.0958 |
+| NPV | 0.5926 | 0.5789 | −0.0137 |
+| F1-Score | 0.8539 | 0.8454 | −0.0085 |
 
-**Statistical tests** (CNN thr=0.7578, BPNN thr=0.5792):
+**Statistical tests** (CNN thr=0.5859, BPNN thr=0.5792):
 
 | Test | Result | p-value | Significance |
 |------|--------|---------|--------------|
-| McNemar's Test (H₀: same error pattern) | b=8 (CNN✓/BPNN✗), c=8 (CNN✗/BPNN✓) | 1.0000 | ns |
-| Bootstrap AUC (H₀: AUC_CNN = AUC_BPNN, n=2,000) | ΔAUC = −0.0193 | 0.7820 | ns |
+| McNemar's Test (H₀: same error pattern) | b=9 (CNN✓/BPNN✗), c=7 (CNN✗/BPNN✓) | 0.8036 | ns |
+| Bootstrap AUC (H₀: AUC_CNN = AUC_BPNN, n=2,000) | ΔAUC = +0.0442 | 0.4730 | ns |
 
 > Neither test reached significance — the two models are statistically equivalent on this test set.
 
@@ -280,7 +276,7 @@ bash run_gpu.sh rq6_bpnn_interpretability.py
 | Framework | TensorFlow 2.21 + Keras 3 |
 | Checkpoint format | `.keras` (not `.h5`) |
 | GPU | NVIDIA Blackwell (RTX 5060 Ti, sm_120a) — requires `jit_compile=False` |
-| Load model | `compile=False` + `custom_objects={'CBAM': CBAM}` |
+| Load model | `compile=False` — avoids deserialization errors |
 | Augmentation | `RandomRotation(±10°)` via tf.data pipeline, training only |
 | Epoch policy | 5-fold CV uses max 50 + early stopping; final retrain uses avg stopping epoch from CV |
 | Feature cache | GLCM+HOG cached at `model_checkpoints/glcm_hog_features.npz` |
