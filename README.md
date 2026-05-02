@@ -60,7 +60,7 @@ Dense(1, sigmoid)
 ### Hyperparameter Tuning — Optuna
 
 - **Sampler**: TPE (Tree-structured Parzen Estimator), Seed=42
-- **Trials**: 10 trials on Fold 1 only
+- **Trials**: 10 trials, each evaluated with 5-Fold CV
 
 | Parameter | Search Space |
 |-----------|-------------|

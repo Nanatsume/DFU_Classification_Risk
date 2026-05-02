@@ -353,40 +353,42 @@ class OptunaHyperparameterTuner:
             'phase2_lr':     trial.suggest_float('phase2_lr', 1e-6, 1e-4, log=True),
         }
         try:
-            fold = fold_indices[0]
-            X_tr, y_tr = X_full[fold['train_idx']], y_full[fold['train_idx']]
-            X_v,  y_v  = X_full[fold['val_idx']],   y_full[fold['val_idx']]
+            aucs = []
+            for fi, fold in enumerate(fold_indices):
+                X_tr, y_tr = X_full[fold['train_idx']], y_full[fold['train_idx']]
+                X_v,  y_v  = X_full[fold['val_idx']],   y_full[fold['val_idx']]
 
-            base = self.base_model_fn()
-            trainer = DFUModelTrainer(
-                model_name=f"{self.model_name}_trial{trial.number}_fold1",
-                base_model=base,
-                dropout_rate=params['dropout_rate'],
-                l2_reg=params['l2_reg'],
-                dense_units=(params['dense_units_1'], params['dense_units_2']),
-                log=self.log,
-            )
-            trainer.build_model()
-            trainer.train_phase1(X_tr, y_tr, X_v, y_v,
-                                 batch_size=params['batch_size'],
-                                 optimizer=params['optimizer'],
-                                 learning_rate=params['phase1_lr'],
-                                 max_epochs=CONFIG['max_epochs'],
-                                 patience=CONFIG['phase1_patience'],
-                                 verbose=0, save_checkpoint=False)
-            trainer.train_phase2(X_tr, y_tr, X_v, y_v,
-                                 batch_size=params['batch_size'],
-                                 optimizer=params['optimizer'],
-                                 learning_rate=params['phase2_lr'],
-                                 max_epochs=CONFIG['max_epochs'],
-                                 patience=CONFIG['phase2_patience'],
-                                 verbose=0, save_checkpoint=False)
-            fold_auc = float(roc_auc_score(y_v, trainer.get_predictions(X_v)))
-            del trainer, base
-            tf.keras.backend.clear_session(); gc.collect()
+                base = self.base_model_fn()
+                trainer = DFUModelTrainer(
+                    model_name=f"{self.model_name}_trial{trial.number}_fold{fi+1}",
+                    base_model=base,
+                    dropout_rate=params['dropout_rate'],
+                    l2_reg=params['l2_reg'],
+                    dense_units=(params['dense_units_1'], params['dense_units_2']),
+                    log=self.log,
+                )
+                trainer.build_model()
+                trainer.train_phase1(X_tr, y_tr, X_v, y_v,
+                                     batch_size=params['batch_size'],
+                                     optimizer=params['optimizer'],
+                                     learning_rate=params['phase1_lr'],
+                                     max_epochs=CONFIG['max_epochs'],
+                                     patience=CONFIG['phase1_patience'],
+                                     verbose=0, save_checkpoint=False)
+                trainer.train_phase2(X_tr, y_tr, X_v, y_v,
+                                     batch_size=params['batch_size'],
+                                     optimizer=params['optimizer'],
+                                     learning_rate=params['phase2_lr'],
+                                     max_epochs=CONFIG['max_epochs'],
+                                     patience=CONFIG['phase2_patience'],
+                                     verbose=0, save_checkpoint=False)
+                aucs.append(float(roc_auc_score(y_v, trainer.get_predictions(X_v))))
+                del trainer, base
+                tf.keras.backend.clear_session(); gc.collect()
 
-            self.log(f"  Trial {trial.number}: fold1 AUC = {fold_auc:.4f}")
-            return fold_auc
+            mean_auc = float(np.mean(aucs))
+            self.log(f"  Trial {trial.number}: 5-fold AUC = {mean_auc:.4f}  {[f'{a:.4f}' for a in aucs]}")
+            return mean_auc
         except Exception as e:
             self.log(f"Trial {trial.number} failed: {e}")
             try:
@@ -401,7 +403,7 @@ class OptunaHyperparameterTuner:
             return 0.0
 
     def optimize(self, X_full, y_full, fold_indices):
-        self.log(f"\n{'='*80}\nOPTUNA: {self.model_name} ({self.n_trials} trials × fold1 only)\n{'='*80}")
+        self.log(f"\n{'='*80}\nOPTUNA: {self.model_name} ({self.n_trials} trials × 5-fold CV)\n{'='*80}")
         self.study = optuna.create_study(direction='maximize', sampler=TPESampler(seed=SEED))
         self.study.optimize(
             lambda t: self.objective(t, X_full, y_full, fold_indices),
@@ -411,6 +413,8 @@ class OptunaHyperparameterTuner:
         self.best_value = self.study.best_value
         self.log(f"\n✓ Best mean CV AUC: {self.best_value:.6f}")
         self.log(f"Best hyperparameters: {self.best_params}")
+        tf.keras.backend.clear_session()
+        gc.collect()
         return self.best_params
 
 

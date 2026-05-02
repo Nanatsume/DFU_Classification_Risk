@@ -82,7 +82,7 @@ Dense(1, sigmoid)   ← output probability
 ### Hyperparameter Tuning — Optuna
 
 - **Sampler**: TPE (Tree-structured Parzen Estimator), Seed=42
-- **Trials**: 10 trials, evaluated on Fold 1 only (for speed)
+- **Trials**: 10 trials, each evaluated with 5-Fold CV
 - **Search space**:
   - `dropout_rate`: 0.2–0.5
   - `l2_reg`: 1e-5–1e-2

@@ -9,19 +9,19 @@
       "phase2": 50
     },
     "fold3": {
-      "phase1": 50,
+      "phase1": 28,
       "phase2": 50
     },
     "fold4": {
-      "phase1": 22,
-      "phase2": 50
+      "phase1": 50,
+      "phase2": 47
     },
     "fold5": {
       "phase1": 50,
       "phase2": 50
     }
   },
-  "avg_phase1": 44,
-  "avg_phase2": 50,
+  "avg_phase1": 46,
+  "avg_phase2": 49,
   "n_folds_used": 5
 }
