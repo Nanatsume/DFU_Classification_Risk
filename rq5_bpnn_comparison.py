@@ -43,23 +43,48 @@ def mcnemar_test(y_true, pred_a, pred_b):
     return p, b, c
 
 
-def bootstrap_auc_pvalue(y_true, prob_a, prob_b, n_boot=2000, seed=42):
-    """Bootstrap p-value for H0: AUC_A = AUC_B (two-sided)."""
-    rng = np.random.default_rng(seed)
-    obs = roc_auc_score(y_true, prob_a) - roc_auc_score(y_true, prob_b)
-    n = len(y_true)
-    boot = []
-    for _ in range(n_boot):
-        idx = rng.integers(0, n, size=n)
-        try:
-            d = roc_auc_score(y_true[idx], prob_a[idx]) - \
-                roc_auc_score(y_true[idx], prob_b[idx])
-            boot.append(d)
-        except Exception:
-            continue
-    boot = np.array(boot)
-    centered = boot - boot.mean()
-    return float(np.mean(np.abs(centered) >= abs(obs)))
+def delong_auc_pvalue(y_true, prob_a, prob_b):
+    """DeLong's test p-value for H0: AUC_A = AUC_B (two-sided).
+
+    Uses the variance estimation method from DeLong et al. (1988).
+    Returns (p_value, delta_auc, z_stat).
+    """
+    y = np.asarray(y_true)
+    a = np.asarray(prob_a)
+    b = np.asarray(prob_b)
+
+    pos = np.where(y == 1)[0]
+    neg = np.where(y == 0)[0]
+    n1, n0 = len(pos), len(neg)
+
+    def placement_values(scores, pos_idx, neg_idx):
+        V10 = np.array([np.mean(scores[pos_idx[i]] > scores[neg_idx]) +
+                        0.5 * np.mean(scores[pos_idx[i]] == scores[neg_idx])
+                        for i in range(len(pos_idx))])
+        V01 = np.array([np.mean(scores[neg_idx[j]] < scores[pos_idx]) +
+                        0.5 * np.mean(scores[neg_idx[j]] == scores[pos_idx])
+                        for j in range(len(neg_idx))])
+        return V10, V01
+
+    V10_a, V01_a = placement_values(a, pos, neg)
+    V10_b, V01_b = placement_values(b, pos, neg)
+
+    auc_a = V10_a.mean()
+    auc_b = V10_b.mean()
+    delta = auc_a - auc_b
+
+    S10 = np.cov(V10_a, V10_b) / n1
+    S01 = np.cov(V01_a, V01_b) / n0
+    S = S10 + S01
+
+    var_delta = S[0, 0] + S[1, 1] - 2 * S[0, 1]
+    if var_delta <= 0:
+        return 1.0, delta, 0.0
+
+    z = delta / np.sqrt(var_delta)
+    from scipy import stats
+    p = float(2 * stats.norm.sf(abs(z)))
+    return p, float(delta), float(z)
 
 
 # ── Feature extraction ────────────────────────────────────────────────────────
@@ -307,12 +332,12 @@ def main():
             log(f"  b={b} (CNN✓/BPNN✗)  c={c} (CNN✗/BPNN✓)  "
                 f"p={p_mc:.4f} {sig_mc}")
 
-            p_auc = bootstrap_auc_pvalue(y_test, cnn_probs, test_probs)
+            p_auc, delta_auc, z_stat = delong_auc_pvalue(y_test, cnn_probs, test_probs)
             sig_auc = '***' if p_auc < 0.001 else ('**' if p_auc < 0.01 else
                       ('*'  if p_auc < 0.05 else 'ns'))
-            log(f"Bootstrap AUC   (H0: AUC_CNN = AUC_BPNN, n_boot=2000)")
-            log(f"  ΔAUC={cnn_m['auc_roc'] - bpnn_metrics['auc_roc']:+.4f}  "
-                f"p={p_auc:.4f} {sig_auc}")
+            log(f"DeLong's test   (H0: AUC_CNN = AUC_BPNN)")
+            log(f"  AUC_CNN={cnn_m['auc_roc']:.4f}  AUC_BPNN={bpnn_metrics['auc_roc']:.4f}  "
+                f"ΔAUC={delta_auc:+.4f}  z={z_stat:.4f}  p={p_auc:.4f} {sig_auc}")
             log(f"\nSignificance: * p<0.05  ** p<0.01  *** p<0.001  ns=not significant")
         else:
             log("⚠ rq3_test_probs.npy not found — re-run rq3_final_evaluation.py "
@@ -334,17 +359,17 @@ def main():
         bpnn_bin  = (test_probs >= mean_youden).astype(int)
 
         p_mc, b, c = mcnemar_test(y_test, cnn_bin, bpnn_bin)
-        p_auc = bootstrap_auc_pvalue(y_test, cnn_probs, test_probs)
+        p_auc, delta_auc, z_stat = delong_auc_pvalue(y_test, cnn_probs, test_probs)
         stat_tests = {
             'mcnemar': {
                 'b': b, 'c': c,
                 'p_value': round(p_mc, 4),
                 'significance': '***' if p_mc < 0.001 else ('**' if p_mc < 0.01 else ('*' if p_mc < 0.05 else 'ns')),
             },
-            'bootstrap_auc': {
-                'n_bootstrap': 2000,
-                'delta_auc': round(cnn_m['auc_roc'] - bpnn_metrics['auc_roc'], 4),
-                'p_value': round(p_auc, 4),
+            'delong_auc': {
+                'delta_auc': round(delta_auc, 4),
+                'z_stat':    round(z_stat, 4),
+                'p_value':   round(p_auc, 4),
                 'significance': '***' if p_auc < 0.001 else ('**' if p_auc < 0.01 else ('*' if p_auc < 0.05 else 'ns')),
             },
         }

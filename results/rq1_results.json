@@ -1,0 +1,31 @@
+{
+  "best_model": "ConvNeXt-Tiny",
+  "criteria": {
+    "auc": 0.8,
+    "sens": 0.85,
+    "spec": 0.7
+  },
+  "comparison": [
+    {
+      "name": "EfficientNetB0",
+      "auc": 0.6378998778998779,
+      "sens": 0.5948717948717949,
+      "spec": 0.41809523809523813,
+      "qualifies": false
+    },
+    {
+      "name": "ResNet50",
+      "auc": 0.7875213675213676,
+      "sens": 0.9897435897435898,
+      "spec": 0.15333333333333335,
+      "qualifies": false
+    },
+    {
+      "name": "ConvNeXt-Tiny",
+      "auc": 0.8390476190476189,
+      "sens": 0.7846153846153845,
+      "spec": 0.6657142857142857,
+      "qualifies": false
+    }
+  ]
+}
