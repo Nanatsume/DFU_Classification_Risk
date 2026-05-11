@@ -10,7 +10,7 @@
 ## ขั้นตอนที่ 1 — เตรียมข้อมูล
 
 1. โหลด dataset INAOE (334 ภาพ: CT=90, DM=244)
-2. แบ่ง **Test set 20%** (~67 ภาพ) แยกออกไปก่อน ไม่แตะจนกว่าจะถึง RQ3
+2. แบ่ง **Test set 20%** (~67 ภาพ) แยกออกไปก่อน ไม่แตะจนกว่าจะถึงขั้นตอนประเมินผล
 3. แบ่ง **Train+Val 80%** (~267 ภาพ) → 5-Fold Stratified CV
 
 ---
@@ -53,7 +53,7 @@
 
 ---
 
-## ขั้นตอนที่ 5 — RQ2: ปรับ Threshold ด้วย Youden's Index
+## ขั้นตอนที่ 5 — ปรับ Threshold ด้วย Youden's Index
 
 **Input**: `val_preds.npz` ของ ConvNeXt-Tiny
 
@@ -66,9 +66,9 @@
 
 ---
 
-## ขั้นตอนที่ 6 — RQ3: ประเมินบน Test Set
+## ขั้นตอนที่ 6 — ประเมินบน Test Set
 
-**Input**: `avg_epochs.json`, `best_params.json`, Youden threshold จาก RQ2
+**Input**: `avg_epochs.json`, `best_params.json`, Youden threshold จากขั้นตอนที่ 5
 
 1. Retrain ConvNeXt-Tiny บน **full training set** (267 ภาพ)
    - Phase 1: 50 epochs (avg จาก CV), **ไม่มี** early stopping
@@ -80,9 +80,9 @@
 
 ---
 
-## ขั้นตอนที่ 7 — RQ4: Grad-CAM Localization
+## ขั้นตอนที่ 7 — RQ2: Grad-CAM Localization
 
-**Input**: โมเดล ConvNeXt-Tiny จาก RQ3
+**Input**: โมเดล ConvNeXt-Tiny จากขั้นตอนที่ 6
 
 1. แยกโมเดลเป็น 2 ส่วน: backbone (feature extractor) และ classifier head
 2. สร้าง heatmap ด้วย 3 วิธี: Grad-CAM, Grad-CAM++, Eigen-CAM
@@ -92,7 +92,7 @@
 
 ---
 
-## ขั้นตอนที่ 8 — RQ5: เปรียบเทียบ CNN กับ BPNN
+## ขั้นตอนที่ 8 — RQ3: เปรียบเทียบ CNN กับ BPNN
 
 **BPNN Branch (ทำคู่ขนานกับ CNN):**
 
@@ -101,10 +101,10 @@
    - HOG 8-dim (8×8 cells, 8 statistics)
 2. **GridSearchCV** 5-fold หา best BPNN architecture
 3. Retrain BPNN บน full training set, ทำนายบน Test set ด้วย Youden threshold
-4. เปรียบเทียบ metrics กับ CNN (RQ3)
-5. ทดสอบ statistical significance: McNemar's Test + Bootstrap AUC
+4. เปรียบเทียบ metrics กับ CNN
+5. ทดสอบ statistical significance: McNemar's Test + DeLong's Test
 
 **ผลลัพธ์**:
-- CNN: AUC=0.8968, Sens=0.7755, Spec=0.8889
+- CNN: AUC=0.9070, Sens=0.9184, Spec=0.8333
 - BPNN: AUC=0.8526, Sens=0.8367, Spec=0.6111
-- ไม่พบความแตกต่างที่ significant (McNemar p=0.80, Bootstrap p=0.47)
+- ไม่พบความแตกต่างที่ significant (McNemar p=0.057, DeLong p=0.448)

@@ -1,0 +1,27 @@
+[2026-05-07 20:16:48] === Log file: ./results/rq2_log_20260507_201648.txt ===
+[2026-05-07 20:16:49] Loaded INAOE: 334 images, shape=(334, 224, 224, 3), CT=90, DM=244
+[2026-05-07 20:16:49] Loading proposed model: ./model_checkpoints/ConvNeXt-Tiny_final_retrain.keras
+[2026-05-07 20:16:50] Building CAM models ...
+[2026-05-07 20:16:55]   feat_model output : (None, 7, 7, 768)
+[2026-05-07 20:16:55]   classifier input  : (None, 7, 7, 768)
+[2026-05-07 20:16:55] 
+================================================================================
+[2026-05-07 20:16:55] RQ2: CAM VISUALISATIONS — ConvNeXt-Tiny  (final retrained model)
+[2026-05-07 20:16:55] ================================================================================
+[2026-05-07 20:16:55] NOTE: Pointing-game evaluation deferred (no ground-truth bboxes yet)
+
+[2026-05-07 20:17:12]   Saved: ./results/rq2_gradcam/sample01_DM.png
+[2026-05-07 20:17:27]   Saved: ./results/rq2_gradcam/sample02_DM.png
+[2026-05-07 20:17:43]   Saved: ./results/rq2_gradcam/sample03_DM.png
+[2026-05-07 20:17:58]   Saved: ./results/rq2_gradcam/sample04_DM.png
+[2026-05-07 20:18:13]   Saved: ./results/rq2_gradcam/sample05_CT.png
+[2026-05-07 20:18:28]   Saved: ./results/rq2_gradcam/sample06_CT.png
+[2026-05-07 20:18:44]   Saved: ./results/rq2_gradcam/sample07_CT.png
+[2026-05-07 20:18:59]   Saved: ./results/rq2_gradcam/sample08_CT.png
+[2026-05-07 20:18:59] 
+✓ 8 figures saved to ./results/rq2_gradcam/
+[2026-05-07 20:18:59] 
+⚠ Pointing game skipped — annotations.json not found
+[2026-05-07 20:18:59]    Expected at: /home/ntphoto/DFU/INAOE_Preprocessed/annotations.json
+[2026-05-07 20:18:59]    See the TODO comment near the top of this file for the required format.
+[2026-05-07 20:18:59] ✓ Results → ./results/rq2_results.json

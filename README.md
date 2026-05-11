@@ -146,7 +146,7 @@ $$J = \text{Sensitivity} + \text{Specificity} - 1 \qquad \text{threshold}^* = \a
 
 ---
 
-### RQ4 — Localization Evaluation
+### RQ2 — Localization Evaluation
 
 **Objective**: Evaluate whether the model correctly localizes lesion regions using three CAM methods, quantified by the Top-Region Pointing Game.
 
@@ -158,13 +158,13 @@ $$J = \text{Sensitivity} + \text{Specificity} - 1 \qquad \text{threshold}^* = \a
 
 **Metric**: **Top-Region Pointing Game** — checks whether the highest-activation region (top 5% of CAM, thresholded at 95th percentile) overlaps with the ground-truth lesion bounding box (expanded by τ=15 px).
 
-Output: 4-panel images (Original / Grad-CAM / Grad-CAM++ / Eigen-CAM) saved to `results/rq4_gradcam/`
+Output: 4-panel images (Original / Grad-CAM / Grad-CAM++ / Eigen-CAM) saved to `results/rq2_gradcam/`
 
 > **Note**: Top-Region Pointing Game evaluation has not been conducted, as the INAOE dataset does not provide ground-truth ROI annotations. Localization results are therefore **qualitative only**.
 
 ---
 
-### RQ5 — CNN vs BPNN
+### RQ3 — CNN vs BPNN
 
 **Objective**: Compare the proposed CNN against a BPNN trained on handcrafted features.
 
@@ -199,21 +199,6 @@ Output: 4-panel images (Original / Grad-CAM / Grad-CAM++ / Eigen-CAM) saved to `
 
 ---
 
-### RQ6 — BPNN Feature Interpretability (Supplementary)
-
-**Objective**: Understand which features drive the BPNN's decisions.
-
-| Method | Concept | Output |
-|--------|---------|--------|
-| Permutation Importance | Shuffle each feature, measure AUC drop | bar chart |
-| SHAP KernelExplainer | Shapley value per feature per sample | beeswarm + bar |
-
-**Key findings**:
-- **HOG Median and HOG Mean** are the most important features — overall gradient magnitude is the primary signal
-- DM feet show lower HOG values than CT — more uniform pressure distribution
-- **Homogeneity 0° and Contrast 0°** are the most important GLCM features
-- Correlation features have almost no effect on predictions
-
 ---
 
 ## File Structure
@@ -225,11 +210,10 @@ Project/
 ├── train_efficientnet.py          # Train EfficientNetB0
 ├── train_convnext.py              # Train ConvNeXt-Tiny
 ├── rq1_backbone_comparison.py     # RQ1
-├── rq2_threshold_optimization.py  # RQ2
-├── rq3_final_evaluation.py        # RQ3
-├── rq4_gradcam.py                 # RQ4
-├── rq5_bpnn_comparison.py         # RQ5
-├── rq6_bpnn_interpretability.py   # RQ6 (Supplementary)
+├── threshold_optimization.py      # Youden threshold (pipeline step)
+├── final_evaluation.py            # Final retrain + test eval (pipeline step)
+├── rq2_gradcam.py                 # RQ2
+├── rq3_bpnn_comparison.py         # RQ3
 ├── run_gpu.sh                     # Helper script for GPU execution
 ├── DFU_Project_Overview.ipynb     # Interactive project overview notebook
 ├── model_checkpoints/             # best_params.json, val_preds.npz, avg_epochs.json
@@ -249,20 +233,17 @@ bash run_gpu.sh train_convnext.py
 # 2. RQ1 — backbone selection
 bash run_gpu.sh rq1_backbone_comparison.py
 
-# 3. RQ2 — threshold optimization
-bash run_gpu.sh rq2_threshold_optimization.py
+# 3. Threshold optimization (Youden's Index)
+bash run_gpu.sh threshold_optimization.py
 
-# 4. RQ3 — final test evaluation
-bash run_gpu.sh rq3_final_evaluation.py
+# 4. Final evaluation on test set
+bash run_gpu.sh final_evaluation.py
 
-# 5. RQ4 — XAI visualizations
-bash run_gpu.sh rq4_gradcam.py
+# 5. RQ2 — Grad-CAM localization
+bash run_gpu.sh rq2_gradcam.py
 
-# 6. RQ5 — BPNN comparison
-bash run_gpu.sh rq5_bpnn_comparison.py
-
-# 7. RQ6 — BPNN interpretability (run after RQ5)
-bash run_gpu.sh rq6_bpnn_interpretability.py
+# 6. RQ3 — CNN vs BPNN comparison
+bash run_gpu.sh rq3_bpnn_comparison.py
 ```
 
 > `run_gpu.sh` sets `LD_LIBRARY_PATH` from CUDA pip wheels in the `tf_gpu` conda environment.

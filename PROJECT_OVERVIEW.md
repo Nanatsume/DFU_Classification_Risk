@@ -38,11 +38,8 @@ Dataset: **INAOE** (334 images: CT=90, DM=244), preprocessed to 224×224 px, nor
 | RQ | Question | Script |
 |----|----------|--------|
 | RQ1 | Which backbone performs best? | `rq1_backbone_comparison.py` |
-| RQ2 | How does Youden's Index threshold help? | `rq2_threshold_optimization.py` |
-| RQ3 | Final performance on the test set | `rq3_final_evaluation.py` |
-| RQ4 | Localization Evaluation (Grad-CAM / Grad-CAM++ / Eigen-CAM + Top-Region Pointing Game) | `rq4_gradcam.py` |
-| RQ5 | CNN vs BPNN (GLCM+HOG) | `rq5_bpnn_comparison.py` |
-| RQ6 | BPNN Feature Interpretability (Supplementary) | `rq6_bpnn_interpretability.py` |
+| RQ2 | Localization Evaluation (Grad-CAM / Grad-CAM++ / Eigen-CAM + Top-Region Pointing Game) | `rq2_gradcam.py` |
+| RQ3 | CNN vs BPNN (GLCM+HOG) | `rq3_bpnn_comparison.py` |
 
 ---
 
@@ -103,11 +100,10 @@ Project/
 ├── train_efficientnet.py            ← train EfficientNetB0
 ├── train_convnext.py                ← train ConvNeXt-Tiny
 ├── rq1_backbone_comparison.py       ← RQ1
-├── rq2_threshold_optimization.py    ← RQ2
-├── rq3_final_evaluation.py          ← RQ3
-├── rq4_gradcam.py                   ← RQ4
-├── rq5_bpnn_comparison.py           ← RQ5
-├── rq6_bpnn_interpretability.py     ← RQ6 (Supplementary — Permutation + SHAP)
+├── threshold_optimization.py        ← Youden threshold (pipeline step)
+├── final_evaluation.py              ← Final retrain + test eval (pipeline step)
+├── rq2_gradcam.py                   ← RQ2
+├── rq3_bpnn_comparison.py           ← RQ3
 ├── run_gpu.sh                       ← helper script for GPU execution
 ├── model_checkpoints/               ← fold checkpoints, best_params, val_preds, avg_epochs
 └── results/                         ← JSON results, log files, CAM images
@@ -138,7 +134,7 @@ Project/
 
 ---
 
-## RQ2 — Threshold Optimization (Youden's Index)
+## Threshold Optimization (Youden's Index)
 
 **Objective**: Compare threshold = 0.5 vs Youden's Index threshold on ConvNeXt-Tiny.
 
@@ -172,7 +168,7 @@ threshold* = argmax(TPR − FPR)
 
 ---
 
-## RQ3 — Final Evaluation on Test Set
+## Final Evaluation on Test Set
 
 **Objective**: Evaluate the proposed model (ConvNeXt-Tiny) on the held-out test set.
 
@@ -201,7 +197,7 @@ threshold* = argmax(TPR − FPR)
 
 ---
 
-## RQ4 — Localization Evaluation
+## RQ2 — Localization Evaluation
 
 **Objective**: Evaluate whether the model correctly localizes lesion regions using three CAM methods, quantified by the Top-Region Pointing Game.
 
@@ -236,11 +232,11 @@ GradientTape.watch(conv_out) is used before running clf_model
 - **Hit** = any pixel in that region overlaps with the expanded bbox
 - τ is configurable via `POINTING_GAME_TAU` constant at the top of the file
 
-**Output**: 4-panel images (Original / Grad-CAM / Grad-CAM++ / Eigen-CAM) saved to `results/rq4_gradcam/`
+**Output**: 4-panel images (Original / Grad-CAM / Grad-CAM++ / Eigen-CAM) saved to `results/rq2_gradcam/`
 
 ---
 
-## RQ5 — CNN vs BPNN
+## RQ3 — CNN vs BPNN
 
 **Objective**: Compare the proposed CNN against a BPNN using handcrafted features.
 
@@ -285,28 +281,7 @@ GradientTape.watch(conv_out) is used before running clf_model
 
 > Neither test reached significance — the two models are statistically equivalent on this test set.
 
-**Results saved to**: `results/rq5_results.json`
-
----
-
-## RQ6 — BPNN Feature Interpretability (Supplementary)
-
-**Objective**: Understand which features drive the BPNN's decisions.
-
-**Methods used**:
-
-| Method | Concept | Output |
-|--------|---------|--------|
-| **Permutation Importance** | Shuffle each feature, measure AUC drop | bar chart |
-| **SHAP KernelExplainer** | Compute Shapley contribution per feature per sample | beeswarm + bar |
-
-**Key findings**:
-- **HOG Median and HOG Mean** are the most important features — overall gradient magnitude is the primary signal
-- DM feet show lower HOG values than CT — more uniform pressure distribution
-- **Homogeneity 0° and Contrast 0°** are the most important GLCM features
-- Correlation features have almost no effect on predictions
-
-**Output**: `results/rq6_bpnn_interpretability/` (permutation_importance.png, shap_beeswarm.png, shap_bar.png)
+**Results saved to**: `results/rq3_results.json`
 
 ---
 
@@ -318,23 +293,20 @@ bash run_gpu.sh train_resnet.py
 bash run_gpu.sh train_efficientnet.py
 bash run_gpu.sh train_convnext.py
 
-# 2. RQ1 — select backbone
+# 2. RQ1 — backbone selection
 bash run_gpu.sh rq1_backbone_comparison.py
 
-# 3. RQ2 — optimize threshold
-bash run_gpu.sh rq2_threshold_optimization.py
+# 3. Threshold optimization (Youden's Index)
+bash run_gpu.sh threshold_optimization.py
 
-# 4. RQ3 — final test evaluation
-bash run_gpu.sh rq3_final_evaluation.py
+# 4. Final evaluation on test set
+bash run_gpu.sh final_evaluation.py
 
-# 5. RQ4 — XAI visualizations
-bash run_gpu.sh rq4_gradcam.py
+# 5. RQ2 — Grad-CAM localization
+bash run_gpu.sh rq2_gradcam.py
 
-# 6. RQ5 — BPNN comparison
-bash run_gpu.sh rq5_bpnn_comparison.py
-
-# 7. RQ6 — BPNN interpretability (supplementary, run after rq5)
-bash run_gpu.sh rq6_bpnn_interpretability.py
+# 6. RQ3 — CNN vs BPNN comparison
+bash run_gpu.sh rq3_bpnn_comparison.py
 ```
 
 > `run_gpu.sh` sets `LD_LIBRARY_PATH` from CUDA pip wheels in the `tf_gpu` conda environment.
