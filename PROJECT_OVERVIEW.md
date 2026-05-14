@@ -54,9 +54,9 @@ Backbone (ImageNet pretrained, frozen in Phase 1 / top 30% unfrozen in Phase 2)
     ↓
 GlobalAveragePooling2D
     ↓
-Dense(128, relu) → Dropout(0.31)
+Dense(n₁, relu) → Dropout
     ↓
-Dense(256, relu) → Dropout(0.31)
+Dense(n₂, relu) → Dropout
     ↓
 Dense(1, sigmoid)   ← output probability
 ```
@@ -80,6 +80,18 @@ Dense(1, sigmoid)   ← output probability
 
 - **Sampler**: TPE (Tree-structured Parzen Estimator), Seed=42
 - **Trials**: 10 trials, each evaluated with fold 1 only (for speed)
+- **Best hyperparameters per backbone**:
+
+| Parameter | EfficientNetB0 | ResNet50 | ConvNeXt-Tiny |
+|-----------|---------------|----------|---------------|
+| `dense_units_1` | 128 | 128 | 128 |
+| `dense_units_2` | 256 | 256 | 256 |
+| `dropout_rate` | 0.312 | 0.291 | 0.312 |
+| `l2_reg` | 7.11e-3 | 1.96e-5 | 7.11e-3 |
+| `batch_size` | 32 | 32 | 32 |
+| `phase1_lr` | 1.10e-4 | 4.20e-4 | 1.10e-4 |
+| `phase2_lr` | 8.71e-5 | 1.10e-5 | 8.71e-5 |
+
 - **Search space**:
   - `dropout_rate`: 0.2–0.5
   - `l2_reg`: 1e-5–1e-2
