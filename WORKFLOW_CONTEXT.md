@@ -10,8 +10,8 @@
 ## ขั้นตอนที่ 1 — เตรียมข้อมูล
 
 1. โหลด dataset INAOE (334 ภาพ: CT=90, DM=244)
-2. แบ่ง **Test set 20%** (~67 ภาพ) แยกออกไปก่อน ไม่แตะจนกว่าจะถึงขั้นตอนประเมินผล
-3. แบ่ง **Train+Val 80%** (~267 ภาพ) → 5-Fold Stratified CV
+2. แบ่ง **Test set 20%** (67 ภาพ) แยกออกไปก่อน ไม่แตะจนกว่าจะถึงขั้นตอนประเมินผล
+3. แบ่ง **Train+Val 80%** (267 ภาพ) → 5-Fold Stratified CV
 
 ---
 
@@ -49,7 +49,7 @@
 2. ตรวจสอบเกณฑ์คลินิก: AUC ≥ 0.80, Sens ≥ 0.85, Spec ≥ 0.70
 3. เลือก backbone ที่ AUC สูงสุด
 
-**ผลลัพธ์**: เลือก **ConvNeXt-Tiny** (AUC=0.8252)
+**ผลลัพธ์**: เลือก **ConvNeXt-Tiny** (AUC=0.8293)
 
 ---
 
@@ -61,8 +61,8 @@
 2. เฉลี่ย Youden threshold ทั้ง 5 folds
 3. เปรียบเทียบ default 0.5 กับ Youden threshold บน val set
 
-**ผลลัพธ์**: Mean Youden threshold = **0.5859**
-(Specificity เพิ่มจาก 0.67 → 0.72, ผ่านเกณฑ์ ≥ 0.70)
+**ผลลัพธ์**: Mean Youden threshold = **0.7318**
+(Specificity เพิ่มจาก 0.70 → 0.77, ผ่านเกณฑ์ ≥ 0.70)
 
 ---
 
@@ -72,11 +72,11 @@
 
 1. Retrain ConvNeXt-Tiny บน **full training set** (267 ภาพ)
    - Phase 1: 50 epochs (avg จาก CV), **ไม่มี** early stopping
-   - Phase 2: 43 epochs (avg จาก CV), **ไม่มี** early stopping
-2. ทำนายบน Test set (67 ภาพ) ด้วย threshold = 0.5859
+   - Phase 2: 46 epochs (avg จาก CV), **ไม่มี** early stopping
+2. ทำนายบน Test set (67 ภาพ) ด้วย threshold = 0.7318
 3. คำนวณ Sensitivity, Specificity, AUC-ROC, PPV, NPV, F1
 
-**ผลลัพธ์**: AUC=0.9070, Sens=0.9184, Spec=0.8333
+**ผลลัพธ์**: AUC=0.9150, Sens=0.9592, Spec=0.6667
 
 ---
 
@@ -105,6 +105,6 @@
 5. ทดสอบ statistical significance: McNemar's Test + DeLong's Test
 
 **ผลลัพธ์**:
-- Proposed Model (ConvNeXt-Tiny): AUC=0.9070, Sens=0.9184, Spec=0.8333
+- Proposed Model (ConvNeXt-Tiny): AUC=0.9150, Sens=0.9592, Spec=0.6667
 - Baseline (BPNN, GLCM+HOG): AUC=0.8526, Sens=0.8367, Spec=0.6111
-- ไม่พบความแตกต่างที่ significant (McNemar p=0.057, DeLong p=0.448)
+- ไม่พบความแตกต่างที่ significant (McNemar p=0.092, DeLong p=0.359)

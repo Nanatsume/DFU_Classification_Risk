@@ -16,15 +16,15 @@ Dataset: **INAOE** (334 images: CT=90, DM=244), preprocessed to 224×224 px, nor
 ## Dataset & Splits
 
 - **Total**: 334 images
-- **Test set** (held-out): 20% → ~67 images (separated at the start, never touched during training)
-- **Training set**: 80% → ~267 images, split into 5-fold Stratified CV
+- **Test set** (held-out): 20% → 67 images (separated at the start, never touched during training)
+- **Training set**: 80% → 267 images, split into 5-fold Stratified CV
 - **Seed**: 42 (fixed across all files to ensure identical splits)
 
 ```
 334 images
-├── Test Set (~67 images) ─────────── evaluated at the end only
-└── Train+Val (~267 images)
-    ├── Fold 1 (train ~213 / val ~54)
+├── Test Set (67 images) ─────────── evaluated at the end only
+└── Train+Val (267 images)
+    ├── Fold 1 (train 214 / val 53)
     ├── Fold 2
     ├── Fold 3
     ├── Fold 4
@@ -138,9 +138,9 @@ Project/
 |----------|-----|------|------|---------|
 | EfficientNetB0 | 0.6379 | 0.5949 | 0.4181 | ✗ |
 | ResNet50 | 0.7875 | 0.9897 | 0.1533 | ✗ |
-| **ConvNeXt-Tiny** | **0.8390** | **0.7846** | **0.6657** | ✗ |
+| **ConvNeXt-Tiny** | **0.8293** | **0.8000** | **0.6952** | ✗ |
 
-> No backbone passed all three criteria. **ConvNeXt-Tiny** was selected as it achieved the highest AUC and came closest to meeting the specificity criterion (0.67 vs threshold 0.70).
+> No backbone passed all three criteria. **ConvNeXt-Tiny** was selected as it achieved the highest AUC and came closest to meeting the specificity criterion (0.70 vs threshold 0.70).
 
 **Results saved to**: `results/rq1_results.json`
 
@@ -160,21 +160,21 @@ threshold* = argmax(TPR − FPR)
 
 | Fold | Youden thr | Sens | Spec |
 |------|-----------|------|------|
-| 1 | 0.8860 | 0.6923 | 0.8667 |
-| 2 | 0.3423 | 0.8718 | 0.7333 |
-| 3 | 0.9378 | 0.5641 | 0.9286 |
-| 4 | 0.9578 | 0.5897 | 0.9286 |
-| 5 | 0.3404 | 0.9487 | 0.8571 |
-| **Mean** | **0.6929** | | |
+| 1 | 0.8586 | 0.6923 | 0.8667 |
+| 2 | 0.4464 | 0.8205 | 0.6667 |
+| 3 | 0.7798 | 0.6923 | 0.7857 |
+| 4 | 0.6629 | 0.7949 | 0.8571 |
+| 5 | 0.9112 | 0.7436 | 1.0000 |
+| **Mean** | **0.7318** | | |
 
-**Step 2 — Default (0.5) vs Mean Youden (0.6929) applied to all folds**:
+**Step 2 — Default (0.5) vs Mean Youden (0.7318) applied to all folds**:
 
-| Metric | Default 0.5 | Youden 0.6929 | Δ |
+| Metric | Default 0.5 | Youden 0.7318 | Δ |
 |--------|------------|--------------|---|
-| Sensitivity | 0.7846 ± 0.0205 | 0.7231 ± 0.0377 | −0.0615 (−7.8%) |
-| Specificity | 0.6657 ± 0.1400 | 0.7352 ± 0.0850 | +0.0695 (+10.4%) |
+| Sensitivity | 0.8000 ± 0.0192 | 0.7333 ± 0.0205 | −0.0667 (−8.3%) |
+| Specificity | 0.6952 ± 0.0508 | 0.7657 ± 0.0777 | +0.0705 (+10.1%) |
 
-> Youden threshold trade-off: Sensitivity drops −7.8% but Specificity gains +10.4% — rising from 0.67 to 0.74, exceeding the ≥0.70 criterion.
+> Youden threshold trade-off: Sensitivity drops −8.3% but Specificity gains +10.1% — rising from 0.70 to 0.77, exceeding the ≥0.70 criterion.
 
 **Results saved to**: `results/threshold_results.json`
 
@@ -192,18 +192,18 @@ threshold* = argmax(TPR − FPR)
 
 **Avg stopping epochs** (ConvNeXt-Tiny):
 - Phase 1: **50 epochs**
-- Phase 2: **47 epochs**
+- Phase 2: **46 epochs**
 
-**Test set results** (threshold = 0.6929):
+**Test set results** (threshold = 0.7318):
 
 | Metric | Value |
 |--------|-------|
-| Sensitivity | **0.9184** |
-| Specificity | **0.8333** |
-| AUC-ROC | **0.9070** |
-| PPV | 0.9375 |
-| NPV | 0.7895 |
-| F1-Score | 0.9278 |
+| Sensitivity | **0.9592** |
+| Specificity | **0.6667** |
+| AUC-ROC | **0.9150** |
+| PPV | 0.8868 |
+| NPV | 0.8571 |
+| F1-Score | 0.9216 |
 
 **Results saved to**: `results/final_eval_results.json`, `results/final_eval_probs.npy`
 
@@ -277,19 +277,19 @@ GradientTape.watch(conv_out) is used before running clf_model
 
 | Metric | Proposed Model (ConvNeXt-Tiny) | Baseline (BPNN, GLCM+HOG) | Δ |
 |--------|-------------------------------|--------------------------|---|
-| Sensitivity | 0.9184 | 0.8367 | −0.0817 |
-| Specificity | 0.8333 | 0.6111 | −0.2222 |
-| AUC-ROC | 0.9070 | 0.8526 | −0.0544 |
-| PPV | 0.9375 | 0.8542 | −0.0833 |
-| NPV | 0.7895 | 0.5789 | −0.2105 |
-| F1-Score | 0.9278 | 0.8454 | −0.0825 |
+| Sensitivity | 0.9592 | 0.8367 | +0.1225 |
+| Specificity | 0.6667 | 0.6111 | +0.0556 |
+| AUC-ROC | 0.9150 | 0.8526 | +0.0624 |
+| PPV | 0.8868 | 0.8542 | +0.0326 |
+| NPV | 0.8571 | 0.5789 | +0.2782 |
+| F1-Score | 0.9216 | 0.8454 | +0.0762 |
 
-**Statistical Tests** (Proposed thr=0.6929, Baseline thr=0.5792):
+**Statistical Tests** (Proposed thr=0.7318, Baseline thr=0.5792):
 
 | Test | H₀ | Result | p-value | Sig. |
 |------|----|--------|---------|------|
-| McNemar's Test | Both models make same errors | b=11 (Proposed✓/Baseline✗), c=3 (Proposed✗/Baseline✓) | 0.0574 | ns |
-| DeLong's Test | AUC_Proposed = AUC_Baseline | ΔAUC = +0.0544 | 0.4482 | ns |
+| McNemar's Test | Both models make same errors | b=10 (Proposed✓/Baseline✗), c=3 (Proposed✗/Baseline✓) | 0.0923 | ns |
+| DeLong's Test | AUC_Proposed = AUC_Baseline | ΔAUC = +0.0624 | 0.3591 | ns |
 
 > Neither test reached significance — the two models are statistically equivalent on this test set.
 

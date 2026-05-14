@@ -17,9 +17,9 @@
 
 ```
 334 images
-├── Test Set  (~67 images, 20%)  — held out, evaluated once at the end
-└── Train+Val (~267 images, 80%)
-    ├── Fold 1 (train ~213 / val ~54)
+├── Test Set  (67 images, 20%)  — held out, evaluated once at the end
+└── Train+Val (267 images, 80%)
+    ├── Fold 1 (train 214 / val 53)
     ├── Fold 2
     ├── Fold 3
     ├── Fold 4
@@ -101,9 +101,9 @@ Dense(1, sigmoid)
 |----------|-----|-------------|-------------|----------|
 | EfficientNetB0 | 0.6379 | 0.5949 | 0.4181 | ✗ |
 | ResNet50 | 0.7875 | 0.9897 | 0.1533 | ✗ |
-| **ConvNeXt-Tiny** | **0.8390** | **0.7846** | **0.6657** | ✗ |
+| **ConvNeXt-Tiny** | **0.8293** | **0.8000** | **0.6952** | ✗ |
 
-> No backbone passed all three criteria. **ConvNeXt-Tiny** was selected as it achieved the highest AUC and came closest to meeting the specificity threshold (0.67 vs criterion 0.70).
+> No backbone passed all three criteria. **ConvNeXt-Tiny** was selected as it achieved the highest AUC and came closest to meeting the specificity threshold (0.70 vs criterion 0.70).
 
 ---
 
@@ -117,21 +117,21 @@ $$J = \text{Sensitivity} + \text{Specificity} - 1 \qquad \text{threshold}^* = \a
 
 | Fold | Youden thr | Sensitivity | Specificity |
 |------|-----------|-------------|-------------|
-| 1 | 0.8860 | 0.6923 | 0.8667 |
-| 2 | 0.3423 | 0.8718 | 0.7333 |
-| 3 | 0.9378 | 0.5641 | 0.9286 |
-| 4 | 0.9578 | 0.5897 | 0.9286 |
-| 5 | 0.3404 | 0.9487 | 0.8571 |
-| **Mean** | **0.6929** | — | — |
+| 1 | 0.8586 | 0.6923 | 0.8667 |
+| 2 | 0.4464 | 0.8205 | 0.6667 |
+| 3 | 0.7798 | 0.6923 | 0.7857 |
+| 4 | 0.6629 | 0.7949 | 0.8571 |
+| 5 | 0.9112 | 0.7436 | 1.0000 |
+| **Mean** | **0.7318** | — | — |
 
-**Default (0.5) vs Youden (0.6929)**:
+**Default (0.5) vs Youden (0.7318)**:
 
-| Metric | Default 0.5 | Youden 0.6929 | Delta |
+| Metric | Default 0.5 | Youden 0.7318 | Delta |
 |--------|------------|--------------|-------|
-| Sensitivity | 0.7846 ± 0.0205 | 0.7231 ± 0.0377 | −0.0615 (−7.8%) |
-| Specificity | 0.6657 ± 0.1400 | 0.7352 ± 0.0850 | +0.0695 (+10.4%) |
+| Sensitivity | 0.8000 ± 0.0192 | 0.7333 ± 0.0205 | −0.0667 (−8.3%) |
+| Specificity | 0.6952 ± 0.0508 | 0.7657 ± 0.0777 | +0.0705 (+10.1%) |
 
-> Youden threshold trades −7.8% Sensitivity for +10.4% Specificity, bringing Specificity above the ≥0.70 criterion.
+> Youden threshold trades −8.3% Sensitivity for +10.1% Specificity, bringing Specificity above the ≥0.70 criterion.
 
 ---
 
@@ -143,18 +143,18 @@ $$J = \text{Sensitivity} + \text{Specificity} - 1 \qquad \text{threshold}^* = \a
 3. No early stopping in the final retrain
 4. Evaluate with Youden threshold (0.6929)
 
-**Average stopping epochs** (ConvNeXt-Tiny): Phase 1 = **50**, Phase 2 = **47**
+**Average stopping epochs** (ConvNeXt-Tiny): Phase 1 = **50**, Phase 2 = **46**
 
-**Test set results** (threshold = 0.6929):
+**Test set results** (threshold = 0.7318):
 
 | Metric | Value |
 |--------|-------|
-| AUC-ROC | **0.9070** |
-| Sensitivity | **0.9184** |
-| Specificity | **0.8333** |
-| PPV | 0.9375 |
-| NPV | 0.7895 |
-| F1-Score | 0.9278 |
+| AUC-ROC | **0.9150** |
+| Sensitivity | **0.9592** |
+| Specificity | **0.6667** |
+| PPV | 0.8868 |
+| NPV | 0.8571 |
+| F1-Score | 0.9216 |
 
 ---
 
@@ -193,19 +193,19 @@ Output: 4-panel images (Original / Grad-CAM / Grad-CAM++ / Eigen-CAM) saved to `
 
 | Metric | Proposed Model (ConvNeXt-Tiny) | Baseline (BPNN, GLCM+HOG) | Delta |
 |--------|-------------------------------|--------------------------|-------|
-| Sensitivity | 0.9184 | 0.8367 | −0.0817 |
-| Specificity | 0.8333 | 0.6111 | −0.2222 |
-| AUC-ROC | 0.9070 | 0.8526 | −0.0544 |
-| PPV | 0.9375 | 0.8542 | −0.0833 |
-| NPV | 0.7895 | 0.5789 | −0.2105 |
-| F1-Score | 0.9278 | 0.8454 | −0.0825 |
+| Sensitivity | 0.9592 | 0.8367 | +0.1225 |
+| Specificity | 0.6667 | 0.6111 | +0.0556 |
+| AUC-ROC | 0.9150 | 0.8526 | +0.0624 |
+| PPV | 0.8868 | 0.8542 | +0.0326 |
+| NPV | 0.8571 | 0.5789 | +0.2782 |
+| F1-Score | 0.9216 | 0.8454 | +0.0762 |
 
-**Statistical tests** (Proposed thr=0.6929, Baseline thr=0.5792):
+**Statistical tests** (Proposed thr=0.7318, Baseline thr=0.5792):
 
 | Test | Result | p-value | Significance |
 |------|--------|---------|--------------|
-| McNemar's Test (H₀: same error pattern) | b=11 (Proposed✓/Baseline✗), c=3 (Proposed✗/Baseline✓) | 0.0574 | ns |
-| DeLong's Test (H₀: AUC_Proposed = AUC_Baseline) | ΔAUC = +0.0544 | 0.4482 | ns |
+| McNemar's Test (H₀: same error pattern) | b=10 (Proposed✓/Baseline✗), c=3 (Proposed✗/Baseline✓) | 0.0923 | ns |
+| DeLong's Test (H₀: AUC_Proposed = AUC_Baseline) | ΔAUC = +0.0624 | 0.3591 | ns |
 
 > Neither test reached significance — the two models are statistically equivalent on this test set.
 
