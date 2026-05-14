@@ -60,7 +60,7 @@ Dense(1, sigmoid)
 ### Hyperparameter Tuning — Optuna
 
 - **Sampler**: TPE (Tree-structured Parzen Estimator), Seed=42
-- **Trials**: 10 trials, each evaluated with 5-Fold CV
+- **Trials**: 10 trials, each evaluated with fold 1 only (for speed)
 
 | Parameter | Search Space |
 |-----------|-------------|
@@ -87,15 +87,15 @@ Dense(1, sigmoid)
 
 | Backbone | AUC | Sensitivity | Specificity | Pass All |
 |----------|-----|-------------|-------------|----------|
-| EfficientNetB0 | 0.5601 | 0.9795 | 0.0000 | ✗ |
-| ResNet50 | 0.6558 | 0.9949 | 0.0429 | ✗ |
-| **ConvNeXt-Tiny** | **0.8252** | **0.7795** | **0.6667** | ✗ |
+| EfficientNetB0 | 0.6379 | 0.5949 | 0.4181 | ✗ |
+| ResNet50 | 0.7875 | 0.9897 | 0.1533 | ✗ |
+| **ConvNeXt-Tiny** | **0.8390** | **0.7846** | **0.6657** | ✗ |
 
 > No backbone passed all three criteria. **ConvNeXt-Tiny** was selected as it achieved the highest AUC and came closest to meeting the specificity threshold (0.67 vs criterion 0.70).
 
 ---
 
-### RQ2 — Threshold Optimization (Youden's Index)
+### Threshold Optimization (Youden's Index)
 
 **Objective**: Compare default threshold (0.5) against Youden's Index threshold on ConvNeXt-Tiny.
 
@@ -105,25 +105,25 @@ $$J = \text{Sensitivity} + \text{Specificity} - 1 \qquad \text{threshold}^* = \a
 
 | Fold | Youden thr | Sensitivity | Specificity |
 |------|-----------|-------------|-------------|
-| 1 | 0.3679 | 0.8974 | 0.6667 |
-| 2 | 0.5854 | 0.8205 | 0.6667 |
-| 3 | 0.6694 | 0.6923 | 0.7857 |
-| 4 | 0.9660 | 0.5897 | 1.0000 |
-| 5 | 0.3408 | 0.9231 | 0.8571 |
-| **Mean** | **0.5859** | — | — |
+| 1 | 0.8860 | 0.6923 | 0.8667 |
+| 2 | 0.3423 | 0.8718 | 0.7333 |
+| 3 | 0.9378 | 0.5641 | 0.9286 |
+| 4 | 0.9578 | 0.5897 | 0.9286 |
+| 5 | 0.3404 | 0.9487 | 0.8571 |
+| **Mean** | **0.6929** | — | — |
 
-**Default (0.5) vs Youden (0.5859)**:
+**Default (0.5) vs Youden (0.6929)**:
 
-| Metric | Default 0.5 | Youden 0.5859 | Delta |
+| Metric | Default 0.5 | Youden 0.6929 | Delta |
 |--------|------------|--------------|-------|
-| Sensitivity | 0.7795 ± 0.0384 | 0.7590 ± 0.0476 | −0.0205 (−2.6%) |
-| Specificity | 0.6667 ± 0.1137 | 0.7238 ± 0.0833 | +0.0571 (+8.6%) |
+| Sensitivity | 0.7846 ± 0.0205 | 0.7231 ± 0.0377 | −0.0615 (−7.8%) |
+| Specificity | 0.6657 ± 0.1400 | 0.7352 ± 0.0850 | +0.0695 (+10.4%) |
 
-> Youden threshold trades −2.6% Sensitivity for +8.6% Specificity, bringing Specificity above the ≥0.70 criterion.
+> Youden threshold trades −7.8% Sensitivity for +10.4% Specificity, bringing Specificity above the ≥0.70 criterion.
 
 ---
 
-### RQ3 — Final Evaluation on Test Set
+### Final Evaluation on Test Set
 
 **Strategy**:
 1. Record average stopping epoch from 5-fold CV
@@ -131,18 +131,18 @@ $$J = \text{Sensitivity} + \text{Specificity} - 1 \qquad \text{threshold}^* = \a
 3. No early stopping in the final retrain
 4. Evaluate with Youden threshold (0.5859)
 
-**Average stopping epochs** (ConvNeXt-Tiny): Phase 1 = **50**, Phase 2 = **43**
+**Average stopping epochs** (ConvNeXt-Tiny): Phase 1 = **50**, Phase 2 = **47**
 
-**Test set results**:
+**Test set results** (threshold = 0.6929):
 
 | Metric | Value |
 |--------|-------|
-| AUC-ROC | **0.8968** |
-| Sensitivity | **0.7755** |
-| Specificity | **0.8889** |
-| PPV | 0.9500 |
-| NPV | 0.5926 |
-| F1-Score | 0.8539 |
+| AUC-ROC | **0.9070** |
+| Sensitivity | **0.9184** |
+| Specificity | **0.8333** |
+| PPV | 0.9375 |
+| NPV | 0.7895 |
+| F1-Score | 0.9278 |
 
 ---
 
@@ -181,19 +181,19 @@ Output: 4-panel images (Original / Grad-CAM / Grad-CAM++ / Eigen-CAM) saved to `
 
 | Metric | ConvNeXt-Tiny | BPNN (GLCM+HOG) | Delta |
 |--------|--------------|-----------------|-------|
-| Sensitivity | 0.7755 | 0.8367 | +0.0612 |
-| Specificity | 0.8889 | 0.6111 | −0.2778 |
-| AUC-ROC | 0.8968 | 0.8526 | −0.0442 |
-| PPV | 0.9500 | 0.8542 | −0.0958 |
-| NPV | 0.5926 | 0.5789 | −0.0137 |
-| F1-Score | 0.8539 | 0.8454 | −0.0085 |
+| Sensitivity | 0.9184 | 0.8367 | −0.0817 |
+| Specificity | 0.8333 | 0.6111 | −0.2222 |
+| AUC-ROC | 0.9070 | 0.8526 | −0.0544 |
+| PPV | 0.9375 | 0.8542 | −0.0833 |
+| NPV | 0.7895 | 0.5789 | −0.2105 |
+| F1-Score | 0.9278 | 0.8454 | −0.0825 |
 
-**Statistical tests** (CNN thr=0.5859, BPNN thr=0.5792):
+**Statistical tests** (CNN thr=0.6929, BPNN thr=0.5792):
 
 | Test | Result | p-value | Significance |
 |------|--------|---------|--------------|
-| McNemar's Test (H₀: same error pattern) | b=9 (CNN✓/BPNN✗), c=7 (CNN✗/BPNN✓) | 0.8036 | ns |
-| Bootstrap AUC (H₀: AUC_CNN = AUC_BPNN, n=2,000) | ΔAUC = +0.0442 | 0.4730 | ns |
+| McNemar's Test (H₀: same error pattern) | b=11 (CNN✓/BPNN✗), c=3 (CNN✗/BPNN✓) | 0.0574 | ns |
+| DeLong's Test (H₀: AUC_CNN = AUC_BPNN) | ΔAUC = +0.0544 | 0.4482 | ns |
 
 > Neither test reached significance — the two models are statistically equivalent on this test set.
 
