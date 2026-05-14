@@ -18,9 +18,9 @@
 ## ขั้นตอนที่ 2 — Hyperparameter Tuning (Optuna)
 
 - ทำ **ทีละ backbone** (EfficientNetB0, ResNet50, ConvNeXt-Tiny)
-- ใช้ **5-Fold CV** ทุก trial เพื่อให้ได้ผลที่น่าเชื่อถือ
+- ใช้ **Fold 1 เท่านั้น** ต่อ trial (เพื่อความเร็ว)
 - 10 trials, TPE Sampler
-- objective: maximize mean AUC-ROC จาก 5-Fold CV
+- objective: maximize AUC-ROC จาก fold 1
 - ได้ `best_params.json` ต่อ 1 backbone
 
 ---
@@ -31,7 +31,7 @@
 
 **ต่อ 1 fold:**
 1. Build model (backbone + Dense head)
-2. **Phase 1**: freeze backbone → train Dense head → early stopping (patience=5)
+2. **Phase 1**: freeze backbone → train classifier head → early stopping (patience=5)
 3. **Phase 2**: unfreeze top 30% ของ backbone → fine-tune → early stopping (patience=15)
 4. บันทึก val predictions และ stopping epoch ของแต่ละ phase
 
@@ -76,7 +76,7 @@
 2. ทำนายบน Test set (67 ภาพ) ด้วย threshold = 0.5859
 3. คำนวณ Sensitivity, Specificity, AUC-ROC, PPV, NPV, F1
 
-**ผลลัพธ์**: AUC=0.8968, Sens=0.7755, Spec=0.8889, F1=0.8539
+**ผลลัพธ์**: AUC=0.9070, Sens=0.9184, Spec=0.8333
 
 ---
 
