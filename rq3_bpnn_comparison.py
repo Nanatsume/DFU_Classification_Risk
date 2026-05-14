@@ -4,7 +4,7 @@ Both models are evaluated with their own optimal Youden's Index threshold.
 Features are cached to model_checkpoints/glcm_hog_features.npz to avoid
 recomputing on re-runs.
 
-Saves results and comparison table to results/bpnn_results.json.
+Saves results and comparison table to results/rq3_results.json.
 """
 
 import os
@@ -346,7 +346,7 @@ def main():
         log("\n⚠ final_eval_results.json not found — CNN comparison skipped.")
 
     # Save BPNN test probabilities for use in notebook statistical tests
-    bpnn_probs_path = os.path.join(CONFIG['results_dir'], 'bpnn_test_probs.npy')
+    bpnn_probs_path = os.path.join(CONFIG['results_dir'], 'rq3_test_probs.npy')
     np.save(bpnn_probs_path, test_probs)
     log(f"✓ BPNN test probs → {bpnn_probs_path}")
 
@@ -383,7 +383,7 @@ def main():
         'test_metrics':          bpnn_metrics,
         'statistical_tests':     stat_tests,
     }
-    out = os.path.join(CONFIG['results_dir'], 'bpnn_results.json')
+    out = os.path.join(CONFIG['results_dir'], 'rq3_results.json')
     with open(out, 'w') as f:
         json.dump(result, f, indent=2)
     log(f"\n✓ Results → {out}")

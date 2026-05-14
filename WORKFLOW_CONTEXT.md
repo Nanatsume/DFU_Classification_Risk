@@ -92,9 +92,9 @@
 
 ---
 
-## ขั้นตอนที่ 8 — RQ3: เปรียบเทียบ CNN กับ BPNN
+## ขั้นตอนที่ 8 — RQ3: เปรียบเทียบ Proposed Model กับ Baseline
 
-**BPNN Branch (ทำคู่ขนานกับ CNN):**
+**Baseline Branch (BPNN, ทำคู่ขนานกับ CNN):**
 
 1. **สกัด features** (24 มิติ ต่อภาพ):
    - GLCM 16-dim (8 ระดับ, 4 มุม, 4 properties)
@@ -105,6 +105,6 @@
 5. ทดสอบ statistical significance: McNemar's Test + DeLong's Test
 
 **ผลลัพธ์**:
-- CNN: AUC=0.9070, Sens=0.9184, Spec=0.8333
-- BPNN: AUC=0.8526, Sens=0.8367, Spec=0.6111
+- Proposed Model (ConvNeXt-Tiny): AUC=0.9070, Sens=0.9184, Spec=0.8333
+- Baseline (BPNN, GLCM+HOG): AUC=0.8526, Sens=0.8367, Spec=0.6111
 - ไม่พบความแตกต่างที่ significant (McNemar p=0.057, DeLong p=0.448)

@@ -2,7 +2,7 @@
 
 Applies all three methods to sample images from the test set and saves
 side-by-side heatmap overlays to results/rq2_gradcam/.
-Saves summary to results/gradcam_results.json.
+Saves summary to results/rq2_results.json.
 
 NOTE: Pointing-game evaluation against ground-truth bounding boxes is deferred
 until annotations are available.
@@ -359,7 +359,7 @@ def main():
         log(f"   Expected at: {ANNOTATIONS_PATH}")
         log(f"   See the TODO comment near the top of this file for the required format.")
 
-    out = os.path.join(CONFIG['results_dir'], 'gradcam_results.json')
+    out = os.path.join(CONFIG['results_dir'], 'rq2_results.json')
     with open(out, 'w') as f:
         json.dump(rq2_result, f, indent=2)
     log(f"✓ Results → {out}")

@@ -129,7 +129,7 @@ $$J = \text{Sensitivity} + \text{Specificity} - 1 \qquad \text{threshold}^* = \a
 1. Record average stopping epoch from 5-fold CV
 2. Retrain on full training set (267 images) for that fixed number of epochs
 3. No early stopping in the final retrain
-4. Evaluate with Youden threshold (0.5859)
+4. Evaluate with Youden threshold (0.6929)
 
 **Average stopping epochs** (ConvNeXt-Tiny): Phase 1 = **50**, Phase 2 = **47**
 
@@ -164,23 +164,23 @@ Output: 4-panel images (Original / Grad-CAM / Grad-CAM++ / Eigen-CAM) saved to `
 
 ---
 
-### RQ3 — CNN vs BPNN
+### RQ3 — Proposed Model vs Baseline
 
-**Objective**: Compare the proposed CNN against a BPNN trained on handcrafted features.
+**Objective**: Compare the proposed CNN (ConvNeXt-Tiny) against a Baseline BPNN trained on handcrafted features.
 
-**BPNN feature extraction (24-dim)**:
+**Baseline feature extraction (24-dim)**:
 
 | Features | Details | Dim |
 |----------|---------|-----|
 | GLCM | 8-level, 4 angles (0/45/90/135°), 4 properties × 4 angles | 16 |
 | HOG | 8×8 cells, 8 statistics (mean, std, var, median, max, min, skew, kurtosis) | 8 |
 
-**Best BPNN**: architecture=(256, 128), activation=tanh, α=0.0001, Youden thr=0.5792
+**Best Baseline (BPNN)**: architecture=(256, 128), activation=tanh, α=0.0001, Youden thr=0.5792
 
 **Comparison on test set**:
 
-| Metric | ConvNeXt-Tiny | BPNN (GLCM+HOG) | Delta |
-|--------|--------------|-----------------|-------|
+| Metric | Proposed Model (ConvNeXt-Tiny) | Baseline (BPNN, GLCM+HOG) | Delta |
+|--------|-------------------------------|--------------------------|-------|
 | Sensitivity | 0.9184 | 0.8367 | −0.0817 |
 | Specificity | 0.8333 | 0.6111 | −0.2222 |
 | AUC-ROC | 0.9070 | 0.8526 | −0.0544 |
@@ -188,16 +188,14 @@ Output: 4-panel images (Original / Grad-CAM / Grad-CAM++ / Eigen-CAM) saved to `
 | NPV | 0.7895 | 0.5789 | −0.2105 |
 | F1-Score | 0.9278 | 0.8454 | −0.0825 |
 
-**Statistical tests** (CNN thr=0.6929, BPNN thr=0.5792):
+**Statistical tests** (Proposed thr=0.6929, Baseline thr=0.5792):
 
 | Test | Result | p-value | Significance |
 |------|--------|---------|--------------|
-| McNemar's Test (H₀: same error pattern) | b=11 (CNN✓/BPNN✗), c=3 (CNN✗/BPNN✓) | 0.0574 | ns |
-| DeLong's Test (H₀: AUC_CNN = AUC_BPNN) | ΔAUC = +0.0544 | 0.4482 | ns |
+| McNemar's Test (H₀: same error pattern) | b=11 (Proposed✓/Baseline✗), c=3 (Proposed✗/Baseline✓) | 0.0574 | ns |
+| DeLong's Test (H₀: AUC_Proposed = AUC_Baseline) | ΔAUC = +0.0544 | 0.4482 | ns |
 
 > Neither test reached significance — the two models are statistically equivalent on this test set.
-
----
 
 ---
 
@@ -216,8 +214,10 @@ Project/
 ├── rq3_bpnn_comparison.py         # RQ3
 ├── run_gpu.sh                     # Helper script for GPU execution
 ├── DFU_Project_Overview.ipynb     # Interactive project overview notebook
+├── Image_Preprocessing_Pipeline.ipynb  # Image preprocessing pipeline
+├── Prelim_preprocessing.ipynb     # Preliminary preprocessing exploration
 ├── model_checkpoints/             # best_params.json, val_preds.npz, avg_epochs.json
-└── results/                       # JSON results, log files, CAM images
+└── results/                       # JSON results, .npy test probs, log files, CAM images, model architecture plots
 ```
 
 ---
