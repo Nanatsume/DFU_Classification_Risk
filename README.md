@@ -33,13 +33,13 @@
 ```
 Input (224×224×3)
     |
-Backbone (ImageNet pretrained, frozen in Phase 1)
+Backbone (ImageNet pretrained, frozen in Phase 1 / top 30% unfrozen in Phase 2)
     |
 GlobalAveragePooling2D
     |
-Dense(256, relu) -> Dropout(0.5)
+Dense(128, relu) -> Dropout(0.31)
     |
-Dense(64, relu)  -> Dropout(0.5)
+Dense(256, relu) -> Dropout(0.31)
     |
 Dense(1, sigmoid)
 ```
