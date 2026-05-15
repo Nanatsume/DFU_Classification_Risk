@@ -267,7 +267,7 @@ GradientTape.watch(conv_out) is used before running clf_model
 **Model**:
 - MLPClassifier (sklearn), activation=tanh, solver=Adam
 - Hyperparameter search: **GridSearchCV** 5-fold, scoring=AUC
-  - `hidden_layer_sizes`: {(64,32), (128,64), (128,64,32), (256,128), (256,128,64)}
+  - `hidden_layer_sizes`: {(64,32), (128,64), (256,128)}
   - `alpha`: {1e-4, 1e-3, 1e-2}
 - Best architecture: **(256, 128), tanh, α=0.0001**
 - Avg stopping iterations: **28** (per fold: 24, 24, 24, 39, 30)

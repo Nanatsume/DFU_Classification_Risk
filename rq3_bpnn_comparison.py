@@ -205,8 +205,7 @@ def main():
     X_train_s_search = sc_search.fit_transform(X_train)
 
     param_grid = {
-        'hidden_layer_sizes': [(64, 32), (128, 64), (128, 64, 32),
-                               (256, 128), (256, 128, 64)],
+        'hidden_layer_sizes': [(64, 32), (128, 64), (256, 128)],
         'alpha':              [1e-4, 1e-3, 1e-2],
     }
     gs = GridSearchCV(
