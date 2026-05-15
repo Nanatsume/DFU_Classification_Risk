@@ -141,7 +141,7 @@ $$J = \text{Sensitivity} + \text{Specificity} - 1 \qquad \text{threshold}^* = \a
 1. Record average stopping epoch from 5-fold CV
 2. Retrain on full training set (267 images) for that fixed number of epochs
 3. No early stopping in the final retrain
-4. Evaluate with Youden threshold (0.6929)
+4. Evaluate with Youden threshold (0.7318)
 
 **Average stopping epochs** (ConvNeXt-Tiny): Phase 1 = **50**, Phase 2 = **46**
 

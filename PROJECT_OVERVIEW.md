@@ -188,7 +188,7 @@ threshold* = argmax(TPR − FPR)
 1. Record the average stopping epoch from 5-fold CV (`ConvNeXt-Tiny_avg_epochs.json`)
 2. Retrain on **full training set (267 images)** for exactly that many epochs
 3. No early stopping in the final retrain
-4. Evaluate with Youden threshold (0.6929)
+4. Evaluate with Youden threshold (0.7318)
 
 **Avg stopping epochs** (ConvNeXt-Tiny):
 - Phase 1: **50 epochs**
