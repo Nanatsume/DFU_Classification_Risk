@@ -1,6 +1,9 @@
 # Claude Code local settings
 .claude/
 
+# LaTeX research paper (private, not for version control)
+69b7a55ef1c9f8e33a9cbb5a/
+
 # Windows Zone Identifier metadata
 *:Zone.Identifier
 
