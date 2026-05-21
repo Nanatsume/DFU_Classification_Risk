@@ -12,6 +12,7 @@ from typing import Dict, List, Tuple, Optional
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import StratifiedKFold
+from sklearn.utils.class_weight import compute_class_weight
 from sklearn.metrics import (
     accuracy_score, precision_score, recall_score, f1_score,
     confusion_matrix, roc_curve, auc, roc_auc_score, classification_report
@@ -208,10 +209,9 @@ class DFUModelTrainer:
         return ds.batch(batch_size).prefetch(tf.data.AUTOTUNE)
 
     def _class_weights(self, y):
-        return {
-            0: 1.0 / (np.sum(y == 0) / len(y)),
-            1: 1.0 / (np.sum(y == 1) / len(y)),
-        }
+        classes = np.unique(y)
+        weights = compute_class_weight(class_weight='balanced', classes=classes, y=y)
+        return dict(zip(classes.tolist(), weights.tolist()))
 
     def train_phase1(self, X_train, y_train, X_val=None, y_val=None, batch_size=32,
                      optimizer='adam', learning_rate=1e-3, max_epochs=100,

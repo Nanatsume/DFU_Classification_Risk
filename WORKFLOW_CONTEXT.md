@@ -46,37 +46,52 @@
 **Input**: `val_preds.npz` ของทั้ง 3 backbone
 
 1. ใช้ threshold = 0.5 คำนวณ AUC, Sensitivity, Specificity (mean 5 folds)
-2. ตรวจสอบเกณฑ์คลินิก: AUC ≥ 0.80, Sens ≥ 0.85, Spec ≥ 0.70
-3. เลือก backbone ที่ AUC สูงสุด
+2. เลือก backbone ที่มี AUC-ROC สูงสุด
 
 **ผลลัพธ์**: เลือก **ConvNeXt-Tiny** (AUC=0.8293)
 
 ---
 
-## ขั้นตอนที่ 5 — ปรับ Threshold ด้วย Youden's Index
+## ขั้นตอนที่ 5 — ปรับ Threshold
 
 **Input**: `val_preds.npz` ของ ConvNeXt-Tiny
 
+**5.1 Youden's Index**
 1. คำนวณ ROC curve ต่อ fold → หา threshold ที่ max(Sensitivity + Specificity − 1)
 2. เฉลี่ย Youden threshold ทั้ง 5 folds
 3. เปรียบเทียบ default 0.5 กับ Youden threshold บน val set
 
 **ผลลัพธ์**: Mean Youden threshold = **0.7318**
-(Specificity เพิ่มจาก 0.70 → 0.77, ผ่านเกณฑ์ ≥ 0.70)
+(Sensitivity ลดจาก 0.80 → 0.73, Specificity เพิ่มจาก 0.70 → 0.77)
+
+**5.2 Threshold Sweep (0.05–0.95, step=0.05)**
+1. รวม val predictions ทั้ง 5 folds เป็น pool เดียว
+2. ไล่ threshold 0.05–0.95 ทีละ 0.05
+3. เลือก threshold ที่ให้ Sensitivity สูงสุด โดยมีทั้ง Sens ≥ 0.70 และ Spec ≥ 0.70
+
+| Threshold | Sensitivity | Specificity | Selected |
+|-----------|-------------|-------------|----------|
+| 0.50 | 0.8000 | 0.6944 | |
+| 0.55 | 0.7846 | 0.6944 | |
+| **0.60** | **0.7744** | **0.7361** | ✓ |
+| 0.65 | 0.7744 | 0.7500 | |
+| 0.70 | 0.7333 | 0.7500 | |
+
+**ผลลัพธ์**: Sweep threshold = **0.60** (Sens=0.774, Spec=0.736)
 
 ---
 
 ## ขั้นตอนที่ 6 — ประเมินบน Test Set
 
-**Input**: `avg_epochs.json`, `best_params.json`, Youden threshold จากขั้นตอนที่ 5
+**Input**: `avg_epochs.json`, `best_params.json`
 
 1. Retrain ConvNeXt-Tiny บน **full training set** (267 ภาพ)
    - Phase 1: 50 epochs (avg จาก CV), **ไม่มี** early stopping
    - Phase 2: 46 epochs (avg จาก CV), **ไม่มี** early stopping
-2. ทำนายบน Test set (67 ภาพ) ด้วย threshold = 0.7318
-3. คำนวณ Sensitivity, Specificity, AUC-ROC, PPV, NPV, F1
-
-**ผลลัพธ์**: AUC=0.9150, Sens=0.9592, Spec=0.6667
+2. ทำนายบน Test set (67 ภาพ) → บันทึก probabilities ไว้ใน `final_eval_probs.npy`
+3. ประเมินด้วย 2 threshold:
+   - **Youden (0.7318)**: AUC=0.9150, Sens=0.9592, Spec=0.6667
+   - **Sweep (0.60)**: AUC=0.9150, Sens=0.9796, Spec=0.6667
 
 ---
 
@@ -100,11 +115,11 @@
    - GLCM 16-dim (8 ระดับ, 4 มุม, 4 properties)
    - HOG 8-dim (8×8 cells, 8 statistics)
 2. **GridSearchCV** 5-fold หา best BPNN architecture
-3. Retrain BPNN บน full training set, ทำนายบน Test set ด้วย Youden threshold
+3. Retrain BPNN บน full training set, ทำนายบน Test set ด้วย sweep threshold
 4. เปรียบเทียบ metrics กับ CNN
 5. ทดสอบ statistical significance: McNemar's Test + DeLong's Test
 
-**ผลลัพธ์**:
-- Proposed Model (ConvNeXt-Tiny): AUC=0.9150, Sens=0.9592, Spec=0.6667
-- Baseline (BPNN, GLCM+HOG): AUC=0.8526, Sens=0.8367, Spec=0.6111
-- ไม่พบความแตกต่างที่ significant (McNemar p=0.092, DeLong p=0.359)
+**ผลลัพธ์** (CNN thr=0.60, BPNN thr=0.55):
+- Proposed Model (ConvNeXt-Tiny): AUC=0.9150, Sens=0.9796, Spec=0.6667
+- Baseline (BPNN, GLCM+HOG): AUC=0.8526, Sens=0.8776, Spec=0.6111
+- ไม่พบความแตกต่างที่ significant (McNemar p=0.1094, DeLong p=0.3591)

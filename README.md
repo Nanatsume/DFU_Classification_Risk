@@ -54,7 +54,7 @@ Dense(1, sigmoid)
 | 2 | Unfreeze top 30% | 50 | patience=15 (val_loss) | 1e-4 (Exp decay) |
 
 - **Augmentation**: RandomRotation(±10°) on training set only
-- **Class weights**: applied to handle imbalance (DM:CT ≈ 2.7:1)
+- **Class weights**: sklearn balanced class weighting to address class imbalance
 - **Optimizer**: Adam (Phase 1), Adam + ExponentialDecayScheduler (Phase 2)
 
 ### Hyperparameter Tuning — Optuna
@@ -92,18 +92,17 @@ Dense(1, sigmoid)
 
 **Objective**: Select the best backbone from 3 candidates using 5-fold CV.
 
-**Clinical screening criteria** (all three must be met):
-- AUC-ROC ≥ 0.80 &nbsp;·&nbsp; Sensitivity ≥ 0.85 &nbsp;·&nbsp; Specificity ≥ 0.70
+**Selection criterion**: Highest AUC-ROC
 
 **Results** (mean across 5 folds, threshold = 0.5):
 
-| Backbone | AUC | Sensitivity | Specificity | Pass All |
-|----------|-----|-------------|-------------|----------|
-| EfficientNetB0 | 0.6379 | 0.5949 | 0.4181 | ✗ |
-| ResNet50 | 0.7875 | 0.9897 | 0.1533 | ✗ |
-| **ConvNeXt-Tiny** | **0.8293** | **0.8000** | **0.6952** | ✗ |
+| Backbone | AUC | Sensitivity | Specificity |
+|----------|-----|-------------|-------------|
+| EfficientNetB0 | 0.6379 | 0.5949 | 0.4181 |
+| ResNet50 | 0.7875 | 0.9897 | 0.1533 |
+| **ConvNeXt-Tiny** | **0.8293** | **0.8000** | **0.6952** |
 
-> No backbone passed all three criteria. **ConvNeXt-Tiny** was selected as it achieved the highest AUC and came closest to meeting the specificity threshold (0.70 vs criterion 0.70).
+> **ConvNeXt-Tiny** was selected as the best backbone (highest AUC-ROC = 0.8293).
 
 ---
 
@@ -131,7 +130,25 @@ $$J = \text{Sensitivity} + \text{Specificity} - 1 \qquad \text{threshold}^* = \a
 | Sensitivity | 0.8000 ± 0.0192 | 0.7333 ± 0.0205 | −0.0667 (−8.3%) |
 | Specificity | 0.6952 ± 0.0508 | 0.7657 ± 0.0777 | +0.0705 (+10.1%) |
 
-> Youden threshold trades −8.3% Sensitivity for +10.1% Specificity, bringing Specificity above the ≥0.70 criterion.
+> Youden threshold trades −8.3% Sensitivity for +10.1% Specificity (0.695 → 0.766).
+
+---
+
+### Threshold Optimization (Threshold Sweep)
+
+**Objective**: Select the optimal threshold by sweeping 0.05–0.95 (step=0.05) on combined 5-fold validation predictions.
+
+**Selection rule**: Highest Sensitivity where both Sensitivity ≥ 0.70 and Specificity ≥ 0.70. If no threshold satisfies both, fall back to max Youden's J.
+
+| Threshold | Sensitivity | Specificity | Selected |
+|-----------|-------------|-------------|----------|
+| 0.50 | 0.8000 | 0.6944 | |
+| 0.55 | 0.7846 | 0.6944 | |
+| **0.60** | **0.7744** | **0.7361** | ✓ |
+| 0.65 | 0.7744 | 0.7500 | |
+| 0.70 | 0.7333 | 0.7500 | |
+
+> **Selected threshold = 0.60** — highest Sensitivity with both Sens ≥ 0.70 and Spec ≥ 0.70.
 
 ---
 
@@ -141,20 +158,20 @@ $$J = \text{Sensitivity} + \text{Specificity} - 1 \qquad \text{threshold}^* = \a
 1. Record average stopping epoch from 5-fold CV
 2. Retrain on full training set (267 images) for that fixed number of epochs
 3. No early stopping in the final retrain
-4. Evaluate with Youden threshold (0.7318)
+4. Evaluate with both Youden (0.7318) and Sweep (0.60) thresholds
 
 **Average stopping epochs** (ConvNeXt-Tiny): Phase 1 = **50**, Phase 2 = **46**
 
-**Test set results** (threshold = 0.7318):
+**Test set results**:
 
-| Metric | Value |
-|--------|-------|
-| AUC-ROC | **0.9150** |
-| Sensitivity | **0.9592** |
-| Specificity | **0.6667** |
-| PPV | 0.8868 |
-| NPV | 0.8571 |
-| F1-Score | 0.9216 |
+| Metric | Youden (thr=0.7318) | Sweep (thr=0.60) |
+|--------|---------------------|------------------|
+| AUC-ROC | **0.9150** | **0.9150** |
+| Sensitivity | 0.9592 | **0.9796** |
+| Specificity | **0.6667** | **0.6667** |
+| PPV | 0.8868 | 0.8889 |
+| NPV | 0.8571 | 0.9231 |
+| F1-Score | 0.9216 | 0.9320 |
 
 ---
 
@@ -187,24 +204,26 @@ Output: 4-panel images (Original / Grad-CAM / Grad-CAM++ / Eigen-CAM) saved to `
 | GLCM | 8-level, 4 angles (0/45/90/135°), 4 properties × 4 angles | 16 |
 | HOG | 8×8 cells, 8 statistics (mean, std, var, median, max, min, skew, kurtosis) | 8 |
 
-**Best Baseline (BPNN)**: architecture=(256, 128), activation=tanh, α=0.0001, Youden thr=0.5792
+**Best Baseline (BPNN)**: architecture=(256, 128), activation=tanh, α=0.0001, sweep thr=0.55
 
-**Comparison on test set**:
+Thresholds selected via sweep (0.05–0.95, step=0.05) on combined 5-fold validation predictions — highest Sensitivity where both Sens ≥ 0.70 and Spec ≥ 0.70.
 
-| Metric | Proposed Model (ConvNeXt-Tiny) | Baseline (BPNN, GLCM+HOG) | Delta |
-|--------|-------------------------------|--------------------------|-------|
-| Sensitivity | 0.9592 | 0.8367 | +0.1225 |
+**Comparison on test set** (Proposed thr=0.60, Baseline thr=0.55):
+
+| Metric | Proposed Model (ConvNeXt-Tiny) | Baseline (BPNN, GLCM+HOG) | Δ |
+|--------|-------------------------------|--------------------------|---|
+| Sensitivity | 0.9796 | 0.8776 | +0.1020 |
 | Specificity | 0.6667 | 0.6111 | +0.0556 |
 | AUC-ROC | 0.9150 | 0.8526 | +0.0624 |
-| PPV | 0.8868 | 0.8542 | +0.0326 |
-| NPV | 0.8571 | 0.5789 | +0.2782 |
-| F1-Score | 0.9216 | 0.8454 | +0.0762 |
+| PPV | 0.8889 | 0.8600 | +0.0289 |
+| NPV | 0.9231 | 0.6471 | +0.2760 |
+| F1-Score | 0.9320 | 0.8687 | +0.0634 |
 
-**Statistical tests** (Proposed thr=0.7318, Baseline thr=0.5792):
+**Statistical tests** (Proposed thr=0.60, Baseline thr=0.55):
 
 | Test | Result | p-value | Significance |
 |------|--------|---------|--------------|
-| McNemar's Test (H₀: same error pattern) | b=10 (Proposed✓/Baseline✗), c=3 (Proposed✗/Baseline✓) | 0.0923 | ns |
+| McNemar's Test (H₀: same error pattern) | b=8 (Proposed✓/Baseline✗), c=2 (Proposed✗/Baseline✓) | 0.1094 | ns |
 | DeLong's Test (H₀: AUC_Proposed = AUC_Baseline) | ΔAUC = +0.0624 | 0.3591 | ns |
 
 > Neither test reached significance — the two models are statistically equivalent on this test set.

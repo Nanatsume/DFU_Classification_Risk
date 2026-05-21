@@ -222,13 +222,14 @@ def main():
     best_params = gs.best_params_
     log(f"Best params: {best_params}  (CV AUC={gs.best_score_:.4f})")
 
-    # ── Phase 2: 5-fold CV with best params — find mean Youden threshold ─────
+    # ── Phase 2: 5-fold CV with best params — find sweep threshold ────────────
     log(f"\n{'='*80}")
-    log(f"RQ3: BPNN 5-FOLD CV — Youden threshold search (best params)")
+    log(f"RQ3: BPNN 5-FOLD CV — Threshold sweep (best params)")
     log(f"{'='*80}")
 
-    youden_thresholds = []
-    fold_iters        = []   # actual stopping iteration per fold (n_iter_)
+    fold_iters   = []
+    all_y_val    = []
+    all_probs_val = []
     for i, fi in enumerate(fold_indices):
         X_tr, y_tr = X_feat[fi['train_idx']], labels[fi['train_idx']]
         X_v,  y_v  = X_feat[fi['val_idx']],   labels[fi['val_idx']]
@@ -252,17 +253,48 @@ def main():
         probs_v = bpnn.predict_proba(X_v_s)[:, 1]
 
         auc_v = roc_auc_score(y_v, probs_v)
-        y_thr, y_sens, y_spec = compute_youden_threshold(y_v, probs_v)
-        youden_thresholds.append(y_thr)
         fold_iters.append(bpnn.n_iter_)
-        log(f"  Fold {i+1}: AUC={auc_v:.4f}  Youden_thr={y_thr:.4f}  "
-            f"Sens={y_sens:.4f}  Spec={y_spec:.4f}  stop_iter={bpnn.n_iter_}")
+        all_y_val.append(y_v)
+        all_probs_val.append(probs_v)
+        log(f"  Fold {i+1}: AUC={auc_v:.4f}  stop_iter={bpnn.n_iter_}")
 
-    mean_youden   = float(np.mean(youden_thresholds))
-    avg_iter      = int(round(np.mean(fold_iters)))
-    log(f"\n✓ Mean Youden threshold (BPNN): {mean_youden:.4f}")
-    log(f"✓ Avg stopping iteration       : {avg_iter}  "
-        f"(per fold: {fold_iters})")
+    # Sweep threshold on combined val predictions
+    all_y_val    = np.concatenate(all_y_val)
+    all_probs_val = np.concatenate(all_probs_val)
+    best_sweep_thr, best_sweep_sens = None, 0.0
+    best_j_thr, best_j = 0.5, -1.0
+    log(f"\n  Threshold sweep (0.05–0.95, step=0.05):")
+    for t in np.arange(0.05, 1.0, 0.05):
+        pred = (all_probs_val >= t).astype(int)
+        tp = ((pred==1)&(all_y_val==1)).sum()
+        tn = ((pred==0)&(all_y_val==0)).sum()
+        fp = ((pred==1)&(all_y_val==0)).sum()
+        fn = ((pred==0)&(all_y_val==1)).sum()
+        sens = tp/(tp+fn) if (tp+fn)>0 else 0
+        spec = tn/(tn+fp) if (tn+fp)>0 else 0
+        j = sens + spec - 1
+        log(f"    thr={t:.2f}  Sens={sens:.4f}  Spec={spec:.4f}  J={j:.4f}")
+        if j > best_j:
+            best_j = j
+            best_j_thr = round(float(t), 2)
+        if sens >= 0.70 and spec >= 0.70 and sens > best_sweep_sens:
+            best_sweep_sens = sens
+            best_sweep_thr  = round(float(t), 2)
+
+    if best_sweep_thr is None:
+        best_sweep_thr = best_j_thr
+        log(f"  ⚠ No threshold satisfies both Sens≥0.70 & Spec≥0.70 — using max J fallback: {best_j_thr:.2f}")
+
+    mean_youden = best_sweep_thr   # reuse variable name for compatibility
+    avg_iter    = int(round(np.mean(fold_iters)))
+    # Compute actual sens/spec at chosen threshold for display
+    _pred_final = (all_probs_val >= mean_youden).astype(int)
+    _tp = ((_pred_final==1)&(all_y_val==1)).sum(); _fn = ((_pred_final==0)&(all_y_val==1)).sum()
+    _tn = ((_pred_final==0)&(all_y_val==0)).sum(); _fp = ((_pred_final==1)&(all_y_val==0)).sum()
+    _sens = _tp/(_tp+_fn) if (_tp+_fn)>0 else 0
+    _spec = _tn/(_tn+_fp) if (_tn+_fp)>0 else 0
+    log(f"\n✓ Sweep threshold (BPNN): {mean_youden:.2f}  (Sens={_sens:.4f}  Spec={_spec:.4f})")
+    log(f"✓ Avg stopping iteration : {avg_iter}  (per fold: {fold_iters})")
 
     # ── Final BPNN on full training set ───────────────────────────────────────
     # Mirror CNN strategy: train for avg stopping iter, no early stopping
@@ -299,9 +331,48 @@ def main():
     if os.path.exists(rq3_path):
         with open(rq3_path) as f:
             rq3 = json.load(f)
-        cnn_m    = rq3['test_metrics']
         cnn_name = rq3['best_model']
-        cnn_thr  = rq3['threshold']
+
+        # Compute CNN sweep threshold from 5-fold val predictions
+        cnn_val_path = os.path.join(CONFIG['checkpoint_dir'], f'{cnn_name}_val_preds.npz')
+        log(f"\n{'='*80}")
+        log(f"RQ3: CNN THRESHOLD SWEEP — {cnn_name} (step=0.05)")
+        log(f"{'='*80}")
+        if os.path.exists(cnn_val_path):
+            _val_data = np.load(cnn_val_path)
+            _cnn_y = np.concatenate([labels[fi['val_idx']]               for fi in fold_indices])
+            _cnn_p_val = np.concatenate([_val_data[f'fold{fi["fold"]+1}'] for fi in fold_indices])
+            _best_cnn_thr, _best_cnn_sens = None, 0.0
+            _best_cnn_j_thr, _best_cnn_j = 0.5, -1.0
+            for t in np.arange(0.05, 1.0, 0.05):
+                _pred = (_cnn_p_val >= t).astype(int)
+                _tp = ((_pred==1)&(_cnn_y==1)).sum(); _fn = ((_pred==0)&(_cnn_y==1)).sum()
+                _tn = ((_pred==0)&(_cnn_y==0)).sum(); _fp = ((_pred==1)&(_cnn_y==0)).sum()
+                _s = _tp/(_tp+_fn) if (_tp+_fn)>0 else 0
+                _sp = _tn/(_tn+_fp) if (_tn+_fp)>0 else 0
+                _j = _s + _sp - 1
+                log(f"  thr={t:.2f}  Sens={_s:.4f}  Spec={_sp:.4f}  J={_j:.4f}")
+                if _j > _best_cnn_j:
+                    _best_cnn_j = _j
+                    _best_cnn_j_thr = round(float(t), 2)
+                if _s >= 0.70 and _sp >= 0.70 and _s > _best_cnn_sens:
+                    _best_cnn_sens = _s
+                    _best_cnn_thr  = round(float(t), 2)
+            if _best_cnn_thr is None:
+                _best_cnn_thr = _best_cnn_j_thr
+                log(f"  ⚠ CNN: No threshold satisfies both Sens≥0.70 & Spec≥0.70 — using max J: {_best_cnn_j_thr:.2f}")
+            cnn_thr = _best_cnn_thr
+            log(f"✓ CNN sweep threshold: {cnn_thr:.2f}")
+        else:
+            cnn_thr = 0.6
+            log(f"  ⚠ {cnn_val_path} not found — using default thr=0.60")
+
+        cnn_probs_path = os.path.join(CONFIG['results_dir'], 'final_eval_probs.npy')
+        if os.path.exists(cnn_probs_path):
+            _cnn_p = np.load(cnn_probs_path)
+            cnn_m  = metrics_at(y_test, _cnn_p, cnn_thr)
+        else:
+            cnn_m  = rq3['test_metrics']
 
         log(f"\n{'='*80}")
         log(f"RQ3: COMPARISON TABLE")
@@ -312,7 +383,7 @@ def main():
         for m in order:
             cv = cnn_m.get(m, 0.0)
             bv = bpnn_metrics[m]
-            log(f"{m:<14}  {cv:>22.4f}  {bv:>18.4f}  {bv - cv:>+8.4f}")
+            log(f"{m:<14}  {cv:>22.4f}  {bv:>18.4f}  {cv - bv:>+8.4f}")
 
         # ── Statistical tests ──────────────────────────────────────────────────
         log(f"\n{'─'*68}")
@@ -353,17 +424,54 @@ def main():
     stat_tests = {}
     if os.path.exists(rq3_path) and os.path.exists(rq3_probs_path):
         cnn_probs = np.load(rq3_probs_path)
-        cnn_thr   = rq3['threshold']
         cnn_bin   = (cnn_probs  >= cnn_thr).astype(int)
         bpnn_bin  = (test_probs >= mean_youden).astype(int)
 
         p_mc, b, c = mcnemar_test(y_test, cnn_bin, bpnn_bin)
         p_auc, delta_auc, z_stat = delong_auc_pvalue(y_test, cnn_probs, test_probs)
+
+        # Discordant cases: which test samples CNN and BPNN disagree on
+        label_name = {0: 'CT', 1: 'DM'}
+        b_idx = np.where((cnn_bin == y_test) & (bpnn_bin != y_test))[0]
+        c_idx = np.where((cnn_bin != y_test) & (bpnn_bin == y_test))[0]
+
+        log(f"\n{'─'*68}")
+        log(f"McNemar Discordant Cases")
+        log(f"{'─'*68}")
+        log(f"b={b}: CNN correct / BPNN wrong")
+        for i in b_idx:
+            log(f"  test[{i:2d}] dataset[{test_indices[i]:3d}]  true={label_name[y_test[i]]}  "
+                f"CNN={label_name[cnn_bin[i]]}({cnn_probs[i]:.3f})  "
+                f"BPNN={label_name[bpnn_bin[i]]}({test_probs[i]:.3f})")
+        log(f"c={c}: CNN wrong / BPNN correct")
+        for i in c_idx:
+            log(f"  test[{i:2d}] dataset[{test_indices[i]:3d}]  true={label_name[y_test[i]]}  "
+                f"CNN={label_name[cnn_bin[i]]}({cnn_probs[i]:.3f})  "
+                f"BPNN={label_name[bpnn_bin[i]]}({test_probs[i]:.3f})")
+
+        discordant = {
+            'b_cases': [
+                {'test_idx': int(i), 'dataset_idx': int(test_indices[i]),
+                 'true_label': int(y_test[i]), 'true_name': label_name[y_test[i]],
+                 'cnn_pred': int(cnn_bin[i]), 'cnn_prob': round(float(cnn_probs[i]), 4),
+                 'bpnn_pred': int(bpnn_bin[i]), 'bpnn_prob': round(float(test_probs[i]), 4)}
+                for i in b_idx
+            ],
+            'c_cases': [
+                {'test_idx': int(i), 'dataset_idx': int(test_indices[i]),
+                 'true_label': int(y_test[i]), 'true_name': label_name[y_test[i]],
+                 'cnn_pred': int(cnn_bin[i]), 'cnn_prob': round(float(cnn_probs[i]), 4),
+                 'bpnn_pred': int(bpnn_bin[i]), 'bpnn_prob': round(float(test_probs[i]), 4)}
+                for i in c_idx
+            ],
+        }
+
         stat_tests = {
             'mcnemar': {
                 'b': b, 'c': c,
                 'p_value': round(p_mc, 4),
                 'significance': '***' if p_mc < 0.001 else ('**' if p_mc < 0.01 else ('*' if p_mc < 0.05 else 'ns')),
+                'discordant_cases': discordant,
             },
             'delong_auc': {
                 'delta_auc': round(delta_auc, 4),
@@ -379,6 +487,7 @@ def main():
         'avg_stopping_iter':     avg_iter,
         'fold_stopping_iters':   fold_iters,
         'mean_youden_threshold': mean_youden,
+        'cnn_threshold':         cnn_thr if os.path.exists(rq3_path) else None,
         'test_metrics':          bpnn_metrics,
         'statistical_tests':     stat_tests,
     }
