@@ -193,9 +193,9 @@ Output: 4-panel images (Original / Grad-CAM / Grad-CAM++ / Eigen-CAM) saved to `
 
 ---
 
-### RQ3 — Proposed Model vs Baseline
+### RQ3 — Proposed Model vs Baseline Model
 
-**Objective**: Compare the proposed CNN (ConvNeXt-Tiny) against a Baseline BPNN trained on handcrafted features.
+**Objective**: Compare the proposed CNN (ConvNeXt-Tiny) against the Baseline Model trained on handcrafted features.
 
 **Baseline feature extraction (24-dim)**:
 
@@ -204,13 +204,13 @@ Output: 4-panel images (Original / Grad-CAM / Grad-CAM++ / Eigen-CAM) saved to `
 | GLCM | 8-level, 4 angles (0/45/90/135°), 4 properties × 4 angles | 16 |
 | HOG | 8×8 cells, 8 statistics (mean, std, var, median, max, min, skew, kurtosis) | 8 |
 
-**Best Baseline (BPNN)**: architecture=(256, 128), activation=tanh, α=0.0001, sweep thr=0.55
+**Best Baseline Model**: architecture=(256, 128), activation=tanh, α=0.0001, sweep thr=0.55
 
 Thresholds selected via sweep (0.05–0.95, step=0.05) on combined 5-fold validation predictions — highest Sensitivity where both Sens ≥ 0.70 and Spec ≥ 0.70.
 
 **Comparison on test set** (Proposed thr=0.60, Baseline thr=0.55):
 
-| Metric | Proposed Model (ConvNeXt-Tiny) | Baseline (BPNN, GLCM+HOG) | Δ |
+| Metric | Proposed Model (ConvNeXt-Tiny) | Baseline Model (GLCM+HOG) | Δ |
 |--------|-------------------------------|--------------------------|---|
 | Sensitivity | 0.9796 | 0.8776 | +0.1020 |
 | Specificity | 0.6667 | 0.6111 | +0.0556 |
@@ -273,7 +273,7 @@ bash run_gpu.sh final_evaluation.py
 # 5. RQ2 — Grad-CAM localization
 bash run_gpu.sh rq2_gradcam.py
 
-# 6. RQ3 — CNN vs BPNN comparison
+# 6. RQ3 — Proposed Model vs Baseline Model
 bash run_gpu.sh rq3_bpnn_comparison.py
 ```
 

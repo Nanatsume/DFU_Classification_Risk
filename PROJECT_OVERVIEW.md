@@ -39,7 +39,7 @@ Dataset: **INAOE** (334 images: CT=90, DM=244), preprocessed to 224×224 px, nor
 |----|----------|--------|
 | RQ1 | Which backbone performs best? | `rq1_backbone_comparison.py` |
 | RQ2 | Localization Evaluation (Grad-CAM / Grad-CAM++ / Eigen-CAM + Top-Region Pointing Game) | `rq2_gradcam.py` |
-| RQ3 | Proposed Model vs Baseline (BPNN, GLCM+HOG) | `rq3_bpnn_comparison.py` |
+| RQ3 | Proposed Model vs Baseline Model (GLCM+HOG) | `rq3_bpnn_comparison.py` |
 
 ---
 
@@ -263,11 +263,11 @@ GradientTape.watch(conv_out) is used before running clf_model
 
 ---
 
-## RQ3 — Proposed Model vs Baseline
+## RQ3 — Proposed Model vs Baseline Model
 
-**Objective**: Compare the proposed CNN (ConvNeXt-Tiny) against a Baseline BPNN using handcrafted features.
+**Objective**: Compare the proposed CNN (ConvNeXt-Tiny) against the Baseline Model using handcrafted features.
 
-### BPNN Pipeline
+### Baseline Model Pipeline
 
 **Feature Extraction (24-dim)**:
 
@@ -288,9 +288,9 @@ GradientTape.watch(conv_out) is used before running clf_model
 - Avg stopping iterations: **28** (per fold: 24, 24, 24, 39, 30)
 - Threshold: Sweep-based (step=0.05, 0.05–0.95) = **0.55** (Sens=0.708 ✓, Spec=0.736 ✓ on combined val)
 
-**Comparison Table** (CNN thr=0.60 sweep-selected; BPNN thr=0.55 sweep-selected):
+**Comparison Table** (CNN thr=0.60 sweep-selected; Baseline thr=0.55 sweep-selected):
 
-| Metric | Proposed Model (ConvNeXt-Tiny) | Baseline (BPNN, GLCM+HOG) | Δ |
+| Metric | Proposed Model (ConvNeXt-Tiny) | Baseline Model (GLCM+HOG) | Δ |
 |--------|-------------------------------|--------------------------|---|
 | Sensitivity | 0.9796 | 0.8776 | +0.1020 |
 | Specificity | 0.6667 | 0.6111 | +0.0556 |
@@ -332,7 +332,7 @@ bash run_gpu.sh final_evaluation.py
 # 5. RQ2 — Grad-CAM localization
 bash run_gpu.sh rq2_gradcam.py
 
-# 6. RQ3 — CNN vs BPNN comparison
+# 6. RQ3 — Proposed Model vs Baseline Model
 bash run_gpu.sh rq3_bpnn_comparison.py
 ```
 
