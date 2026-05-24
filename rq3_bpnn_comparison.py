@@ -222,13 +222,14 @@ def main():
     best_params = gs.best_params_
     log(f"Best params: {best_params}  (CV AUC={gs.best_score_:.4f})")
 
-    # ── Phase 2: 5-fold CV with best params — find sweep threshold ────────────
+    # ── Phase 2: 5-fold CV with best params — Youden's Index threshold ──────────
     log(f"\n{'='*80}")
-    log(f"RQ3: BPNN 5-FOLD CV — Threshold sweep (best params)")
+    log(f"RQ3: BPNN 5-FOLD CV — Youden's Index threshold (best params)")
     log(f"{'='*80}")
 
-    fold_iters   = []
-    all_y_val    = []
+    fold_iters    = []
+    youden_thrs   = []
+    all_y_val     = []
     all_probs_val = []
     for i, fi in enumerate(fold_indices):
         X_tr, y_tr = X_feat[fi['train_idx']], labels[fi['train_idx']]
@@ -253,47 +254,24 @@ def main():
         probs_v = bpnn.predict_proba(X_v_s)[:, 1]
 
         auc_v = roc_auc_score(y_v, probs_v)
+        y_thr, y_sens_f, y_spec_f = compute_youden_threshold(y_v, probs_v)
+        youden_thrs.append(y_thr)
         fold_iters.append(bpnn.n_iter_)
         all_y_val.append(y_v)
         all_probs_val.append(probs_v)
-        log(f"  Fold {i+1}: AUC={auc_v:.4f}  stop_iter={bpnn.n_iter_}")
+        log(f"  Fold {i+1}: AUC={auc_v:.4f}  stop_iter={bpnn.n_iter_}  Youden_thr={y_thr:.4f}")
 
-    # Sweep threshold on combined val predictions
-    all_y_val    = np.concatenate(all_y_val)
+    all_y_val     = np.concatenate(all_y_val)
     all_probs_val = np.concatenate(all_probs_val)
-    best_sweep_thr, best_sweep_sens = None, 0.0
-    best_j_thr, best_j = 0.5, -1.0
-    log(f"\n  Threshold sweep (0.05–0.95, step=0.05):")
-    for t in np.arange(0.05, 1.0, 0.05):
-        pred = (all_probs_val >= t).astype(int)
-        tp = ((pred==1)&(all_y_val==1)).sum()
-        tn = ((pred==0)&(all_y_val==0)).sum()
-        fp = ((pred==1)&(all_y_val==0)).sum()
-        fn = ((pred==0)&(all_y_val==1)).sum()
-        sens = tp/(tp+fn) if (tp+fn)>0 else 0
-        spec = tn/(tn+fp) if (tn+fp)>0 else 0
-        j = sens + spec - 1
-        log(f"    thr={t:.2f}  Sens={sens:.4f}  Spec={spec:.4f}  J={j:.4f}")
-        if j > best_j:
-            best_j = j
-            best_j_thr = round(float(t), 2)
-        if sens >= 0.70 and spec >= 0.70 and sens > best_sweep_sens:
-            best_sweep_sens = sens
-            best_sweep_thr  = round(float(t), 2)
-
-    if best_sweep_thr is None:
-        best_sweep_thr = best_j_thr
-        log(f"  ⚠ No threshold satisfies both Sens≥0.70 & Spec≥0.70 — using max J fallback: {best_j_thr:.2f}")
-
-    mean_youden = best_sweep_thr   # reuse variable name for compatibility
-    avg_iter    = int(round(np.mean(fold_iters)))
-    # Compute actual sens/spec at chosen threshold for display
+    mean_youden   = float(np.mean(youden_thrs))
+    avg_iter      = int(round(np.mean(fold_iters)))
     _pred_final = (all_probs_val >= mean_youden).astype(int)
     _tp = ((_pred_final==1)&(all_y_val==1)).sum(); _fn = ((_pred_final==0)&(all_y_val==1)).sum()
     _tn = ((_pred_final==0)&(all_y_val==0)).sum(); _fp = ((_pred_final==1)&(all_y_val==0)).sum()
     _sens = _tp/(_tp+_fn) if (_tp+_fn)>0 else 0
     _spec = _tn/(_tn+_fp) if (_tn+_fp)>0 else 0
-    log(f"\n✓ Sweep threshold (BPNN): {mean_youden:.2f}  (Sens={_sens:.4f}  Spec={_spec:.4f})")
+    log(f"\n✓ Mean Youden threshold (BPNN): {mean_youden:.4f}  (Sens={_sens:.4f}  Spec={_spec:.4f})")
+    log(f"  Per-fold thresholds: {[round(t, 4) for t in youden_thrs]}")
     log(f"✓ Avg stopping iteration : {avg_iter}  (per fold: {fold_iters})")
 
     # ── Final BPNN on full training set ───────────────────────────────────────
@@ -333,39 +311,16 @@ def main():
             rq3 = json.load(f)
         cnn_name = rq3['best_model']
 
-        # Compute CNN sweep threshold from 5-fold val predictions
-        cnn_val_path = os.path.join(CONFIG['checkpoint_dir'], f'{cnn_name}_val_preds.npz')
-        log(f"\n{'='*80}")
-        log(f"RQ3: CNN THRESHOLD SWEEP — {cnn_name} (step=0.05)")
-        log(f"{'='*80}")
-        if os.path.exists(cnn_val_path):
-            _val_data = np.load(cnn_val_path)
-            _cnn_y = np.concatenate([labels[fi['val_idx']]               for fi in fold_indices])
-            _cnn_p_val = np.concatenate([_val_data[f'fold{fi["fold"]+1}'] for fi in fold_indices])
-            _best_cnn_thr, _best_cnn_sens = None, 0.0
-            _best_cnn_j_thr, _best_cnn_j = 0.5, -1.0
-            for t in np.arange(0.05, 1.0, 0.05):
-                _pred = (_cnn_p_val >= t).astype(int)
-                _tp = ((_pred==1)&(_cnn_y==1)).sum(); _fn = ((_pred==0)&(_cnn_y==1)).sum()
-                _tn = ((_pred==0)&(_cnn_y==0)).sum(); _fp = ((_pred==1)&(_cnn_y==0)).sum()
-                _s = _tp/(_tp+_fn) if (_tp+_fn)>0 else 0
-                _sp = _tn/(_tn+_fp) if (_tn+_fp)>0 else 0
-                _j = _s + _sp - 1
-                log(f"  thr={t:.2f}  Sens={_s:.4f}  Spec={_sp:.4f}  J={_j:.4f}")
-                if _j > _best_cnn_j:
-                    _best_cnn_j = _j
-                    _best_cnn_j_thr = round(float(t), 2)
-                if _s >= 0.70 and _sp >= 0.70 and _s > _best_cnn_sens:
-                    _best_cnn_sens = _s
-                    _best_cnn_thr  = round(float(t), 2)
-            if _best_cnn_thr is None:
-                _best_cnn_thr = _best_cnn_j_thr
-                log(f"  ⚠ CNN: No threshold satisfies both Sens≥0.70 & Spec≥0.70 — using max J: {_best_cnn_j_thr:.2f}")
-            cnn_thr = _best_cnn_thr
-            log(f"✓ CNN sweep threshold: {cnn_thr:.2f}")
+        # Load CNN Youden threshold from threshold_optimization step
+        threshold_path = os.path.join(CONFIG['results_dir'], 'threshold_results.json')
+        if os.path.exists(threshold_path):
+            with open(threshold_path) as _tf:
+                _thr_data = json.load(_tf)
+            cnn_thr = _thr_data['mean_youden_threshold']
+            log(f"✓ CNN Youden threshold: {cnn_thr:.4f}  (from threshold_results.json)")
         else:
-            cnn_thr = 0.6
-            log(f"  ⚠ {cnn_val_path} not found — using default thr=0.60")
+            cnn_thr = rq3.get('threshold', 0.7318)
+            log(f"✓ CNN Youden threshold: {cnn_thr:.4f}  (from final_eval_results.json)")
 
         cnn_probs_path = os.path.join(CONFIG['results_dir'], 'final_eval_probs.npy')
         if os.path.exists(cnn_probs_path):

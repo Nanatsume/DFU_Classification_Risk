@@ -89,9 +89,8 @@
    - Phase 1: 50 epochs (avg จาก CV), **ไม่มี** early stopping
    - Phase 2: 46 epochs (avg จาก CV), **ไม่มี** early stopping
 2. ทำนายบน Test set (67 ภาพ) → บันทึก probabilities ไว้ใน `final_eval_probs.npy`
-3. ประเมินด้วย 2 threshold:
+3. ประเมินด้วย Youden threshold (primary):
    - **Youden (0.7318)**: AUC=0.9150, Sens=0.9592, Spec=0.6667
-   - **Sweep (0.60)**: AUC=0.9150, Sens=0.9796, Spec=0.6667
 
 ---
 
@@ -115,11 +114,11 @@
    - GLCM 16-dim (8 ระดับ, 4 มุม, 4 properties)
    - HOG 8-dim (8×8 cells, 8 statistics)
 2. **GridSearchCV** 5-fold หา best BPNN architecture
-3. Retrain BPNN บน full training set, ทำนายบน Test set ด้วย sweep threshold
+3. Retrain BPNN บน full training set, ทำนายบน Test set ด้วย Youden threshold
 4. เปรียบเทียบ metrics กับ CNN
 5. ทดสอบ statistical significance: McNemar's Test + DeLong's Test
 
-**ผลลัพธ์** (CNN thr=0.60, BPNN thr=0.55):
-- Proposed Model (ConvNeXt-Tiny): AUC=0.9150, Sens=0.9796, Spec=0.6667
-- Baseline (BPNN, GLCM+HOG): AUC=0.8526, Sens=0.8776, Spec=0.6111
-- ไม่พบความแตกต่างที่ significant (McNemar p=0.1094, DeLong p=0.3591)
+**ผลลัพธ์** (CNN thr=0.7318, BPNN thr=0.5792):
+- Proposed Model (ConvNeXt-Tiny): AUC=0.9150, Sens=0.9592, Spec=0.6667
+- Baseline (BPNN, GLCM+HOG): AUC=0.8526, Sens=0.8367, Spec=0.6111
+- ไม่พบความแตกต่างที่ significant (McNemar p=0.0923, DeLong p=0.3591)

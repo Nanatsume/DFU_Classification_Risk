@@ -56,12 +56,12 @@ def main():
     with open(os.path.join(CONFIG['results_dir'], 'rq1_results.json')) as f:
         rq1 = json.load(f)
     with open(os.path.join(CONFIG['results_dir'], 'threshold_results.json')) as f:
-        rq2 = json.load(f)
+        thr_data = json.load(f)
 
     best_model = rq1['best_model']
-    threshold  = rq2['mean_youden_threshold']
+    threshold  = thr_data['mean_youden_threshold']
     log(f"Best backbone : {best_model}")
-    log(f"Threshold     : {threshold:.4f}  (mean Youden's J from RQ2)")
+    log(f"Threshold     : {threshold:.4f}  (mean Youden's J)")
 
     # ── Load average stopping epochs from K-fold CV ───────────────────────────
     avg_epochs_path = os.path.join(CONFIG['checkpoint_dir'],

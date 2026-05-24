@@ -162,16 +162,16 @@ $$J = \text{Sensitivity} + \text{Specificity} - 1 \qquad \text{threshold}^* = \a
 
 **Average stopping epochs** (ConvNeXt-Tiny): Phase 1 = **50**, Phase 2 = **46**
 
-**Test set results**:
+**Test set results** (thr=0.7318, Youden's Index):
 
-| Metric | Youden (thr=0.7318) | Sweep (thr=0.60) |
-|--------|---------------------|------------------|
-| AUC-ROC | **0.9150** | **0.9150** |
-| Sensitivity | 0.9592 | **0.9796** |
-| Specificity | **0.6667** | **0.6667** |
-| PPV | 0.8868 | 0.8889 |
-| NPV | 0.8571 | 0.9231 |
-| F1-Score | 0.9216 | 0.9320 |
+| Metric | Value |
+|--------|-------|
+| AUC-ROC | 0.9150 |
+| Sensitivity | 0.9592 |
+| Specificity | 0.6667 |
+| PPV | 0.8868 |
+| NPV | 0.8571 |
+| F1-Score | 0.9216 |
 
 ---
 
@@ -204,26 +204,26 @@ Output: 4-panel images (Original / Grad-CAM / Grad-CAM++ / Eigen-CAM) saved to `
 | GLCM | 8-level, 4 angles (0/45/90/135°), 4 properties × 4 angles | 16 |
 | HOG | 8×8 cells, 8 statistics (mean, std, var, median, max, min, skew, kurtosis) | 8 |
 
-**Best Baseline Model**: architecture=(256, 128), activation=tanh, α=0.0001, sweep thr=0.55
+**Best Baseline Model**: architecture=(256, 128), activation=tanh, α=0.0001, Youden thr=0.5792
 
-Thresholds selected via sweep (0.05–0.95, step=0.05) on combined 5-fold validation predictions — highest Sensitivity where both Sens ≥ 0.70 and Spec ≥ 0.70.
+Thresholds selected via Youden's Index per fold, averaged across 5 folds.
 
-**Comparison on test set** (Proposed thr=0.60, Baseline thr=0.55):
+**Comparison on test set** (Proposed thr=0.7318, Baseline thr=0.5792):
 
 | Metric | Proposed Model (ConvNeXt-Tiny) | Baseline Model (GLCM+HOG) | Δ |
 |--------|-------------------------------|--------------------------|---|
-| Sensitivity | 0.9796 | 0.8776 | +0.1020 |
+| Sensitivity | 0.9592 | 0.8367 | +0.1225 |
 | Specificity | 0.6667 | 0.6111 | +0.0556 |
 | AUC-ROC | 0.9150 | 0.8526 | +0.0624 |
-| PPV | 0.8889 | 0.8600 | +0.0289 |
-| NPV | 0.9231 | 0.6471 | +0.2760 |
-| F1-Score | 0.9320 | 0.8687 | +0.0634 |
+| PPV | 0.8868 | 0.8542 | +0.0326 |
+| NPV | 0.8571 | 0.5789 | +0.2782 |
+| F1-Score | 0.9216 | 0.8454 | +0.0762 |
 
-**Statistical tests** (Proposed thr=0.60, Baseline thr=0.55):
+**Statistical tests** (Proposed thr=0.7318, Baseline thr=0.5792):
 
 | Test | Result | p-value | Significance |
 |------|--------|---------|--------------|
-| McNemar's Test (H₀: same error pattern) | b=8 (Proposed✓/Baseline✗), c=2 (Proposed✗/Baseline✓) | 0.1094 | ns |
+| McNemar's Test (H₀: same error pattern) | b=10 (Proposed✓/Baseline✗), c=3 (Proposed✗/Baseline✓) | 0.0923 | ns |
 | DeLong's Test (H₀: AUC_Proposed = AUC_Baseline) | ΔAUC = +0.0624 | 0.3591 | ns |
 
 > Neither test reached significance — the two models are statistically equivalent on this test set.
