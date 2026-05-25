@@ -9,21 +9,21 @@
     39,
     30
   ],
-  "mean_youden_threshold": 0.5792088508605957,
-  "cnn_threshold": 0.7317705988883972,
+  "bpnn_threshold": 0.5,
+  "cnn_threshold": 0.5,
   "test_metrics": {
-    "sensitivity": 0.8367346938775511,
+    "sensitivity": 0.8979591836734694,
     "specificity": 0.6111111111111112,
-    "ppv": 0.8541666666666666,
-    "npv": 0.5789473684210527,
-    "f1": 0.845360824742268,
+    "ppv": 0.8627450980392157,
+    "npv": 0.6875,
+    "f1": 0.88,
     "auc_roc": 0.852607709750567
   },
   "statistical_tests": {
     "mcnemar": {
-      "b": 10,
-      "c": 3,
-      "p_value": 0.0923,
+      "b": 7,
+      "c": 2,
+      "p_value": 0.1797,
       "significance": "ns",
       "discordant_cases": {
         "b_cases": [
@@ -48,16 +48,6 @@
             "bpnn_prob": 0.6891
           },
           {
-            "test_idx": 18,
-            "dataset_idx": 93,
-            "true_label": 1,
-            "true_name": "DM",
-            "cnn_pred": 1,
-            "cnn_prob": 0.9596,
-            "bpnn_pred": 0,
-            "bpnn_prob": 0.5428
-          },
-          {
             "test_idx": 22,
             "dataset_idx": 114,
             "true_label": 1,
@@ -68,16 +58,6 @@
             "bpnn_prob": 0.3215
           },
           {
-            "test_idx": 26,
-            "dataset_idx": 135,
-            "true_label": 1,
-            "true_name": "DM",
-            "cnn_pred": 1,
-            "cnn_prob": 0.9793,
-            "bpnn_pred": 0,
-            "bpnn_prob": 0.5588
-          },
-          {
             "test_idx": 32,
             "dataset_idx": 156,
             "true_label": 1,
@@ -86,16 +66,6 @@
             "cnn_prob": 0.986,
             "bpnn_pred": 0,
             "bpnn_prob": 0.494
-          },
-          {
-            "test_idx": 50,
-            "dataset_idx": 262,
-            "true_label": 1,
-            "true_name": "DM",
-            "cnn_pred": 1,
-            "cnn_prob": 0.9996,
-            "bpnn_pred": 0,
-            "bpnn_prob": 0.5571
           },
           {
             "test_idx": 61,
@@ -148,16 +118,6 @@
             "cnn_prob": 0.2916,
             "bpnn_pred": 1,
             "bpnn_prob": 0.7699
-          },
-          {
-            "test_idx": 66,
-            "dataset_idx": 322,
-            "true_label": 1,
-            "true_name": "DM",
-            "cnn_pred": 0,
-            "cnn_prob": 0.7237,
-            "bpnn_pred": 1,
-            "bpnn_prob": 0.7515
           }
         ]
       }

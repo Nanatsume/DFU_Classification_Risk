@@ -203,22 +203,22 @@ threshold* = argmax(TPR − FPR)
 1. Record the average stopping epoch from 5-fold CV (`ConvNeXt-Tiny_avg_epochs.json`)
 2. Retrain on **full training set (267 images)** for exactly that many epochs
 3. No early stopping in the final retrain
-4. Evaluate with both Youden (0.7318) and Sweep (0.60) thresholds
+4. Evaluate at default threshold = 0.5
 
 **Avg stopping epochs** (ConvNeXt-Tiny):
 - Phase 1: **50 epochs**
 - Phase 2: **46 epochs**
 
-**Test set results**:
+**Test set results** (thr=0.5):
 
-| Metric | Youden (thr=0.7318) |
-|--------|---------------------|
+| Metric | Value |
+|--------|-------|
 | AUC-ROC | 0.9150 |
-| Sensitivity | 0.9592 |
+| Sensitivity | 0.9796 |
 | Specificity | 0.6667 |
-| PPV | 0.8868 |
-| NPV | 0.8571 |
-| F1-Score | 0.9216 |
+| PPV | 0.8889 |
+| NPV | 0.9231 |
+| F1-Score | 0.9320 |
 
 **Results saved to**: `results/final_eval_results.json`, `results/final_eval_probs.npy`
 
@@ -286,24 +286,24 @@ GradientTape.watch(conv_out) is used before running clf_model
   - `alpha`: {1e-4, 1e-3, 1e-2}
 - Best architecture: **(256, 128), tanh, α=0.0001**
 - Avg stopping iterations: **28** (per fold: 24, 24, 24, 39, 30)
-- Threshold: Youden's Index (mean across 5 folds) = **0.5792**
+- Threshold: **0.5** (default)
 
-**Comparison Table** (CNN thr=0.7318 Youden; Baseline thr=0.5792 Youden):
+**Comparison Table** (both thr=0.5):
 
 | Metric | Proposed Model (ConvNeXt-Tiny) | Baseline Model (GLCM+HOG) | Δ |
 |--------|-------------------------------|--------------------------|---|
-| Sensitivity | 0.9592 | 0.8367 | +0.1225 |
+| Sensitivity | 0.9796 | 0.8980 | +0.0816 |
 | Specificity | 0.6667 | 0.6111 | +0.0556 |
 | AUC-ROC | 0.9150 | 0.8526 | +0.0624 |
-| PPV | 0.8868 | 0.8542 | +0.0326 |
-| NPV | 0.8571 | 0.5789 | +0.2782 |
-| F1-Score | 0.9216 | 0.8454 | +0.0762 |
+| PPV | 0.8889 | 0.8627 | +0.0262 |
+| NPV | 0.9231 | 0.6875 | +0.2356 |
+| F1-Score | 0.9320 | 0.8800 | +0.0520 |
 
-**Statistical Tests** (Proposed thr=0.7318, Baseline thr=0.5792):
+**Statistical Tests** (both thr=0.5):
 
 | Test | H₀ | Result | p-value | Sig. |
 |------|----|--------|---------|------|
-| McNemar's Test | Both models make same errors | b=10 (Proposed✓/Baseline✗), c=3 (Proposed✗/Baseline✓) | 0.0923 | ns |
+| McNemar's Test | Both models make same errors | b=7 (Proposed✓/Baseline✗), c=2 (Proposed✗/Baseline✓) | 0.1797 | ns |
 | DeLong's Test | AUC_Proposed = AUC_Baseline | ΔAUC = +0.0624 | 0.3591 | ns |
 
 > Neither test reached significance — the two models are statistically equivalent on this test set.

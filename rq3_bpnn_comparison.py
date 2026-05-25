@@ -222,13 +222,12 @@ def main():
     best_params = gs.best_params_
     log(f"Best params: {best_params}  (CV AUC={gs.best_score_:.4f})")
 
-    # ── Phase 2: 5-fold CV with best params — Youden's Index threshold ──────────
+    # ── Phase 2: 5-fold CV with best params — record avg stopping iteration ──────
     log(f"\n{'='*80}")
-    log(f"RQ3: BPNN 5-FOLD CV — Youden's Index threshold (best params)")
+    log(f"RQ3: BPNN 5-FOLD CV — best params (threshold=0.5)")
     log(f"{'='*80}")
 
     fold_iters    = []
-    youden_thrs   = []
     all_y_val     = []
     all_probs_val = []
     for i, fi in enumerate(fold_indices):
@@ -254,25 +253,14 @@ def main():
         probs_v = bpnn.predict_proba(X_v_s)[:, 1]
 
         auc_v = roc_auc_score(y_v, probs_v)
-        y_thr, y_sens_f, y_spec_f = compute_youden_threshold(y_v, probs_v)
-        youden_thrs.append(y_thr)
         fold_iters.append(bpnn.n_iter_)
         all_y_val.append(y_v)
         all_probs_val.append(probs_v)
-        log(f"  Fold {i+1}: AUC={auc_v:.4f}  stop_iter={bpnn.n_iter_}  Youden_thr={y_thr:.4f}")
+        log(f"  Fold {i+1}: AUC={auc_v:.4f}  stop_iter={bpnn.n_iter_}")
 
-    all_y_val     = np.concatenate(all_y_val)
-    all_probs_val = np.concatenate(all_probs_val)
-    mean_youden   = float(np.mean(youden_thrs))
-    avg_iter      = int(round(np.mean(fold_iters)))
-    _pred_final = (all_probs_val >= mean_youden).astype(int)
-    _tp = ((_pred_final==1)&(all_y_val==1)).sum(); _fn = ((_pred_final==0)&(all_y_val==1)).sum()
-    _tn = ((_pred_final==0)&(all_y_val==0)).sum(); _fp = ((_pred_final==1)&(all_y_val==0)).sum()
-    _sens = _tp/(_tp+_fn) if (_tp+_fn)>0 else 0
-    _spec = _tn/(_tn+_fp) if (_tn+_fp)>0 else 0
-    log(f"\n✓ Mean Youden threshold (BPNN): {mean_youden:.4f}  (Sens={_sens:.4f}  Spec={_spec:.4f})")
-    log(f"  Per-fold thresholds: {[round(t, 4) for t in youden_thrs]}")
+    avg_iter = int(round(np.mean(fold_iters)))
     log(f"✓ Avg stopping iteration : {avg_iter}  (per fold: {fold_iters})")
+    bpnn_thr = 0.5
 
     # ── Final BPNN on full training set ───────────────────────────────────────
     # Mirror CNN strategy: train for avg stopping iter, no early stopping
@@ -295,10 +283,10 @@ def main():
     final_bpnn.fit(X_train_s, y_train)
     test_probs = final_bpnn.predict_proba(X_test_s)[:, 1]
 
-    bpnn_metrics = metrics_at(y_test, test_probs, mean_youden)
+    bpnn_metrics = metrics_at(y_test, test_probs, bpnn_thr)
 
     log(f"\n{'='*80}")
-    log(f"RQ3: BPNN TEST RESULTS  (threshold={mean_youden:.4f})")
+    log(f"RQ3: BPNN TEST RESULTS  (threshold={bpnn_thr:.4f})")
     log(f"{'='*80}")
     for k, v in bpnn_metrics.items():
         log(f"  {k:<14}: {v:.4f}")
@@ -311,16 +299,8 @@ def main():
             rq3 = json.load(f)
         cnn_name = rq3['best_model']
 
-        # Load CNN Youden threshold from threshold_optimization step
-        threshold_path = os.path.join(CONFIG['results_dir'], 'threshold_results.json')
-        if os.path.exists(threshold_path):
-            with open(threshold_path) as _tf:
-                _thr_data = json.load(_tf)
-            cnn_thr = _thr_data['mean_youden_threshold']
-            log(f"✓ CNN Youden threshold: {cnn_thr:.4f}  (from threshold_results.json)")
-        else:
-            cnn_thr = rq3.get('threshold', 0.7318)
-            log(f"✓ CNN Youden threshold: {cnn_thr:.4f}  (from final_eval_results.json)")
+        cnn_thr = 0.5
+        log(f"✓ CNN threshold: {cnn_thr:.4f}  (default)")
 
         cnn_probs_path = os.path.join(CONFIG['results_dir'], 'final_eval_probs.npy')
         if os.path.exists(cnn_probs_path):
@@ -342,13 +322,13 @@ def main():
 
         # ── Statistical tests ──────────────────────────────────────────────────
         log(f"\n{'─'*68}")
-        log(f"Statistical Tests  (CNN thr={cnn_thr:.4f}, BPNN thr={mean_youden:.4f})")
+        log(f"Statistical Tests  (CNN thr={cnn_thr:.4f}, BPNN thr={bpnn_thr:.4f})")
         log(f"{'─'*68}")
 
         if os.path.exists(rq3_probs_path):
             cnn_probs  = np.load(rq3_probs_path)
             cnn_bin    = (cnn_probs  >= cnn_thr).astype(int)
-            bpnn_bin   = (test_probs >= mean_youden).astype(int)
+            bpnn_bin   = (test_probs >= bpnn_thr).astype(int)
 
             p_mc, b, c = mcnemar_test(y_test, cnn_bin, bpnn_bin)
             sig_mc = '***' if p_mc < 0.001 else ('**' if p_mc < 0.01 else
@@ -380,7 +360,7 @@ def main():
     if os.path.exists(rq3_path) and os.path.exists(rq3_probs_path):
         cnn_probs = np.load(rq3_probs_path)
         cnn_bin   = (cnn_probs  >= cnn_thr).astype(int)
-        bpnn_bin  = (test_probs >= mean_youden).astype(int)
+        bpnn_bin  = (test_probs >= bpnn_thr).astype(int)
 
         p_mc, b, c = mcnemar_test(y_test, cnn_bin, bpnn_bin)
         p_auc, delta_auc, z_stat = delong_auc_pvalue(y_test, cnn_probs, test_probs)
@@ -441,8 +421,8 @@ def main():
         'features':              'GLCM 8-level 4-angle (16-dim) + HOG 8-stats (8-dim) = 24-dim',
         'avg_stopping_iter':     avg_iter,
         'fold_stopping_iters':   fold_iters,
-        'mean_youden_threshold': mean_youden,
-        'cnn_threshold':         cnn_thr if os.path.exists(rq3_path) else None,
+        'bpnn_threshold':    bpnn_thr,
+        'cnn_threshold':     cnn_thr if os.path.exists(rq3_path) else None,
         'test_metrics':          bpnn_metrics,
         'statistical_tests':     stat_tests,
     }

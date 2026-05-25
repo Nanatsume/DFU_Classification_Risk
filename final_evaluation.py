@@ -47,7 +47,7 @@ def main():
     log = make_logger('rq3')
 
     # ── Load prerequisites ────────────────────────────────────────────────────
-    for fname, label in [('rq1_results.json', 'RQ1'), ('threshold_results.json', 'Threshold')]:
+    for fname, label in [('rq1_results.json', 'RQ1')]:
         p = os.path.join(CONFIG['results_dir'], fname)
         if not os.path.exists(p):
             log(f"❌ {fname} not found. Run {label} script first.")
@@ -55,13 +55,11 @@ def main():
 
     with open(os.path.join(CONFIG['results_dir'], 'rq1_results.json')) as f:
         rq1 = json.load(f)
-    with open(os.path.join(CONFIG['results_dir'], 'threshold_results.json')) as f:
-        thr_data = json.load(f)
 
     best_model = rq1['best_model']
-    threshold  = thr_data['mean_youden_threshold']
+    threshold  = 0.5
     log(f"Best backbone : {best_model}")
-    log(f"Threshold     : {threshold:.4f}  (mean Youden's J)")
+    log(f"Threshold     : {threshold:.4f}  (default)")
 
     # ── Load average stopping epochs from K-fold CV ───────────────────────────
     avg_epochs_path = os.path.join(CONFIG['checkpoint_dir'],

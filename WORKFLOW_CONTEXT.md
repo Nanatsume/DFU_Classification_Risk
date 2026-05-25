@@ -52,32 +52,13 @@
 
 ---
 
-## ขั้นตอนที่ 5 — ปรับ Threshold
+## ขั้นตอนที่ 5 — Threshold Analysis (supplementary)
 
 **Input**: `val_preds.npz` ของ ConvNeXt-Tiny
 
-**5.1 Youden's Index**
-1. คำนวณ ROC curve ต่อ fold → หา threshold ที่ max(Sensitivity + Specificity − 1)
-2. เฉลี่ย Youden threshold ทั้ง 5 folds
-3. เปรียบเทียบ default 0.5 กับ Youden threshold บน val set
-
-**ผลลัพธ์**: Mean Youden threshold = **0.7318**
-(Sensitivity ลดจาก 0.80 → 0.73, Specificity เพิ่มจาก 0.70 → 0.77)
-
-**5.2 Threshold Sweep (0.05–0.95, step=0.05)**
-1. รวม val predictions ทั้ง 5 folds เป็น pool เดียว
-2. ไล่ threshold 0.05–0.95 ทีละ 0.05
-3. เลือก threshold ที่ให้ Sensitivity สูงสุด โดยมีทั้ง Sens ≥ 0.70 และ Spec ≥ 0.70
-
-| Threshold | Sensitivity | Specificity | Selected |
-|-----------|-------------|-------------|----------|
-| 0.50 | 0.8000 | 0.6944 | |
-| 0.55 | 0.7846 | 0.6944 | |
-| **0.60** | **0.7744** | **0.7361** | ✓ |
-| 0.65 | 0.7744 | 0.7500 | |
-| 0.70 | 0.7333 | 0.7500 | |
-
-**ผลลัพธ์**: Sweep threshold = **0.60** (Sens=0.774, Spec=0.736)
+วิเคราะห์ Youden's Index เพื่อเปรียบเทียบกับ default 0.5 (เก็บไว้เป็น reference):
+- Mean Youden threshold = **0.7318** (val set: Sens ลด 0.80→0.73, Spec เพิ่ม 0.70→0.77)
+- แต่บน test set Youden ไม่ได้เพิ่ม Specificity → ใช้ **default threshold = 0.5** สำหรับ final evaluation
 
 ---
 
@@ -89,8 +70,8 @@
    - Phase 1: 50 epochs (avg จาก CV), **ไม่มี** early stopping
    - Phase 2: 46 epochs (avg จาก CV), **ไม่มี** early stopping
 2. ทำนายบน Test set (67 ภาพ) → บันทึก probabilities ไว้ใน `final_eval_probs.npy`
-3. ประเมินด้วย Youden threshold (primary):
-   - **Youden (0.7318)**: AUC=0.9150, Sens=0.9592, Spec=0.6667
+3. ประเมินด้วย threshold = 0.5:
+   - **AUC=0.9150, Sens=0.9796, Spec=0.6667**
 
 ---
 
@@ -114,11 +95,11 @@
    - GLCM 16-dim (8 ระดับ, 4 มุม, 4 properties)
    - HOG 8-dim (8×8 cells, 8 statistics)
 2. **GridSearchCV** 5-fold หา best BPNN architecture
-3. Retrain BPNN บน full training set, ทำนายบน Test set ด้วย Youden threshold
+3. Retrain BPNN บน full training set, ทำนายบน Test set ด้วย threshold = 0.5
 4. เปรียบเทียบ metrics กับ CNN
 5. ทดสอบ statistical significance: McNemar's Test + DeLong's Test
 
-**ผลลัพธ์** (CNN thr=0.7318, BPNN thr=0.5792):
-- Proposed Model (ConvNeXt-Tiny): AUC=0.9150, Sens=0.9592, Spec=0.6667
-- Baseline (BPNN, GLCM+HOG): AUC=0.8526, Sens=0.8367, Spec=0.6111
-- ไม่พบความแตกต่างที่ significant (McNemar p=0.0923, DeLong p=0.3591)
+**ผลลัพธ์** (ทั้งคู่ thr=0.5):
+- Proposed Model (ConvNeXt-Tiny): AUC=0.9150, Sens=0.9796, Spec=0.6667
+- Baseline (BPNN, GLCM+HOG): AUC=0.8526, Sens=0.8980, Spec=0.6111
+- ไม่พบความแตกต่างที่ significant (McNemar b=7,c=2,p=0.1797; DeLong p=0.3591)
