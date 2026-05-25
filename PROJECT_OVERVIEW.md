@@ -213,12 +213,12 @@ threshold* = argmax(TPR − FPR)
 
 | Metric | Value |
 |--------|-------|
-| AUC-ROC | 0.9150 |
-| Sensitivity | 0.9796 |
+| AUC-ROC | 0.9002 |
+| Sensitivity | 0.9388 |
 | Specificity | 0.6667 |
-| PPV | 0.8889 |
-| NPV | 0.9231 |
-| F1-Score | 0.9320 |
+| PPV | 0.8846 |
+| NPV | 0.8000 |
+| F1-Score | 0.9109 |
 
 **Results saved to**: `results/final_eval_results.json`, `results/final_eval_probs.npy`
 
@@ -292,19 +292,19 @@ GradientTape.watch(conv_out) is used before running clf_model
 
 | Metric | Proposed Model (ConvNeXt-Tiny) | Baseline Model (GLCM+HOG) | Δ |
 |--------|-------------------------------|--------------------------|---|
-| Sensitivity | 0.9796 | 0.8980 | +0.0816 |
+| Sensitivity | 0.9388 | 0.8980 | +0.0408 |
 | Specificity | 0.6667 | 0.6111 | +0.0556 |
-| AUC-ROC | 0.9150 | 0.8526 | +0.0624 |
-| PPV | 0.8889 | 0.8627 | +0.0262 |
-| NPV | 0.9231 | 0.6875 | +0.2356 |
-| F1-Score | 0.9320 | 0.8800 | +0.0520 |
+| AUC-ROC | 0.9002 | 0.8526 | +0.0476 |
+| PPV | 0.8846 | 0.8627 | +0.0219 |
+| NPV | 0.8000 | 0.6875 | +0.1125 |
+| F1-Score | 0.9109 | 0.8800 | +0.0309 |
 
 **Statistical Tests** (both thr=0.5):
 
 | Test | H₀ | Result | p-value | Sig. |
 |------|----|--------|---------|------|
-| McNemar's Test | Both models make same errors | b=7 (Proposed✓/Baseline✗), c=2 (Proposed✗/Baseline✓) | 0.1797 | ns |
-| DeLong's Test | AUC_Proposed = AUC_Baseline | ΔAUC = +0.0624 | 0.3591 | ns |
+| McNemar's Test | Both models make same errors | b=7 (Proposed✓/Baseline✗), c=4 (Proposed✗/Baseline✓) | 0.5488 | ns |
+| DeLong's Test | AUC_Proposed = AUC_Baseline | ΔAUC = +0.0476 | 0.4700 | ns |
 
 > Neither test reached significance — the two models are statistically equivalent on this test set.
 

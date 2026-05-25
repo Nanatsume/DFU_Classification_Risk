@@ -71,7 +71,7 @@
    - Phase 2: 46 epochs (avg จาก CV), **ไม่มี** early stopping
 2. ทำนายบน Test set (67 ภาพ) → บันทึก probabilities ไว้ใน `final_eval_probs.npy`
 3. ประเมินด้วย threshold = 0.5:
-   - **AUC=0.9150, Sens=0.9796, Spec=0.6667**
+   - **AUC=0.9002, Sens=0.9388, Spec=0.6667**
 
 ---
 
@@ -100,6 +100,6 @@
 5. ทดสอบ statistical significance: McNemar's Test + DeLong's Test
 
 **ผลลัพธ์** (ทั้งคู่ thr=0.5):
-- Proposed Model (ConvNeXt-Tiny): AUC=0.9150, Sens=0.9796, Spec=0.6667
+- Proposed Model (ConvNeXt-Tiny): AUC=0.9002, Sens=0.9388, Spec=0.6667
 - Baseline (BPNN, GLCM+HOG): AUC=0.8526, Sens=0.8980, Spec=0.6111
-- ไม่พบความแตกต่างที่ significant (McNemar b=7,c=2,p=0.1797; DeLong p=0.3591)
+- ไม่พบความแตกต่างที่ significant (McNemar b=7,c=4,p=0.5488; DeLong p=0.4700)
