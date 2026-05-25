@@ -548,23 +548,31 @@ def train_one_model(model_name: str, base_model_fn, log):
     np.savez(val_preds_path, **fold_val_preds)
     log(f"✓ Val predictions → {val_preds_path}")
 
-    # Save average stopping epochs (used by rq3 for final retraining)
+    # Save average stopping epochs (used by final_evaluation for retraining)
     avg_epochs_path = os.path.join(ckpt_dir, f"{model_name}_avg_epochs.json")
     if fold_epochs:
-        p1_epochs = [v['phase1'] for v in fold_epochs.values() if v['phase1'] is not None]
-        p2_epochs = [v['phase2'] for v in fold_epochs.values() if v['phase2'] is not None]
+        # Merge with existing per_fold data so partial re-runs accumulate correctly
+        merged = {}
+        if os.path.exists(avg_epochs_path):
+            with open(avg_epochs_path) as _f:
+                _existing = json.load(_f)
+            merged = _existing.get('per_fold', {})
+        merged.update(fold_epochs)  # new data overwrites same-key entries
+
+        p1_epochs = [v['phase1'] for v in merged.values() if v.get('phase1') is not None]
+        p2_epochs = [v['phase2'] for v in merged.values() if v.get('phase2') is not None]
         avg_p1 = int(round(np.mean(p1_epochs))) if p1_epochs else None
         avg_p2 = int(round(np.mean(p2_epochs))) if p2_epochs else None
         epochs_data = {
-            'per_fold':    fold_epochs,
-            'avg_phase1':  avg_p1,
-            'avg_phase2':  avg_p2,
-            'n_folds_used': len(fold_epochs),
+            'per_fold':     merged,
+            'avg_phase1':   avg_p1,
+            'avg_phase2':   avg_p2,
+            'n_folds_used': len(merged),
         }
         with open(avg_epochs_path, 'w') as f:
             json.dump(epochs_data, f, indent=2)
         log(f"✓ Avg stopping epochs (phase1={avg_p1}, phase2={avg_p2}, "
-            f"from {len(fold_epochs)} folds) → {avg_epochs_path}")
+            f"from {len(merged)} folds) → {avg_epochs_path}")
     elif not os.path.exists(avg_epochs_path):
         log(f"⚠ All folds loaded from checkpoint — {avg_epochs_path} not written. "
             f"Delete fold checkpoints and re-run to regenerate it.")
