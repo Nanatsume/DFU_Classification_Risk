@@ -1,0 +1,153 @@
+[2026-06-28 14:57:14] === Log file: ./results/train_convnext_log_20260628_145714.txt ===
+[2026-06-28 14:57:14] 
+################################################################################
+# TRAINING ConvNeXt-Tiny
+################################################################################
+
+[2026-06-28 14:57:15] Loaded INAOE: 334 images, shape=(334, 224, 224, 3), CT=90, DM=244
+[2026-06-28 14:57:15] ✓ 5 folds  |  test set: 67
+[2026-06-28 14:57:15] 
+================================================================================
+GPyOpt: ConvNeXt-Tiny_HyperparameterSearch (10 trials × fold1 only)
+================================================================================
+[2026-06-28 14:57:16] 
+================================================================================
+PHASE 1: Frozen Backbone — ConvNeXt-Tiny_HyperparameterSearch_trial1_fold1
+================================================================================
+[2026-06-28 14:57:16] Augmentation: rotation ±10°
+[2026-06-28 14:59:00] Phase 1 done. Best val_loss: 1.106125  (best epoch: 50)
+[2026-06-28 14:59:00] 
+================================================================================
+PHASE 2: Fine-tuning — ConvNeXt-Tiny_HyperparameterSearch_trial1_fold1
+================================================================================
+[2026-06-28 14:59:00] Unfroze all 133 backbone layers (Full Fine-tuning)
+[2026-06-28 15:03:34] Phase 2 done. Best val_loss: 1.041533  (best epoch: 50)
+[2026-06-28 15:03:44]   Trial 1: fold1 AUC = 0.9436  params={'dropout_rate': 0.11742508365045984, 'l2_reg': 0.07072114131472233, 'dense_units_1': 512, 'dense_units_2': 32, 'batch_size': 32, 'optimizer': 'adam', 'phase1_lr': 0.00040596116104843044, 'phase2_lr': 1.901024531987036e-06}
+[2026-06-28 15:03:45] 
+================================================================================
+PHASE 1: Frozen Backbone — ConvNeXt-Tiny_HyperparameterSearch_trial2_fold1
+================================================================================
+[2026-06-28 15:03:45] Augmentation: rotation ±10°
+[2026-06-28 15:05:14] Phase 1 done. Best val_loss: 0.622217  (best epoch: 50)
+[2026-06-28 15:05:14] 
+================================================================================
+PHASE 2: Fine-tuning — ConvNeXt-Tiny_HyperparameterSearch_trial2_fold1
+================================================================================
+[2026-06-28 15:05:14] Unfroze all 133 backbone layers (Full Fine-tuning)
+[2026-06-28 15:07:17] Phase 2 done. Best val_loss: 0.623849  (best epoch: 18)
+[2026-06-28 15:07:28]   Trial 2: fold1 AUC = 0.9607  params={'dropout_rate': 0.3598528437324806, 'l2_reg': 0.014528246637516035, 'dense_units_1': 128, 'dense_units_2': 128, 'batch_size': 32, 'optimizer': 'adam', 'phase1_lr': 0.0011207606211860572, 'phase2_lr': 3.8396292998041664e-06}
+[2026-06-28 15:07:29] 
+================================================================================
+PHASE 1: Frozen Backbone — ConvNeXt-Tiny_HyperparameterSearch_trial3_fold1
+================================================================================
+[2026-06-28 15:07:29] Augmentation: rotation ±10°
+[2026-06-28 15:08:14] Phase 1 done. Best val_loss: 0.362795  (best epoch: 17)
+[2026-06-28 15:08:14] 
+================================================================================
+PHASE 2: Fine-tuning — ConvNeXt-Tiny_HyperparameterSearch_trial3_fold1
+================================================================================
+[2026-06-28 15:08:14] Unfroze all 133 backbone layers (Full Fine-tuning)
+[2026-06-28 15:11:57] Phase 2 done. Best val_loss: 0.300944  (best epoch: 39)
+[2026-06-28 15:12:09]   Trial 3: fold1 AUC = 0.9504  params={'dropout_rate': 0.2803345035229627, 'l2_reg': 1.1526449540315615e-05, 'dense_units_1': 512, 'dense_units_2': 64, 'batch_size': 32, 'optimizer': 'adam', 'phase1_lr': 0.0007309539835912906, 'phase2_lr': 5.404103854647327e-06}
+[2026-06-28 15:12:09] 
+================================================================================
+PHASE 1: Frozen Backbone — ConvNeXt-Tiny_HyperparameterSearch_trial4_fold1
+================================================================================
+[2026-06-28 15:12:09] Augmentation: rotation ±10°
+[2026-06-28 15:13:21] Phase 1 done. Best val_loss: 0.292991  (best epoch: 37)
+[2026-06-28 15:13:21] 
+================================================================================
+PHASE 2: Fine-tuning — ConvNeXt-Tiny_HyperparameterSearch_trial4_fold1
+================================================================================
+[2026-06-28 15:13:21] Unfroze all 133 backbone layers (Full Fine-tuning)
+[2026-06-28 15:14:40] Phase 2 done. Best val_loss: 0.288587  (best epoch: 8)
+[2026-06-28 15:14:51]   Trial 4: fold1 AUC = 0.9641  params={'dropout_rate': 0.3124217733388137, 'l2_reg': 8.111941985431925e-06, 'dense_units_1': 512, 'dense_units_2': 128, 'batch_size': 32, 'optimizer': 'adam', 'phase1_lr': 0.0003823475224675187, 'phase2_lr': 8.16845589476017e-06}
+[2026-06-28 15:14:52] 
+================================================================================
+PHASE 1: Frozen Backbone — ConvNeXt-Tiny_HyperparameterSearch_trial5_fold1
+================================================================================
+[2026-06-28 15:14:52] Augmentation: rotation ±10°
+[2026-06-28 15:15:56] Phase 1 done. Best val_loss: 0.296197  (best epoch: 31)
+[2026-06-28 15:15:56] 
+================================================================================
+PHASE 2: Fine-tuning — ConvNeXt-Tiny_HyperparameterSearch_trial5_fold1
+================================================================================
+[2026-06-28 15:15:56] Unfroze all 133 backbone layers (Full Fine-tuning)
+[2026-06-28 15:17:03] Phase 2 done. Best val_loss: 0.252311  (best epoch: 6)
+[2026-06-28 15:17:16]   Trial 5: fold1 AUC = 0.9590  params={'dropout_rate': 0.10617534828874074, 'l2_reg': 8.260808399079598e-06, 'dense_units_1': 128, 'dense_units_2': 128, 'batch_size': 32, 'optimizer': 'adam', 'phase1_lr': 0.0016738085788752133, 'phase2_lr': 3.71836418057321e-05}
+[2026-06-28 15:17:18] 
+================================================================================
+PHASE 1: Frozen Backbone — ConvNeXt-Tiny_HyperparameterSearch_trial6_fold1
+================================================================================
+[2026-06-28 15:17:18] Augmentation: rotation ±10°
+[2026-06-28 15:18:20] Phase 1 done. Best val_loss: 0.291619  (best epoch: 29)
+[2026-06-28 15:18:20] 
+================================================================================
+PHASE 2: Fine-tuning — ConvNeXt-Tiny_HyperparameterSearch_trial6_fold1
+================================================================================
+[2026-06-28 15:18:20] Unfroze all 133 backbone layers (Full Fine-tuning)
+[2026-06-28 15:20:01] Phase 2 done. Best val_loss: 0.258863  (best epoch: 13)
+[2026-06-28 15:20:14]   Trial 6: fold1 AUC = 0.9692  params={'dropout_rate': 0.3109072623764115, 'l2_reg': 7.45807549470458e-06, 'dense_units_1': 512, 'dense_units_2': 128, 'batch_size': 32, 'optimizer': 'adam', 'phase1_lr': 0.00040407823028422316, 'phase2_lr': 9.371949638516417e-06}
+[2026-06-28 15:20:16] 
+================================================================================
+PHASE 1: Frozen Backbone — ConvNeXt-Tiny_HyperparameterSearch_trial7_fold1
+================================================================================
+[2026-06-28 15:20:16] Augmentation: rotation ±10°
+[2026-06-28 15:21:10] Phase 1 done. Best val_loss: 0.315529  (best epoch: 24)
+[2026-06-28 15:21:11] 
+================================================================================
+PHASE 2: Fine-tuning — ConvNeXt-Tiny_HyperparameterSearch_trial7_fold1
+================================================================================
+[2026-06-28 15:21:11] Unfroze all 133 backbone layers (Full Fine-tuning)
+[2026-06-28 15:22:48] Phase 2 done. Best val_loss: 0.279820  (best epoch: 12)
+[2026-06-28 15:23:00]   Trial 7: fold1 AUC = 0.9607  params={'dropout_rate': 0.30921055636477557, 'l2_reg': 6.787798291150687e-06, 'dense_units_1': 512, 'dense_units_2': 128, 'batch_size': 32, 'optimizer': 'adam', 'phase1_lr': 0.00042989547339863265, 'phase2_lr': 1.0932381565435336e-05}
+[2026-06-28 15:23:02] 
+================================================================================
+PHASE 1: Frozen Backbone — ConvNeXt-Tiny_HyperparameterSearch_trial8_fold1
+================================================================================
+[2026-06-28 15:23:02] Augmentation: rotation ±10°
+[2026-06-28 15:23:56] Phase 1 done. Best val_loss: 0.359052  (best epoch: 23)
+[2026-06-28 15:23:57] 
+================================================================================
+PHASE 2: Fine-tuning — ConvNeXt-Tiny_HyperparameterSearch_trial8_fold1
+================================================================================
+[2026-06-28 15:23:57] Unfroze all 133 backbone layers (Full Fine-tuning)
+[2026-06-28 15:26:51] Phase 2 done. Best val_loss: 0.291205  (best epoch: 29)
+[2026-06-28 15:27:04]   Trial 8: fold1 AUC = 0.9675  params={'dropout_rate': 0.3140591363510117, 'l2_reg': 8.322670294844634e-06, 'dense_units_1': 512, 'dense_units_2': 128, 'batch_size': 32, 'optimizer': 'adam', 'phase1_lr': 0.0003659765161581366, 'phase2_lr': 7.794375067833024e-06}
+[2026-06-28 15:27:06] 
+================================================================================
+PHASE 1: Frozen Backbone — ConvNeXt-Tiny_HyperparameterSearch_trial9_fold1
+================================================================================
+[2026-06-28 15:27:06] Augmentation: rotation ±10°
+[2026-06-28 15:28:09] Phase 1 done. Best val_loss: 0.334094  (best epoch: 29)
+[2026-06-28 15:28:09] 
+================================================================================
+PHASE 2: Fine-tuning — ConvNeXt-Tiny_HyperparameterSearch_trial9_fold1
+================================================================================
+[2026-06-28 15:28:09] Unfroze all 133 backbone layers (Full Fine-tuning)
+[2026-06-28 15:31:12] Phase 2 done. Best val_loss: 0.289945  (best epoch: 31)
+[2026-06-28 15:31:25]   Trial 9: fold1 AUC = 0.9624  params={'dropout_rate': 0.3268291970902733, 'l2_reg': 9.05818932610564e-06, 'dense_units_1': 512, 'dense_units_2': 128, 'batch_size': 32, 'optimizer': 'adam', 'phase1_lr': 0.0002676270983141311, 'phase2_lr': 6.473175818927508e-06}
+[2026-06-28 15:31:27] 
+================================================================================
+PHASE 1: Frozen Backbone — ConvNeXt-Tiny_HyperparameterSearch_trial10_fold1
+================================================================================
+[2026-06-28 15:31:27] Augmentation: rotation ±10°
+[2026-06-28 15:32:25] Phase 1 done. Best val_loss: 0.342538  (best epoch: 26)
+[2026-06-28 15:32:26] 
+================================================================================
+PHASE 2: Fine-tuning — ConvNeXt-Tiny_HyperparameterSearch_trial10_fold1
+================================================================================
+[2026-06-28 15:32:26] Unfroze all 133 backbone layers (Full Fine-tuning)
+[2026-06-28 15:34:12] Phase 2 done. Best val_loss: 0.303028  (best epoch: 14)
+[2026-06-28 15:34:25]   Trial 10: fold1 AUC = 0.9538  params={'dropout_rate': 0.29357178160801295, 'l2_reg': 9.885552539139555e-06, 'dense_units_1': 512, 'dense_units_2': 128, 'batch_size': 32, 'optimizer': 'adam', 'phase1_lr': 0.0005607093440668157, 'phase2_lr': 6.495022112337864e-06}
+[2026-06-28 15:34:29] 
+================================================================================
+PHASE 1: Frozen Backbone — ConvNeXt-Tiny_HyperparameterSearch_trial11_fold1
+================================================================================
+[2026-06-28 15:34:29] Augmentation: rotation ±10°
+[2026-06-28 15:35:20] Phase 1 done. Best val_loss: 0.369626  (best epoch: 21)
+[2026-06-28 15:35:29] 
+================================================================================
+PHASE 2: Fine-tuning — ConvNeXt-Tiny_HyperparameterSearch_trial11_fold1
+================================================================================
+[2026-06-28 15:35:29] Unfroze all 133 backbone layers (Full Fine-tuning)

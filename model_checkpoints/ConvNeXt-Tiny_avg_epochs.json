@@ -1,23 +1,27 @@
 {
   "per_fold": {
-    "fold2": {
+    "fold1": {
       "phase1": 50,
-      "phase2": 44
+      "phase2": 15
+    },
+    "fold2": {
+      "phase1": 41,
+      "phase2": 15
     },
     "fold3": {
       "phase1": 50,
-      "phase2": 38
+      "phase2": 13
     },
     "fold4": {
       "phase1": 50,
-      "phase2": 50
+      "phase2": 14
     },
     "fold5": {
       "phase1": 50,
-      "phase2": 50
+      "phase2": 15
     }
   },
-  "avg_phase1": 50,
-  "avg_phase2": 46,
-  "n_folds_used": 4
+  "avg_phase1": 48,
+  "avg_phase2": 14,
+  "n_folds_used": 5
 }

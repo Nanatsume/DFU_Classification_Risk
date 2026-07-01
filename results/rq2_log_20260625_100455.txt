@@ -1,0 +1,25 @@
+[2026-06-25 10:04:55] === Log file: ./results/rq2_log_20260625_100455.txt ===
+[2026-06-25 10:04:55] Loaded INAOE: 334 images, shape=(334, 224, 224, 3), CT=90, DM=244
+[2026-06-25 10:04:55] Loading proposed model: ./model_checkpoints/ResNet50_final_retrain.keras
+[2026-06-25 10:04:56] Building CAM models ...
+[2026-06-25 10:04:57]   feat_model output : (None, 7, 7, 2048)
+[2026-06-25 10:04:57]   classifier input  : (None, 7, 7, 2048)
+[2026-06-25 10:05:02] Confident correct DM samples available: 0 → using 0
+[2026-06-25 10:05:02] Confident correct CT samples available: 18 → using 4
+[2026-06-25 10:05:02] 
+================================================================================
+[2026-06-25 10:05:02] RQ2: CAM VISUALISATIONS — ResNet50  (final retrained model)
+[2026-06-25 10:05:02] ================================================================================
+[2026-06-25 10:05:02] NOTE: Pointing-game evaluation deferred (no ground-truth bboxes yet)
+
+[2026-06-25 10:05:04]   Saved: ./results/rq2_gradcam/sample01_CT.png
+[2026-06-25 10:05:05]   Saved: ./results/rq2_gradcam/sample02_CT.png
+[2026-06-25 10:05:07]   Saved: ./results/rq2_gradcam/sample03_CT.png
+[2026-06-25 10:05:08]   Saved: ./results/rq2_gradcam/sample04_CT.png
+[2026-06-25 10:05:08] 
+✓ 4 figures saved to ./results/rq2_gradcam/
+[2026-06-25 10:05:08] 
+⚠ Pointing game skipped — annotations.json not found
+[2026-06-25 10:05:08]    Expected at: /home/ntphoto/DFU/INAOE_Preprocessed/annotations.json
+[2026-06-25 10:05:08]    See the TODO comment near the top of this file for the required format.
+[2026-06-25 10:05:08] ✓ Results → ./results/rq2_results.json

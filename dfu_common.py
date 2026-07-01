@@ -25,8 +25,7 @@ from tensorflow.keras.optimizers import Adam, RMSprop, SGD
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 from tensorflow.keras.applications import efficientnet, resnet50, convnext
 
-import optuna
-from optuna.samplers import TPESampler
+import GPyOpt
 
 warnings.filterwarnings('ignore')
 os.environ.setdefault('TF_CPP_MIN_LOG_LEVEL', '2')
@@ -45,10 +44,10 @@ CONFIG = {
     'checkpoint_dir':      './model_checkpoints',
     'results_dir':         './results',
     'img_size':            (224, 224),
-    'batch_size_default':  32,
+    'batch_size_default':  64,
     'max_epochs':          50,
     'phase1_patience':     5,
-    'phase2_patience':     15,
+    'phase2_patience':     5,
     'n_folds':             5,
     'test_split':          0.2,
     'optuna_trials':       10,
@@ -174,7 +173,12 @@ class DFUModelTrainer:
     def build_model(self):
         self.base_model.trainable = False
         inputs = layers.Input(shape=(224, 224, 3))
-        x = self.base_model(inputs, training=False)
+        # Backbones expect [0,255]; scale from stored [0,1]
+        x = layers.Rescaling(255.0)(inputs)
+        # ResNet50 has no built-in preprocessing: apply caffe-style mean subtraction
+        if self.model_name == 'ResNet50':
+            x = layers.Lambda(lambda t: resnet50.preprocess_input(t))(x)
+        x = self.base_model(x, training=False)
         x = layers.GlobalAveragePooling2D()(x)
         x = layers.Dense(self.dense_units[0], activation='relu',
                          kernel_regularizer=keras.regularizers.l2(self.l2_reg))(x)
@@ -265,8 +269,7 @@ class DFUModelTrainer:
                      optimizer='adam', learning_rate=1e-4, max_epochs=100,
                      patience=15, verbose=1, fixed_epochs=None, save_checkpoint=True):
         n_layers = len(self.base_model.layers)
-        unfreeze_from = int(n_layers * 0.7)
-        for layer in self.base_model.layers[unfreeze_from:]:
+        for layer in self.base_model.layers:
             layer.trainable = True
 
         lr_schedule = ExponentialDecayScheduler(
@@ -286,7 +289,7 @@ class DFUModelTrainer:
             # Final retraining on full training set — no validation, no early stopping
             self.log(f"\n{'='*80}\nPHASE 2: Fine-tuning "
                      f"[{fixed_epochs} epochs, full set] — {self.model_name}\n{'='*80}")
-            self.log(f"Unfroze {n_layers - unfreeze_from} layers (from layer {unfreeze_from})")
+            self.log(f"Unfroze all {n_layers} backbone layers (Full Fine-tuning)")
             self.log(f"Augmentation: rotation ±{CONFIG['augmentation_rotation']}°")
             self.phase2_history = self.model.fit(
                 train_ds,
@@ -297,7 +300,7 @@ class DFUModelTrainer:
             self.log(f"Phase 2 done (fixed {fixed_epochs} epochs).")
         else:
             self.log(f"\n{'='*80}\nPHASE 2: Fine-tuning — {self.model_name}\n{'='*80}")
-            self.log(f"Unfroze {n_layers - unfreeze_from} layers (from layer {unfreeze_from})")
+            self.log(f"Unfroze all {n_layers} backbone layers (Full Fine-tuning)")
             val_ds = self._make_dataset(X_val, y_val, batch_size, augment=False)
             callbacks_p2 = [
                 EarlyStopping(monitor='val_loss', patience=patience,
@@ -330,36 +333,58 @@ class DFUModelTrainer:
         self.log(f"Model saved to {path}")
 
 
-# ── Optuna ───────────────────────────────────────────────
-class OptunaHyperparameterTuner:
-    def __init__(self, model_name, base_model_fn, n_trials=50, log=print):
-        self.model_name = model_name
+# ── GPyOpt ───────────────────────────────────────────────
+_DENSE1_CHOICES = [128, 256, 512]
+_DENSE2_CHOICES = [32, 64, 128]
+
+_GPYOPT_DOMAIN = [
+    {'name': 'dropout_rate',   'type': 'continuous', 'domain': (0.1, 0.4)},
+    {'name': 'l2_reg_log',     'type': 'continuous', 'domain': (np.log10(1e-6), np.log10(1e-1))},
+    {'name': 'dense_units_1',  'type': 'discrete',   'domain': (0, 1, 2)},
+    {'name': 'dense_units_2',  'type': 'discrete',   'domain': (0, 1, 2)},
+    {'name': 'phase1_lr_log',  'type': 'continuous', 'domain': (np.log10(1e-4), np.log10(1e-2))},
+    {'name': 'phase2_lr_log',  'type': 'continuous', 'domain': (np.log10(1e-6), np.log10(1e-4))},
+]
+
+
+def _decode_gpyopt_x(x):
+    """Convert GPyOpt flat array to named hyperparameter dict."""
+    return {
+        'dropout_rate':  float(x[0]),
+        'l2_reg':        float(10 ** x[1]),
+        'dense_units_1': _DENSE1_CHOICES[int(round(x[2]))],
+        'dense_units_2': _DENSE2_CHOICES[int(round(x[3]))],
+        'batch_size':    CONFIG['batch_size_default'],
+        'optimizer':     'adam',
+        'phase1_lr':     float(10 ** x[4]),
+        'phase2_lr':     float(10 ** x[5]),
+    }
+
+
+class GPyOptHyperparameterTuner:
+    def __init__(self, model_name, base_model_fn, n_trials=10, log=print):
+        self.model_name   = model_name
         self.base_model_fn = base_model_fn
-        self.n_trials = n_trials
-        self.log = log
-        self.best_params = None
-        self.best_value = 0
-        self.study = None
+        self.n_trials     = n_trials
+        self.log          = log
+        self.best_params  = None
+        self.best_value   = 0.0
+        self._trial_num   = 0
 
-    def objective(self, trial, X_full, y_full, fold_indices):
-        params = {
-            'dropout_rate':  trial.suggest_float('dropout_rate', 0.2, 0.5),
-            'l2_reg':        trial.suggest_float('l2_reg', 1e-5, 1e-2, log=True),
-            'dense_units_1': trial.suggest_categorical('dense_units_1', [128, 256, 512]),
-            'dense_units_2': trial.suggest_categorical('dense_units_2', [64, 128, 256]),
-            'batch_size':    trial.suggest_categorical('batch_size', [16, 32]),
-            'optimizer':     trial.suggest_categorical('optimizer', ['adam']),
-            'phase1_lr':     trial.suggest_float('phase1_lr', 1e-4, 1e-2, log=True),
-            'phase2_lr':     trial.suggest_float('phase2_lr', 1e-6, 1e-4, log=True),
-        }
+    def _evaluate(self, X_gpyopt, X_full, y_full, fold_indices):
+        """Called by GPyOpt with a (1 × 6) array; returns (1 × 1) cost (negated AUC)."""
+        x      = X_gpyopt[0]
+        params = _decode_gpyopt_x(x)
+        self._trial_num += 1
+        trial_id = self._trial_num
+
+        fold   = fold_indices[0]
+        X_tr, y_tr = X_full[fold['train_idx']], y_full[fold['train_idx']]
+        X_v,  y_v  = X_full[fold['val_idx']],   y_full[fold['val_idx']]
         try:
-            fold = fold_indices[0]
-            X_tr, y_tr = X_full[fold['train_idx']], y_full[fold['train_idx']]
-            X_v,  y_v  = X_full[fold['val_idx']],   y_full[fold['val_idx']]
-
             base = self.base_model_fn()
             trainer = DFUModelTrainer(
-                model_name=f"{self.model_name}_trial{trial.number}_fold1",
+                model_name=f"{self.model_name}_trial{trial_id}_fold1",
                 base_model=base,
                 dropout_rate=params['dropout_rate'],
                 l2_reg=params['l2_reg'],
@@ -384,35 +409,36 @@ class OptunaHyperparameterTuner:
             fold_auc = float(roc_auc_score(y_v, trainer.get_predictions(X_v)))
             del trainer, base
             tf.keras.backend.clear_session(); gc.collect()
-
-            self.log(f"  Trial {trial.number}: fold1 AUC = {fold_auc:.4f}")
-            return fold_auc
+            self.log(f"  Trial {trial_id}: fold1 AUC = {fold_auc:.4f}  params={params}")
+            return np.array([[- fold_auc]])   # GPyOpt minimises
         except Exception as e:
-            self.log(f"Trial {trial.number} failed: {e}")
-            try:
-                del trainer
-            except Exception:
-                pass
-            try:
-                del base
-            except Exception:
-                pass
+            self.log(f"Trial {trial_id} failed: {e}")
+            try: del trainer
+            except Exception: pass
+            try: del base
+            except Exception: pass
             tf.keras.backend.clear_session(); gc.collect()
-            return 0.0
+            return np.array([[0.0]])
 
     def optimize(self, X_full, y_full, fold_indices):
-        self.log(f"\n{'='*80}\nOPTUNA: {self.model_name} ({self.n_trials} trials × fold1 only)\n{'='*80}")
-        self.study = optuna.create_study(direction='maximize', sampler=TPESampler(seed=SEED))
-        self.study.optimize(
-            lambda t: self.objective(t, X_full, y_full, fold_indices),
-            n_trials=self.n_trials, show_progress_bar=False,
+        self.log(f"\n{'='*80}\nGPyOpt: {self.model_name} ({self.n_trials} trials × fold1 only)\n{'='*80}")
+        bo = GPyOpt.methods.BayesianOptimization(
+            f=lambda x: self._evaluate(x, X_full, y_full, fold_indices),
+            domain=_GPYOPT_DOMAIN,
+            model_type='GP',
+            acquisition_type='EI',
+            exact_feval=False,
+            maximize=False,
+            verbosity=False,
+            initial_design_numdata=1,   # 1 random init + (n_trials-1) BO = n_trials total
         )
-        self.best_params = self.study.best_params
-        self.best_value = self.study.best_value
-        self.log(f"\n✓ Best mean CV AUC: {self.best_value:.6f}")
+        bo.run_optimization(max_iter=self.n_trials - 1)
+        best_x = bo.x_opt
+        self.best_params = _decode_gpyopt_x(best_x)
+        self.best_value  = float(-bo.fx_opt)
+        self.log(f"\n✓ Best fold1 AUC: {self.best_value:.6f}")
         self.log(f"Best hyperparameters: {self.best_params}")
-        tf.keras.backend.clear_session()
-        gc.collect()
+        tf.keras.backend.clear_session(); gc.collect()
         return self.best_params
 
 
@@ -475,7 +501,7 @@ def train_one_model(model_name: str, base_model_fn, log):
             best_params = json.load(f)
         log(f"✓ Loaded best_params — skipping Optuna")
     else:
-        tuner = OptunaHyperparameterTuner(
+        tuner = GPyOptHyperparameterTuner(
             model_name=f"{model_name}_HyperparameterSearch",
             base_model_fn=base_model_fn,
             n_trials=CONFIG['optuna_trials'],

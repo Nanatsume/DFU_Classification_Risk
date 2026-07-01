@@ -70,31 +70,36 @@ def build_cam_models(model):
     """Return (feat_model, classifier_model).
 
     feat_model      : input (224,224,3) → 4-D spatial feature maps
+                      includes all preprocessing layers (Rescaling, Lambda) + backbone
     classifier_model: spatial features  → scalar prediction
-
-    Rebuilds the computation graph by calling loaded layers on fresh tensors,
-    avoiding the tensor-ID mismatch that occurs when using base_layer.output
-    from the original loaded model's graph.
+                      includes only post-backbone layers (GAP, Dense, ...)
     """
     base_layer = get_base_layer(model)
 
-    # ── Feature extractor ──
-    inp      = tf.keras.Input(shape=(224, 224, 3))
-    conv_out = base_layer(inp, training=False)
-    feat_model = tf.keras.Model(inputs=inp, outputs=conv_out)
+    # Walk model.layers in execution order.
+    # Layers before the backbone (preprocessing) go into feat_model.
+    # Layers after the backbone (classification head) go into clf_model.
+    non_input = [l for l in model.layers
+                 if not isinstance(l, tf.keras.layers.InputLayer)]
+    backbone_idx = next(i for i, l in enumerate(non_input)
+                        if l.name == base_layer.name)
+    pre_layers  = non_input[:backbone_idx]   # Rescaling, Lambda, …
+    post_layers = non_input[backbone_idx+1:] # GAP, Dense, Dropout, …
 
-    # Get spatial shape via a dummy forward pass
-    dummy       = tf.zeros((1, 224, 224, 3))
-    spatial_out = feat_model(dummy)
-    spatial_shape = tuple(spatial_out.shape[1:])   # (H, W, C)
+    # ── Feature extractor: preprocessing + backbone ──
+    inp = tf.keras.Input(shape=(224, 224, 3))
+    x = inp
+    for layer in pre_layers:
+        x = layer(x)
+    x = base_layer(x, training=False)
+    feat_model = tf.keras.Model(inputs=inp, outputs=x)
 
-    # ── Classifier (remaining layers after base model) ──
+    # ── Classifier: post-backbone head only ──
+    dummy         = tf.zeros((1, 224, 224, 3))
+    spatial_shape = tuple(feat_model(dummy).shape[1:])  # (H, W, C)
     feat_inp = tf.keras.Input(shape=spatial_shape)
     x = feat_inp
-    remaining = [l for l in model.layers
-                 if not isinstance(l, tf.keras.layers.InputLayer)
-                 and l.name != base_layer.name]
-    for layer in remaining:
+    for layer in post_layers:
         x = layer(x)
     classifier_model = tf.keras.Model(inputs=feat_inp, outputs=x)
 
@@ -293,13 +298,21 @@ def main():
     X_test = images[test_indices]
     y_test = labels[test_indices]
 
-    rng    = np.random.default_rng(SEED)
-    dm_idx = rng.choice(np.where(y_test == 1)[0],
-                        size=min(N_SAMPLES_PER_CLASS, int(np.sum(y_test == 1))),
-                        replace=False)
-    ct_idx = rng.choice(np.where(y_test == 0)[0],
-                        size=min(N_SAMPLES_PER_CLASS, int(np.sum(y_test == 0))),
-                        replace=False)
+    # Run inference on all test samples to pick confident correct predictions
+    all_probs = clf_model(feat_model(X_test.astype(np.float32), training=False),
+                          training=False).numpy()[:, 0]
+
+    rng = np.random.default_rng(SEED)
+    # DM: correct (pred=1) and confident (p >= 0.7), sorted by confidence desc
+    dm_pool = np.where((y_test == 1) & (all_probs >= 0.7))[0]
+    dm_pool = dm_pool[np.argsort(all_probs[dm_pool])[::-1]]
+    dm_idx  = dm_pool[:N_SAMPLES_PER_CLASS]
+    # CT: correct (pred=0) and confident (p <= 0.3), sorted by confidence asc
+    ct_pool = np.where((y_test == 0) & (all_probs <= 0.3))[0]
+    ct_pool = ct_pool[np.argsort(all_probs[ct_pool])]
+    ct_idx  = ct_pool[:N_SAMPLES_PER_CLASS]
+    log(f"Confident correct DM samples available: {len(dm_pool)} → using {len(dm_idx)}")
+    log(f"Confident correct CT samples available: {len(ct_pool)} → using {len(ct_idx)}")
     sample_idx    = np.concatenate([dm_idx, ct_idx])
     sample_labels = y_test[sample_idx]
     sample_images = X_test[sample_idx]

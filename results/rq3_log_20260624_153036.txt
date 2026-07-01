@@ -1,0 +1,2 @@
+[2026-06-24 15:30:36] === Log file: ./results/rq3_log_20260624_153036.txt ===
+[2026-06-24 15:30:36] ❌ rq1_results.json not found. Run RQ1 script first.

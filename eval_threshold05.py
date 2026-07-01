@@ -1,5 +1,5 @@
 """
-Quick comparison: both models at threshold = 0.5 vs Youden threshold
+Quick comparison: both models at threshold = 0.5 vs stored threshold
 """
 import numpy as np
 import json
@@ -26,26 +26,26 @@ _, test_idx = create_fold_splits(X, y, n_splits=CONFIG['n_folds'], test_split=CO
 y_true = y[test_idx]
 
 # Load probabilities
-cnn_probs  = np.load(f"{RESULTS_DIR}/final_eval_probs.npy")
-bpnn_probs = np.load(f"{RESULTS_DIR}/rq3_test_probs.npy")
+cnn_probs = np.load(f"{RESULTS_DIR}/final_eval_probs.npy")
+ada_probs = np.load(f"{RESULTS_DIR}/rq3_test_probs.npy")
 
-# Youden thresholds
+# Stored thresholds
 with open(f"{RESULTS_DIR}/rq3_results.json") as f:
     rq3 = json.load(f)
-cnn_youden  = rq3["cnn_threshold"]
-bpnn_youden = rq3["mean_youden_threshold"]
+cnn_thr = rq3["cnn_threshold"]
+ada_thr = rq3["adaboost_threshold"]
 
-# Compute metrics
-cnn_05   = compute_metrics(y_true, cnn_probs,  THR)
-bpnn_05  = compute_metrics(y_true, bpnn_probs, THR)
-cnn_ydn  = compute_metrics(y_true, cnn_probs,  cnn_youden)
-bpnn_ydn = compute_metrics(y_true, bpnn_probs, bpnn_youden)
+# Compute metrics at both threshold=0.5 and stored threshold
+cnn_05  = compute_metrics(y_true, cnn_probs, THR)
+ada_05  = compute_metrics(y_true, ada_probs, THR)
+cnn_thr_m = compute_metrics(y_true, cnn_probs, cnn_thr)
+ada_thr_m = compute_metrics(y_true, ada_probs, ada_thr)
 
 metrics = ["Sensitivity", "Specificity", "AUC", "PPV", "NPV", "F1"]
-header  = f"{'Metric':<14} {'CNN (0.5)':>10} {'CNN (Youden)':>14} {'BPNN (0.5)':>12} {'BPNN (Youden)':>14}"
+header  = f"{'Metric':<14} {'CNN (0.5)':>10} {'CNN (thr)':>12} {'AdaBoost (0.5)':>16} {'AdaBoost (thr)':>16}"
 print(header)
 print("-" * len(header))
 for m in metrics:
-    print(f"{m:<14} {cnn_05[m]:>10.4f} {cnn_ydn[m]:>14.4f} {bpnn_05[m]:>12.4f} {bpnn_ydn[m]:>14.4f}")
+    print(f"{m:<14} {cnn_05[m]:>10.4f} {cnn_thr_m[m]:>12.4f} {ada_05[m]:>16.4f} {ada_thr_m[m]:>16.4f}")
 
-print(f"\nThresholds used — CNN Youden: {cnn_youden:.4f} | BPNN Youden: {bpnn_youden:.4f}")
+print(f"\nThresholds used — CNN: {cnn_thr:.4f} | AdaBoost: {ada_thr:.4f}")

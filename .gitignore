@@ -11,6 +11,7 @@
 INAOE_Preprocessed/
 Model/INAOE Dataset/
 Model/Dataset/IMG/
+ThermoDataBase/
 
 # Model checkpoints (large binary files — 241–250 MB each)
 model_checkpoints/*.keras
