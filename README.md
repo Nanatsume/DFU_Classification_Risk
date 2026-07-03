@@ -100,9 +100,22 @@ McNemar's tests whether models make different errors on the same individual samp
 
 ## Baseline Model (RQ3)
 
-AdaBoost with top-10 thermal features selected from Khandakar et al. (2021):
+AdaBoost classifier with handcrafted features. The feature set differs between the preliminary and target studies.
+
+**Preliminary (INAOE proxy):** Khandakar et al. (2021) top-10 thermal features, extracted from raw pixel temperature maps and angiosome CSV files of the INAOE dataset — the same dataset and features on which Khandakar et al. originally demonstrated strong AdaBoost performance.
 - Features: Age, Gender, TCI, HighestTemp, NTR class fractions (5), zone statistics (Mean, Median, SD, ET, ETD, HSE) for 5 angiosome zones
-- Pipeline: Correlation filter (>95%) → SMOTE → RF importance ranking → top-10 → AdaBoost (decision stump, balanced class weight)
+
+**Target (Podoscope dataset):** Our own 43 handcrafted features extracted from plantar pressure footprint images, grouped into four categories.
+
+| Feature Group | Features | Count |
+|---|---|---|
+| GLCM | Contrast, Correlation, Energy, Homogeneity × 4 orientations (0°, 45°, 90°, 135°) | 16 |
+| LBP | Statistical moments from LBP histograms | 8 |
+| HOG | Statistical distribution of HOG descriptors | 8 |
+| Geometric | Foot arch indices and regional pressure areas | 11 |
+| **Total** | | **43** |
+
+**Pipeline (both datasets):** Correlation filter (>95%) → SMOTE → ensemble importance ranking (XGBoost + RF + ExtraTree) → top subset → AdaBoost (decision stump, balanced class weight)
 
 ---
 
