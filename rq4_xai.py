@@ -1,13 +1,13 @@
-"""RQ2: Grad-CAM, Grad-CAM++, and Eigen-CAM visualisations on the proposed model.
+"""RQ4: Grad-CAM, Grad-CAM++, and Eigen-CAM visualisations on the S2_best model.
 
 Applies all three methods to sample images from the test set and saves
-side-by-side heatmap overlays to results/rq2_gradcam/.
-Saves summary to results/rq2_results.json.
+side-by-side heatmap overlays to results/rq4_xai/.
+Saves summary to results/rq4_results.json.
 
 NOTE: Pointing-game evaluation against ground-truth bounding boxes is deferred
 until annotations are available.
 
-Run after rq3_final_evaluation.py.
+Run after rq2_final_eval.py.
 """
 
 import os
@@ -25,15 +25,20 @@ from dfu_common import (
 N_SAMPLES_PER_CLASS = 4
 POINTING_GAME_TAU   = 15   # spatial offset (pixels) applied to GT bbox on all sides
 
+DATA_SOURCE = {
+    'S1': '/home/ntphoto/DFU/INAOE_S1',
+    'S2': '/home/ntphoto/DFU/INAOE_S2',
+}
+
 # ── Pointing-game annotation path ────────────────────────────────────────────
 # TODO (POINTING GAME — when annotations arrive):
 #
-# 1. Create this JSON file:
-#      ANNOTATIONS_PATH = CONFIG['data_source'] + '/annotations.json'
+# 1. Create this JSON file inside the input-strategy data directory, e.g.:
+#      <DATA_SOURCE[input_strategy]>/annotations.json
 #    Format:
 #      [
 #        {
-#          "filename": "DM/image001.npy",   ← relative to CONFIG['data_source']
+#          "filename": "DM/image001.npy",   ← relative to the data directory
 #          "orig_w":   640,                 ← original image width  BEFORE 224×224 resize
 #          "orig_h":   480,                 ← original image height BEFORE 224×224 resize
 #          "bbox":     [x1, y1, x2, y2]    ← bounding box in ORIGINAL pixel coordinates
@@ -53,7 +58,6 @@ POINTING_GAME_TAU   = 15   # spatial offset (pixels) applied to GT bbox on all s
 #    - Change τ by editing POINTING_GAME_TAU at the top of this file
 #
 # 4. Result: hit rate per CAM method saved to results/rq2_results.json
-ANNOTATIONS_PATH = os.path.join(CONFIG['data_source'], 'annotations.json')
 
 
 # ── Model helpers ─────────────────────────────────────────────────────────────
@@ -265,17 +269,27 @@ def overlay(img, cam, alpha=0.45):
 # ── Main ──────────────────────────────────────────────────────────────────────
 
 def main():
-    log = make_logger('rq2')
+    log = make_logger('rq4')
 
-    rq3_path = os.path.join(CONFIG['results_dir'], 'final_eval_results.json')
-    if not os.path.exists(rq3_path):
-        log("❌ final_eval_results.json not found. Run final_evaluation.py first.")
+    rq2_path = os.path.join(CONFIG['results_dir'], 'rq2_results.json')
+    if not os.path.exists(rq2_path):
+        log("❌ rq2_results.json not found. Run rq2_final_eval.py first.")
         return
-    with open(rq3_path) as f:
-        rq3 = json.load(f)
-    best_model = rq3['best_model']
+    with open(rq2_path) as f:
+        rq2_data = json.load(f)
 
-    images, labels = load_preprocessed_inaoe(CONFIG['data_source'], log=log)
+    s2 = rq2_data.get('S2_best')
+    if s2 is None:
+        log("❌ S2_best not found in rq2_results.json.")
+        return
+
+    combo_id       = s2['combo_id']
+    backbone       = s2['backbone']
+    input_strategy = 'S2'
+    data_path      = DATA_SOURCE[input_strategy]
+    annotations_path = os.path.join(data_path, 'annotations.json')
+
+    images, labels = load_preprocessed_inaoe(data_path, log=log)
     _, test_indices = create_fold_splits(
         images, labels,
         n_splits=CONFIG['n_folds'],
@@ -283,7 +297,7 @@ def main():
         random_state=SEED,
     )
 
-    ckpt = os.path.join(CONFIG['checkpoint_dir'], f"{best_model}_final_retrain.keras")
+    ckpt = os.path.join(CONFIG['checkpoint_dir'], f"{combo_id}_final_retrain.keras")
     if not os.path.exists(ckpt):
         log(f"❌ {ckpt} not found.")
         return
@@ -317,11 +331,11 @@ def main():
     sample_labels = y_test[sample_idx]
     sample_images = X_test[sample_idx]
 
-    out_dir = os.path.join(CONFIG['results_dir'], 'rq2_gradcam')
+    out_dir = os.path.join(CONFIG['results_dir'], 'rq4_xai')
     os.makedirs(out_dir, exist_ok=True)
 
     log(f"\n{'='*80}")
-    log(f"RQ2: CAM VISUALISATIONS — {best_model}  (final retrained model)")
+    log(f"RQ4: XAI VISUALISATIONS (S2_best) — {combo_id}")
     log(f"{'='*80}")
     log("NOTE: Pointing-game evaluation deferred (no ground-truth bboxes yet)\n")
 
@@ -337,7 +351,7 @@ def main():
 
         fig, axes = plt.subplots(1, 4, figsize=(18, 4.5))
         fig.suptitle(
-            f"{best_model} (proposed) — Sample {i+1} ({class_name}, p={proba:.3f})",
+            f"{combo_id} (proposed) — Sample {i+1} ({class_name}, p={proba:.3f})",
             fontsize=12,
         )
         panels = [('Original', img), ('Grad-CAM', overlay(img, gc)),
@@ -356,25 +370,26 @@ def main():
     log(f"\n✓ {len(sample_images)} figures saved to {out_dir}/")
 
     # ── Pointing game (runs only when annotations.json is present) ────────────
-    rq2_result = {'best_model': best_model, 'model': 'final_retrain'}
+    rq4_result = {'combo_id': combo_id, 'backbone': backbone,
+                  'input_strategy': input_strategy, 'model': 'S2_best_final_retrain'}
 
-    if os.path.exists(ANNOTATIONS_PATH):
-        log(f"\nLoading annotations: {ANNOTATIONS_PATH}")
-        with open(ANNOTATIONS_PATH) as f:
+    if os.path.exists(annotations_path):
+        log(f"\nLoading annotations: {annotations_path}")
+        with open(annotations_path) as f:
             annotations = json.load(f)
-        image_names = get_image_names(CONFIG['data_source'])
+        image_names = get_image_names(data_path)
         scores = run_pointing_game(
             feat_model, clf_model, images, image_names, test_indices, annotations, log
         )
-        rq2_result['pointing_game'] = {'tau': POINTING_GAME_TAU, 'scores': scores}
+        rq4_result['pointing_game'] = {'tau': POINTING_GAME_TAU, 'scores': scores}
     else:
         log(f"\n⚠ Pointing game skipped — annotations.json not found")
-        log(f"   Expected at: {ANNOTATIONS_PATH}")
+        log(f"   Expected at: {annotations_path}")
         log(f"   See the TODO comment near the top of this file for the required format.")
 
-    out = os.path.join(CONFIG['results_dir'], 'rq2_results.json')
+    out = os.path.join(CONFIG['results_dir'], 'rq4_results.json')
     with open(out, 'w') as f:
-        json.dump(rq2_result, f, indent=2)
+        json.dump(rq4_result, f, indent=2)
     log(f"✓ Results → {out}")
 
 

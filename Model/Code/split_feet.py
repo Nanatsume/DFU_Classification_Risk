@@ -36,7 +36,7 @@ def pad_to_square(img_array: np.ndarray) -> np.ndarray:
                     mode='constant', constant_values=0)
     return padded
 
-def process_and_split(image_path: str, output_dir: str | None = None):
+def process_and_split(image_path: str, output_dir: str | None = None, flip_left: bool = False):
     """
     Load image, extract left and right footprint, crop tight, and pad to square.
     """
@@ -119,6 +119,9 @@ def process_and_split(image_path: str, output_dir: str | None = None):
     extracted_feet.sort(key=lambda item: item['center_x'])
     foot_left_img  = extracted_feet[0]['square_img']
     foot_right_img = extracted_feet[1]['square_img']
+
+    if flip_left:
+        foot_left_img = foot_left_img[:, ::-1, :]
     
     # --- [เพิ่มเพื่อทำสไลด์] วาดกรอบสี่เหลี่ยมโชว์ Tight Crop & L/R Sorting ---
     demo_img = img_pil.copy()
@@ -163,12 +166,14 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Split left and right foot and pad to square.")
     parser.add_argument("-i", "--input", type=str, required=True, 
                         help="Path to the segmented image (e.g. _foot_black_bg.png)")
-    parser.add_argument("-o", "--output_dir", type=str, default=None, 
+    parser.add_argument("-o", "--output_dir", type=str, default=None,
                         help="Directory to save the L/R square images (optional)")
+    parser.add_argument("--flip_left", action="store_true",
+                        help="Horizontally flip the left foot to match right foot orientation (S2 strategy)")
 
     args = parser.parse_args()
-    
+
     if not os.path.exists(args.input):
         print(f"Error: Input file not found: {args.input}")
     else:
-        process_and_split(image_path=args.input, output_dir=args.output_dir)
+        process_and_split(image_path=args.input, output_dir=args.output_dir, flip_left=args.flip_left)

@@ -40,7 +40,7 @@ for gpu in tf.config.list_physical_devices('GPU'):
     tf.config.experimental.set_memory_growth(gpu, True)
 
 CONFIG = {
-    'data_source':         '/home/ntphoto/DFU/INAOE_Preprocessed',
+    'data_source':         '/home/ntphoto/DFU/INAOE_S1',
     'checkpoint_dir':      './model_checkpoints',
     'results_dir':         './results',
     'img_size':            (224, 224),
@@ -50,7 +50,7 @@ CONFIG = {
     'phase2_patience':     5,
     'n_folds':             5,
     'test_split':          0.2,
-    'optuna_trials':       10,
+    'n_bo_trials':         10,
     'phase2_lr_decay':        0.95,
     'phase2_decay_steps':     100,
     'augmentation_rotation':  10,   # degrees — applied to training set only
@@ -139,16 +139,18 @@ class ExponentialDecayScheduler(tf.keras.optimizers.schedules.LearningRateSchedu
 
 class DFUModelTrainer:
     def __init__(self, model_name, base_model, dropout_rate=0.5, l2_reg=1e-5,
-                 dense_units=(256, 64), log=print):
-        self.model_name = model_name
-        self.base_model = base_model
+                 dense_units=(256, 64), log=print, backbone_name=None):
+        self.model_name   = model_name
+        self.base_model   = base_model
         self.dropout_rate = dropout_rate
-        self.l2_reg = l2_reg
-        self.dense_units = dense_units
-        self.log = log
-        self.model = None
+        self.l2_reg       = l2_reg
+        self.dense_units  = dense_units
+        self.log          = log
+        self.backbone_name = backbone_name or model_name.split('_')[0]
+        self.model        = None
         self.phase1_history = None
         self.phase2_history = None
+        self._epoch_used   = {'phase1': None, 'phase2': None}
 
     @property
     def phase1_best_epoch(self):
@@ -332,6 +334,350 @@ class DFUModelTrainer:
         self.model.save(path)
         self.log(f"Model saved to {path}")
 
+    def get_epochs(self) -> dict:
+        """Return stopping epoch counts for the most recent train_with_strategy() call."""
+        p1 = self._epoch_used.get('phase1')
+        if p1 is None and self.phase1_history is not None:
+            p1 = len(self.phase1_history.history.get('val_loss', []))
+        p2 = self._epoch_used.get('phase2')
+        if p2 is None and self.phase2_history is not None:
+            p2 = len(self.phase2_history.history.get('val_loss', []))
+        return {'phase1': p1, 'phase2': p2}
+
+    def retrain_fixed(self, strategy: str, X_tr, y_tr, params: dict,
+                      epochs_p1: int, epochs_p2: int = 0, verbose: int = 1):
+        """Retrain on full training set for exactly epochs_p1 (and epochs_p2 for LP-FT).
+        No validation data, no early stopping — for final model training after CV."""
+        batch_size = params.get('batch_size', CONFIG['batch_size_default'])
+        cw = self._class_weights(y_tr)
+        train_ds = self._make_dataset(X_tr, y_tr, batch_size, augment=True)
+
+        if strategy == 'LP-FT':
+            self.train_phase1(X_tr, y_tr, batch_size=batch_size, optimizer=params['optimizer'],
+                              learning_rate=params['phase1_lr'], fixed_epochs=epochs_p1,
+                              verbose=verbose)
+            self.train_phase2(X_tr, y_tr, batch_size=batch_size, optimizer=params['optimizer'],
+                              learning_rate=params['phase2_lr'], fixed_epochs=epochs_p2,
+                              verbose=verbose)
+            return
+
+        if strategy == 'FT':
+            for layer in self.base_model.layers:
+                layer.trainable = True
+            lr = params['lr']
+        elif strategy == 'LP':
+            lr = params['lr']
+        elif strategy in ('G-LF', 'G-FL'):
+            self._retrain_gradual_fixed(X_tr, y_tr, params, epochs_p1, verbose,
+                                        reverse=(strategy == 'G-LF'))
+            return
+        elif strategy in ('L1-SP', 'L2-SP'):
+            self._retrain_sp_fixed(X_tr, y_tr, params, epochs_p1, verbose,
+                                   sp_type='l1' if strategy == 'L1-SP' else 'l2')
+            return
+        elif strategy == 'Auto-RGN':
+            self._retrain_auto_rgn_fixed(X_tr, y_tr, params, epochs_p1, verbose)
+            return
+        else:
+            raise ValueError(f'Unknown strategy for retrain_fixed: {strategy}')
+
+        self.model.compile(
+            optimizer=self._make_optimizer(params['optimizer'], lr),
+            loss='binary_crossentropy',
+            metrics=['accuracy', tf.keras.metrics.AUC(name='auc')], jit_compile=False,
+        )
+        self.phase1_history = self.model.fit(
+            train_ds, epochs=epochs_p1, class_weight=cw, verbose=verbose,
+        )
+
+    def _retrain_gradual_fixed(self, X_tr, y_tr, params, total_epochs, verbose, reverse):
+        name = 'G-LF' if reverse else 'G-FL'
+        self.log(f"\n{'='*80}\n{name} FIXED RETRAIN — {self.model_name}\n{'='*80}")
+        blocks  = get_backbone_blocks(self.backbone_name, self.base_model)
+        ordered = blocks[::-1] if reverse else blocks
+        epochs_per_block = max(1, total_epochs // len(ordered))
+        for layer in self.base_model.layers:
+            layer.trainable = False
+        train_ds = self._make_dataset(X_tr, y_tr, params['batch_size'], augment=True)
+        cw = self._class_weights(y_tr)
+        used = 0
+        for bi, block in enumerate(ordered):
+            for layer in block:
+                layer.trainable = True
+            n = min(epochs_per_block, total_epochs - used)
+            if n <= 0:
+                break
+            self.model.compile(
+                optimizer=self._make_optimizer(params['optimizer'], params['lr']),
+                loss='binary_crossentropy',
+                metrics=['accuracy', tf.keras.metrics.AUC(name='auc')], jit_compile=False,
+            )
+            self.log(f"  Block {bi+1}/{len(ordered)}: {n} epochs (fixed)")
+            h = self.model.fit(train_ds, epochs=n, class_weight=cw, verbose=verbose)
+            used += n
+            self.phase1_history = h
+            if used >= total_epochs:
+                break
+        self.log(f"  {name} fixed retrain done. Total epochs: {used}")
+
+    def _retrain_sp_fixed(self, X_tr, y_tr, params, total_epochs, verbose, sp_type):
+        name = 'L1-SP' if sp_type == 'l1' else 'L2-SP'
+        self.log(f"\n{'='*80}\n{name} FIXED RETRAIN — {self.model_name}\n{'='*80}")
+        for layer in self.base_model.layers:
+            layer.trainable = True
+        backbone_vars = [v for l in self.base_model.layers for v in l.trainable_weights]
+        pretrained    = [tf.constant(v.numpy()) for v in backbone_vars]
+        bb_ids        = {id(v) for v in backbone_vars}
+        head_vars     = [v for v in self.model.trainable_weights if id(v) not in bb_ids]
+        all_vars      = backbone_vars + head_vars
+        alpha, beta   = params['alpha'], params['beta']
+        opt           = tf.keras.optimizers.Adam(learning_rate=params['lr'])
+        bce           = tf.keras.losses.BinaryCrossentropy()
+        cw            = self._class_weights(y_tr)
+        cw_t          = tf.constant([cw[0], cw[1]], dtype=tf.float32)
+        train_ds = self._make_dataset(X_tr, y_tr, params['batch_size'], augment=True)
+        for epoch in range(total_epochs):
+            for xb, yb in train_ds:
+                with tf.GradientTape() as tape:
+                    p  = self.model(xb, training=True)
+                    sw = tf.gather(cw_t, tf.cast(yb, tf.int32))
+                    ce = bce(yb[:, tf.newaxis], p, sample_weight=sw)
+                    if sp_type == 'l1':
+                        sp = tf.add_n([tf.reduce_sum(tf.abs(v - v0)) for v, v0 in zip(backbone_vars, pretrained)])
+                        hp = tf.add_n([tf.reduce_sum(tf.abs(v)) for v in head_vars]) if head_vars else 0.0
+                    else:
+                        sp = tf.add_n([tf.reduce_sum(tf.square(v - v0)) for v, v0 in zip(backbone_vars, pretrained)])
+                        hp = tf.add_n([tf.reduce_sum(tf.square(v)) for v in head_vars]) if head_vars else 0.0
+                    loss = ce + alpha * sp + beta * hp
+                opt.apply_gradients(zip(tape.gradient(loss, all_vars), all_vars))
+            if verbose and (epoch + 1) % 5 == 0:
+                self.log(f"  Epoch {epoch+1}/{total_epochs}")
+        self.log(f"  {name} fixed retrain done.")
+
+    def _retrain_auto_rgn_fixed(self, X_tr, y_tr, params, total_epochs, verbose):
+        self.log(f"\n{'='*80}\nAuto-RGN FIXED RETRAIN — {self.model_name}\n{'='*80}")
+        for layer in self.base_model.layers:
+            layer.trainable = True
+        all_vars  = self.model.trainable_weights
+        base_lr   = params['lr']
+        bce       = tf.keras.losses.BinaryCrossentropy()
+        cw        = self._class_weights(y_tr)
+        cw_t      = tf.constant([cw[0], cw[1]], dtype=tf.float32)
+        train_ds  = self._make_dataset(X_tr, y_tr, params['batch_size'], augment=True)
+        for epoch in range(total_epochs):
+            for xb, yb in train_ds:
+                with tf.GradientTape() as tape:
+                    p  = self.model(xb, training=True)
+                    sw = tf.gather(cw_t, tf.cast(yb, tf.int32))
+                    loss = bce(yb[:, tf.newaxis], p, sample_weight=sw)
+                grads = tape.gradient(loss, all_vars)
+                rgns  = [tf.norm(g) / (tf.norm(v) + 1e-8) if g is not None else tf.constant(0.0)
+                         for g, v in zip(grads, all_vars)]
+                mean_rgn = tf.reduce_mean(tf.stack(rgns)) + 1e-8
+                for g, v, r in zip(grads, all_vars, rgns):
+                    if g is not None:
+                        v.assign_sub(base_lr * (r / mean_rgn) * g)
+            if verbose and (epoch + 1) % 5 == 0:
+                self.log(f"  Epoch {epoch+1}/{total_epochs}")
+        self.log(f"  Auto-RGN fixed retrain done.")
+
+    # ── Strategy dispatcher ───────────────────────────────
+    def train_with_strategy(self, strategy: str, X_tr, y_tr, X_val, y_val,
+                             params: dict, max_epochs=50, patience=5, verbose=1):
+        self._epoch_used = {'phase1': None, 'phase2': None}
+        if strategy == 'LP-FT':
+            self.train_phase1(X_tr, y_tr, X_val, y_val,
+                              batch_size=params['batch_size'], optimizer=params['optimizer'],
+                              learning_rate=params['phase1_lr'], max_epochs=max_epochs,
+                              patience=patience, verbose=verbose)
+            self.train_phase2(X_tr, y_tr, X_val, y_val,
+                              batch_size=params['batch_size'], optimizer=params['optimizer'],
+                              learning_rate=params['phase2_lr'], max_epochs=max_epochs,
+                              patience=patience * 3, verbose=verbose)
+        elif strategy == 'FT':
+            self._train_ft(X_tr, y_tr, X_val, y_val, params, max_epochs, patience, verbose)
+        elif strategy == 'LP':
+            self._train_lp(X_tr, y_tr, X_val, y_val, params, max_epochs, patience, verbose)
+        elif strategy == 'G-LF':
+            self._train_gradual(X_tr, y_tr, X_val, y_val, params, max_epochs, patience, verbose, reverse=True)
+        elif strategy == 'G-FL':
+            self._train_gradual(X_tr, y_tr, X_val, y_val, params, max_epochs, patience, verbose, reverse=False)
+        elif strategy in ('L1-SP', 'L2-SP'):
+            self._train_sp(X_tr, y_tr, X_val, y_val, params, max_epochs, patience, verbose,
+                           sp_type='l1' if strategy == 'L1-SP' else 'l2')
+        elif strategy == 'Auto-RGN':
+            self._train_auto_rgn(X_tr, y_tr, X_val, y_val, params, max_epochs, patience, verbose)
+        else:
+            raise ValueError(f'Unknown strategy: {strategy}')
+
+    def _train_ft(self, X_tr, y_tr, X_val, y_val, params, max_epochs, patience, verbose):
+        for layer in self.base_model.layers:
+            layer.trainable = True
+        self.model.compile(
+            optimizer=self._make_optimizer(params['optimizer'], params['lr']),
+            loss='binary_crossentropy',
+            metrics=['accuracy', tf.keras.metrics.AUC(name='auc')], jit_compile=False,
+        )
+        train_ds = self._make_dataset(X_tr, y_tr, params['batch_size'], augment=True)
+        val_ds   = self._make_dataset(X_val, y_val, params['batch_size'], augment=False)
+        cb = [EarlyStopping(monitor='val_loss', patience=patience, restore_best_weights=True, verbose=1)]
+        self.log(f"\n{'='*80}\nFULL FINE-TUNING (FT) — {self.model_name}\n{'='*80}")
+        self.phase1_history = self.model.fit(
+            train_ds, validation_data=val_ds, epochs=max_epochs,
+            class_weight=self._class_weights(y_tr), callbacks=cb, verbose=verbose,
+        )
+
+    def _train_lp(self, X_tr, y_tr, X_val, y_val, params, max_epochs, patience, verbose):
+        self.model.compile(
+            optimizer=self._make_optimizer(params['optimizer'], params['lr']),
+            loss='binary_crossentropy',
+            metrics=['accuracy', tf.keras.metrics.AUC(name='auc')], jit_compile=False,
+        )
+        train_ds = self._make_dataset(X_tr, y_tr, params['batch_size'], augment=True)
+        val_ds   = self._make_dataset(X_val, y_val, params['batch_size'], augment=False)
+        cb = [EarlyStopping(monitor='val_loss', patience=patience, restore_best_weights=True, verbose=1)]
+        self.log(f"\n{'='*80}\nLINEAR PROBING (LP) — {self.model_name}\n{'='*80}")
+        self.phase1_history = self.model.fit(
+            train_ds, validation_data=val_ds, epochs=max_epochs,
+            class_weight=self._class_weights(y_tr), callbacks=cb, verbose=verbose,
+        )
+
+    def _train_gradual(self, X_tr, y_tr, X_val, y_val, params, max_epochs, patience, verbose, reverse: bool):
+        name = 'G-LF' if reverse else 'G-FL'
+        self.log(f"\n{'='*80}\n{name} — {self.model_name}\n{'='*80}")
+        blocks  = get_backbone_blocks(self.backbone_name, self.base_model)
+        ordered = blocks[::-1] if reverse else blocks
+        epochs_per_block = max(1, max_epochs // len(ordered))
+        for layer in self.base_model.layers:
+            layer.trainable = False
+        train_ds = self._make_dataset(X_tr, y_tr, params['batch_size'], augment=True)
+        val_ds   = self._make_dataset(X_val, y_val, params['batch_size'], augment=False)
+        cw = self._class_weights(y_tr)
+        used = 0
+        for bi, block in enumerate(ordered):
+            for layer in block:
+                layer.trainable = True
+            n = min(epochs_per_block, max_epochs - used)
+            if n <= 0:
+                break
+            self.model.compile(
+                optimizer=self._make_optimizer(params['optimizer'], params['lr']),
+                loss='binary_crossentropy',
+                metrics=['accuracy', tf.keras.metrics.AUC(name='auc')], jit_compile=False,
+            )
+            cb = [EarlyStopping(monitor='val_loss', patience=patience, restore_best_weights=True, verbose=0)]
+            self.log(f"  Block {bi+1}/{len(ordered)}: unfreezing {len(block)} layers, budget {n} epochs")
+            h = self.model.fit(train_ds, validation_data=val_ds, epochs=n,
+                               class_weight=cw, callbacks=cb, verbose=verbose)
+            used += len(h.history['val_loss'])
+            self.phase1_history = h
+            if used >= max_epochs:
+                break
+        self.log(f"  {name} done. Total epochs used: {used}")
+        self._epoch_used['phase1'] = used
+
+    def _sp_custom_loop(self, X_tr, y_tr, X_val, y_val, params, max_epochs, patience, verbose, sp_type):
+        for layer in self.base_model.layers:
+            layer.trainable = True
+        backbone_vars  = [v for l in self.base_model.layers for v in l.trainable_weights]
+        pretrained     = [tf.constant(v.numpy()) for v in backbone_vars]
+        bb_ids         = {id(v) for v in backbone_vars}
+        head_vars      = [v for v in self.model.trainable_weights if id(v) not in bb_ids]
+        all_vars       = backbone_vars + head_vars
+        alpha, beta    = params['alpha'], params['beta']
+        opt            = tf.keras.optimizers.Adam(learning_rate=params['lr'])
+        bce            = tf.keras.losses.BinaryCrossentropy()
+        cw             = self._class_weights(y_tr)
+        cw_t           = tf.constant([cw[0], cw[1]], dtype=tf.float32)
+        train_ds = self._make_dataset(X_tr, y_tr, params['batch_size'], augment=True)
+        val_ds   = self._make_dataset(X_val, y_val, params['batch_size'], augment=False)
+        best_loss, patience_cnt, best_w = float('inf'), 0, None
+        for epoch in range(max_epochs):
+            for xb, yb in train_ds:
+                with tf.GradientTape() as tape:
+                    p  = self.model(xb, training=True)
+                    sw = tf.gather(cw_t, tf.cast(yb, tf.int32))
+                    ce = bce(yb[:, tf.newaxis], p, sample_weight=sw)
+                    if sp_type == 'l1':
+                        sp = tf.add_n([tf.reduce_sum(tf.abs(v - v0)) for v, v0 in zip(backbone_vars, pretrained)])
+                        hp = tf.add_n([tf.reduce_sum(tf.abs(v)) for v in head_vars]) if head_vars else 0.0
+                    else:
+                        sp = tf.add_n([tf.reduce_sum(tf.square(v - v0)) for v, v0 in zip(backbone_vars, pretrained)])
+                        hp = tf.add_n([tf.reduce_sum(tf.square(v)) for v in head_vars]) if head_vars else 0.0
+                    loss = ce + alpha * sp + beta * hp
+                opt.apply_gradients(zip(tape.gradient(loss, all_vars), all_vars))
+            vl = float(np.mean([
+                float(bce(yb[:, tf.newaxis], self.model(xb, training=False),
+                          sample_weight=tf.gather(cw_t, tf.cast(yb, tf.int32))))
+                for xb, yb in val_ds
+            ]))
+            if verbose and (epoch + 1) % 5 == 0:
+                self.log(f"  Epoch {epoch+1}/{max_epochs}  val_loss={vl:.4f}")
+            if vl < best_loss:
+                best_loss, patience_cnt = vl, 0
+                best_w = [v.numpy() for v in self.model.weights]
+            else:
+                patience_cnt += 1
+                if patience_cnt >= patience:
+                    self.log(f"  Early stopping at epoch {epoch+1}")
+                    break
+        if best_w:
+            for var, val in zip(self.model.weights, best_w):
+                var.assign(val)
+        self._epoch_used['phase1'] = epoch + 1
+        self.log(f"  Best val_loss: {best_loss:.6f}")
+
+    def _train_sp(self, X_tr, y_tr, X_val, y_val, params, max_epochs, patience, verbose, sp_type):
+        name = 'L1-SP' if sp_type == 'l1' else 'L2-SP'
+        self.log(f"\n{'='*80}\n{name} — {self.model_name}\n{'='*80}")
+        self._sp_custom_loop(X_tr, y_tr, X_val, y_val, params, max_epochs, patience, verbose, sp_type)
+
+    def _train_auto_rgn(self, X_tr, y_tr, X_val, y_val, params, max_epochs, patience, verbose):
+        self.log(f"\n{'='*80}\nAuto-RGN — {self.model_name}\n{'='*80}")
+        for layer in self.base_model.layers:
+            layer.trainable = True
+        all_vars  = self.model.trainable_weights
+        base_lr   = params['lr']
+        bce       = tf.keras.losses.BinaryCrossentropy()
+        cw        = self._class_weights(y_tr)
+        cw_t      = tf.constant([cw[0], cw[1]], dtype=tf.float32)
+        train_ds  = self._make_dataset(X_tr, y_tr, params['batch_size'], augment=True)
+        val_ds    = self._make_dataset(X_val, y_val, params['batch_size'], augment=False)
+        best_loss, patience_cnt, best_w = float('inf'), 0, None
+        for epoch in range(max_epochs):
+            for xb, yb in train_ds:
+                with tf.GradientTape() as tape:
+                    p  = self.model(xb, training=True)
+                    sw = tf.gather(cw_t, tf.cast(yb, tf.int32))
+                    loss = bce(yb[:, tf.newaxis], p, sample_weight=sw)
+                grads = tape.gradient(loss, all_vars)
+                rgns  = [tf.norm(g) / (tf.norm(v) + 1e-8) if g is not None else tf.constant(0.0)
+                         for g, v in zip(grads, all_vars)]
+                mean_rgn = tf.reduce_mean(tf.stack(rgns)) + 1e-8
+                for g, v, r in zip(grads, all_vars, rgns):
+                    if g is not None:
+                        v.assign_sub(base_lr * (r / mean_rgn) * g)
+            vl = float(np.mean([
+                float(bce(yb[:, tf.newaxis], self.model(xb, training=False),
+                          sample_weight=tf.gather(cw_t, tf.cast(yb, tf.int32))))
+                for xb, yb in val_ds
+            ]))
+            if verbose and (epoch + 1) % 5 == 0:
+                self.log(f"  Epoch {epoch+1}/{max_epochs}  val_loss={vl:.4f}")
+            if vl < best_loss:
+                best_loss, patience_cnt = vl, 0
+                best_w = [v.numpy() for v in self.model.weights]
+            else:
+                patience_cnt += 1
+                if patience_cnt >= patience:
+                    self.log(f"  Early stopping at epoch {epoch+1}")
+                    break
+        if best_w:
+            for var, val in zip(self.model.weights, best_w):
+                var.assign(val)
+        self._epoch_used['phase1'] = epoch + 1
+        self.log(f"  Best val_loss: {best_loss:.6f}")
+
 
 # ── GPyOpt ───────────────────────────────────────────────
 _DENSE1_CHOICES = [128, 256, 512]
@@ -504,7 +850,7 @@ def train_one_model(model_name: str, base_model_fn, log):
         tuner = GPyOptHyperparameterTuner(
             model_name=f"{model_name}_HyperparameterSearch",
             base_model_fn=base_model_fn,
-            n_trials=CONFIG['optuna_trials'],
+            n_trials=CONFIG['n_bo_trials'],
             log=log,
         )
         best_params = tuner.optimize(X_full, y_full, fold_indices)
@@ -621,3 +967,165 @@ def train_one_model(model_name: str, base_model_fn, log):
         log(f"  Fold {i+1}:  AUC={a:.4f}  Sens={s:.4f}  Spec={sp:.4f}")
     log(f"  Mean :  AUC={np.mean(aucs):.4f}  Sens={np.mean(sens_l):.4f}  Spec={np.mean(spec_l):.4f}")
     log(f"\n{'#'*80}\n# {model_name} TRAINING COMPLETE\n{'#'*80}\n")
+
+
+# ── 8 Fine-Tuning Strategy support ───────────────────────────────────────────
+
+ALL_STRATEGIES = ['FT', 'LP', 'G-LF', 'G-FL', 'LP-FT', 'L1-SP', 'L2-SP', 'Auto-RGN']
+
+_BACKBONE_BLOCKS = {
+    'EfficientNetB0': [
+        ['stem_'],
+        ['block1'], ['block2'], ['block3'], ['block4'],
+        ['block5'], ['block6'], ['block7'],
+        ['top_'],
+    ],
+    'ResNet50': [
+        ['conv1_', 'bn_conv1', 'conv1_pad'],
+        ['conv2_'], ['conv3_'], ['conv4_'], ['conv5_'],
+    ],
+    'ConvNeXt-Tiny': [
+        ['convnext_tiny_stem'],
+        ['convnext_tiny_downsampling_block_0', 'convnext_tiny_stage_0'],
+        ['convnext_tiny_downsampling_block_1', 'convnext_tiny_stage_1'],
+        ['convnext_tiny_downsampling_block_2', 'convnext_tiny_stage_2'],
+        ['convnext_tiny_downsampling_block_3', 'convnext_tiny_stage_3'],
+    ],
+}
+
+
+def get_backbone_blocks(backbone_name: str, base_model) -> list:
+    """Return ordered list of layer groups [stem→output] for gradual unfreezing."""
+    prefixes_list = _BACKBONE_BLOCKS.get(backbone_name, [])
+    blocks = []
+    for prefixes in prefixes_list:
+        block = [l for l in base_model.layers if any(l.name.startswith(p) for p in prefixes)]
+        if block:
+            blocks.append(block)
+    return blocks
+
+
+_DOM_SHARED = [
+    {'name': 'dropout_rate',  'type': 'continuous', 'domain': (0.1, 0.4)},
+    {'name': 'l2_reg_log',   'type': 'continuous', 'domain': (-6.0, -1.0)},
+    {'name': 'dense_units_1', 'type': 'discrete',   'domain': (0, 1, 2)},
+    {'name': 'dense_units_2', 'type': 'discrete',   'domain': (0, 1, 2)},
+]
+
+STRATEGY_DOMAINS = {
+    'FT':       _DOM_SHARED + [{'name': 'lr_log', 'type': 'continuous', 'domain': (-6.0, -2.0)}],
+    'LP':       _DOM_SHARED + [{'name': 'lr_log', 'type': 'continuous', 'domain': (-6.0, -2.0)}],
+    'G-LF':     _DOM_SHARED + [{'name': 'lr_log', 'type': 'continuous', 'domain': (-6.0, -2.0)}],
+    'G-FL':     _DOM_SHARED + [{'name': 'lr_log', 'type': 'continuous', 'domain': (-6.0, -2.0)}],
+    'Auto-RGN': _DOM_SHARED + [{'name': 'lr_log', 'type': 'continuous', 'domain': (-6.0, -2.0)}],
+    'LP-FT':    _DOM_SHARED + [
+        {'name': 'phase1_lr_log', 'type': 'continuous', 'domain': (-4.0, -2.0)},
+        {'name': 'phase2_lr_log', 'type': 'continuous', 'domain': (-6.0, -4.0)},
+    ],
+    'L1-SP':    _DOM_SHARED + [
+        {'name': 'lr_log',    'type': 'continuous', 'domain': (-6.0, -2.0)},
+        {'name': 'alpha_log', 'type': 'continuous', 'domain': (-4.0, -1.0)},
+        {'name': 'beta_log',  'type': 'continuous', 'domain': (-4.0, -1.0)},
+    ],
+    'L2-SP':    _DOM_SHARED + [
+        {'name': 'lr_log',    'type': 'continuous', 'domain': (-6.0, -2.0)},
+        {'name': 'alpha_log', 'type': 'continuous', 'domain': (-4.0, -1.0)},
+        {'name': 'beta_log',  'type': 'continuous', 'domain': (-4.0, -1.0)},
+    ],
+}
+
+
+def decode_strategy_params(x, strategy: str) -> dict:
+    params = {
+        'dropout_rate':  float(x[0]),
+        'l2_reg':        float(10 ** x[1]),
+        'dense_units_1': _DENSE1_CHOICES[int(round(x[2]))],
+        'dense_units_2': _DENSE2_CHOICES[int(round(x[3]))],
+        'batch_size':    CONFIG['batch_size_default'],
+        'optimizer':     'adam',
+    }
+    if strategy in ('FT', 'LP', 'G-LF', 'G-FL', 'Auto-RGN'):
+        params['lr'] = float(10 ** x[4])
+    elif strategy == 'LP-FT':
+        params['phase1_lr'] = float(10 ** x[4])
+        params['phase2_lr'] = float(10 ** x[5])
+    elif strategy in ('L1-SP', 'L2-SP'):
+        params['lr']    = float(10 ** x[4])
+        params['alpha'] = float(10 ** x[5])
+        params['beta']  = float(10 ** x[6])
+    return params
+
+
+class StrategyTuner:
+    """GPyOpt Bayesian tuner that is aware of the fine-tuning strategy."""
+    def __init__(self, model_name, base_model_fn, strategy, backbone_name,
+                 n_trials=10, log=print):
+        self.model_name     = model_name
+        self.base_model_fn  = base_model_fn
+        self.strategy       = strategy
+        self.backbone_name  = backbone_name
+        self.n_trials       = n_trials
+        self.log            = log
+        self.best_params    = None
+        self.best_value     = 0.0
+        self._trial_num     = 0
+
+    def _evaluate(self, X_gpyopt, X_full, y_full, fold_indices):
+        x      = X_gpyopt[0]
+        params = decode_strategy_params(x, self.strategy)
+        self._trial_num += 1
+        tid    = self._trial_num
+        fold   = fold_indices[0]
+        X_tr, y_tr = X_full[fold['train_idx']], y_full[fold['train_idx']]
+        X_v,  y_v  = X_full[fold['val_idx']],   y_full[fold['val_idx']]
+        try:
+            base    = self.base_model_fn()
+            trainer = DFUModelTrainer(
+                model_name=f"{self.model_name}_trial{tid}_fold1",
+                base_model=base,
+                dropout_rate=params['dropout_rate'],
+                l2_reg=params['l2_reg'],
+                dense_units=(params['dense_units_1'], params['dense_units_2']),
+                log=self.log,
+                backbone_name=self.backbone_name,
+            )
+            trainer.build_model()
+            trainer.train_with_strategy(
+                self.strategy, X_tr, y_tr, X_v, y_v,
+                params=params,
+                max_epochs=CONFIG['max_epochs'],
+                patience=CONFIG['phase1_patience'],
+                verbose=0,
+            )
+            fold_auc = float(roc_auc_score(y_v, trainer.get_predictions(X_v)))
+            del trainer, base
+            tf.keras.backend.clear_session(); gc.collect()
+            self.log(f"  Trial {tid}: fold1 AUC={fold_auc:.4f}  params={params}")
+            return np.array([[-fold_auc]])
+        except Exception as e:
+            self.log(f"  Trial {tid} failed: {e}")
+            try: del trainer
+            except Exception: pass
+            try: del base
+            except Exception: pass
+            tf.keras.backend.clear_session(); gc.collect()
+            return np.array([[0.0]])
+
+    def optimize(self, X_full, y_full, fold_indices):
+        domain = STRATEGY_DOMAINS[self.strategy]
+        self.log(f"\n{'='*80}\nStrategyTuner: {self.model_name}/{self.strategy} "
+                 f"({self.n_trials} trials × fold1)\n{'='*80}")
+        bo = GPyOpt.methods.BayesianOptimization(
+            f=lambda x: self._evaluate(x, X_full, y_full, fold_indices),
+            domain=domain,
+            model_type='GP', acquisition_type='EI',
+            exact_feval=False, maximize=False,
+            verbosity=False, initial_design_numdata=1,
+        )
+        bo.run_optimization(max_iter=self.n_trials - 1)
+        self.best_params = decode_strategy_params(bo.x_opt, self.strategy)
+        self.best_value  = float(-bo.fx_opt)
+        self.log(f"\n✓ Best fold1 AUC: {self.best_value:.6f}")
+        self.log(f"Best params: {self.best_params}")
+        tf.keras.backend.clear_session(); gc.collect()
+        return self.best_params
