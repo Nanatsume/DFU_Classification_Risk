@@ -13,9 +13,20 @@ Model/INAOE Dataset/
 Model/Dataset/IMG/
 ThermoDataBase/
 
-# Model checkpoints (large binary files — 241–250 MB each)
-model_checkpoints/*.keras
-model_checkpoints/*.h5
+# Model checkpoints (large binary files)
+model_checkpoints/
+
+# RQ1 training outputs — keep metrics.json/best_params.json, ignore large binaries
+results/rq1/**/*.keras
+results/rq1/**/*.h5
+results/rq1/**/*.npz
+
+# Feature caches and numpy outputs
+*.npz
+*.npy
+
+# Training logs
+*.log
 
 # Conda/virtualenv
 activate
