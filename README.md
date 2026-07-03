@@ -14,6 +14,7 @@ Master's thesis proposal, Mahidol University ICT.
 | **RQ2** | Does flipping the left foot image to match right-foot orientation (S2) significantly outperform original orientation (S1)? |
 | **RQ3** | How does the best CNN model compare with a Traditional ML baseline (AdaBoost + Khandakar thermal features)? |
 | **RQ4** | How do Grad-CAM, Grad-CAM++, and Eigen-CAM compare in localizing pressure risk regions? |
+| **RQ5** | Can the best CNN model distinguish between all four IWGDF risk categories (0–3)? *(exploratory, podoscope dataset only)* |
 
 ---
 
@@ -23,13 +24,55 @@ Master's thesis proposal, Mahidol University ICT.
 334 images (224×224 px) from 167 patient pairs — 90 Control (CT), 244 Diabetic (DM).
 
 ### Target (Podoscope Plantar Pressure — to be collected)
-300 diabetic patients, Buddhachinaraj Hospital. Both feet assessed independently; patients with unilateral amputation contribute one foot image. No pre-specified IWGDF category quota — natural clinical distribution.
+300 diabetic patients, Buddhachinaraj Hospital, Phitsanulok, Thailand. ~10 eligible patients/day over ~30 working days.
+
+- Both feet assessed and labeled independently → fewer than 600 foot-level images (unilateral amputees contribute 1 foot)
+- No pre-specified IWGDF category quota — natural clinical distribution from outpatient diabetic care clinic
+- Recruitment begins only after IRB approval from Mahidol University and Buddhachinaraj Hospital EC
+
+**Inclusion criteria**
+- Type 2 Diabetes Mellitus diagnosis
+- Age ≥ 18 years
+- Able to stand independently on the podoscope platform (unilateral amputees who can bear weight on the remaining limb are included)
+- Cognitively alert and able to follow verbal instructions
+- Diabetes-related foot deformities (claw toes, hammer toes, prominent bony landmarks, Charcot foot) are explicitly included — these represent IWGDF category 2+ and are a key subgroup
+
+**Exclusion criteria**
+- Open wounds, active ulcers, or active infections on the plantar surface (prevents reliable contact image acquisition)
+- Bilateral lower-limb amputation (cannot stand on the platform)
+- Congenital foot deformities unrelated to diabetes (clubfoot, congenital pes planus)
+- Autoimmune or connective tissue diseases (SLE, vasculitis, uncontrolled rheumatoid arthritis) — independently affect lower-limb vasculature and confound IWGDF classification
+
+**Annotation**
+- Expert wound-care nurse conducts full clinical assessment (monofilament test, tuning fork, ABI, visual inspection) alongside image capture
+- Specialist doctor reviews findings, assigns IWGDF category (0–3), and marks ROI bounding boxes for XAI evaluation using VIA2
+- Binary label: Cat 0 = negative, Cat 1/2/3 = positive
+- Full 4-class label (0–3) also retained for RQ5
 
 **Splits** (Seed=42, stratified, patient-level):
 ```
-├── Test Set  (20%, held out)
+├── Test Set  (20%, held out — never used during training or tuning)
 └── Train+Val (80%, 5-fold CV)
 ```
+
+---
+
+## Key Design Decisions
+
+**Prediction unit: foot image level, not patient level.**
+Each foot is annotated independently (left and right feet can have different IWGDF risk categories). Image-level output also aligns with the clinical workflow — if one foot is flagged, the clinician can act immediately without waiting for the other foot.
+
+**Split unit: patient level.**
+Despite image-level prediction, the 80/20 train/test split and 5-fold CV are stratified at the *patient* level so that both feet of the same patient always stay in the same partition, preventing data leakage.
+
+**Binary labels: IWGDF Cat 0 = negative, Cat 1+2+3 = positive.**
+The goal is *risk screening*, not severity grading. Any identifiable risk warrants clinical follow-up, so categories 1–3 are collapsed into a single positive class. Full four-class IWGDF labels (0–3) are retained for RQ5.
+
+**Primary metrics: Sensitivity and Specificity — not Accuracy.**
+The INAOE dataset is imbalanced (CT:DM = 90:244). A majority-class predictor achieves >70% accuracy while providing no clinical value. Sensitivity captures missed at-risk patients; Specificity captures unnecessary referrals. Accuracy is reported for completeness only.
+
+**Statistical tests for RQ2 and RQ3: McNemar's + DeLong's.**
+McNemar's tests whether models make different errors on the same individual samples (decision level). DeLong's tests whether AUC-ROC values differ significantly (ranking level). Both are needed because a model can have similar binary decisions but meaningfully different discriminative ability.
 
 ---
 
@@ -142,3 +185,6 @@ RQ1 full 48-combo run currently in progress. Partial results (mean ± SD across 
 | Epoch policy | CV uses early stopping; final retrain uses mean stopped epoch across folds |
 | Results location | `results/rq1/<combo>/` — best_params, fold checkpoints, val_preds, metrics |
 | Khandakar cache | `model_checkpoints/khandakar_features_39.npz` (auto-generated on first RQ3 run) |
+| BO trials | 10 trials for all strategies |
+| G-LF/G-FL blocks | EfficientNetB0 uses 5 merged block groups (stem, block1+2, block3+4, block5+6, block7+top); ResNet50 and ConvNeXt-Tiny use 5 natural groups each |
+| WSL memory | Requires `C:\Users\<user>\.wslconfig` with `memory=12GB` and `swap=16GB` — G-LF/G-FL accumulate TF graph state and will trigger WSL kernel restart without this cap |

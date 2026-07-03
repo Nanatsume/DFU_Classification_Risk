@@ -199,15 +199,17 @@ class DFUModelTrainer:
 
     def _make_dataset(self, X, y, batch_size, augment=False):
         """tf.data pipeline; applies random rotation to training set only."""
-        ds = tf.data.Dataset.from_tensor_slices(
-            (tf.cast(X, tf.float32), tf.cast(y, tf.float32))
-        )
+        X_f32 = X if X.dtype == np.float32 else X.astype(np.float32)
+        y_f32 = y.astype(np.float32)
+        ds = tf.data.Dataset.from_tensor_slices((X_f32, y_f32))
         if augment:
-            factor = CONFIG['augmentation_rotation'] / 360.0
-            aug = tf.keras.Sequential([
-                tf.keras.layers.RandomRotation(
-                    factor=factor, fill_mode='nearest', seed=SEED)
-            ])
+            if not hasattr(self, '_aug'):
+                factor = CONFIG['augmentation_rotation'] / 360.0
+                self._aug = tf.keras.Sequential([
+                    tf.keras.layers.RandomRotation(
+                        factor=factor, fill_mode='nearest', seed=SEED)
+                ])
+            aug = self._aug
             ds = ds.map(
                 lambda x, lbl: (aug(x[tf.newaxis], training=True)[0], lbl),
                 num_parallel_calls=tf.data.AUTOTUNE,
@@ -571,6 +573,8 @@ class DFUModelTrainer:
                                class_weight=cw, callbacks=cb, verbose=verbose)
             used += len(h.history['val_loss'])
             self.phase1_history = h
+            del cb, h
+            gc.collect()
             if used >= max_epochs:
                 break
         self.log(f"  {name} done. Total epochs used: {used}")
@@ -976,9 +980,10 @@ ALL_STRATEGIES = ['FT', 'LP', 'G-LF', 'G-FL', 'LP-FT', 'L1-SP', 'L2-SP', 'Auto-R
 _BACKBONE_BLOCKS = {
     'EfficientNetB0': [
         ['stem_'],
-        ['block1'], ['block2'], ['block3'], ['block4'],
-        ['block5'], ['block6'], ['block7'],
-        ['top_'],
+        ['block1', 'block2'],
+        ['block3', 'block4'],
+        ['block5', 'block6'],
+        ['block7', 'top_'],
     ],
     'ResNet50': [
         ['conv1_', 'bn_conv1', 'conv1_pad'],

@@ -128,3 +128,29 @@ G-LF — EfficientNetB0_G-LF_S1_trial8_fold1
 [2026-07-03 21:13:53]   Block 8/9: unfreezing 10 layers, budget 5 epochs
 [2026-07-03 21:14:19]   Block 9/9: unfreezing 4 layers, budget 5 epochs
 [2026-07-03 21:14:45]   G-LF done. Total epochs used: 45
+[2026-07-03 21:15:07]   Trial 8: fold1 AUC=0.9214  params={'dropout_rate': 0.21989231197339892, 'l2_reg': 0.024077637470907673, 'dense_units_1': 512, 'dense_units_2': 64, 'batch_size': 64, 'optimizer': 'adam', 'lr': 0.00019371542796304446}
+[2026-07-03 21:15:09] 
+================================================================================
+G-LF — EfficientNetB0_G-LF_S1_trial9_fold1
+================================================================================
+[2026-07-03 21:15:10]   Block 1/9: unfreezing 3 layers, budget 5 epochs
+[2026-07-03 21:15:19]   Block 2/9: unfreezing 13 layers, budget 5 epochs
+[2026-07-03 21:15:28]   Block 3/9: unfreezing 59 layers, budget 5 epochs
+[2026-07-03 21:15:43]   Block 4/9: unfreezing 43 layers, budget 5 epochs
+[2026-07-03 21:15:59]   Block 5/9: unfreezing 44 layers, budget 5 epochs
+[2026-07-03 21:16:20]   Block 6/9: unfreezing 29 layers, budget 5 epochs
+[2026-07-03 21:16:43]   Block 7/9: unfreezing 29 layers, budget 5 epochs
+[2026-07-03 21:17:08]   Block 8/9: unfreezing 10 layers, budget 5 epochs
+[2026-07-03 21:17:34]   Block 9/9: unfreezing 4 layers, budget 5 epochs
+[2026-07-03 21:18:02]   G-LF done. Total epochs used: 45
+[2026-07-03 21:18:25]   Trial 9: fold1 AUC=0.9299  params={'dropout_rate': 0.1, 'l2_reg': 0.004883292868871912, 'dense_units_1': 512, 'dense_units_2': 64, 'batch_size': 64, 'optimizer': 'adam', 'lr': 0.00013841232256978954}
+[2026-07-03 21:18:28] 
+================================================================================
+G-LF — EfficientNetB0_G-LF_S1_trial10_fold1
+================================================================================
+[2026-07-03 21:18:28]   Block 1/9: unfreezing 3 layers, budget 5 epochs
+[2026-07-03 21:18:37]   Block 2/9: unfreezing 13 layers, budget 5 epochs
+[2026-07-03 21:18:46]   Block 3/9: unfreezing 59 layers, budget 5 epochs
+[2026-07-03 21:19:04]   Block 4/9: unfreezing 43 layers, budget 5 epochs
+[2026-07-03 21:19:19]   Block 5/9: unfreezing 44 layers, budget 5 epochs
+[2026-07-03 21:30:30]   Block 6/9: unfreezing 29 layers, budget 5 epochs
