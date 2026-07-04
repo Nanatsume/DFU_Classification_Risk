@@ -1,0 +1,9 @@
+{
+  "dropout_rate": 0.1,
+  "l2_reg": 0.0012678246058249667,
+  "dense_units_1": 512,
+  "dense_units_2": 32,
+  "batch_size": 64,
+  "optimizer": "adam",
+  "lr": 0.00010959671266786026
+}

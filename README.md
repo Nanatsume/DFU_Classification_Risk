@@ -125,6 +125,21 @@ Grad-CAM, Grad-CAM++, and Eigen-CAM applied to the final model. Evaluated via **
 
 ---
 
+## Multiclass Extension (RQ5)
+
+The best CNN backbone from RQ1 is adapted for four-class IWGDF risk category classification (Cat 0, 1, 2, 3) by replacing the binary output head with a softmax layer. All other components (backbone, GAP, Dense layers) remain unchanged.
+
+| Item | Detail |
+|------|--------|
+| Output head | Dense(4, softmax) — replaces Dense(1, sigmoid) |
+| Loss | Categorical cross-entropy |
+| Class weighting | Inverse class frequency per fold |
+| Evaluation | Per-class sensitivity (one-vs-rest), macro AUC-ROC, confusion matrix |
+| Significance tests | None — treated as exploratory |
+| Dataset | Podoscope dataset only — INAOE has no IWGDF subcategory labels |
+
+---
+
 ## File Structure
 
 ```
