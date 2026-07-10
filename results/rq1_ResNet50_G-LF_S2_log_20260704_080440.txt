@@ -83,3 +83,372 @@ G-LF — ResNet50_G-LF_S2_trial7_fold1
 [2026-07-04 08:19:11]   Block 2/5: unfreezing 62 layers, budget 10 epochs
 [2026-07-04 08:19:34]   Block 3/5: unfreezing 42 layers, budget 10 epochs
 [2026-07-04 08:20:05]   Block 4/5: unfreezing 32 layers, budget 10 epochs
+[2026-07-04 08:20:43]   Block 5/5: unfreezing 4 layers, budget 10 epochs
+[2026-07-04 08:21:10]   Trial 7 failed: Graph execution error:
+
+Detected at node functional_1/resnet50_1/conv5_block1_3_conv_1/convolution defined at (most recent call last):
+  File "/home/ntphoto/Project/rq1_run_combo.py", line 209, in <module>
+
+  File "/home/ntphoto/Project/rq1_run_combo.py", line 101, in main
+
+  File "/home/ntphoto/Project/dfu_common.py", line 1130, in optimize
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/GPyOpt/core/bo.py", line 151, in run_optimization
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/GPyOpt/core/bo.py", line 197, in evaluate_objective
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/GPyOpt/core/task/objective.py", line 50, in evaluate
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/GPyOpt/core/task/objective.py", line 74, in _eval_func
+
+  File "/home/ntphoto/Project/dfu_common.py", line 1124, in <lambda>
+
+  File "/home/ntphoto/Project/dfu_common.py", line 1098, in _evaluate
+
+  File "/home/ntphoto/Project/dfu_common.py", line 504, in train_with_strategy
+
+  File "/home/ntphoto/Project/dfu_common.py", line 572, in _train_gradual
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/utils/traceback_utils.py", line 117, in error_handler
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/backend/tensorflow/trainer.py", line 399, in fit
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/backend/tensorflow/trainer.py", line 241, in function
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/backend/tensorflow/trainer.py", line 154, in multi_step_on_iterator
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/backend/tensorflow/trainer.py", line 125, in wrapper
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/backend/tensorflow/trainer.py", line 134, in one_step_on_data
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/backend/tensorflow/trainer.py", line 59, in train_step
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/utils/traceback_utils.py", line 117, in error_handler
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/layers/layer.py", line 959, in __call__
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/utils/traceback_utils.py", line 117, in error_handler
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/ops/operation.py", line 59, in __call__
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/utils/traceback_utils.py", line 156, in error_handler
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/models/functional.py", line 183, in call
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/ops/function.py", line 206, in _run_through_graph
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/models/functional.py", line 647, in call
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/utils/traceback_utils.py", line 117, in error_handler
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/layers/layer.py", line 959, in __call__
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/utils/traceback_utils.py", line 117, in error_handler
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/ops/operation.py", line 59, in __call__
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/utils/traceback_utils.py", line 156, in error_handler
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/models/functional.py", line 183, in call
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/ops/function.py", line 206, in _run_through_graph
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/models/functional.py", line 647, in call
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/utils/traceback_utils.py", line 117, in error_handler
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/layers/layer.py", line 959, in __call__
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/utils/traceback_utils.py", line 117, in error_handler
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/ops/operation.py", line 59, in __call__
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/utils/traceback_utils.py", line 156, in error_handler
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/layers/convolutional/base_conv.py", line 250, in call
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/layers/convolutional/base_conv.py", line 240, in convolution_op
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/ops/nn.py", line 1518, in conv
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/backend/tensorflow/nn.py", line 837, in conv
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/backend/tensorflow/nn.py", line 796, in _conv
+
+OOM when allocating tensor with shape[2048,512,1,1] and type float on /job:localhost/replica:0/task:0/device:GPU:0 by allocator GPU_0_bfc
+	 [[{{node functional_1/resnet50_1/conv5_block1_3_conv_1/convolution}}]]
+Hint: If you want to see a list of allocated tensors when OOM happens, add report_tensor_allocations_upon_oom to RunOptions for current allocation info. This isn't available when running in Eager mode.
+ [Op:__inference_multi_step_on_iterator_1551129]
+[2026-07-04 08:21:19] 
+================================================================================
+G-LF — ResNet50_G-LF_S2_trial8_fold1
+================================================================================
+[2026-07-04 08:21:19]   Block 1/5: unfreezing 32 layers, budget 10 epochs
+[2026-07-04 08:21:37]   Block 2/5: unfreezing 62 layers, budget 10 epochs
+[2026-07-04 08:21:58]   Block 3/5: unfreezing 42 layers, budget 10 epochs
+[2026-07-04 08:22:23]   Block 4/5: unfreezing 32 layers, budget 10 epochs
+[2026-07-04 08:23:00]   Trial 8 failed: Graph execution error:
+
+Detected at node gradient_tape/functional_1/dense_1/MatMul/MatMul_1 defined at (most recent call last):
+  File "/home/ntphoto/Project/rq1_run_combo.py", line 209, in <module>
+
+  File "/home/ntphoto/Project/rq1_run_combo.py", line 101, in main
+
+  File "/home/ntphoto/Project/dfu_common.py", line 1130, in optimize
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/GPyOpt/core/bo.py", line 151, in run_optimization
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/GPyOpt/core/bo.py", line 197, in evaluate_objective
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/GPyOpt/core/task/objective.py", line 50, in evaluate
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/GPyOpt/core/task/objective.py", line 74, in _eval_func
+
+  File "/home/ntphoto/Project/dfu_common.py", line 1124, in <lambda>
+
+  File "/home/ntphoto/Project/dfu_common.py", line 1098, in _evaluate
+
+  File "/home/ntphoto/Project/dfu_common.py", line 504, in train_with_strategy
+
+  File "/home/ntphoto/Project/dfu_common.py", line 572, in _train_gradual
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/utils/traceback_utils.py", line 117, in error_handler
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/backend/tensorflow/trainer.py", line 399, in fit
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/backend/tensorflow/trainer.py", line 241, in function
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/backend/tensorflow/trainer.py", line 154, in multi_step_on_iterator
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/backend/tensorflow/trainer.py", line 125, in wrapper
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/backend/tensorflow/trainer.py", line 134, in one_step_on_data
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/backend/tensorflow/trainer.py", line 81, in train_step
+
+OOM when allocating tensor with shape[2048,256] and type float on /job:localhost/replica:0/task:0/device:GPU:0 by allocator GPU_0_bfc
+	 [[{{node gradient_tape/functional_1/dense_1/MatMul/MatMul_1}}]]
+Hint: If you want to see a list of allocated tensors when OOM happens, add report_tensor_allocations_upon_oom to RunOptions for current allocation info. This isn't available when running in Eager mode.
+ [Op:__inference_multi_step_on_iterator_1697342]
+[2026-07-04 08:23:11] 
+================================================================================
+G-LF — ResNet50_G-LF_S2_trial9_fold1
+================================================================================
+[2026-07-04 08:23:11]   Block 1/5: unfreezing 32 layers, budget 10 epochs
+[2026-07-04 08:23:29]   Block 2/5: unfreezing 62 layers, budget 10 epochs
+[2026-07-04 08:23:54]   Block 3/5: unfreezing 42 layers, budget 10 epochs
+[2026-07-04 08:24:27]   Block 4/5: unfreezing 32 layers, budget 10 epochs
+[2026-07-04 08:24:54]   Trial 9 failed: Graph execution error:
+
+Detected at node functional_1/resnet50_1/conv4_block3_1_conv_1/convolution defined at (most recent call last):
+  File "/home/ntphoto/Project/rq1_run_combo.py", line 209, in <module>
+
+  File "/home/ntphoto/Project/rq1_run_combo.py", line 101, in main
+
+  File "/home/ntphoto/Project/dfu_common.py", line 1130, in optimize
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/GPyOpt/core/bo.py", line 151, in run_optimization
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/GPyOpt/core/bo.py", line 197, in evaluate_objective
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/GPyOpt/core/task/objective.py", line 50, in evaluate
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/GPyOpt/core/task/objective.py", line 74, in _eval_func
+
+  File "/home/ntphoto/Project/dfu_common.py", line 1124, in <lambda>
+
+  File "/home/ntphoto/Project/dfu_common.py", line 1098, in _evaluate
+
+  File "/home/ntphoto/Project/dfu_common.py", line 504, in train_with_strategy
+
+  File "/home/ntphoto/Project/dfu_common.py", line 572, in _train_gradual
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/utils/traceback_utils.py", line 117, in error_handler
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/backend/tensorflow/trainer.py", line 399, in fit
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/backend/tensorflow/trainer.py", line 241, in function
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/backend/tensorflow/trainer.py", line 154, in multi_step_on_iterator
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/backend/tensorflow/trainer.py", line 125, in wrapper
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/backend/tensorflow/trainer.py", line 134, in one_step_on_data
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/backend/tensorflow/trainer.py", line 59, in train_step
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/utils/traceback_utils.py", line 117, in error_handler
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/layers/layer.py", line 959, in __call__
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/utils/traceback_utils.py", line 117, in error_handler
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/ops/operation.py", line 59, in __call__
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/utils/traceback_utils.py", line 156, in error_handler
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/models/functional.py", line 183, in call
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/ops/function.py", line 206, in _run_through_graph
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/models/functional.py", line 647, in call
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/utils/traceback_utils.py", line 117, in error_handler
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/layers/layer.py", line 959, in __call__
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/utils/traceback_utils.py", line 117, in error_handler
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/ops/operation.py", line 59, in __call__
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/utils/traceback_utils.py", line 156, in error_handler
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/models/functional.py", line 183, in call
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/ops/function.py", line 206, in _run_through_graph
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/models/functional.py", line 647, in call
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/utils/traceback_utils.py", line 117, in error_handler
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/layers/layer.py", line 959, in __call__
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/utils/traceback_utils.py", line 117, in error_handler
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/ops/operation.py", line 59, in __call__
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/utils/traceback_utils.py", line 156, in error_handler
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/layers/convolutional/base_conv.py", line 250, in call
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/layers/convolutional/base_conv.py", line 240, in convolution_op
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/ops/nn.py", line 1518, in conv
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/backend/tensorflow/nn.py", line 837, in conv
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/backend/tensorflow/nn.py", line 796, in _conv
+
+OOM when allocating tensor with shape[64,256,14,14] and type float on /job:localhost/replica:0/task:0/device:GPU:0 by allocator GPU_0_bfc
+	 [[{{node functional_1/resnet50_1/conv4_block3_1_conv_1/convolution}}]]
+Hint: If you want to see a list of allocated tensors when OOM happens, add report_tensor_allocations_upon_oom to RunOptions for current allocation info. This isn't available when running in Eager mode.
+ [Op:__inference_multi_step_on_iterator_1858955]
+[2026-07-04 08:25:03] 
+================================================================================
+G-LF — ResNet50_G-LF_S2_trial10_fold1
+================================================================================
+[2026-07-04 08:25:03]   Block 1/5: unfreezing 32 layers, budget 10 epochs
+[2026-07-04 08:25:23]   Block 2/5: unfreezing 62 layers, budget 10 epochs
+[2026-07-04 08:25:47]   Block 3/5: unfreezing 42 layers, budget 10 epochs
+[2026-07-04 08:26:19]   Block 4/5: unfreezing 32 layers, budget 10 epochs
+[2026-07-04 08:26:47]   Trial 10 failed: Graph execution error:
+
+Detected at node functional_1/resnet50_1/conv3_block4_3_conv_1/convolution defined at (most recent call last):
+  File "/home/ntphoto/Project/rq1_run_combo.py", line 209, in <module>
+
+  File "/home/ntphoto/Project/rq1_run_combo.py", line 101, in main
+
+  File "/home/ntphoto/Project/dfu_common.py", line 1130, in optimize
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/GPyOpt/core/bo.py", line 151, in run_optimization
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/GPyOpt/core/bo.py", line 197, in evaluate_objective
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/GPyOpt/core/task/objective.py", line 50, in evaluate
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/GPyOpt/core/task/objective.py", line 74, in _eval_func
+
+  File "/home/ntphoto/Project/dfu_common.py", line 1124, in <lambda>
+
+  File "/home/ntphoto/Project/dfu_common.py", line 1098, in _evaluate
+
+  File "/home/ntphoto/Project/dfu_common.py", line 504, in train_with_strategy
+
+  File "/home/ntphoto/Project/dfu_common.py", line 572, in _train_gradual
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/utils/traceback_utils.py", line 117, in error_handler
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/backend/tensorflow/trainer.py", line 399, in fit
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/backend/tensorflow/trainer.py", line 241, in function
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/backend/tensorflow/trainer.py", line 154, in multi_step_on_iterator
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/backend/tensorflow/trainer.py", line 125, in wrapper
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/backend/tensorflow/trainer.py", line 134, in one_step_on_data
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/backend/tensorflow/trainer.py", line 59, in train_step
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/utils/traceback_utils.py", line 117, in error_handler
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/layers/layer.py", line 959, in __call__
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/utils/traceback_utils.py", line 117, in error_handler
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/ops/operation.py", line 59, in __call__
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/utils/traceback_utils.py", line 156, in error_handler
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/models/functional.py", line 183, in call
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/ops/function.py", line 206, in _run_through_graph
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/models/functional.py", line 647, in call
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/utils/traceback_utils.py", line 117, in error_handler
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/layers/layer.py", line 959, in __call__
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/utils/traceback_utils.py", line 117, in error_handler
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/ops/operation.py", line 59, in __call__
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/utils/traceback_utils.py", line 156, in error_handler
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/models/functional.py", line 183, in call
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/ops/function.py", line 206, in _run_through_graph
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/models/functional.py", line 647, in call
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/utils/traceback_utils.py", line 117, in error_handler
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/layers/layer.py", line 959, in __call__
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/utils/traceback_utils.py", line 117, in error_handler
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/ops/operation.py", line 59, in __call__
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/utils/traceback_utils.py", line 156, in error_handler
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/layers/convolutional/base_conv.py", line 250, in call
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/layers/convolutional/base_conv.py", line 240, in convolution_op
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/ops/nn.py", line 1518, in conv
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/backend/tensorflow/nn.py", line 837, in conv
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/backend/tensorflow/nn.py", line 796, in _conv
+
+OOM when allocating tensor with shape[64,512,28,28] and type float on /job:localhost/replica:0/task:0/device:GPU:0 by allocator GPU_0_bfc
+	 [[{{node functional_1/resnet50_1/conv3_block4_3_conv_1/convolution}}]]
+Hint: If you want to see a list of allocated tensors when OOM happens, add report_tensor_allocations_upon_oom to RunOptions for current allocation info. This isn't available when running in Eager mode.
+ [Op:__inference_multi_step_on_iterator_2019920]
+[2026-07-04 08:26:58] 
+✓ Best fold1 AUC: 0.947009
+[2026-07-04 08:26:58] Best params: {'dropout_rate': 0.19853809721144697, 'l2_reg': 0.03656496123124827, 'dense_units_1': 512, 'dense_units_2': 128, 'batch_size': 64, 'optimizer': 'adam', 'lr': 9.920207215173075e-05}
+[2026-07-04 08:27:06] ✓ best_params → ./results/rq1/ResNet50_G-LF_S2/best_params.json
+[2026-07-04 08:27:06] 
+================================================================================
+FOLD 1/5: ResNet50_G-LF_S2
+================================================================================
+[2026-07-04 08:27:06] Train: 213  Val: 54
+[2026-07-04 08:27:07] 
+================================================================================
+G-LF — ResNet50_G-LF_S2_Fold1
+================================================================================
+[2026-07-04 08:27:07]   Block 1/5: unfreezing 32 layers, budget 10 epochs
+[2026-07-04 08:27:25]   Block 2/5: unfreezing 62 layers, budget 10 epochs
+[2026-07-04 08:27:51]   Block 3/5: unfreezing 42 layers, budget 10 epochs

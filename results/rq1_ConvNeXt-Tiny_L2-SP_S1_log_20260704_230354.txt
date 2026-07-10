@@ -1,0 +1,74 @@
+[2026-07-04 23:03:54] === Log file: ./results/rq1_ConvNeXt-Tiny_L2-SP_S1_log_20260704_230354.txt ===
+[2026-07-04 23:03:54] 
+################################################################################
+# COMBO: ConvNeXt-Tiny_L2-SP_S1
+################################################################################
+
+[2026-07-04 23:03:54] Loaded INAOE: 334 images, shape=(334, 224, 224, 3), CT=90, DM=244
+[2026-07-04 23:03:54] 
+================================================================================
+StrategyTuner: ConvNeXt-Tiny_L2-SP_S1/L2-SP (10 trials × fold1)
+================================================================================
+[2026-07-04 23:03:55] 
+================================================================================
+L2-SP — ConvNeXt-Tiny_L2-SP_S1_trial1_fold1
+================================================================================
+[2026-07-04 23:04:39]   Trial 1 failed: {{function_node __wrapped__BatchMatMulV2_device_/job:localhost/replica:0/task:0/device:GPU:0}} OOM when allocating tensor with shape[32,7,3072,768] and type float on /job:localhost/replica:0/task:0/device:GPU:0 by allocator GPU_0_bfc [Op:BatchMatMulV2] name: 
+[2026-07-04 23:04:40] 
+================================================================================
+L2-SP — ConvNeXt-Tiny_L2-SP_S1_trial2_fold1
+================================================================================
+[2026-07-04 23:05:05]   Trial 2 failed: {{function_node __wrapped__BatchMatMulV2_device_/job:localhost/replica:0/task:0/device:GPU:0}} OOM when allocating tensor with shape[32,7,3072,768] and type float on /job:localhost/replica:0/task:0/device:GPU:0 by allocator GPU_0_bfc [Op:BatchMatMulV2] name: 
+[2026-07-04 23:05:06] 
+================================================================================
+L2-SP — ConvNeXt-Tiny_L2-SP_S1_trial3_fold1
+================================================================================
+[2026-07-04 23:05:30]   Trial 3 failed: {{function_node __wrapped__BatchMatMulV2_device_/job:localhost/replica:0/task:0/device:GPU:0}} OOM when allocating tensor with shape[32,7,3072,768] and type float on /job:localhost/replica:0/task:0/device:GPU:0 by allocator GPU_0_bfc [Op:BatchMatMulV2] name: 
+[2026-07-04 23:05:31] 
+================================================================================
+L2-SP — ConvNeXt-Tiny_L2-SP_S1_trial4_fold1
+================================================================================
+[2026-07-04 23:05:49]   Trial 4 failed: {{function_node __wrapped__BatchMatMulV2_device_/job:localhost/replica:0/task:0/device:GPU:0}} OOM when allocating tensor with shape[32,7,3072,768] and type float on /job:localhost/replica:0/task:0/device:GPU:0 by allocator GPU_0_bfc [Op:BatchMatMulV2] name: 
+[2026-07-04 23:05:50] 
+================================================================================
+L2-SP — ConvNeXt-Tiny_L2-SP_S1_trial5_fold1
+================================================================================
+[2026-07-04 23:06:05]   Trial 5 failed: {{function_node __wrapped__BatchMatMulV2_device_/job:localhost/replica:0/task:0/device:GPU:0}} OOM when allocating tensor with shape[32,7,3072,768] and type float on /job:localhost/replica:0/task:0/device:GPU:0 by allocator GPU_0_bfc [Op:BatchMatMulV2] name: 
+[2026-07-04 23:06:05] 
+================================================================================
+L2-SP — ConvNeXt-Tiny_L2-SP_S1_trial6_fold1
+================================================================================
+[2026-07-04 23:06:23]   Trial 6 failed: {{function_node __wrapped__BatchMatMulV2_device_/job:localhost/replica:0/task:0/device:GPU:0}} OOM when allocating tensor with shape[32,7,3072,768] and type float on /job:localhost/replica:0/task:0/device:GPU:0 by allocator GPU_0_bfc [Op:BatchMatMulV2] name: 
+[2026-07-04 23:06:24] 
+================================================================================
+L2-SP — ConvNeXt-Tiny_L2-SP_S1_trial7_fold1
+================================================================================
+[2026-07-04 23:06:39]   Trial 7 failed: {{function_node __wrapped__BatchMatMulV2_device_/job:localhost/replica:0/task:0/device:GPU:0}} OOM when allocating tensor with shape[32,7,3072,768] and type float on /job:localhost/replica:0/task:0/device:GPU:0 by allocator GPU_0_bfc [Op:BatchMatMulV2] name: 
+[2026-07-04 23:06:40] 
+================================================================================
+L2-SP — ConvNeXt-Tiny_L2-SP_S1_trial8_fold1
+================================================================================
+[2026-07-04 23:06:54]   Trial 8 failed: {{function_node __wrapped__BatchMatMulV2_device_/job:localhost/replica:0/task:0/device:GPU:0}} OOM when allocating tensor with shape[32,7,3072,768] and type float on /job:localhost/replica:0/task:0/device:GPU:0 by allocator GPU_0_bfc [Op:BatchMatMulV2] name: 
+[2026-07-04 23:06:55] 
+================================================================================
+L2-SP — ConvNeXt-Tiny_L2-SP_S1_trial9_fold1
+================================================================================
+[2026-07-04 23:07:10]   Trial 9 failed: {{function_node __wrapped__BatchMatMulV2_device_/job:localhost/replica:0/task:0/device:GPU:0}} OOM when allocating tensor with shape[32,7,3072,768] and type float on /job:localhost/replica:0/task:0/device:GPU:0 by allocator GPU_0_bfc [Op:BatchMatMulV2] name: 
+[2026-07-04 23:07:11] 
+================================================================================
+L2-SP — ConvNeXt-Tiny_L2-SP_S1_trial10_fold1
+================================================================================
+[2026-07-04 23:07:26]   Trial 10 failed: {{function_node __wrapped__BatchMatMulV2_device_/job:localhost/replica:0/task:0/device:GPU:0}} OOM when allocating tensor with shape[32,7,3072,768] and type float on /job:localhost/replica:0/task:0/device:GPU:0 by allocator GPU_0_bfc [Op:BatchMatMulV2] name: 
+[2026-07-04 23:07:26] 
+✓ Best fold1 AUC: -0.000000
+[2026-07-04 23:07:26] Best params: {'dropout_rate': 0.15503043695984914, 'l2_reg': 0.00791507439765621, 'dense_units_1': 512, 'dense_units_2': 32, 'batch_size': 32, 'optimizer': 'adam', 'lr': 0.0002440060709081752, 'alpha': 0.0021751953118777636, 'beta': 0.00019949166150633933}
+[2026-07-04 23:07:26] ✓ best_params → ./results/rq1/ConvNeXt-Tiny_L2-SP_S1/best_params.json
+[2026-07-04 23:07:26] 
+================================================================================
+FOLD 1/5: ConvNeXt-Tiny_L2-SP_S1
+================================================================================
+[2026-07-04 23:07:26] Train: 213  Val: 54
+[2026-07-04 23:07:27] 
+================================================================================
+L2-SP — ConvNeXt-Tiny_L2-SP_S1_Fold1
+================================================================================

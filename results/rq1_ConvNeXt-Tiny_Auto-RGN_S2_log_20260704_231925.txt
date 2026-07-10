@@ -1,0 +1,74 @@
+[2026-07-04 23:19:25] === Log file: ./results/rq1_ConvNeXt-Tiny_Auto-RGN_S2_log_20260704_231925.txt ===
+[2026-07-04 23:19:25] 
+################################################################################
+# COMBO: ConvNeXt-Tiny_Auto-RGN_S2
+################################################################################
+
+[2026-07-04 23:19:25] Loaded INAOE: 334 images, shape=(334, 224, 224, 3), CT=90, DM=244
+[2026-07-04 23:19:25] 
+================================================================================
+StrategyTuner: ConvNeXt-Tiny_Auto-RGN_S2/Auto-RGN (10 trials × fold1)
+================================================================================
+[2026-07-04 23:19:26] 
+================================================================================
+Auto-RGN — ConvNeXt-Tiny_Auto-RGN_S2_trial1_fold1
+================================================================================
+[2026-07-04 23:21:16]   Trial 1 failed: {{function_node __wrapped__BatchMatMulV2_device_/job:localhost/replica:0/task:0/device:GPU:0}} OOM when allocating tensor with shape[32,7,3072,768] and type float on /job:localhost/replica:0/task:0/device:GPU:0 by allocator GPU_0_bfc [Op:BatchMatMulV2] name: 
+[2026-07-04 23:21:17] 
+================================================================================
+Auto-RGN — ConvNeXt-Tiny_Auto-RGN_S2_trial2_fold1
+================================================================================
+[2026-07-04 23:21:50]   Trial 2 failed: {{function_node __wrapped__BatchMatMulV2_device_/job:localhost/replica:0/task:0/device:GPU:0}} OOM when allocating tensor with shape[32,7,3072,768] and type float on /job:localhost/replica:0/task:0/device:GPU:0 by allocator GPU_0_bfc [Op:BatchMatMulV2] name: 
+[2026-07-04 23:21:51] 
+================================================================================
+Auto-RGN — ConvNeXt-Tiny_Auto-RGN_S2_trial3_fold1
+================================================================================
+[2026-07-04 23:22:25]   Trial 3 failed: {{function_node __wrapped__BatchMatMulV2_device_/job:localhost/replica:0/task:0/device:GPU:0}} OOM when allocating tensor with shape[32,7,3072,768] and type float on /job:localhost/replica:0/task:0/device:GPU:0 by allocator GPU_0_bfc [Op:BatchMatMulV2] name: 
+[2026-07-04 23:22:26] 
+================================================================================
+Auto-RGN — ConvNeXt-Tiny_Auto-RGN_S2_trial4_fold1
+================================================================================
+[2026-07-04 23:22:50]   Trial 4 failed: {{function_node __wrapped__Sum_device_/job:localhost/replica:0/task:0/device:GPU:0}} OOM when allocating tensor with shape[2359296] and type float on /job:localhost/replica:0/task:0/device:GPU:0 by allocator GPU_0_bfc [Op:Sum] name: 
+[2026-07-04 23:22:51] 
+================================================================================
+Auto-RGN — ConvNeXt-Tiny_Auto-RGN_S2_trial5_fold1
+================================================================================
+[2026-07-04 23:23:28]   Trial 5 failed: {{function_node __wrapped__BatchMatMulV2_device_/job:localhost/replica:0/task:0/device:GPU:0}} OOM when allocating tensor with shape[32,7,3072,768] and type float on /job:localhost/replica:0/task:0/device:GPU:0 by allocator GPU_0_bfc [Op:BatchMatMulV2] name: 
+[2026-07-04 23:23:32] 
+================================================================================
+Auto-RGN — ConvNeXt-Tiny_Auto-RGN_S2_trial6_fold1
+================================================================================
+[2026-07-04 23:24:06]   Trial 6 failed: {{function_node __wrapped__BatchMatMulV2_device_/job:localhost/replica:0/task:0/device:GPU:0}} OOM when allocating tensor with shape[32,7,3072,768] and type float on /job:localhost/replica:0/task:0/device:GPU:0 by allocator GPU_0_bfc [Op:BatchMatMulV2] name: 
+[2026-07-04 23:24:07] 
+================================================================================
+Auto-RGN — ConvNeXt-Tiny_Auto-RGN_S2_trial7_fold1
+================================================================================
+[2026-07-04 23:24:41]   Trial 7 failed: {{function_node __wrapped__BatchMatMulV2_device_/job:localhost/replica:0/task:0/device:GPU:0}} OOM when allocating tensor with shape[32,7,3072,768] and type float on /job:localhost/replica:0/task:0/device:GPU:0 by allocator GPU_0_bfc [Op:BatchMatMulV2] name: 
+[2026-07-04 23:24:42] 
+================================================================================
+Auto-RGN — ConvNeXt-Tiny_Auto-RGN_S2_trial8_fold1
+================================================================================
+[2026-07-04 23:25:07]   Trial 8 failed: {{function_node __wrapped__Sum_device_/job:localhost/replica:0/task:0/device:GPU:0}} OOM when allocating tensor with shape[2359296] and type float on /job:localhost/replica:0/task:0/device:GPU:0 by allocator GPU_0_bfc [Op:Sum] name: 
+[2026-07-04 23:25:08] 
+================================================================================
+Auto-RGN — ConvNeXt-Tiny_Auto-RGN_S2_trial9_fold1
+================================================================================
+[2026-07-04 23:25:45]   Trial 9 failed: {{function_node __wrapped__BatchMatMulV2_device_/job:localhost/replica:0/task:0/device:GPU:0}} OOM when allocating tensor with shape[32,7,3072,768] and type float on /job:localhost/replica:0/task:0/device:GPU:0 by allocator GPU_0_bfc [Op:BatchMatMulV2] name: 
+[2026-07-04 23:25:46] 
+================================================================================
+Auto-RGN — ConvNeXt-Tiny_Auto-RGN_S2_trial10_fold1
+================================================================================
+[2026-07-04 23:26:23]   Trial 10 failed: {{function_node __wrapped__BatchMatMulV2_device_/job:localhost/replica:0/task:0/device:GPU:0}} OOM when allocating tensor with shape[32,7,3072,768] and type float on /job:localhost/replica:0/task:0/device:GPU:0 by allocator GPU_0_bfc [Op:BatchMatMulV2] name: 
+[2026-07-04 23:26:23] 
+✓ Best fold1 AUC: -0.000000
+[2026-07-04 23:26:23] Best params: {'dropout_rate': 0.15503043695984914, 'l2_reg': 0.00791507439765621, 'dense_units_1': 512, 'dense_units_2': 32, 'batch_size': 32, 'optimizer': 'adam', 'lr': 0.0002440060709081752}
+[2026-07-04 23:26:23] ✓ best_params → ./results/rq1/ConvNeXt-Tiny_Auto-RGN_S2/best_params.json
+[2026-07-04 23:26:23] 
+================================================================================
+FOLD 1/5: ConvNeXt-Tiny_Auto-RGN_S2
+================================================================================
+[2026-07-04 23:26:23] Train: 213  Val: 54
+[2026-07-04 23:26:24] 
+================================================================================
+Auto-RGN — ConvNeXt-Tiny_Auto-RGN_S2_Fold1
+================================================================================

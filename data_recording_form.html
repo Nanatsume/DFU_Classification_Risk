@@ -1,0 +1,674 @@
+<title>Research Data Recording Form — DFU Risk Classification</title>
+<style>
+:root {
+  --ink:        #18263A;
+  --ink-mid:    #3A5268;
+  --ink-soft:   #608098;
+  --accent:     #1A5C8A;
+  --accent-lt:  #EBF2F7;
+  --rule:       #B0C4D4;
+  --rule-lt:    #D5E3EE;
+  --surface:    #FFFFFF;
+  --bg:         #F0F4F8;
+  --neuro-bar:  #2E72B8;
+  --neuro-bg:   #EAF1FA;
+  --pad-bar:    #7A2E00;
+  --pad-bg:     #FDF0E8;
+  --struct-bar: #1A6B40;
+  --struct-bg:  #E8F5EE;
+  --img-bar:    #2A6060;
+  --img-bg:     #E8F4F4;
+  --phys-bar:   #5A3060;
+  --phys-bg:    #F4EEF8;
+  --warn:       #7A2000;
+  --warn-bg:    #FFF0EB;
+  --warn-bd:    #DDA090;
+  --pass:       #0A5230;
+  --pass-bg:    #E8F5EE;
+  --pass-bd:    #80C8A0;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ink:#D0E4F5; --ink-mid:#8AAAC8; --ink-soft:#587890;
+    --accent:#60A8D8; --accent-lt:#0A1C30;
+    --rule:#2A4060; --rule-lt:#182E42;
+    --surface:#0C1C2C; --bg:#060E18;
+    --neuro-bar:#4A92E0; --neuro-bg:#061828;
+    --pad-bar:#E08060; --pad-bg:#1A0800;
+    --struct-bar:#40B870; --struct-bg:#001808;
+    --img-bar:#40A0A0; --img-bg:#001818;
+    --phys-bar:#B080D0; --phys-bg:#180820;
+    --warn:#FFB090; --warn-bg:#200800; --warn-bd:#703020;
+    --pass:#80D0A0; --pass-bg:#001A0E; --pass-bd:#205840;
+  }
+}
+:root[data-theme="light"] {
+  --ink:#18263A; --ink-mid:#3A5268; --ink-soft:#608098;
+  --accent:#1A5C8A; --accent-lt:#EBF2F7;
+  --rule:#B0C4D4; --rule-lt:#D5E3EE;
+  --surface:#FFFFFF; --bg:#F0F4F8;
+  --neuro-bar:#2E72B8; --neuro-bg:#EAF1FA;
+  --pad-bar:#7A2E00; --pad-bg:#FDF0E8;
+  --struct-bar:#1A6B40; --struct-bg:#E8F5EE;
+  --img-bar:#2A6060; --img-bg:#E8F4F4;
+  --phys-bar:#5A3060; --phys-bg:#F4EEF8;
+  --warn:#7A2000; --warn-bg:#FFF0EB; --warn-bd:#DDA090;
+  --pass:#0A5230; --pass-bg:#E8F5EE; --pass-bd:#80C8A0;
+}
+:root[data-theme="dark"] {
+  --ink:#D0E4F5; --ink-mid:#8AAAC8; --ink-soft:#587890;
+  --accent:#60A8D8; --accent-lt:#0A1C30;
+  --rule:#2A4060; --rule-lt:#182E42;
+  --surface:#0C1C2C; --bg:#060E18;
+  --neuro-bar:#4A92E0; --neuro-bg:#061828;
+  --pad-bar:#E08060; --pad-bg:#1A0800;
+  --struct-bar:#40B870; --struct-bg:#001808;
+  --img-bar:#40A0A0; --img-bg:#001818;
+  --phys-bar:#B080D0; --phys-bg:#180820;
+  --warn:#FFB090; --warn-bg:#200800; --warn-bd:#703020;
+  --pass:#80D0A0; --pass-bg:#001A0E; --pass-bd:#205840;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg); color: var(--ink);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size: 12.5px; line-height: 1.6;
+  padding: 1.5rem 1rem 3rem;
+  -webkit-font-smoothing: antialiased;
+}
+.page {
+  max-width: 800px; margin: 0 auto;
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  padding: 2rem 2.5rem 2.5rem;
+}
+
+/* Header */
+.doc-header { border-bottom: 2.5px solid var(--accent); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+.doc-eyebrow { font-size: 9.5px; letter-spacing: 0.13em; text-transform: uppercase; color: var(--ink-soft); margin-bottom: 0.25rem; }
+.doc-title { font-family: Georgia, serif; font-size: 16px; font-weight: normal; color: var(--accent); line-height: 1.3; margin-bottom: 0.15rem; }
+.doc-sub { font-size: 11px; color: var(--ink-mid); margin-bottom: 0.75rem; }
+.meta-row { display: flex; gap: 2rem; flex-wrap: wrap; margin-top: 0.75rem; align-items: flex-end; }
+.meta-field { display: flex; flex-direction: column; gap: 2px; }
+.meta-lbl { font-size: 9px; letter-spacing: 0.11em; text-transform: uppercase; color: var(--ink-soft); }
+.meta-box { border-bottom: 1.5px solid var(--rule); min-width: 90px; height: 22px; padding: 0 4px; font-size: 12px; }
+.meta-box.id { font-family: "SF Mono", Consolas, monospace; color: var(--accent); font-weight: 700; min-width: 70px; }
+
+/* Assessment Block */
+.ablock { margin-bottom: 1.2rem; border-left: 3.5px solid var(--accent); padding-left: 1rem; }
+.ablock.neuro  { border-left-color: var(--neuro-bar); }
+.ablock.pad    { border-left-color: var(--pad-bar); }
+.ablock.struct { border-left-color: var(--struct-bar); }
+.ablock.img    { border-left-color: var(--img-bar); }
+.ablock.phys   { border-left-color: var(--phys-bar); }
+.ablock.screen { border-left-color: var(--warn); }
+
+.ablock-head { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.7rem; }
+.ablock-letter { font-family: Georgia, serif; font-size: 11px; color: var(--ink-soft); min-width: 18px; }
+.ablock-title { font-size: 13px; font-weight: 700; color: var(--ink); }
+.ablock-cat {
+  font-size: 9.5px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 1px 8px; margin-left: 0.4rem;
+}
+.cat-neuro  { background: var(--neuro-bg);  color: var(--neuro-bar); }
+.cat-pad    { background: var(--pad-bg);    color: var(--pad-bar); }
+.cat-struct { background: var(--struct-bg); color: var(--struct-bar); }
+.cat-img    { background: var(--img-bg);    color: var(--img-bar); }
+.cat-phys   { background: var(--phys-bg);   color: var(--phys-bar); }
+
+/* Bilateral */
+.bilateral { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem 1.8rem; }
+.foot-hd {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--accent); padding-bottom: 3px;
+  border-bottom: 1px solid var(--rule-lt); margin-bottom: 0.5rem;
+}
+
+/* Field label */
+.flbl {
+  font-size: 9.5px; color: var(--ink-soft);
+  text-transform: uppercase; letter-spacing: 0.08em;
+  margin-top: 0.55rem; margin-bottom: 0.2rem;
+}
+.flbl:first-child { margin-top: 0; }
+.flbl-note { font-size: 9px; color: var(--ink-soft); font-style: italic; margin-left: 0.3rem; text-transform: none; letter-spacing: 0; }
+.def-group-lbl { font-size: 9px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: var(--struct-bar); margin-top: 0.2rem; margin-bottom: 0.15rem; }
+
+/* Choices */
+.choices { display: flex; flex-wrap: wrap; gap: 0.3rem 1rem; margin-bottom: 0.1rem; }
+.ci { display: flex; align-items: center; gap: 0.3rem; font-size: 12px; color: var(--ink); }
+.cbox { width: 12px; height: 12px; border: 1.5px solid var(--rule); display: inline-block; flex-shrink: 0; }
+.cbox.w { border-color: var(--warn-bd); }
+
+/* Monofilament sites — 3 sites per IWGDF */
+.mono-grid { display: flex; gap: 4px; margin-bottom: 0.3rem; }
+.mono-site {
+  border: 1px solid var(--rule-lt); background: var(--accent-lt);
+  padding: 4px 6px; text-align: center; font-size: 9.5px;
+  color: var(--ink-mid); line-height: 1.4; flex: 1;
+}
+.site-lbl { font-size: 8.5px; color: var(--ink-soft); display: block; }
+.site-box { width: 14px; height: 14px; border: 1px solid var(--rule); background: var(--surface); display: inline-block; margin-top: 2px; }
+
+/* Pulse table */
+.pulse-table { width: 100%; border-collapse: collapse; font-size: 11.5px; margin-bottom: 0.3rem; }
+.pulse-table th {
+  font-size: 9px; letter-spacing: 0.09em; text-transform: uppercase;
+  color: var(--ink-soft); text-align: left; padding: 2px 6px;
+  border-bottom: 1px solid var(--rule-lt); font-weight: 600;
+}
+.pulse-table td { padding: 3px 6px; border-bottom: 1px solid var(--rule-lt); }
+.pulse-table td:first-child { font-size: 11.5px; color: var(--ink-mid); }
+
+/* Value box */
+.val-box {
+  border-bottom: 1.5px solid var(--rule); width: 55px; height: 20px;
+  display: inline-block; font-family: "SF Mono", Consolas, monospace; font-size: 12px;
+}
+
+/* Write line */
+.wline { border-bottom: 1px solid var(--rule); height: 18px; display: block; margin-top: 2px; }
+.wline-row { display: flex; align-items: flex-end; gap: 0.5rem; flex-wrap: wrap; }
+.wlbl { font-size: 10.5px; color: var(--ink-mid); white-space: nowrap; }
+
+/* Section divider */
+.sdiv { border-top: 1px dashed var(--rule-lt); margin: 0.75rem 0; }
+
+/* Summary */
+.smry-lbl { font-size: 10px; color: var(--ink-soft); letter-spacing: 0.08em; text-transform: uppercase; margin-right: 0.3rem; }
+
+/* Screen items */
+.screen-item { display: grid; grid-template-columns: 14px 1fr; gap: 0 0.5rem; margin-bottom: 0.35rem; }
+.screen-sub { font-size: 10.5px; color: var(--ink-soft); display: block; }
+.result-row { display: flex; gap: 1.5rem; align-items: center; margin-top: 0.6rem; flex-wrap: wrap; }
+.rbadge { padding: 2px 12px; font-size: 11px; font-weight: 700; border: 1.5px solid; letter-spacing: 0.03em; }
+.smry-neg { color: var(--pass); background: var(--pass-bg); border-color: var(--pass-bd); }
+.smry-pos { color: var(--warn); background: var(--warn-bg); border-color: var(--warn-bd); }
+
+/* Image ID */
+.img-id {
+  font-family: "SF Mono", Consolas, monospace; font-size: 13px; font-weight: 700;
+  color: var(--img-bar); border: 1.5px solid var(--rule); padding: 3px 10px;
+  display: inline-block; letter-spacing: 0.08em;
+}
+
+/* IWGDF boxes */
+.iwgdf-row { display: flex; gap: 0.4rem; }
+.iwgdf-box {
+  width: 34px; height: 34px; border: 1.5px solid var(--rule);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; font-weight: 700; font-family: Georgia, serif; color: var(--ink-mid);
+}
+
+/* Signatures */
+.sig-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem 2rem; margin-top: 0.75rem; }
+.sig-block { display: flex; flex-direction: column; gap: 5px; }
+.sig-line { border-bottom: 1.5px solid var(--rule); height: 28px; }
+.sig-cap { font-size: 10px; color: var(--ink-soft); }
+
+/* Notes */
+.notes-box { border: 1px solid var(--rule-lt); background: var(--accent-lt); height: 56px; padding: 4px 6px; }
+
+/* Footer */
+.doc-footer {
+  margin-top: 1.5rem; padding-top: 0.6rem;
+  border-top: 1px solid var(--rule-lt);
+  display: flex; justify-content: space-between;
+  font-size: 9.5px; color: var(--ink-soft);
+}
+
+@media print {
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  body { background: white !important; padding: 0; font-size: 11px; }
+  .page { border: none; padding: 1rem 1.5rem; max-width: 100%; }
+  .ablock { page-break-inside: avoid; break-inside: avoid; }
+}
+</style>
+
+<div class="page">
+
+  <!-- Header -->
+  <div class="doc-header">
+    <div class="doc-eyebrow">Research Data Recording Form &nbsp;·&nbsp; Per-Patient Session Record</div>
+    <div class="doc-title">CNN-based DFU Risk Classification Using Plantar Pressure Footprint Images</div>
+    <div class="doc-sub">Buddhachinaraj Hospital, Phitsanulok &nbsp;·&nbsp; Faculty of ICT, Mahidol University</div>
+    <div class="meta-row">
+      <div class="meta-field">
+        <span class="meta-lbl">Research ID</span>
+        <div class="meta-box id">P ___</div>
+      </div>
+      <div class="meta-field">
+        <span class="meta-lbl">Date</span>
+        <div class="meta-box">___ / ___ / ___</div>
+      </div>
+      <div class="meta-field">
+        <span class="meta-lbl">Recorder (Nurse)</span>
+        <div class="meta-box" style="min-width:150px"></div>
+      </div>
+      <div class="meta-field">
+        <span class="meta-lbl">Session No.</span>
+        <div class="meta-box" style="min-width:50px"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- A: Eligibility Screening -->
+  <div class="ablock screen">
+    <div class="ablock-head">
+      <span class="ablock-letter">A</span>
+      <span class="ablock-title">Eligibility Screening</span>
+    </div>
+    <div style="font-size:10px;color:var(--ink-soft);margin-bottom:0.5rem;font-style:italic">
+      Inclusion — all must be met &nbsp;|&nbsp; Exclusion — any one ticked = stop immediately
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.3rem 2rem">
+      <div>
+        <div style="font-size:9.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--pass);margin-bottom:0.35rem;font-weight:700">Inclusion</div>
+        <div class="screen-item"><span class="cbox"></span><span>Diagnosed T2DM</span></div>
+        <div class="screen-item"><span class="cbox"></span><span>Age ≥ 18 years</span></div>
+        <div class="screen-item"><span class="cbox"></span><span>Able to stand on podoscope (incl. unilateral amputees who can bear weight)</span></div>
+        <div class="screen-item"><span class="cbox"></span><span>Cognitively alert, able to follow verbal instructions</span></div>
+      </div>
+      <div>
+        <div style="font-size:9.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--warn);margin-bottom:0.35rem;font-weight:700">Exclusion</div>
+        <div class="screen-item"><span class="cbox w"></span><span>Open wound / active ulcer / infection on plantar surface</span></div>
+        <div class="screen-item"><span class="cbox w"></span><span>Bilateral lower-limb amputation</span></div>
+        <div class="screen-item"><span class="cbox w"></span><span>Uncontrolled autoimmune / connective tissue disease (SLE, vasculitis, RA)</span></div>
+        <div class="screen-item"><span class="cbox w"></span><span>Prior participation in this study <span class="screen-sub">Verify research ID registry before enrolling</span></span></div>
+      </div>
+    </div>
+    <div class="result-row">
+      <div style="display:flex;align-items:center;gap:0.4rem"><span class="cbox"></span><span class="rbadge smry-neg">✓ ELIGIBLE — proceed</span></div>
+      <div style="display:flex;align-items:center;gap:0.4rem"><span class="cbox w"></span><span class="rbadge smry-pos">✗ INELIGIBLE — stop</span></div>
+    </div>
+    <div class="wline-row" style="margin-top:0.35rem">
+      <span class="wlbl">Reason (if ineligible):</span>
+      <span class="wline" style="flex:1"></span>
+    </div>
+  </div>
+
+  <!-- B: LOPS Assessment -->
+
+  <div class="ablock neuro">
+    <div class="ablock-head">
+      <span class="ablock-letter">B</span>
+      <span class="ablock-title">Neuropathy Assessment <span class="ablock-cat cat-neuro">Loss of Protective Sensation · LOPS</span></span>
+    </div>
+
+    <div class="bilateral">
+      <div class="foot-col">
+        <div class="foot-hd">Left Foot</div>
+
+        <div class="flbl">10 g Semmes-Weinstein Monofilament <span class="flbl-note">Mark each site: ✓ felt / ✗ not felt</span></div>
+        <div class="mono-grid">
+          <div class="mono-site"><span class="site-lbl">Hallux</span><span class="site-box"></span></div>
+          <div class="mono-site"><span class="site-lbl">1st MTH</span><span class="site-box"></span></div>
+          <div class="mono-site"><span class="site-lbl">5th MTH</span><span class="site-box"></span></div>
+        </div>
+        <div class="choices" style="margin-top:2px">
+          <div class="ci"><span class="cbox"></span> Intact</div>
+          <div class="ci"><span class="cbox"></span> LOPS (≥2 sites failed)</div>
+        </div>
+
+        <div class="flbl">128 Hz Tuning Fork <span class="flbl-note">distal phalanx, 1st toe</span></div>
+        <div class="choices">
+          <div class="ci"><span class="cbox"></span> Normal</div>
+          <div class="ci"><span class="cbox"></span> Reduced</div>
+          <div class="ci"><span class="cbox"></span> Absent</div>
+        </div>
+
+        <div class="flbl">Ipswich Touch Test <span class="flbl-note">if above tools unavailable</span></div>
+        <div class="choices">
+          <div class="ci"><span class="cbox"></span> Intact</div>
+          <div class="ci"><span class="cbox"></span> LOPS (fail ≥2 sites)</div>
+          <div class="ci"><span class="cbox"></span> N/A</div>
+        </div>
+      </div>
+
+      <div class="foot-col">
+        <div class="foot-hd">Right Foot</div>
+
+        <div class="flbl">10 g Semmes-Weinstein Monofilament <span class="flbl-note">Mark each site: ✓ felt / ✗ not felt</span></div>
+        <div class="mono-grid">
+          <div class="mono-site"><span class="site-lbl">Hallux</span><span class="site-box"></span></div>
+          <div class="mono-site"><span class="site-lbl">1st MTH</span><span class="site-box"></span></div>
+          <div class="mono-site"><span class="site-lbl">5th MTH</span><span class="site-box"></span></div>
+        </div>
+        <div class="choices" style="margin-top:2px">
+          <div class="ci"><span class="cbox"></span> Intact</div>
+          <div class="ci"><span class="cbox"></span> LOPS (≥2 sites failed)</div>
+        </div>
+
+        <div class="flbl">128 Hz Tuning Fork <span class="flbl-note">distal phalanx, 1st toe</span></div>
+        <div class="choices">
+          <div class="ci"><span class="cbox"></span> Normal</div>
+          <div class="ci"><span class="cbox"></span> Reduced</div>
+          <div class="ci"><span class="cbox"></span> Absent</div>
+        </div>
+
+        <div class="flbl">Ipswich Touch Test <span class="flbl-note">if above tools unavailable</span></div>
+        <div class="choices">
+          <div class="ci"><span class="cbox"></span> Intact</div>
+          <div class="ci"><span class="cbox"></span> LOPS (fail ≥2 sites)</div>
+          <div class="ci"><span class="cbox"></span> N/A</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sdiv"></div>
+    <div style="display:flex;gap:2rem;flex-wrap:wrap">
+      <div><span class="smry-lbl">Left LOPS:</span>
+        <span class="ci" style="display:inline-flex"><span class="cbox"></span>&nbsp;Present</span>&nbsp;&nbsp;
+        <span class="ci" style="display:inline-flex"><span class="cbox"></span>&nbsp;Absent</span>
+      </div>
+      <div><span class="smry-lbl">Right LOPS:</span>
+        <span class="ci" style="display:inline-flex"><span class="cbox"></span>&nbsp;Present</span>&nbsp;&nbsp;
+        <span class="ci" style="display:inline-flex"><span class="cbox"></span>&nbsp;Absent</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- D: PAD Assessment -->
+  <div class="ablock pad">
+    <div class="ablock-head">
+      <span class="ablock-letter">C</span>
+      <span class="ablock-title">PAD Assessment <span class="ablock-cat cat-pad">Peripheral Arterial Disease</span></span>
+    </div>
+
+    <div class="bilateral">
+      <div class="foot-col">
+        <div class="foot-hd">Left Foot / Limb</div>
+
+        <div class="flbl">Ankle-Brachial Index (ABI)</div>
+        <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.3rem;flex-wrap:wrap">
+          <span class="wlbl">Value:</span><span class="val-box"></span>
+        </div>
+        <div class="choices" style="flex-direction:column;gap:0.2rem">
+          <div class="ci"><span class="cbox"></span> Normal (0.9 – 1.3)</div>
+          <div class="ci"><span class="cbox"></span> Borderline (0.7 – 0.89)</div>
+          <div class="ci"><span class="cbox"></span> PAD (&lt; 0.70)</div>
+          <div class="ci"><span class="cbox"></span> Non-compressible (&gt; 1.3) → use TBI</div>
+        </div>
+
+        <div class="flbl">Toe-Brachial Index (TBI) <span class="flbl-note">if ABI &gt; 1.3</span></div>
+        <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap">
+          <span class="wlbl">Value:</span><span class="val-box"></span>
+          <div class="ci"><span class="cbox"></span> PAD (&lt; 0.70)</div>
+          <div class="ci"><span class="cbox"></span> Normal (≥ 0.70)</div>
+        </div>
+      </div>
+
+      <div class="foot-col">
+        <div class="foot-hd">Right Foot / Limb</div>
+
+        <div class="flbl">Ankle-Brachial Index (ABI)</div>
+        <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.3rem;flex-wrap:wrap">
+          <span class="wlbl">Value:</span><span class="val-box"></span>
+        </div>
+        <div class="choices" style="flex-direction:column;gap:0.2rem">
+          <div class="ci"><span class="cbox"></span> Normal (0.9 – 1.3)</div>
+          <div class="ci"><span class="cbox"></span> Borderline (0.7 – 0.89)</div>
+          <div class="ci"><span class="cbox"></span> PAD (&lt; 0.70)</div>
+          <div class="ci"><span class="cbox"></span> Non-compressible (&gt; 1.3) → use TBI</div>
+        </div>
+
+        <div class="flbl">Toe-Brachial Index (TBI) <span class="flbl-note">if ABI &gt; 1.3</span></div>
+        <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap">
+          <span class="wlbl">Value:</span><span class="val-box"></span>
+          <div class="ci"><span class="cbox"></span> PAD (&lt; 0.70)</div>
+          <div class="ci"><span class="cbox"></span> Normal (≥ 0.70)</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sdiv"></div>
+    <div style="display:flex;gap:2rem;flex-wrap:wrap">
+      <div><span class="smry-lbl">Left PAD:</span>
+        <span class="ci" style="display:inline-flex"><span class="cbox"></span>&nbsp;Present</span>&nbsp;&nbsp;
+        <span class="ci" style="display:inline-flex"><span class="cbox"></span>&nbsp;Absent</span>
+      </div>
+      <div><span class="smry-lbl">Right PAD:</span>
+        <span class="ci" style="display:inline-flex"><span class="cbox"></span>&nbsp;Present</span>&nbsp;&nbsp;
+        <span class="ci" style="display:inline-flex"><span class="cbox"></span>&nbsp;Absent</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- E: Structural & Deformity -->
+  <div class="ablock struct">
+    <div class="ablock-head">
+      <span class="ablock-letter">D</span>
+      <span class="ablock-title">Foot Deformity &amp; Visual Inspection <span class="ablock-cat cat-struct">Structural · IWGDF 2023</span></span>
+    </div>
+    <div class="bilateral">
+      <div class="foot-col">
+        <div class="foot-hd">Left Foot</div>
+
+        <div class="flbl">Deformity — tick all present</div>
+
+        <div class="def-group-lbl">Toe deformities</div>
+        <div class="choices" style="flex-direction:column;gap:0.18rem">
+          <div class="ci"><span class="cbox"></span> Hammer toe(s)</div>
+          <div class="ci"><span class="cbox"></span> Mallet toe(s)</div>
+          <div class="ci"><span class="cbox"></span> Claw toe(s)</div>
+          <div class="ci"><span class="cbox"></span> Hallux valgus</div>
+        </div>
+
+        <div class="def-group-lbl" style="margin-top:0.35rem">Arch &amp; sole</div>
+        <div class="choices" style="flex-direction:column;gap:0.18rem">
+          <div class="ci"><span class="cbox"></span> Prominent metatarsal head(s)</div>
+          <div class="ci"><span class="cbox"></span> Abnormally large bony prominence(s)</div>
+          <div class="ci"><span class="cbox"></span> Pes cavus (high arch)</div>
+          <div class="ci"><span class="cbox"></span> Pes planus (flat foot, acquired)</div>
+          <div class="ci"><span class="cbox"></span> Pes equinus (limited dorsiflexion)</div>
+        </div>
+
+        <div class="def-group-lbl" style="margin-top:0.35rem">Joint &amp; bone</div>
+        <div class="choices" style="flex-direction:column;gap:0.18rem">
+          <div class="ci"><span class="cbox"></span> Charcot neuro-osteoarthropathy</div>
+          <div class="ci"><span class="cbox"></span> Limited joint mobility</div>
+        </div>
+
+        <div class="def-group-lbl" style="margin-top:0.35rem">History-related structural change</div>
+        <div class="choices" style="flex-direction:column;gap:0.18rem">
+          <div class="ci"><span class="cbox"></span> Healed trauma to foot</div>
+          <div class="ci"><span class="cbox"></span> Other foot surgery</div>
+        </div>
+
+        <div class="choices" style="margin-top:0.35rem">
+          <div class="ci"><span class="cbox"></span> <strong>None</strong></div>
+        </div>
+
+        <div class="flbl" style="margin-top:0.5rem">Callus</div>
+        <div class="choices">
+          <div class="ci"><span class="cbox"></span> Absent</div>
+          <div class="ci"><span class="cbox"></span> Present</div>
+        </div>
+        <div class="flbl">Previous DFU / Amputation</div>
+        <div class="choices" style="flex-direction:column;gap:0.2rem">
+          <div class="ci"><span class="cbox"></span> No history</div>
+          <div class="ci"><span class="cbox"></span> Previous ulcer</div>
+          <div class="ci"><span class="cbox"></span> Partial foot amputation</div>
+        </div>
+      </div>
+
+      <div class="foot-col">
+        <div class="foot-hd">Right Foot</div>
+
+        <div class="flbl">Deformity — tick all present</div>
+
+        <div class="def-group-lbl">Toe deformities</div>
+        <div class="choices" style="flex-direction:column;gap:0.18rem">
+          <div class="ci"><span class="cbox"></span> Hammer toe(s)</div>
+          <div class="ci"><span class="cbox"></span> Mallet toe(s)</div>
+          <div class="ci"><span class="cbox"></span> Claw toe(s)</div>
+          <div class="ci"><span class="cbox"></span> Hallux valgus</div>
+        </div>
+
+        <div class="def-group-lbl" style="margin-top:0.35rem">Arch &amp; sole</div>
+        <div class="choices" style="flex-direction:column;gap:0.18rem">
+          <div class="ci"><span class="cbox"></span> Prominent metatarsal head(s)</div>
+          <div class="ci"><span class="cbox"></span> Abnormally large bony prominence(s)</div>
+          <div class="ci"><span class="cbox"></span> Pes cavus (high arch)</div>
+          <div class="ci"><span class="cbox"></span> Pes planus (flat foot, acquired)</div>
+          <div class="ci"><span class="cbox"></span> Pes equinus (limited dorsiflexion)</div>
+        </div>
+
+        <div class="def-group-lbl" style="margin-top:0.35rem">Joint &amp; bone</div>
+        <div class="choices" style="flex-direction:column;gap:0.18rem">
+          <div class="ci"><span class="cbox"></span> Charcot neuro-osteoarthropathy</div>
+          <div class="ci"><span class="cbox"></span> Limited joint mobility</div>
+        </div>
+
+        <div class="def-group-lbl" style="margin-top:0.35rem">History-related structural change</div>
+        <div class="choices" style="flex-direction:column;gap:0.18rem">
+          <div class="ci"><span class="cbox"></span> Healed trauma to foot</div>
+          <div class="ci"><span class="cbox"></span> Other foot surgery</div>
+        </div>
+
+        <div class="choices" style="margin-top:0.35rem">
+          <div class="ci"><span class="cbox"></span> <strong>None</strong></div>
+        </div>
+
+        <div class="flbl" style="margin-top:0.5rem">Callus</div>
+        <div class="choices">
+          <div class="ci"><span class="cbox"></span> Absent</div>
+          <div class="ci"><span class="cbox"></span> Present</div>
+        </div>
+        <div class="flbl">Previous DFU / Amputation</div>
+        <div class="choices" style="flex-direction:column;gap:0.2rem">
+          <div class="ci"><span class="cbox"></span> No history</div>
+          <div class="ci"><span class="cbox"></span> Previous ulcer</div>
+          <div class="ci"><span class="cbox"></span> Partial foot amputation</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- F: Image Capture -->
+  <div class="ablock img">
+    <div class="ablock-head">
+      <span class="ablock-letter">E</span>
+      <span class="ablock-title">Podoscope Image Capture <span class="ablock-cat cat-img">Photography</span></span>
+    </div>
+    <div class="bilateral" style="margin-bottom:0.6rem">
+      <div class="foot-col">
+        <div class="foot-hd">Left Foot</div>
+        <div class="flbl">Filename</div>
+        <div class="img-id">P___-L</div>
+        <div class="flbl" style="margin-top:0.5rem">Image Quality</div>
+        <div class="choices">
+          <div class="ci"><span class="cbox"></span> Pass</div>
+          <div class="ci"><span class="cbox"></span> Retake required</div>
+          <div class="ci"><span class="cbox"></span> N/A (amputation)</div>
+        </div>
+      </div>
+      <div class="foot-col">
+        <div class="foot-hd">Right Foot</div>
+        <div class="flbl">Filename</div>
+        <div class="img-id">P___-R</div>
+        <div class="flbl" style="margin-top:0.5rem">Image Quality</div>
+        <div class="choices">
+          <div class="ci"><span class="cbox"></span> Pass</div>
+          <div class="ci"><span class="cbox"></span> Retake required</div>
+          <div class="ci"><span class="cbox"></span> N/A (amputation)</div>
+        </div>
+      </div>
+    </div>
+    <div class="wline-row">
+      <span class="wlbl">Retake reason (if any):</span>
+      <span class="wline" style="flex:1"></span>
+    </div>
+  </div>
+
+  <!-- G: Physician Annotation -->
+  <div class="ablock phys">
+    <div class="ablock-head">
+      <span class="ablock-letter">F</span>
+      <span class="ablock-title">Physician Annotation <span class="ablock-cat cat-phys">IWGDF Classification &amp; ROI</span></span>
+    </div>
+    <div class="bilateral">
+      <div class="foot-col">
+        <div class="foot-hd">Left Foot</div>
+        <div class="flbl">IWGDF Risk Category — circle one</div>
+        <div class="iwgdf-row">
+          <div class="iwgdf-box">0</div>
+          <div class="iwgdf-box">1</div>
+          <div class="iwgdf-box">2</div>
+          <div class="iwgdf-box">3</div>
+        </div>
+        <div style="font-size:9px;color:var(--ink-soft);margin-top:3px;line-height:1.6">
+          0 No LOPS, no PAD<br>
+          1 LOPS or PAD<br>
+          2 LOPS + PAD, or either + deformity<br>
+          3 Prev. ulcer / amputation / ESRD
+        </div>
+        <div class="flbl" style="margin-top:0.5rem">Binary Label</div>
+        <div class="choices">
+          <div class="ci"><span class="cbox"></span> <strong>Negative</strong> (cat. 0)</div>
+          <div class="ci"><span class="cbox"></span> <strong>Positive</strong> (cat. 1–3)</div>
+        </div>
+        <div class="flbl" style="margin-top:0.5rem">ROI in VIA2 <span class="flbl-note">Positive cases only</span></div>
+        <div class="choices" style="flex-direction:column;gap:0.2rem">
+          <div class="ci"><span class="cbox"></span> ROI marked ✓</div>
+          <div class="ci"><span class="cbox"></span> Positive — no visible pressure zone</div>
+          <div class="ci"><span class="cbox"></span> N/A (Negative)</div>
+        </div>
+      </div>
+      <div class="foot-col">
+        <div class="foot-hd">Right Foot</div>
+        <div class="flbl">IWGDF Risk Category — circle one</div>
+        <div class="iwgdf-row">
+          <div class="iwgdf-box">0</div>
+          <div class="iwgdf-box">1</div>
+          <div class="iwgdf-box">2</div>
+          <div class="iwgdf-box">3</div>
+        </div>
+        <div style="font-size:9px;color:var(--ink-soft);margin-top:3px;line-height:1.6">
+          0 No LOPS, no PAD<br>
+          1 LOPS or PAD<br>
+          2 LOPS + PAD, or either + deformity<br>
+          3 Prev. ulcer / amputation / ESRD
+        </div>
+        <div class="flbl" style="margin-top:0.5rem">Binary Label</div>
+        <div class="choices">
+          <div class="ci"><span class="cbox"></span> <strong>Negative</strong> (cat. 0)</div>
+          <div class="ci"><span class="cbox"></span> <strong>Positive</strong> (cat. 1–3)</div>
+        </div>
+        <div class="flbl" style="margin-top:0.5rem">ROI in VIA2 <span class="flbl-note">Positive cases only</span></div>
+        <div class="choices" style="flex-direction:column;gap:0.2rem">
+          <div class="ci"><span class="cbox"></span> ROI marked ✓</div>
+          <div class="ci"><span class="cbox"></span> Positive — no visible pressure zone</div>
+          <div class="ci"><span class="cbox"></span> N/A (Negative)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- H: Notes & Signatures -->
+  <div class="ablock" style="border-left-color:var(--rule)">
+    <div class="ablock-head">
+      <span class="ablock-letter">G</span>
+      <span class="ablock-title">Notes &amp; Signatures</span>
+    </div>
+    <div class="flbl">Notes</div>
+    <div class="notes-box"></div>
+    <div class="sig-row">
+      <div class="sig-block">
+        <div class="sig-line"></div>
+        <div class="sig-cap">Nurse Signature &nbsp;&nbsp; Date: ___/___/___</div>
+      </div>
+      <div class="sig-block">
+        <div class="sig-line"></div>
+        <div class="sig-cap">Physician Signature &nbsp;&nbsp; Date: ___/___/___</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc-footer">
+    <span>Research ID: P___ &nbsp;·&nbsp; Page 1 / 1</span>
+    <span>CNN-based DFU Risk Classification &nbsp;·&nbsp; Faculty of ICT, Mahidol University</span>
+  </div>
+
+</div>

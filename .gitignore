@@ -39,3 +39,4 @@ __pycache__/
 
 # Jupyter checkpoints
 .ipynb_checkpoints/
+rq1_run_all.log

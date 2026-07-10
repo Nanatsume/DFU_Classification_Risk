@@ -1,0 +1,595 @@
+<title>Research Action Plan — DFU Risk Classification</title>
+<style>
+  :root {
+    --navy:       #1C3D5A;
+    --teal:       #1A7B6E;
+    --amber:      #9A5800;
+    --bg:         #F0F4F7;
+    --surface:    #FFFFFF;
+    --surface-2:  #F7FAFB;
+    --border:     #C4D2DE;
+    --border-s:   #DCE7EE;
+    --text:       #0F1C28;
+    --text-mid:   #3A5268;
+    --text-soft:  #6888A0;
+
+    --done-bar:  #1A7B6E; --done-bg:  #E6F5F1; --done-text: #0F5A48; --done-bd: #9ED4C8;
+    --prog-bar:  #9A5800; --prog-bg:  #FFF3DC; --prog-text: #7A4200; --prog-bd: #F0C878;
+    --wait-bar:  #2E72B8; --wait-bg:  #E8F1FA; --wait-text: #1A4880; --wait-bd: #90B8E0;
+    --up-bar:    #8AABC0; --up-bg:    #EEF3F7; --up-text:   #3A5870; --up-bd:   #AABFCC;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --navy:       #5DA0CF; --teal:       #2CBBA6; --amber:      #FFBB55;
+      --bg:         #0A1822; --surface:    #102030; --surface-2:  #0D1A28;
+      --border:     #223848; --border-s:   #1A3045;
+      --text:       #D5E8F5; --text-mid:   #88AECA; --text-soft:  #587890;
+      --done-bar:  #2CBBA6; --done-bg:  #082820; --done-text: #5DC8A8; --done-bd: #185A48;
+      --prog-bar:  #FFBB55; --prog-bg:  #221400; --prog-text: #FFBB55; --prog-bd: #7A5010;
+      --wait-bar:  #4A9AE8; --wait-bg:  #0A1C38; --wait-text: #7ABCE8; --wait-bd: #1E4878;
+      --up-bar:    #607A8E; --up-bg:    #0D1A28; --up-text:   #7090A8; --up-bd:   #283848;
+    }
+  }
+  :root[data-theme="light"] {
+    --navy: #1C3D5A; --teal: #1A7B6E; --amber: #9A5800;
+    --bg: #F0F4F7; --surface: #FFFFFF; --surface-2: #F7FAFB;
+    --border: #C4D2DE; --border-s: #DCE7EE;
+    --text: #0F1C28; --text-mid: #3A5268; --text-soft: #6888A0;
+    --done-bar: #1A7B6E; --done-bg: #E6F5F1; --done-text: #0F5A48; --done-bd: #9ED4C8;
+    --prog-bar: #9A5800; --prog-bg: #FFF3DC; --prog-text: #7A4200; --prog-bd: #F0C878;
+    --wait-bar: #2E72B8; --wait-bg: #E8F1FA; --wait-text: #1A4880; --wait-bd: #90B8E0;
+    --up-bar:   #8AABC0; --up-bg:   #EEF3F7; --up-text:   #3A5870; --up-bd:   #AABFCC;
+  }
+  :root[data-theme="dark"] {
+    --navy: #5DA0CF; --teal: #2CBBA6; --amber: #FFBB55;
+    --bg: #0A1822; --surface: #102030; --surface-2: #0D1A28;
+    --border: #223848; --border-s: #1A3045;
+    --text: #D5E8F5; --text-mid: #88AECA; --text-soft: #587890;
+    --done-bar: #2CBBA6; --done-bg: #082820; --done-text: #5DC8A8; --done-bd: #185A48;
+    --prog-bar: #FFBB55; --prog-bg: #221400; --prog-text: #FFBB55; --prog-bd: #7A5010;
+    --wait-bar: #4A9AE8; --wait-bg: #0A1C38; --wait-text: #7ABCE8; --wait-bd: #1E4878;
+    --up-bar:   #607A8E; --up-bg:   #0D1A28; --up-text:   #7090A8; --up-bd:   #283848;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size: 14px; line-height: 1.7;
+    padding: 2rem 1rem 5rem;
+    -webkit-font-smoothing: antialiased;
+  }
+  .page {
+    max-width: 900px; margin: 0 auto;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-top: 5px solid var(--navy);
+  }
+
+  .hd {
+    padding: 2.25rem 3rem 1.75rem;
+    border-bottom: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: flex-end;
+    gap: 1.5rem; flex-wrap: wrap;
+  }
+  .hd-eyebrow {
+    font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--teal); font-weight: 700; margin-bottom: 0.35rem;
+  }
+  .hd-title {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 22px; font-weight: normal; color: var(--navy); line-height: 1.3;
+  }
+  .hd-sub { font-size: 12.5px; color: var(--text-soft); margin-top: 0.3rem; }
+  .hd-meta {
+    text-align: right; font-size: 12.5px; color: var(--text-soft);
+    line-height: 1.8; flex-shrink: 0;
+  }
+  .hd-meta strong { color: var(--text-mid); display: block; }
+
+  .gantt-wrap {
+    padding: 1rem 3rem;
+    border-bottom: 1px solid var(--border-s);
+    overflow-x: auto;
+  }
+  .gantt-label {
+    font-size: 10.5px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase;
+    color: var(--text-soft); margin-bottom: 0.65rem;
+  }
+  .gantt { width: 100%; border-collapse: collapse; min-width: 560px; }
+  .gantt th {
+    font-size: 11px; font-weight: 600; color: var(--text-soft);
+    text-align: center; padding: 0 4px 4px;
+    border-bottom: 1px solid var(--border-s);
+    min-width: 54px;
+  }
+  .gantt td {
+    font-size: 12px; color: var(--text-mid);
+    padding: 3px 4px; border-bottom: 1px solid var(--border-s);
+  }
+  .gantt td:first-child { font-size: 11.5px; padding-right: 1rem; white-space: nowrap; }
+  .gantt td.cell { text-align: center; }
+  .gantt td.cell .bar {
+    display: inline-block; width: 26px; height: 14px;
+    border-radius: 2px; vertical-align: middle;
+  }
+  .bar.done-c  { background: var(--done-bar); }
+  .bar.prog-c  { background: var(--prog-bar); opacity: 0.85; }
+  .bar.wait-c  { background: var(--wait-bar); opacity: 0.6; }
+  .bar.up-c    { background: var(--up-bar);   opacity: 0.4; }
+  .bar.empty   { background: transparent; }
+
+  .legend {
+    padding: 0.6rem 3rem;
+    border-bottom: 1px solid var(--border-s);
+    display: flex; gap: 1.5rem; flex-wrap: wrap;
+  }
+  .leg-item { display: flex; align-items: center; gap: 0.4rem; font-size: 11.5px; color: var(--text-soft); }
+  .leg-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+  .body { padding: 1.5rem 3rem 3rem; }
+
+  .phase {
+    margin-bottom: 1.25rem;
+    border: 1px solid var(--border-s);
+    border-left: 4px solid var(--up-bar);
+  }
+  .phase.done { border-left-color: var(--done-bar); }
+  .phase.prog { border-left-color: var(--prog-bar); }
+  .phase.wait { border-left-color: var(--wait-bar); }
+  .phase.soon { border-left-color: var(--up-bar); }
+
+  .phase-head {
+    padding: 0.85rem 1.25rem;
+    display: flex; align-items: center; gap: 0.85rem; flex-wrap: wrap;
+    background: var(--surface-2);
+    border-bottom: 1px solid var(--border-s);
+  }
+  .phase-num {
+    font-family: Georgia, serif; font-size: 13px; font-weight: normal;
+    color: var(--text-soft); min-width: 55px; white-space: nowrap;
+  }
+  .phase-title { font-size: 14.5px; font-weight: 700; color: var(--text); flex: 1; line-height: 1.3; }
+  .phase-time {
+    font-size: 11.5px; color: var(--text-soft); background: var(--bg);
+    padding: 2px 8px; border: 1px solid var(--border-s);
+    white-space: nowrap; font-family: "SF Mono", Consolas, monospace;
+  }
+  .badge-s {
+    font-size: 11px; font-weight: 700; padding: 2px 9px; border-radius: 2px;
+    white-space: nowrap; letter-spacing: 0.02em;
+  }
+  .badge-s.done { background: var(--done-bg); color: var(--done-text); border: 1px solid var(--done-bd); }
+  .badge-s.prog { background: var(--prog-bg); color: var(--prog-text); border: 1px solid var(--prog-bd); }
+  .badge-s.wait { background: var(--wait-bg); color: var(--wait-text); border: 1px solid var(--wait-bd); }
+  .badge-s.soon { background: var(--up-bg);   color: var(--up-text);   border: 1px solid var(--up-bd);   }
+
+  .phase-body { padding: 0.85rem 1.25rem 1rem; }
+
+  .group { margin-bottom: 0.9rem; }
+  .group:last-child { margin-bottom: 0; }
+  .group-label {
+    font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase;
+    color: var(--text-soft); margin-bottom: 0.4rem;
+  }
+
+  .tasks { list-style: none; display: flex; flex-direction: column; gap: 0.3rem; }
+  .task {
+    display: grid; grid-template-columns: 16px 1fr;
+    gap: 0 0.55rem; font-size: 13.5px; color: var(--text-mid); align-items: baseline;
+  }
+  .task-icon { color: var(--text-soft); font-size: 11px; padding-top: 2px; }
+  .task.done-t .task-icon { color: var(--done-bar); }
+  .task.prog-t .task-icon { color: var(--prog-bar); }
+  .task-text { line-height: 1.6; }
+  .task.done-t .task-text { color: var(--text-mid); }
+  .task.prog-t .task-text { color: var(--text); font-weight: 500; }
+
+  .sub-tasks {
+    grid-column: 2; list-style: none; margin-top: 0.25rem;
+    display: flex; flex-direction: column; gap: 0.2rem;
+  }
+  .sub-task {
+    display: grid; grid-template-columns: 14px 1fr;
+    gap: 0 0.4rem; font-size: 12.5px; color: var(--text-soft);
+  }
+  .sub-icon { font-size: 9px; padding-top: 3px; }
+
+  .phase-div {
+    text-align: center; color: var(--border); font-size: 18px;
+    line-height: 1; margin: 0.35rem 0; letter-spacing: 0.2em;
+  }
+
+  .note-box {
+    margin-top: 1.5rem; padding: 0.85rem 1.1rem;
+    border: 1px solid var(--wait-bd); background: var(--wait-bg);
+    font-size: 13px; color: var(--wait-text); line-height: 1.7;
+  }
+  .note-box strong {
+    display: block; font-size: 11px; letter-spacing: 0.07em;
+    text-transform: uppercase; margin-bottom: 0.35rem; color: var(--text-soft);
+  }
+
+  @media (max-width: 640px) {
+    .hd, .legend, .body, .gantt-wrap { padding-left: 1.25rem; padding-right: 1.25rem; }
+    .hd { flex-direction: column; align-items: flex-start; }
+    .hd-meta { text-align: left; }
+    .phase-time { display: none; }
+  }
+
+  @media print {
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    body { background: #F0F4F7 !important; padding: 0; font-size: 11px; }
+    .page {
+      max-width: 100%; border: none; border-top: 4px solid #1C3D5A;
+      box-shadow: none;
+    }
+    .hd { padding: 1.25rem 1.75rem 1rem; }
+    .hd-title { font-size: 17px; }
+    .gantt-wrap, .legend, .body { padding-left: 1.75rem; padding-right: 1.75rem; }
+    .body { padding-top: 1rem; padding-bottom: 1rem; }
+    .phase { page-break-inside: avoid; break-inside: avoid; }
+    .phase-head { padding: 0.6rem 1rem; }
+    .phase-body { padding: 0.6rem 1rem 0.75rem; }
+    .note-box { page-break-inside: avoid; break-inside: avoid; }
+    .gantt th, .gantt td { font-size: 10px; }
+    .phase-div { margin: 0.2rem 0; }
+    .bar { width: 20px; height: 11px; }
+  }
+</style>
+
+<div class="page">
+
+  <div class="hd">
+    <div class="hd-left">
+      <div class="hd-eyebrow">Research Action Plan</div>
+      <div class="hd-title">Next Steps &amp; Research Timeline</div>
+      <div class="hd-sub">CNN-based DFU Risk Classification Using Plantar Pressure Footprint Images</div>
+    </div>
+    <div class="hd-meta">
+      <strong>Mr. Nhatthapong Pukdeeboon &nbsp;·&nbsp; 6738213 ITCS/M</strong>
+      Prepared&nbsp;6 July 2026
+    </div>
+  </div>
+
+  <!-- Gantt -->
+  <div class="gantt-wrap">
+    <div class="gantt-label">Research Timeline (Table 3.6 — Chapter 3)</div>
+    <table class="gantt">
+      <tr>
+        <th style="text-align:left">Phase</th>
+        <th>May</th><th>Jun</th><th>Jul</th><th>Aug</th>
+        <th>Sep</th><th>Oct</th><th>Nov</th><th>Dec</th>
+      </tr>
+      <tr>
+        <td>Phase 1: Literature Review &amp; Protocol</td>
+        <td class="cell"><div class="bar done-c"></div></td>
+        <td class="cell"><div class="bar done-c"></div></td>
+        <td class="cell"><div class="bar empty"></div></td>
+        <td class="cell"><div class="bar empty"></div></td>
+        <td class="cell"><div class="bar empty"></div></td>
+        <td class="cell"><div class="bar empty"></div></td>
+        <td class="cell"><div class="bar empty"></div></td>
+        <td class="cell"><div class="bar empty"></div></td>
+      </tr>
+      <tr>
+        <td>Phase 2: IRB Submission &amp; Approval</td>
+        <td class="cell"><div class="bar empty"></div></td>
+        <td class="cell"><div class="bar empty"></div></td>
+        <td class="cell"><div class="bar prog-c"></div></td>
+        <td class="cell"><div class="bar wait-c"></div></td>
+        <td class="cell"><div class="bar empty"></div></td>
+        <td class="cell"><div class="bar empty"></div></td>
+        <td class="cell"><div class="bar empty"></div></td>
+        <td class="cell"><div class="bar empty"></div></td>
+      </tr>
+      <tr>
+        <td>Phase 3: Data Collection</td>
+        <td class="cell"><div class="bar empty"></div></td>
+        <td class="cell"><div class="bar empty"></div></td>
+        <td class="cell"><div class="bar empty"></div></td>
+        <td class="cell"><div class="bar empty"></div></td>
+        <td class="cell"><div class="bar up-c"></div></td>
+        <td class="cell"><div class="bar empty"></div></td>
+        <td class="cell"><div class="bar empty"></div></td>
+        <td class="cell"><div class="bar empty"></div></td>
+      </tr>
+      <tr>
+        <td>Phase 4: Annotation &amp; Model Development</td>
+        <td class="cell"><div class="bar empty"></div></td>
+        <td class="cell"><div class="bar empty"></div></td>
+        <td class="cell"><div class="bar empty"></div></td>
+        <td class="cell"><div class="bar empty"></div></td>
+        <td class="cell"><div class="bar up-c"></div></td>
+        <td class="cell"><div class="bar up-c"></div></td>
+        <td class="cell"><div class="bar empty"></div></td>
+        <td class="cell"><div class="bar empty"></div></td>
+      </tr>
+      <tr>
+        <td>Phase 5: Result Analysis</td>
+        <td class="cell"><div class="bar empty"></div></td>
+        <td class="cell"><div class="bar empty"></div></td>
+        <td class="cell"><div class="bar empty"></div></td>
+        <td class="cell"><div class="bar empty"></div></td>
+        <td class="cell"><div class="bar empty"></div></td>
+        <td class="cell"><div class="bar empty"></div></td>
+        <td class="cell"><div class="bar up-c"></div></td>
+        <td class="cell"><div class="bar empty"></div></td>
+      </tr>
+      <tr>
+        <td>Phase 6: Thesis Writing &amp; Defense</td>
+        <td class="cell"><div class="bar empty"></div></td>
+        <td class="cell"><div class="bar empty"></div></td>
+        <td class="cell"><div class="bar empty"></div></td>
+        <td class="cell"><div class="bar empty"></div></td>
+        <td class="cell"><div class="bar empty"></div></td>
+        <td class="cell"><div class="bar empty"></div></td>
+        <td class="cell"><div class="bar empty"></div></td>
+        <td class="cell"><div class="bar up-c"></div></td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="legend">
+    <div class="leg-item"><div class="leg-dot" style="background:var(--done-bar)"></div> Completed</div>
+    <div class="leg-item"><div class="leg-dot" style="background:var(--prog-bar)"></div> In Progress</div>
+    <div class="leg-item"><div class="leg-dot" style="background:var(--wait-bar)"></div> Awaiting IRB Approval</div>
+    <div class="leg-item"><div class="leg-dot" style="background:var(--up-bar); opacity:0.5"></div> Scheduled</div>
+  </div>
+
+  <div class="body">
+
+    <!-- Phase 0 — extra (thesis revision) -->
+    <div class="phase done">
+      <div class="phase-head">
+        <div class="phase-num">Addendum</div>
+        <div class="phase-title">Thesis Proposal Revision per Committee Comments</div>
+        <span class="phase-time">4 July 2026</span>
+        <span class="badge-s done">✓ Completed</span>
+      </div>
+      <div class="phase-body">
+        <ul class="tasks">
+          <li class="task done-t"><span class="task-icon">✓</span><span class="task-text">Revised inclusion/exclusion criteria — T2DM only, foot deformities, cognitive status, bilateral amputation</span></li>
+          <li class="task done-t"><span class="task-icon">✓</span><span class="task-text">Added forward-reference linking monofilament + ABI in Chapter 2 to annotation protocol (Chapter 3)</span></li>
+          <li class="task done-t"><span class="task-icon">✓</span><span class="task-text">Added RQ5 — Multiclass IWGDF Classification (exploratory)</span></li>
+          <li class="task done-t"><span class="task-icon">✓</span><span class="task-text">Revised framing — "early detection" → "risk screening" throughout</span></li>
+          <li class="task done-t"><span class="task-icon">✓</span><span class="task-text">Added justification for single model for both feet</span></li>
+          <li class="task done-t"><span class="task-icon">✓</span><span class="task-text">Specified full feature names — LBP 8 features (from LBP matrix) / HOG 8 features (from HOG distribution)</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="phase-div">·&nbsp;·&nbsp;·</div>
+
+    <!-- Phase 1 -->
+    <div class="phase done">
+      <div class="phase-head">
+        <div class="phase-num">Phase 1</div>
+        <div class="phase-title">Literature Review and Protocol</div>
+        <span class="phase-time">May – Jun 2026</span>
+        <span class="badge-s done">✓ Completed</span>
+      </div>
+      <div class="phase-body">
+        <ul class="tasks">
+          <li class="task done-t"><span class="task-icon">✓</span><span class="task-text">Literature review covering DFU pathogenesis, IWGDF classification, podoscope imaging, CNN transfer learning, XAI</span></li>
+          <li class="task done-t"><span class="task-icon">✓</span><span class="task-text">Designed research protocol — RQ1–RQ5, methodology, evaluation plan</span></li>
+          <li class="task done-t"><span class="task-icon">✓</span><span class="task-text">Proof-of-concept experiments on INAOE thermal dataset — AdaBoost baseline + CNN preliminary (RQ3)</span></li>
+          <li class="task prog-t"><span class="task-icon">⟳</span><span class="task-text">RQ1 INAOE — 48 combos (3 backbones × 8 strategies × 2 orientations) ongoing</span>
+            <ul class="sub-tasks">
+              <li class="sub-task"><span class="sub-icon">→</span><span>32/48 completed, 16 remaining (all ConvNeXt-Tiny complex strategies + ResNet50 regularised) — training restarted 6 Jul, auto-skips completed combos</span></li>
+              <li class="sub-task"><span class="sub-icon">→</span><span>After completion: run rq1_compare.py to select best backbone + strategy + orientation</span></li>
+            </ul>
+          </li>
+          <li class="task done-t"><span class="task-icon">✓</span><span class="task-text">Prepared IRB application documents (in parallel with thesis proposal writing)</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="phase-div">·&nbsp;·&nbsp;·</div>
+
+    <!-- Phase 2 -->
+    <div class="phase prog">
+      <div class="phase-head">
+        <div class="phase-num">Phase 2</div>
+        <div class="phase-title">IRB Submission and Approval</div>
+        <span class="phase-time">Jul – Aug 2026</span>
+        <span class="badge-s prog">⟳ In Progress</span>
+      </div>
+      <div class="phase-body">
+        <div class="group">
+          <div class="group-label">Submit IRB — Immediate Action</div>
+          <ul class="tasks">
+            <li class="task up-t"><span class="task-icon">○</span><span class="task-text">Submit IRB — Mahidol University Institutional Review Board</span>
+              <ul class="sub-tasks">
+                <li class="sub-task"><span class="sub-icon">→</span><span>Research protocol, informed consent form (Thai), data privacy form (PDPA)</span></li>
+              </ul>
+            </li>
+            <li class="task up-t"><span class="task-icon">○</span><span class="task-text">Submit Ethics Committee (EC) — Buddhachinaraj Hospital, Phitsanulok</span>
+              <ul class="sub-tasks">
+                <li class="sub-task"><span class="sub-icon">→</span><span>Coordinate with nursing and physician research team at the hospital</span></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+        <div class="group">
+          <div class="group-label">While Awaiting IRB Approval</div>
+          <ul class="tasks">
+            <li class="task up-t"><span class="task-icon">○</span><span class="task-text">Fix presentation slides — feature dimensions (LBP/HOG), data inconsistency on pages 37 and 39</span></li>
+            <li class="task up-t"><span class="task-icon">○</span><span class="task-text">Explain McNemar's test + DeLong's test to advisor at next meeting</span>
+              <ul class="sub-tasks">
+                <li class="sub-task"><span class="sub-icon">→</span><span>McNemar's: 2×2 contingency table from binary correct/incorrect predictions (decision level)</span></li>
+                <li class="sub-task"><span class="sub-icon">→</span><span>DeLong's: compare AUC-ROC from continuous probability scores (ranking level)</span></li>
+              </ul>
+            </li>
+            <li class="task up-t"><span class="task-icon">○</span><span class="task-text">Test podoscope + Logitech C615 webcam — resolution, contrast, lighting conditions</span></li>
+            <li class="task up-t"><span class="task-icon">○</span><span class="task-text">Prepare data recording form for examination results (monofilament, ABI, visual inspection, IWGDF category)</span></li>
+            <li class="task up-t"><span class="task-icon">○</span><span class="task-text">Practice annotation protocol with nurses and physicians + configure VIA2</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="phase-div">·&nbsp;·&nbsp;·</div>
+
+    <!-- Phase 3 -->
+    <div class="phase wait">
+      <div class="phase-head">
+        <div class="phase-num">Phase 3</div>
+        <div class="phase-title">Data Collection — 300 Patients, Buddhachinaraj Hospital</div>
+        <span class="phase-time">Sep 2026</span>
+        <span class="badge-s wait">⌛ Awaiting IRB Approval</span>
+      </div>
+      <div class="phase-body">
+        <div class="group">
+          <div class="group-label">Per-patient image capture (~10 patients/day × 30 working days)</div>
+          <ul class="tasks">
+            <li class="task up-t"><span class="task-icon">○</span><span class="task-text">Obtain informed consent from each patient before beginning</span></li>
+            <li class="task up-t"><span class="task-icon">○</span><span class="task-text">Capture podoscope images of both left and right feet — verify image quality on-site immediately</span></li>
+            <li class="task up-t"><span class="task-icon">○</span><span class="task-text">Nurse performs clinical assessment — 10g monofilament, tuning fork, ABI, visual inspection</span></li>
+            <li class="task up-t"><span class="task-icon">○</span><span class="task-text">Physician assigns IWGDF category (0–3) per foot with sign-off</span></li>
+            <li class="task up-t"><span class="task-icon">○</span><span class="task-text">Record research ID, date, IWGDF category, flag images requiring retake</span></li>
+          </ul>
+        </div>
+        <div class="group">
+          <div class="group-label">Weekly Quality Control</div>
+          <ul class="tasks">
+            <li class="task up-t"><span class="task-icon">○</span><span class="task-text">Check image quality — insufficient contact, motion blur, overexposure</span></li>
+            <li class="task up-t"><span class="task-icon">○</span><span class="task-text">Monitor cumulative class distribution — alert if imbalance exceeds 80:20</span></li>
+            <li class="task up-t"><span class="task-icon">○</span><span class="task-text">Evaluate actual recruitment rate — adjust plan if below 8 patients/day</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="phase-div">·&nbsp;·&nbsp;·</div>
+
+    <!-- Phase 4 -->
+    <div class="phase soon">
+      <div class="phase-head">
+        <div class="phase-num">Phase 4</div>
+        <div class="phase-title">Data Annotation and Model Development</div>
+        <span class="phase-time">Sep – Oct 2026</span>
+        <span class="badge-s soon">○ Scheduled</span>
+      </div>
+      <div class="phase-body">
+        <div class="group">
+          <div class="group-label">Annotation (concurrent with Phase 3)</div>
+          <ul class="tasks">
+            <li class="task up-t"><span class="task-icon">○</span><span class="task-text">Physician marks ROI bounding boxes with VIA2 on positive images — identify abnormal high-pressure areas</span></li>
+            <li class="task up-t"><span class="task-icon">○</span><span class="task-text">Check annotation consistency every 50 images</span></li>
+          </ul>
+        </div>
+        <div class="group">
+          <div class="group-label">Image Preprocessing Pipeline</div>
+          <ul class="tasks">
+            <li class="task up-t"><span class="task-icon">○</span><span class="task-text">Test full pipeline on first 5–10 pilot images, inspect output at each step in <code>Image_Preprocessing_Pipeline.ipynb</code></span>
+              <ul class="sub-tasks">
+                <li class="sub-task"><span class="sub-icon">→</span><span>Step 1: HMRF-EM segmentation (RGB → YDbDr → GMM → MAP labeling)</span></li>
+                <li class="sub-task"><span class="sub-icon">→</span><span>Step 2: Run Section 14 dilation sweep → select minimum kernel % → update <code>apply_morphological_dilation()</code></span></li>
+                <li class="sub-task"><span class="sub-icon">→</span><span>Step 3: L-R separation + square crop (connected component analysis, sort by X)</span></li>
+                <li class="sub-task"><span class="sub-icon">→</span><span>Step 4: Run Section 11 CLAHE sweep → select clip_limit → update <code>apply_clahe()</code> (tile 8×8 fixed)</span></li>
+                <li class="sub-task"><span class="sub-icon">→</span><span>Step 5–7: 3-channel RGB → resize 224×224 → pass [0,255] directly to each backbone's <code>preprocess_input</code></span></li>
+              </ul>
+            </li>
+            <li class="task up-t"><span class="task-icon">○</span><span class="task-text">Run batch processing (Section 10) — <code>batch_preprocess_images(input_folder, output_folder)</code></span>
+              <ul class="sub-tasks">
+                <li class="sub-task"><span class="sub-icon">→</span><span>Output: <code>output/left_foot/P###_L.npy</code> and <code>output/right_foot/P###_R.npy</code> (float32, [0,255])</span></li>
+                <li class="sub-task"><span class="sub-icon">→</span><span>Check failed images and re-run manually for images where HMRF-EM separation fails</span></li>
+              </ul>
+            </li>
+            <li class="task up-t"><span class="task-icon">○</span><span class="task-text">Create S2 dataset — orientation-standardised variant used alongside S1 to evaluate whether consistent foot direction improves model performance (RQ2)</span>
+              <ul class="sub-tasks">
+                <li class="sub-task"><span class="sub-icon">→</span><span>Horizontal flip all <code>left_foot/</code> images; copy right foot unchanged</span></li>
+                <li class="sub-task"><span class="sub-icon">→</span><span>ROI coordinate transform on flipped images — see <code>transform_roi_s2_flip()</code> in Section 13</span></li>
+              </ul>
+            </li>
+            <li class="task up-t"><span class="task-icon">○</span><span class="task-text">Create patient-level stratified 5-fold CV split (Seed=42), verify class distribution per fold</span></li>
+          </ul>
+        </div>
+        <div class="group">
+          <div class="group-label">Model Training — RQ1 + RQ3 (podoscope dataset)</div>
+          <ul class="tasks">
+            <li class="task up-t"><span class="task-icon">○</span><span class="task-text">Run rq1_run_all.sh on podoscope dataset — 48 combos with Bayesian hyperparameter optimisation per combo</span></li>
+            <li class="task up-t"><span class="task-icon">○</span><span class="task-text">Extract 43 handcrafted features (GLCM 16, LBP 8, HOG 8, Geometric 11) → run rq3_comparison.py</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="phase-div">·&nbsp;·&nbsp;·</div>
+
+    <!-- Phase 5 -->
+    <div class="phase soon">
+      <div class="phase-head">
+        <div class="phase-num">Phase 5</div>
+        <div class="phase-title">Result Analysis — RQ1–RQ5</div>
+        <span class="phase-time">Nov 2026</span>
+        <span class="badge-s soon">○ Scheduled</span>
+      </div>
+      <div class="phase-body">
+        <ul class="tasks">
+          <li class="task up-t"><span class="task-icon">○</span><span class="task-text">RQ1: Run rq1_compare.py — select best backbone × strategy × orientation by mean AUC-ROC across 5-fold CV</span>
+            <ul class="sub-tasks">
+              <li class="sub-task"><span class="sub-icon">→</span><span>Report per fold + mean ± std of AUC-ROC, Sensitivity, Specificity, F1 for all 48 combos</span></li>
+              <li class="sub-task"><span class="sub-icon">→</span><span>Comparison table — best combo per backbone, best overall marked in bold</span></li>
+            </ul>
+          </li>
+          <li class="task up-t"><span class="task-icon">○</span><span class="task-text">RQ2: Run rq2_final_eval.py — compare best S1 vs best S2 on held-out test set</span>
+            <ul class="sub-tasks">
+              <li class="sub-task"><span class="sub-icon">→</span><span>Report AUC-ROC, Sensitivity, Specificity, F1, confusion matrix for both orientations</span></li>
+              <li class="sub-task"><span class="sub-icon">→</span><span>McNemar's test — do the two orientations make significantly different binary decisions on the same patients?</span></li>
+              <li class="sub-task"><span class="sub-icon">→</span><span>DeLong's test — is the AUC-ROC difference statistically significant (threshold-independent)?</span></li>
+            </ul>
+          </li>
+          <li class="task up-t"><span class="task-icon">○</span><span class="task-text">RQ3: Compare best CNN vs AdaBoost baseline on podoscope dataset</span>
+            <ul class="sub-tasks">
+              <li class="sub-task"><span class="sub-icon">→</span><span>Report AUC-ROC, Sensitivity, Specificity, F1, confusion matrix for both models</span></li>
+              <li class="sub-task"><span class="sub-icon">→</span><span>McNemar's test — does the CNN make significantly different clinical decisions than AdaBoost?</span></li>
+              <li class="sub-task"><span class="sub-icon">→</span><span>DeLong's test — is the CNN's risk-ranking ability significantly better?</span></li>
+            </ul>
+          </li>
+          <li class="task up-t"><span class="task-icon">○</span><span class="task-text">RQ4: Run rq4_xai.py — evaluate XAI alignment with expert ROI annotations</span>
+            <ul class="sub-tasks">
+              <li class="sub-task"><span class="sub-icon">→</span><span>Generate Grad-CAM, Grad-CAM++, Eigen-CAM heatmaps on test set</span></li>
+              <li class="sub-task"><span class="sub-icon">→</span><span>Report pointing game accuracy (τ = 15 px) per XAI method — proportion of top-activation pixels inside expert ROI</span></li>
+            </ul>
+          </li>
+          <li class="task up-t"><span class="task-icon">○</span><span class="task-text">RQ5: Adapt best CNN to Dense(4, softmax) — multiclass IWGDF classification (0–3)</span>
+            <ul class="sub-tasks">
+              <li class="sub-task"><span class="sub-icon">→</span><span>5-fold CV — report per-class sensitivity (IWGDF 0, 1, 2, 3), macro AUC-ROC, confusion matrix</span></li>
+            </ul>
+          </li>
+          <li class="task up-t"><span class="task-icon">○</span><span class="task-text">Write Answer-to-RQ boxes for all RQs with result interpretation and threats to validity</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="phase-div">·&nbsp;·&nbsp;·</div>
+
+    <!-- Phase 6 -->
+    <div class="phase soon">
+      <div class="phase-head">
+        <div class="phase-num">Phase 6</div>
+        <div class="phase-title">Thesis Writing and Defense</div>
+        <span class="phase-time">Dec 2026</span>
+        <span class="badge-s soon">○ Scheduled</span>
+      </div>
+      <div class="phase-body">
+        <ul class="tasks">
+          <li class="task up-t"><span class="task-icon">○</span><span class="task-text">Update Chapter 3 Section 3.6 — replace preliminary results with final results (podoscope dataset)</span></li>
+          <li class="task up-t"><span class="task-icon">○</span><span class="task-text">Write Chapter 4 — experimental results and analysis (RQ1–RQ5, result interpretation, comparison with related work)</span></li>
+          <li class="task up-t"><span class="task-icon">○</span><span class="task-text">Write Chapter 5 — conclusion, limitations, threats to validity (construct, conclusion, internal, external), future work</span></li>
+          <li class="task up-t"><span class="task-icon">○</span><span class="task-text">Submit draft to all advisors — revise per feedback at least one round</span></li>
+          <li class="task up-t"><span class="task-icon">○</span><span class="task-text">Prepare defense presentation slides + practice presentation</span></li>
+          <li class="task up-t"><span class="task-icon">○</span><span class="task-text">Thesis defense + revise and submit final thesis</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="note-box">
+      <strong>Note</strong>
+      This timeline is based on Table 3.6 in Chapter 3 of the thesis proposal (May – Dec 2026). If IRB approval is delayed by more than 2 weeks from plan, feasibility of adjusting Phases 3–6 will be assessed and all advisors notified immediately.
+    </div>
+
+  </div>
+</div>

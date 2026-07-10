@@ -1,0 +1,84 @@
+[2026-07-05 17:17:30] === Log file: ./results/rq1_ConvNeXt-Tiny_G-FL_S1_log_20260705_171730.txt ===
+[2026-07-05 17:17:30] 
+################################################################################
+# COMBO: ConvNeXt-Tiny_G-FL_S1
+################################################################################
+
+[2026-07-05 17:17:30] Loaded INAOE: 334 images, shape=(334, 224, 224, 3), CT=90, DM=244
+[2026-07-05 17:17:30] 
+================================================================================
+StrategyTuner: ConvNeXt-Tiny_G-FL_S1/G-FL (10 trials × fold1)
+================================================================================
+[2026-07-05 17:17:32] 
+================================================================================
+G-FL — ConvNeXt-Tiny_G-FL_S1_trial1_fold1
+================================================================================
+[2026-07-05 17:17:32]   Block 1/5: unfreezing 1 layers, budget 10 epochs
+[2026-07-05 17:18:49]   Block 2/5: unfreezing 22 layers, budget 10 epochs
+[2026-07-05 17:19:57]   Block 3/5: unfreezing 22 layers, budget 10 epochs
+[2026-07-05 17:21:07]   Block 4/5: unfreezing 64 layers, budget 10 epochs
+[2026-07-05 17:22:39]   Block 5/5: unfreezing 21 layers, budget 10 epochs
+[2026-07-05 17:24:08]   G-FL done. Total epochs used: 50
+[2026-07-05 17:24:26]   Trial 1: fold1 AUC=0.5000  params={'dropout_rate': 0.15503043695984914, 'l2_reg': 0.00791507439765621, 'dense_units_1': 512, 'dense_units_2': 32, 'batch_size': 16, 'optimizer': 'adam', 'lr': 0.0002440060709081752}
+[2026-07-05 17:24:27] 
+================================================================================
+G-FL — ConvNeXt-Tiny_G-FL_S1_trial2_fold1
+================================================================================
+[2026-07-05 17:24:27]   Block 1/5: unfreezing 1 layers, budget 10 epochs
+[2026-07-05 17:25:34]   Block 2/5: unfreezing 22 layers, budget 10 epochs
+[2026-07-05 17:26:43]   Block 3/5: unfreezing 22 layers, budget 10 epochs
+[2026-07-05 17:27:56]   Block 4/5: unfreezing 64 layers, budget 10 epochs
+[2026-07-05 17:29:22]   Block 5/5: unfreezing 21 layers, budget 10 epochs
+[2026-07-05 17:30:53]   G-FL done. Total epochs used: 50
+[2026-07-05 17:31:05]   Trial 2: fold1 AUC=0.9829  params={'dropout_rate': 0.3228119563599944, 'l2_reg': 0.05112443931364687, 'dense_units_1': 512, 'dense_units_2': 128, 'batch_size': 16, 'optimizer': 'adam', 'lr': 7.864749246304417e-05}
+[2026-07-05 17:31:06] 
+================================================================================
+G-FL — ConvNeXt-Tiny_G-FL_S1_trial3_fold1
+================================================================================
+[2026-07-05 17:31:06]   Block 1/5: unfreezing 1 layers, budget 10 epochs
+[2026-07-05 17:31:59]   Block 2/5: unfreezing 22 layers, budget 10 epochs
+[2026-07-05 17:33:06]   Block 3/5: unfreezing 22 layers, budget 10 epochs
+[2026-07-05 17:34:18]   Block 4/5: unfreezing 64 layers, budget 10 epochs
+[2026-07-05 17:35:41]   Block 5/5: unfreezing 21 layers, budget 10 epochs
+[2026-07-05 17:37:12]   G-FL done. Total epochs used: 46
+[2026-07-05 17:37:25]   Trial 3: fold1 AUC=0.9658  params={'dropout_rate': 0.3242561910239515, 'l2_reg': 4.483218858527927e-06, 'dense_units_1': 512, 'dense_units_2': 32, 'batch_size': 16, 'optimizer': 'adam', 'lr': 2.3406492014301736e-05}
+[2026-07-05 17:37:26] 
+================================================================================
+G-FL — ConvNeXt-Tiny_G-FL_S1_trial4_fold1
+================================================================================
+[2026-07-05 17:37:26]   Block 1/5: unfreezing 1 layers, budget 10 epochs
+[2026-07-05 17:38:32]   Block 2/5: unfreezing 22 layers, budget 10 epochs
+[2026-07-05 17:39:41]   Block 3/5: unfreezing 22 layers, budget 10 epochs
+[2026-07-05 17:40:53]   Block 4/5: unfreezing 64 layers, budget 10 epochs
+[2026-07-05 17:42:18]   Block 5/5: unfreezing 21 layers, budget 10 epochs
+[2026-07-05 17:43:50]   G-FL done. Total epochs used: 50
+[2026-07-05 17:44:03]   Trial 4: fold1 AUC=0.5000  params={'dropout_rate': 0.2397310586493783, 'l2_reg': 0.021340836756469028, 'dense_units_1': 256, 'dense_units_2': 32, 'batch_size': 16, 'optimizer': 'adam', 'lr': 0.003949855008202597}
+[2026-07-05 17:44:05] 
+================================================================================
+G-FL — ConvNeXt-Tiny_G-FL_S1_trial5_fold1
+================================================================================
+[2026-07-05 17:44:05]   Block 1/5: unfreezing 1 layers, budget 10 epochs
+[2026-07-05 17:45:11]   Block 2/5: unfreezing 22 layers, budget 10 epochs
+[2026-07-05 17:46:20]   Block 3/5: unfreezing 22 layers, budget 10 epochs
+[2026-07-05 17:47:34]   Block 4/5: unfreezing 64 layers, budget 10 epochs
+[2026-07-05 17:48:59]   Block 5/5: unfreezing 21 layers, budget 10 epochs
+[2026-07-05 17:50:31]   G-FL done. Total epochs used: 50
+[2026-07-05 17:50:46]   Trial 5: fold1 AUC=0.9761  params={'dropout_rate': 0.4, 'l2_reg': 0.1, 'dense_units_1': 512, 'dense_units_2': 128, 'batch_size': 16, 'optimizer': 'adam', 'lr': 1.890986201683554e-05}
+[2026-07-05 17:50:48] 
+================================================================================
+G-FL — ConvNeXt-Tiny_G-FL_S1_trial6_fold1
+================================================================================
+[2026-07-05 17:50:48]   Block 1/5: unfreezing 1 layers, budget 10 epochs
+[2026-07-05 17:51:54]   Block 2/5: unfreezing 22 layers, budget 10 epochs
+[2026-07-05 17:53:04]   Block 3/5: unfreezing 22 layers, budget 10 epochs
+[2026-07-05 17:54:16]   Block 4/5: unfreezing 64 layers, budget 10 epochs
+[2026-07-05 17:55:43]   Block 5/5: unfreezing 21 layers, budget 10 epochs
+[2026-07-05 17:57:15]   G-FL done. Total epochs used: 50
+[2026-07-05 17:57:30]   Trial 6: fold1 AUC=0.9350  params={'dropout_rate': 0.4, 'l2_reg': 1e-06, 'dense_units_1': 512, 'dense_units_2': 64, 'batch_size': 16, 'optimizer': 'adam', 'lr': 2.9402255790001016e-06}
+[2026-07-05 17:57:33] 
+================================================================================
+G-FL — ConvNeXt-Tiny_G-FL_S1_trial7_fold1
+================================================================================
+[2026-07-05 17:57:33]   Block 1/5: unfreezing 1 layers, budget 10 epochs
+[2026-07-05 17:58:39]   Block 2/5: unfreezing 22 layers, budget 10 epochs
+[2026-07-05 17:59:50]   Block 3/5: unfreezing 22 layers, budget 10 epochs

@@ -1,0 +1,79 @@
+[2026-07-04 11:05:07] === Log file: ./results/rq1_ResNet50_Auto-RGN_S1_log_20260704_110507.txt ===
+[2026-07-04 11:05:07] 
+################################################################################
+# COMBO: ResNet50_Auto-RGN_S1
+################################################################################
+
+[2026-07-04 11:05:07] Loaded INAOE: 334 images, shape=(334, 224, 224, 3), CT=90, DM=244
+[2026-07-04 11:05:07] 
+================================================================================
+StrategyTuner: ResNet50_Auto-RGN_S1/Auto-RGN (10 trials × fold1)
+================================================================================
+[2026-07-04 11:05:08] 
+================================================================================
+Auto-RGN — ResNet50_Auto-RGN_S1_trial1_fold1
+================================================================================
+[2026-07-04 11:05:20]   Trial 1 failed: Exception encountered when calling Activation.call().
+
+[1m{{function_node __wrapped__Relu_device_/job:localhost/replica:0/task:0/device:GPU:0}} failed to allocate memory [Op:Relu] name: [0m
+
+Arguments received by Activation.call():
+  • inputs=tf.Tensor(shape=(64, 14, 14, 256), dtype=float32)
+[2026-07-04 11:05:30]   Trial 2 failed: {{function_node __wrapped__AddV2_device_/job:localhost/replica:0/task:0/device:GPU:0}} failed to allocate memory [Op:AddV2] name: 
+[2026-07-04 11:05:31] 
+================================================================================
+Auto-RGN — ResNet50_Auto-RGN_S1_trial3_fold1
+================================================================================
+[2026-07-04 11:05:41]   Trial 3 failed: Exception encountered when calling Conv2D.call().
+
+[1m{{function_node __wrapped__Conv2D_device_/job:localhost/replica:0/task:0/device:GPU:0}} OOM when allocating tensor with shape[64,14,14,256] and type float on /job:localhost/replica:0/task:0/device:GPU:0 by allocator GPU_0_bfc [Op:Conv2D][0m
+
+Arguments received by Conv2D.call():
+  • inputs=tf.Tensor(shape=(64, 14, 14, 1024), dtype=float32)
+[2026-07-04 11:05:52]   Trial 4 failed: {{function_node __wrapped__Mul_device_/job:localhost/replica:0/task:0/device:GPU:0}} failed to allocate memory [Op:Mul] name: 
+[2026-07-04 11:05:53] 
+================================================================================
+Auto-RGN — ResNet50_Auto-RGN_S1_trial5_fold1
+================================================================================
+[2026-07-04 11:06:03]   Trial 5 failed: Exception encountered when calling Conv2D.call().
+
+[1m{{function_node __wrapped__Conv2D_device_/job:localhost/replica:0/task:0/device:GPU:0}} OOM when allocating tensor with shape[64,14,14,256] and type float on /job:localhost/replica:0/task:0/device:GPU:0 by allocator GPU_0_bfc [Op:Conv2D][0m
+
+Arguments received by Conv2D.call():
+  • inputs=tf.Tensor(shape=(64, 14, 14, 1024), dtype=float32)
+[2026-07-04 11:06:14]   Trial 6 failed: {{function_node __wrapped__AddV2_device_/job:localhost/replica:0/task:0/device:GPU:0}} failed to allocate memory [Op:AddV2] name: 
+[2026-07-04 11:06:15] 
+================================================================================
+Auto-RGN — ResNet50_Auto-RGN_S1_trial7_fold1
+================================================================================
+[2026-07-04 11:06:25]   Trial 7 failed: Exception encountered when calling Conv2D.call().
+
+[1m{{function_node __wrapped__Conv2D_device_/job:localhost/replica:0/task:0/device:GPU:0}} OOM when allocating tensor with shape[64,14,14,256] and type float on /job:localhost/replica:0/task:0/device:GPU:0 by allocator GPU_0_bfc [Op:Conv2D][0m
+
+Arguments received by Conv2D.call():
+  • inputs=tf.Tensor(shape=(64, 14, 14, 1024), dtype=float32)
+[2026-07-04 11:06:36]   Trial 8 failed: {{function_node __wrapped__StatelessRandomUniformV2_device_/job:localhost/replica:0/task:0/device:GPU:0}} OOM when allocating tensor with shape[3,3,256,256] and type float on /job:localhost/replica:0/task:0/device:GPU:0 by allocator GPU_0_bfc [Op:StatelessRandomUniformV2] name: 
+[2026-07-04 11:06:37] 
+================================================================================
+Auto-RGN — ResNet50_Auto-RGN_S1_trial9_fold1
+================================================================================
+[2026-07-04 11:06:47]   Trial 9 failed: Exception encountered when calling Activation.call().
+
+[1m{{function_node __wrapped__Relu_device_/job:localhost/replica:0/task:0/device:GPU:0}} failed to allocate memory [Op:Relu] name: [0m
+
+Arguments received by Activation.call():
+  • inputs=tf.Tensor(shape=(64, 14, 14, 256), dtype=float32)
+[2026-07-04 11:06:58]   Trial 10 failed: {{function_node __wrapped__AddV2_device_/job:localhost/replica:0/task:0/device:GPU:0}} failed to allocate memory [Op:AddV2] name: 
+[2026-07-04 11:06:58] 
+✓ Best fold1 AUC: -0.000000
+[2026-07-04 11:06:58] Best params: {'dropout_rate': 0.15503043695984914, 'l2_reg': 0.00791507439765621, 'dense_units_1': 512, 'dense_units_2': 32, 'batch_size': 64, 'optimizer': 'adam', 'lr': 0.0002440060709081752}
+[2026-07-04 11:06:58] ✓ best_params → ./results/rq1/ResNet50_Auto-RGN_S1/best_params.json
+[2026-07-04 11:06:58] 
+================================================================================
+FOLD 1/5: ResNet50_Auto-RGN_S1
+================================================================================
+[2026-07-04 11:06:58] Train: 213  Val: 54
+[2026-07-04 11:06:59] 
+================================================================================
+Auto-RGN — ResNet50_Auto-RGN_S1_Fold1
+================================================================================

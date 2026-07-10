@@ -1,0 +1,123 @@
+[2026-07-07 21:26:15] === Log file: ./results/rq3_log_20260707_212615.txt ===
+[2026-07-07 21:26:15] Loaded INAOE: 334 images, shape=(334, 224, 224, 3), CT=90, DM=244
+[2026-07-07 21:26:15] Extracting all 39 Khandakar et al. features ...
+[2026-07-07 21:26:15]   Total images to process: 334
+[2026-07-07 21:26:15]   Pass 1 — computing ET for all zones ...
+[2026-07-07 21:26:17]   Pass 2 — computing all features ...
+[2026-07-07 21:26:17]     50/334 done
+[2026-07-07 21:26:18]     100/334 done
+[2026-07-07 21:26:18]     150/334 done
+[2026-07-07 21:26:18]     200/334 done
+[2026-07-07 21:26:19]     250/334 done
+[2026-07-07 21:26:19]     300/334 done
+[2026-07-07 21:26:19]   Done — feature matrix: (334, 39)  (39 features)
+[2026-07-07 21:26:19] ✓ Features cached -> ./model_checkpoints/khandakar_features_39.npz
+[2026-07-07 21:26:19] Features (39): ['Age', 'Gender', 'TCI', 'HighestTemp', 'NTR_Class1', 'NTR_Class2', 'NTR_Class3', 'NTR_Class4', 'NTR_Class5', 'LPA_Mean', 'LPA_Median', 'LPA_SD', 'LPA_ET', 'LPA_ETD', 'LPA_HSE', 'MPA_Mean', 'MPA_Median', 'MPA_SD', 'MPA_ET', 'MPA_ETD', 'MPA_HSE', 'LCA_Mean', 'LCA_Median', 'LCA_SD', 'LCA_ET', 'LCA_ETD', 'LCA_HSE', 'MCA_Mean', 'MCA_Median', 'MCA_SD', 'MCA_ET', 'MCA_ETD', 'MCA_HSE', 'FullFoot_Mean', 'FullFoot_Median', 'FullFoot_SD', 'FullFoot_ET', 'FullFoot_ETD', 'FullFoot_HSE']
+[2026-07-07 21:26:19] Train: 267  |  Test: 67  (DM_train=195  CT_train=72)
+[2026-07-07 21:26:19] 
+================================================================================
+[2026-07-07 21:26:19] Step 3: Correlation-based feature filtering (threshold=0.95)
+[2026-07-07 21:26:19] ================================================================================
+[2026-07-07 21:26:19]   Correlation filter (>95%): 39 -> 26 features  (dropped 13)
+[2026-07-07 21:26:19]   Retained features (26): ['Age', 'Gender', 'TCI', 'HighestTemp', 'NTR_Class1', 'NTR_Class2', 'NTR_Class3', 'NTR_Class4', 'NTR_Class5', 'LPA_SD', 'LPA_ETD', 'LPA_HSE', 'MPA_SD', 'MPA_ET', 'MPA_ETD', 'MPA_HSE', 'LCA_Mean', 'LCA_SD', 'LCA_ETD', 'LCA_HSE', 'MCA_SD', 'MCA_ETD', 'MCA_HSE', 'FullFoot_SD', 'FullFoot_ETD', 'FullFoot_HSE']
+[2026-07-07 21:26:19] 
+================================================================================
+[2026-07-07 21:26:19] Step 4: SMOTE on training set -> feature ranking
+[2026-07-07 21:26:19] ================================================================================
+[2026-07-07 21:26:19]   After SMOTE: 390 samples  (DM=195  CT=195)
+[2026-07-07 21:26:19] 
+  Feature rankings (RF / XGBoost / ExtraTree):
+[2026-07-07 21:26:19] 
+  Rank   Random Forest              XGBoost                    ExtraTree                
+[2026-07-07 21:26:19]   -------------------------------------------------------------------------------------
+[2026-07-07 21:26:20]   1      Age                        Age                        Age                      
+[2026-07-07 21:26:20]   2      MPA_ET                     MPA_ET                     MPA_ET                   
+[2026-07-07 21:26:20]   3      NTR_Class1                 NTR_Class4                 Gender                   
+[2026-07-07 21:26:20]   4      LPA_SD                     LCA_SD                     TCI                      
+[2026-07-07 21:26:20]   5      TCI                        MCA_SD                     LPA_SD                   
+[2026-07-07 21:26:20]   6      MCA_SD                     HighestTemp                MCA_SD                   
+[2026-07-07 21:26:20]   7      LCA_Mean                   TCI                        MPA_SD                   
+[2026-07-07 21:26:20]   8      MPA_ETD                    MCA_ETD                    NTR_Class1               
+[2026-07-07 21:26:20]   9      MPA_SD                     MPA_SD                     NTR_Class2               
+[2026-07-07 21:26:20]   10     NTR_Class2                 LPA_HSE                    NTR_Class4               
+[2026-07-07 21:26:20]   RF top-10 features:
+[2026-07-07 21:26:20]      1. Age                     importance=0.2814
+[2026-07-07 21:26:20]      2. MPA_ET                  importance=0.0656
+[2026-07-07 21:26:20]      3. NTR_Class1              importance=0.0621
+[2026-07-07 21:26:20]      4. LPA_SD                  importance=0.0602
+[2026-07-07 21:26:20]      5. TCI                     importance=0.0560
+[2026-07-07 21:26:20]      6. MCA_SD                  importance=0.0557
+[2026-07-07 21:26:20]      7. LCA_Mean                importance=0.0483
+[2026-07-07 21:26:20]      8. MPA_ETD                 importance=0.0467
+[2026-07-07 21:26:20]      9. MPA_SD                  importance=0.0457
+[2026-07-07 21:26:20]     10. NTR_Class2              importance=0.0440
+[2026-07-07 21:26:20] 
+  Selected top-10 features: ['Age', 'MPA_ET', 'NTR_Class1', 'LPA_SD', 'TCI', 'MCA_SD', 'LCA_Mean', 'MPA_ETD', 'MPA_SD', 'NTR_Class2']
+[2026-07-07 21:26:20] 
+================================================================================
+[2026-07-07 21:26:20] Step 5: AdaBoost 5-fold CV  (n_estimators=50, lr=1.0)
+[2026-07-07 21:26:20] ================================================================================
+[2026-07-07 21:26:20]   Fold 1: AUC=0.9983
+[2026-07-07 21:26:20]   Fold 2: AUC=1.0000
+[2026-07-07 21:26:20]   Fold 3: AUC=0.9780
+[2026-07-07 21:26:20]   Fold 4: AUC=0.9707
+[2026-07-07 21:26:20]   Fold 5: AUC=1.0000
+[2026-07-07 21:26:20] 
+✓ Mean CV AUC: 0.9894 +/-0.0125  (per fold: [0.9983, 1.0, 0.978, 0.9707, 1.0])
+[2026-07-07 21:26:20] 
+================================================================================
+[2026-07-07 21:26:20] Step 6: AdaBoost final training (threshold=0.5)
+[2026-07-07 21:26:20] ================================================================================
+[2026-07-07 21:26:20]   After SMOTE: 390 samples
+[2026-07-07 21:26:20] 
+================================================================================
+[2026-07-07 21:26:20] Step 6: AdaBoost TEST RESULTS  (threshold=0.5000)
+[2026-07-07 21:26:20] ================================================================================
+[2026-07-07 21:26:20]   sensitivity   : 0.9592
+[2026-07-07 21:26:20]   specificity   : 0.8889
+[2026-07-07 21:26:20]   ppv           : 0.9592
+[2026-07-07 21:26:20]   npv           : 0.8889
+[2026-07-07 21:26:20]   f1            : 0.9592
+[2026-07-07 21:26:20]   auc_roc       : 0.9773
+[2026-07-07 21:26:20] ✓ CNN model: ConvNeXt-Tiny_LP-FT_S2  threshold: 0.5000
+[2026-07-07 21:26:20] 
+================================================================================
+[2026-07-07 21:26:20] RQ3: COMPARISON TABLE
+[2026-07-07 21:26:20] ================================================================================
+[2026-07-07 21:26:20] Metric          CNN (ConvNeXt-Tiny_LP-FT_S2)    AdaBoost (Khandakar)     Delta
+[2026-07-07 21:26:20] ────────────────────────────────────────────────────────────────────────────────
+[2026-07-07 21:26:20] sensitivity                           0.8571                  0.9592   -0.1020
+[2026-07-07 21:26:20] specificity                           0.9444                  0.8889   +0.0556
+[2026-07-07 21:26:20] auc_roc                               0.9853                  0.9773   +0.0079
+[2026-07-07 21:26:20] ppv                                   0.9767                  0.9592   +0.0176
+[2026-07-07 21:26:20] npv                                   0.7083                  0.8889   -0.1806
+[2026-07-07 21:26:20] f1                                    0.9130                  0.9592   -0.0461
+[2026-07-07 21:26:20] 
+────────────────────────────────────────────────────────────────────────────────
+[2026-07-07 21:26:20] Statistical Tests  (CNN thr=0.5000, AdaBoost thr=0.5000)
+[2026-07-07 21:26:20] ────────────────────────────────────────────────────────────────────────────────
+[2026-07-07 21:26:20] McNemar's test  (H0: same error rate)
+[2026-07-07 21:26:20]   b=3 (CNN correct/AdaBoost wrong)  c=7 (CNN wrong/AdaBoost correct)  p=0.3438 ns
+[2026-07-07 21:26:20] DeLong's test   (H0: AUC_CNN = AUC_AdaBoost)
+[2026-07-07 21:26:20]   AUC_CNN=0.9853  AUC_AdaBoost=0.9773  ΔAUC=+0.0079  z=0.6410  p=0.5215 ns
+[2026-07-07 21:26:20] 
+Significance: * p<0.05  ** p<0.01  *** p<0.001  ns=not significant
+[2026-07-07 21:26:20] 
+────────────────────────────────────────────────────────────────────────────────
+[2026-07-07 21:26:20] McNemar Discordant Cases
+[2026-07-07 21:26:20] b=3: CNN correct / AdaBoost wrong
+[2026-07-07 21:26:20]   test[ 6] dataset[ 32]  true=CT  CNN=CT(0.008)  AdaBoost=DM(0.553)
+[2026-07-07 21:26:20]   test[32] dataset[156]  true=DM  CNN=DM(0.993)  AdaBoost=CT(0.490)
+[2026-07-07 21:26:20]   test[33] dataset[157]  true=DM  CNN=DM(0.994)  AdaBoost=CT(0.490)
+[2026-07-07 21:26:20] c=7: CNN wrong / AdaBoost correct
+[2026-07-07 21:26:20]   test[18] dataset[ 93]  true=DM  CNN=CT(0.008)  AdaBoost=DM(0.631)
+[2026-07-07 21:26:20]   test[29] dataset[144]  true=DM  CNN=CT(0.058)  AdaBoost=DM(0.636)
+[2026-07-07 21:26:20]   test[30] dataset[145]  true=DM  CNN=CT(0.009)  AdaBoost=DM(0.629)
+[2026-07-07 21:26:20]   test[44] dataset[218]  true=DM  CNN=CT(0.015)  AdaBoost=DM(0.604)
+[2026-07-07 21:26:20]   test[45] dataset[219]  true=DM  CNN=CT(0.255)  AdaBoost=DM(0.544)
+[2026-07-07 21:26:20]   test[56] dataset[290]  true=DM  CNN=CT(0.053)  AdaBoost=DM(0.572)
+[2026-07-07 21:26:20]   test[66] dataset[322]  true=DM  CNN=CT(0.013)  AdaBoost=DM(0.581)
+[2026-07-07 21:26:20] 
+✓ AdaBoost test probs -> ./results/rq3_test_probs.npy
+[2026-07-07 21:26:20] 
+✓ Results -> ./results/rq3_results.json

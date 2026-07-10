@@ -1,0 +1,310 @@
+<meta charset="UTF-8">
+<title>Thesis Proposal Revision Record</title>
+<style>
+  :root {
+    --navy:#1C3D5A;--navy-light:#2C5580;--teal:#1A7B6E;--teal-bg:#EAF5F3;
+    --amber:#A05C00;--amber-bg:#FFF4E0;--bg:#F2F5F8;--surface:#FFFFFF;
+    --border:#C5D3DF;--border-soft:#DDE6EE;--text:#111B25;--text-mid:#3D5568;
+    --text-soft:#6A849A;--saneh-stripe:#E8F4F2;--saneh-rule:#1A7B6E;
+    --wan-stripe:#EAF0F7;--wan-rule:#1C3D5A;--next-stripe:#FBF6EE;--next-rule:#A05C00;
+    --done-bg:#E8F5F0;--done-text:#145A3E;--done-border:#A8D8C5;
+    --note-bg:#FFF4E0;--note-text:#7A4500;--note-border:#F0C878;
+  }
+  @media(prefers-color-scheme:dark){:root{
+    --navy:#5DA0D0;--navy-light:#7ABCE8;--teal:#2CBBA6;--teal-bg:#0C2825;
+    --amber:#FFB84D;--amber-bg:#241800;--bg:#0C1820;--surface:#132130;
+    --border:#243D55;--border-soft:#1C3248;--text:#D8E8F5;--text-mid:#8AAEC8;
+    --text-soft:#5A7E9A;--saneh-stripe:#0C2825;--saneh-rule:#2CBBA6;
+    --wan-stripe:#0F1E2E;--wan-rule:#5DA0D0;--next-stripe:#241800;--next-rule:#FFB84D;
+    --done-bg:#082A1C;--done-text:#5DC8A0;--done-border:#1A5A40;
+    --note-bg:#241800;--note-text:#FFB84D;--note-border:#7A5010;
+  }}
+  :root[data-theme="light"]{
+    --navy:#1C3D5A;--navy-light:#2C5580;--teal:#1A7B6E;--teal-bg:#EAF5F3;
+    --amber:#A05C00;--amber-bg:#FFF4E0;--bg:#F2F5F8;--surface:#FFFFFF;
+    --border:#C5D3DF;--border-soft:#DDE6EE;--text:#111B25;--text-mid:#3D5568;
+    --text-soft:#6A849A;--saneh-stripe:#E8F4F2;--saneh-rule:#1A7B6E;
+    --wan-stripe:#EAF0F7;--wan-rule:#1C3D5A;--next-stripe:#FBF6EE;--next-rule:#A05C00;
+    --done-bg:#E8F5F0;--done-text:#145A3E;--done-border:#A8D8C5;
+    --note-bg:#FFF4E0;--note-text:#7A4500;--note-border:#F0C878;
+  }
+  :root[data-theme="dark"]{
+    --navy:#5DA0D0;--navy-light:#7ABCE8;--teal:#2CBBA6;--teal-bg:#0C2825;
+    --amber:#FFB84D;--amber-bg:#241800;--bg:#0C1820;--surface:#132130;
+    --border:#243D55;--border-soft:#1C3248;--text:#D8E8F5;--text-mid:#8AAEC8;
+    --text-soft:#5A7E9A;--saneh-stripe:#0C2825;--saneh-rule:#2CBBA6;
+    --wan-stripe:#0F1E2E;--wan-rule:#5DA0D0;--next-stripe:#241800;--next-rule:#FFB84D;
+    --done-bg:#082A1C;--done-text:#5DC8A0;--done-border:#1A5A40;
+    --note-bg:#241800;--note-text:#FFB84D;--note-border:#7A5010;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;font-size:14.5px;line-height:1.75;padding:2rem 1rem 5rem;-webkit-font-smoothing:antialiased;}
+  .page{max-width:880px;margin:0 auto;background:var(--surface);border:1px solid var(--border);border-top:5px solid var(--navy);}
+  .lh{padding:2.5rem 3rem 2rem;border-bottom:1px solid var(--border);display:flex;flex-direction:column;align-items:center;text-align:center;gap:0.2rem;}
+  .lh-inst{font-size:12.5px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-mid);}
+  .lh-dept{font-size:11.5px;color:var(--text-soft);}
+  .lh-divider{width:40px;height:2px;background:var(--teal);margin:0.85rem auto 0.7rem;}
+  .lh-title{font-family:Georgia,"Times New Roman",serif;font-size:20px;font-weight:normal;color:var(--navy);letter-spacing:0.03em;}
+  .lh-sub{font-size:12px;color:var(--text-soft);margin-top:0.2rem;}
+  .meta{padding:1.75rem 3rem;border-bottom:1px solid var(--border-soft);display:grid;grid-template-columns:160px 1fr;gap:0.4rem 0.75rem;font-size:13.5px;}
+  .ml{color:var(--text-soft);font-size:11px;letter-spacing:0.05em;text-transform:uppercase;padding-top:2px;}
+  .mv{color:var(--text);}.mv strong{color:var(--navy);font-weight:600;}.mv small{color:var(--text-soft);font-size:12px;}
+  .body{padding:0 3rem 3rem;}
+  .sec-header{display:flex;align-items:center;gap:0.75rem;margin:2.25rem 0 0;padding:0.9rem 1.1rem;border-left:4px solid var(--saneh-rule);background:var(--saneh-stripe);}
+  .sec-header.wan{border-left-color:var(--wan-rule);background:var(--wan-stripe);}
+  .sec-header.next{border-left-color:var(--next-rule);background:var(--next-stripe);}
+  .sec-role{font-size:10.5px;letter-spacing:0.1em;text-transform:uppercase;font-weight:700;color:var(--text-soft);white-space:nowrap;}
+  .sec-name{font-size:14.5px;font-weight:700;color:var(--text);}
+  .sec-dept{font-size:12px;color:var(--text-soft);margin-left:auto;white-space:nowrap;}
+  .item{border:1px solid var(--border-soft);border-top:none;display:grid;grid-template-columns:36px 1fr;}
+  .item:first-of-type{border-top:1px solid var(--border-soft);margin-top:0.5rem;}
+  .item-num{background:var(--navy);color:rgba(255,255,255,0.85);font-family:Georgia,serif;font-size:13px;display:flex;align-items:flex-start;justify-content:center;padding-top:1rem;letter-spacing:0.01em;}
+  .sec-header.wan~.item .item-num,.sec-header.wan+.item .item-num{background:var(--navy-light);}
+  .sec-header.next~.item .item-num{background:var(--amber);color:white;}
+  .item-body{padding:1rem 1.1rem 1.1rem;}
+  .item-title{font-size:14px;font-weight:600;color:var(--text);margin-bottom:0.5rem;line-height:1.4;}
+  .label{font-size:10.5px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-soft);margin-bottom:0.3rem;margin-top:0.6rem;display:block;}
+  .comment-text{font-size:13px;color:var(--text-mid);line-height:1.7;font-style:italic;padding-left:0.75rem;border-left:2px solid var(--border);}
+  .action-text{font-size:13.5px;color:var(--text);line-height:1.75;}
+  .status-row{display:flex;align-items:center;gap:0.6rem;margin-top:0.65rem;flex-wrap:wrap;}
+  .badge{display:inline-flex;align-items:center;gap:0.3rem;font-size:11px;font-weight:600;padding:2px 9px;border-radius:2px;letter-spacing:0.03em;}
+  .badge.done{background:var(--done-bg);color:var(--done-text);border:1px solid var(--done-border);}
+  .badge.noted{background:var(--note-bg);color:var(--note-text);border:1px solid var(--note-border);}
+  .ref{font-family:"SF Mono",Consolas,"Courier New",monospace;font-size:11.5px;background:var(--bg);color:var(--teal);padding:1px 7px;border:1px solid var(--border-soft);}
+  .sig-area{margin:2.5rem 3rem 0;padding-top:1.5rem;border-top:1px solid var(--border);display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;}
+  .sig-box{font-size:13px;}
+  .sig-role{font-size:10.5px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-soft);font-weight:700;margin-bottom:0.3rem;}
+  .sig-line{width:140px;height:1px;background:var(--border);margin:1.75rem 0 0.45rem;}
+  .sig-name{font-weight:600;color:var(--text);}
+  .sig-detail{font-size:12px;color:var(--text-soft);line-height:1.55;margin-top:0.2rem;}
+  @media(max-width:640px){.lh,.meta,.body{padding-left:1.25rem;padding-right:1.25rem;}.meta{grid-template-columns:1fr;}.ml{margin-top:0.5rem;}.sig-area{grid-template-columns:1fr;}.sec-dept{display:none;}}
+
+  @media print {
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    body { background: #F2F5F8 !important; padding: 0; font-size: 11px; }
+    .page { max-width: 100%; border: none; border-top: 4px solid #1C3D5A; box-shadow: none; }
+    .lh { padding: 1rem 1.75rem; }
+    .meta, .body { padding-left: 1.75rem; padding-right: 1.75rem; }
+    .meta { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+    .item { page-break-inside: avoid; break-inside: avoid; margin-bottom: 0.6rem; }
+    .item-head { padding: 0.55rem 0.9rem; }
+    .item-body { padding: 0.55rem 0.9rem 0.7rem; }
+    .sig-area { margin: 1.5rem 1.75rem 0; padding-top: 1rem; }
+    .sec { margin-bottom: 1rem; }
+  }
+</style>
+
+<div class="page">
+  <div class="lh">
+    <div class="lh-inst">Mahidol University</div>
+    <div class="lh-dept">Faculty of Information and Communication Technology &nbsp;·&nbsp; Master of Science in Information Technology</div>
+    <div class="lh-divider"></div>
+    <div class="lh-title">Thesis Proposal Revision Record</div>
+    <div class="lh-sub">Response to Committee Comments — Post-Defense Revisions</div>
+  </div>
+
+  <div class="meta">
+    <div class="ml">Thesis Title</div>
+    <div class="mv"><strong>CNN-based Diabetic Foot Ulcer Risk Classification Using Plantar Pressure Footprint Images with Explainable Artificial Intelligence (XAI)</strong></div>
+    <div class="ml">Student</div>
+    <div class="mv">Mr. Nhatthapong Pukdeeboon &nbsp;<small>6738213 ITCS/M</small></div>
+    <div class="ml">Principal Advisor</div>
+    <div class="mv">Asst. Prof. Dr. Morakot Choetkiertikul</div>
+    <div class="ml">Co-Advisors</div>
+    <div class="mv">Assoc. Prof. Dr. Worapan Kusakunniran &nbsp;·&nbsp; Dr. Saneh Khankaew</div>
+    <div class="ml">Defense Date</div>
+    <div class="mv">1 July 2026</div>
+    <div class="ml">Revision Date</div>
+    <div class="mv">4 July 2026</div>
+  </div>
+
+  <div class="body">
+
+    <!-- SANEH -->
+    <div class="sec-header">
+      <div>
+        <div class="sec-role">Comments from</div>
+        <div class="sec-name">Dr. Saneh Khankaew</div>
+      </div>
+      <div class="sec-dept">Clinical &amp; Nursing Sciences</div>
+    </div>
+
+    <div class="item">
+      <div class="item-num">A1</div>
+      <div class="item-body">
+        <div class="item-title">Revise Inclusion Criteria — T2DM only, include foot deformities, add cognitive status condition</div>
+        <span class="label">Comment</span>
+        <div class="comment-text">Revise the inclusion criteria to specify Type 2 Diabetes Mellitus patients only, since T1DM has a different pathogenesis. Reclassify "diabetes-related foot deformities" from exclusion to inclusion (as IWGDF category 2+), and add a requirement that participants must be alert and able to follow verbal commands.</div>
+        <span class="label">Action Taken</span>
+        <div class="action-text">Updated inclusion criteria in Section 3.1.4 covering all three points: (1) specify Type 2 Diabetes Mellitus only; (2) include diabetes-related deformities (claw toes, hammer toes, Charcot foot, etc.) with clinical rationale as IWGDF category 2 or higher; (3) require participants to be alert and able to follow verbal commands while standing on the podoscope.</div>
+        <div class="status-row"><span class="badge done">✓ Resolved</span><span class="ref">Chapter 3 § 3.1.4 Inclusion Criteria</span></div>
+      </div>
+    </div>
+
+    <div class="item">
+      <div class="item-num">A2</div>
+      <div class="item-body">
+        <div class="item-title">Revise Exclusion Criteria — Specify Bilateral Amputation Explicitly</div>
+        <span class="label">Comment</span>
+        <div class="comment-text">Clarify in the exclusion criteria that only patients with bilateral lower-limb amputation are excluded, so that patients with one remaining limb may still participate.</div>
+        <span class="label">Action Taken</span>
+        <div class="action-text">Updated the exclusion criteria to specify "bilateral lower-limb amputation" as the exclusion condition, with the rationale that the patient cannot stand on the podoscope. Patients with unilateral amputation who can bear weight on the remaining limb remain eligible.</div>
+        <div class="status-row"><span class="badge done">✓ Resolved</span><span class="ref">Chapter 3 § 3.1.4 Exclusion Criteria</span></div>
+      </div>
+    </div>
+
+    <div class="item">
+      <div class="item-num">A3</div>
+      <div class="item-body">
+        <div class="item-title">Update Study Setting — Diabetic Clinic Instead of Primary Care</div>
+        <span class="label">Comment</span>
+        <div class="comment-text">Revise the study setting description to specify "diabetic clinic" (outpatient diabetic care unit), which better fits the target population than a primary care setting.</div>
+        <span class="label">Action Taken</span>
+        <div class="action-text">Updated Section 3.1.3 to specify that participants are recruited from the "outpatient diabetic care clinic" at Buddhachinaraj Hospital, Phitsanulok.</div>
+        <div class="status-row"><span class="badge done">✓ Resolved</span><span class="ref">Chapter 3 § 3.1.3 Data Source</span></div>
+      </div>
+    </div>
+
+    <div class="item">
+      <div class="item-num">A4</div>
+      <div class="item-body">
+        <div class="item-title">Add 10g Monofilament and ABI in Literature Review and Study Design</div>
+        <span class="label">Comment</span>
+        <div class="comment-text">Include information on 10-gram monofilament screening and Ankle-Brachial Index (ABI) in the Chapter 2 literature review and in the overall study design.</div>
+        <span class="label">Action Taken</span>
+        <div class="action-text">Chapter 2 Section 2.3 already covers both instruments: 10-gram Semmes-Weinstein monofilament (testing procedure, test sites, LOPS diagnostic criteria) and Ankle-Brachial Index (normal range 0.9–1.3, combined with TBI and Doppler waveform). A forward-reference was added linking these to Section 3.1 to clarify that monofilament and ABI are used in the annotation protocol to establish ground truth labels.</div>
+        <div class="status-row"><span class="badge done">✓ Resolved</span><span class="ref">Chapter 2 § 2.3 (paragraph after Clinical Assessment table)</span></div>
+      </div>
+    </div>
+
+    <!-- WORAPAN -->
+    <div class="sec-header wan">
+      <div>
+        <div class="sec-role">Comments from</div>
+        <div class="sec-name">Assoc. Prof. Dr. Worapan Kusakunniran</div>
+      </div>
+      <div class="sec-dept">Methodology &amp; Technical</div>
+    </div>
+
+    <div class="item">
+      <div class="item-num">B1</div>
+      <div class="item-body">
+        <div class="item-title">Add Multiclass Classification — Distinguish All 4 IWGDF Risk Levels</div>
+        <span class="label">Comment</span>
+        <div class="comment-text">Suggested expanding scope beyond binary classification to explore whether the model can stage patients across different IWGDF risk categories.</div>
+        <span class="label">Action Taken</span>
+        <div class="action-text">Added RQ5 to the proposal. Output layer changes from Dense(1, sigmoid) to Dense(4, softmax) using categorical cross-entropy and inverse-frequency class weighting. Results reported as per-class sensitivity (one-vs-rest), macro AUC-ROC and confusion matrix. Treated as exploratory — no significance testing, podoscope dataset only.</div>
+        <div class="status-row"><span class="badge done">✓ Resolved</span><span class="ref">Chapter 1 § 1.3 RQ5 &nbsp;·&nbsp; Chapter 3 § 3.5 RQ5 subsection</span></div>
+      </div>
+    </div>
+
+    <div class="item">
+      <div class="item-num">B2</div>
+      <div class="item-body">
+        <div class="item-title">Reframe from "Early Detection" to "Risk Screening"</div>
+        <span class="label">Comment</span>
+        <div class="comment-text">The committee noted that claiming "early detection" may overclaim the contribution, since IWGDF Category 1 is defined by LOPS (monofilament) and PAD (ABI) — neurological and vascular conditions not directly observable in plantar pressure images. A Category 1 patient with LOPS but normal foot structure may show no abnormal pressure pattern.</div>
+        <span class="label">Action Taken</span>
+        <div class="action-text">The committee's concern is acknowledged as valid. The model detects only mechanical risk patterns visible in plantar pressure distribution (e.g. high forefoot pressure, deformity-related contact patterns) and cannot infer LOPS or PAD directly from the image. Framing has been revised throughout from "early detection" to "risk screening" — the tool screens for risk patterns in footprint images only and does not replace monofilament or ABI examination.</div>
+        <div class="status-row"><span class="badge done">✓ Resolved</span><span class="ref">Chapter 1 § 1.1, 1.3 &nbsp;·&nbsp; Chapter 3 § 3.2 Labels for Classification</span></div>
+      </div>
+    </div>
+
+    <div class="item">
+      <div class="item-num">B3</div>
+      <div class="item-body">
+        <div class="item-title">Justify Single Model for Both Feet Instead of Side-Specific Models</div>
+        <span class="label">Comment</span>
+        <div class="comment-text">Explore whether a single model can effectively process data from both feet, or whether separate models should be built for each side.</div>
+        <span class="label">Action Taken</span>
+        <div class="action-text">Added a paragraph in Section 3.3.1 explaining three reasons for a single model: (1) the task is identical for both feet, since biomechanical loading is side-independent once orientation is controlled via RQ2; (2) splitting would unnecessarily halve training data for this limited dataset; (3) patient-level aggregation (flag patient as high-risk if either foot is positive) is a natural extension for future work.</div>
+        <div class="status-row"><span class="badge done">✓ Resolved</span><span class="ref">Chapter 3 § 3.3.1 Data Splitting</span></div>
+      </div>
+    </div>
+
+    <div class="item">
+      <div class="item-num">B4</div>
+      <div class="item-body">
+        <div class="item-title">Clarify Feature Dimensions — LBP and HOG 8 Features Each</div>
+        <span class="label">Comment</span>
+        <div class="comment-text">The reported feature counts for LBP and HOG appeared too few compared to raw descriptors expected to have thousands of dimensions. Clarify the feature dimensions and selection technique.</div>
+        <span class="label">Action Taken</span>
+        <div class="action-text">Confirmed from Bansal (2024) that 8 statistical moments are used per technique. Full feature names specified in tables and prose:<br><br><strong>LBP (8 features from LBP matrix):</strong> Mean, Variance, Entropy, Skewness, Kurtosis, Energy, Contrast, Correlation — note that Contrast and Correlation are computed from the LBP matrix, not the original image, and thus differ from GLCM Contrast/Correlation.<br><br><strong>HOG (8 features from HOG descriptor distribution):</strong> Mean, Variance, Standard Deviation, Skewness, Kurtosis, Median, Max, Min.<br><br>Added a "Note that…" paragraph explaining that raw LBP histograms may have 256+ bins and raw HOG vectors may have thousands of dimensions, but only statistical summaries of 8 values are extracted — appropriate for a dataset of fewer than 600 images.</div>
+        <div class="status-row"><span class="badge done">✓ Resolved</span><span class="ref">Chapter 3 — Table (Handcrafted Features) + prose § 3.4.1</span></div>
+      </div>
+    </div>
+
+    <div class="item">
+      <div class="item-num">B5</div>
+      <div class="item-body">
+        <div class="item-title">Report Cross-Validation Results as Mean ± SD</div>
+        <span class="label">Comment</span>
+        <div class="comment-text">Report cross-validation results using mean and standard deviation (mean ± SD) to show model stability and avoid reliance on a single-fold number.</div>
+        <span class="label">Action Taken</span>
+        <div class="action-text">The preliminary results table in Section 3.6 reports mean ± SD across 5-fold CV for all metrics (AUC-ROC, Sensitivity, Specificity, PPV, NPV, F1-Score). Section 3.5 explicitly states this reporting format will apply to all combinations in RQ1.</div>
+        <div class="status-row"><span class="badge done">✓ Resolved</span><span class="ref">Chapter 3 § 3.5 Evaluations Plan + § 3.6 Preliminary Results</span></div>
+      </div>
+    </div>
+
+    <!-- NEXT MEETING -->
+    <div class="sec-header next">
+      <div>
+        <div class="sec-role">Items for Next Meeting</div>
+        <div class="sec-name">Regarding Presentation &amp; Methodology Clarification</div>
+      </div>
+    </div>
+
+    <div class="item">
+      <div class="item-num">C1</div>
+      <div class="item-body">
+        <div class="item-title">Justify Choice of Statistical Significance Tests — McNemar's Test and DeLong's Test</div>
+        <span class="label">Comment</span>
+        <div class="comment-text">During the examination, the candidate was unable to clearly justify the choice of McNemar's Test and DeLong's Test as the statistical significance tests used to compare model performance (Section 2.8.3; applied in RQ2 and RQ3). Please clarify why these two specific tests were selected, what each test evaluates, and why they are appropriate for this study.</div>
+        <span class="label">Action Taken</span>
+        <div class="action-text">
+          <strong>1. Why a paired test design is required.</strong> Both comparisons in this study (S1 vs. S2 in RQ2, and the proposed CNN vs. the Baseline in RQ3) are evaluated on the exact same held-out test set. The two sets of predictions are therefore paired, not independent samples. Standard tests that assume independent groups would ignore the correlation between the two models' outputs on the same patients, which can produce an incorrect significance conclusion. McNemar's Test and DeLong's Test were selected because both are designed specifically for paired classifier comparisons on a shared test set, following Rainio et al. (2024).<br><br>
+          <strong>2. McNemar's Test</strong> compares two classifiers at a fixed decision threshold (0.5). It isolates the discordant pairs — cases where the two models disagree — and tests whether one model wins those disagreements significantly more often, using a chi-square statistic on the discordant counts. This answers the practically important question: at the operating threshold that would be used in a diabetic care clinic, does one model make meaningfully fewer misclassifications?<br><br>
+          <strong>3. DeLong's Test</strong> compares AUC-ROC values without fixing a decision threshold. Because both AUC estimates are computed from the same test set, they are statistically correlated. DeLong's Test accounts for this using a non-parametric, U-statistic-based estimator of the covariance between the two AUCs, making it the appropriate test for comparing overall discriminative capacity in a paired evaluation setting.<br><br>
+          <strong>4. Why both tests are used together.</strong> The two tests are complementary. McNemar's evaluates significance at the exact operating condition that would be deployed clinically (threshold = 0.5), while DeLong's evaluates whether the models differ in their overall ability to rank at-risk versus not-at-risk feet across all thresholds. A model could show no significant difference in AUC-ROC yet show a significant difference in McNemar's Test at a specific threshold, or vice versa — each result carries a different practical implication.<br><br>
+          <strong>5. Scope and limitation acknowledged.</strong> The target podoscope dataset (n = 300 patients) is pilot-scale, and the statistical tests are therefore treated as exploratory rather than confirmatory. Exact p-values, effect sizes, and confidence intervals will be reported in the final thesis. A formal written response (Rebuttal Letter dated 6 July 2026) has been submitted to the Committee Chair.
+        </div>
+        <div class="status-row"><span class="badge done">✓ Resolved</span><span class="ref">Chapter 2 § 2.8.3 · Rebuttal Letter submitted 6 July 2026</span></div>
+      </div>
+    </div>
+
+    <div class="item">
+      <div class="item-num">C2</div>
+      <div class="item-body">
+        <div class="item-title">Fix Presentation Slides — Feature Levels, Window Size and Data Consistency</div>
+        <span class="label">Comment</span>
+        <div class="comment-text">Update slides to show correct feature levels and window size, and fix data inconsistencies between pages 37 and 39.</div>
+        <span class="label">Planned Action</span>
+        <div class="action-text">Will update slides to be consistent with the revised thesis proposal, including correct LBP/HOG feature dimensions as confirmed from Bansal (2024), and verify numerical consistency across all slides.</div>
+        <div class="status-row"><span class="badge noted">⟳ In Progress</span></div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="sig-area">
+    <div class="sig-box">
+      <div class="sig-role">Student</div>
+      <div class="sig-line"></div>
+      <div class="sig-name">Mr. Nhatthapong Pukdeeboon</div>
+      <div class="sig-detail">6 July 2026</div>
+    </div>
+    <div class="sig-box">
+      <div class="sig-role">Principal Advisor</div>
+      <div class="sig-line"></div>
+      <div class="sig-name">Asst. Prof. Dr. Morakot Choetkiertikul</div>
+      <div class="sig-detail">Date ……………………</div>
+    </div>
+    <div class="sig-box">
+      <div class="sig-role">Co-Advisor</div>
+      <div class="sig-line"></div>
+      <div class="sig-name">Assoc. Prof. Dr. Worapan Kusakunniran</div>
+      <div class="sig-detail">Date ……………………</div>
+    </div>
+  </div>
+  <div style="height:2.5rem"></div>
+</div>

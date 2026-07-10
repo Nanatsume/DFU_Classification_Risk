@@ -9,6 +9,11 @@ from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Tuple, Optional
 
+# Disable XLA JIT compilation — RTX 5060 Ti (compute cap 12.0a) is not natively
+# supported by this TF build and PTX JIT-compilation hangs indefinitely.
+os.environ['TF_XLA_FLAGS'] = '--tf_xla_auto_jit=0'
+os.environ['XLA_FLAGS'] = '--xla_disable_hlo_passes=all'
+
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import StratifiedKFold
@@ -19,6 +24,17 @@ from sklearn.metrics import (
 )
 
 import tensorflow as tf
+
+# Force jit_compile=False globally — ConvNeXt uses @tf.function(jit_compile=True)
+# internally which triggers XLA PTX compilation that hangs on RTX 5060 Ti.
+_orig_tf_function = tf.function
+def _tf_function_no_jit(func=None, **kwargs):
+    kwargs['jit_compile'] = False
+    if func is not None:
+        return _orig_tf_function(func, **kwargs)
+    return lambda f: _orig_tf_function(f, **kwargs)
+tf.function = _tf_function_no_jit
+
 from tensorflow import keras
 from tensorflow.keras import layers, models
 from tensorflow.keras.optimizers import Adam, RMSprop, SGD
@@ -117,6 +133,75 @@ def create_fold_splits(images, labels, n_splits=5, test_split=0.2, random_state=
             'train_idx': train_val_orig[train_idx],
             'val_idx':   train_val_orig[val_idx],
         })
+    return fold_indices, test_indices
+
+
+def create_patient_fold_splits(image_paths, labels, patient_ids,
+                                n_splits=5, test_split=0.2, random_state=SEED):
+    """
+    Patient-level stratified k-fold split for podoscope data.
+
+    Prevents data leakage by ensuring both feet of the same patient
+    (e.g. P001_L and P001_R) always stay in the same fold.
+
+    Patient-level label: 1 if ANY foot of that patient is positive (DM),
+    0 if all feet are negative (CT).
+
+    Parameters
+    ----------
+    image_paths : list of str
+    labels      : array-like of int  (0=CT, 1=DM, per image)
+    patient_ids : list of str  (e.g. ['P001', 'P001', 'P002', ...])
+    n_splits    : int   — number of CV folds (default 5)
+    test_split  : float — fraction held out as test set (default 0.2)
+    random_state: int
+
+    Returns
+    -------
+    fold_indices : list of dicts, each with keys 'fold', 'train_idx', 'val_idx'
+    test_indices : np.ndarray of int indices into image_paths / labels
+    """
+    from sklearn.model_selection import StratifiedGroupKFold
+
+    image_paths = list(image_paths)
+    labels      = np.array(labels, dtype=np.int32)
+    patient_ids = list(patient_ids)
+
+    unique_patients = sorted(set(patient_ids))
+    pid_to_idx = {p: i for i, p in enumerate(unique_patients)}
+    groups = np.array([pid_to_idx[p] for p in patient_ids], dtype=np.int32)
+
+    # Patient-level label: positive if any image of that patient is DM
+    patient_label = {}
+    for pid, lbl in zip(patient_ids, labels):
+        patient_label[pid] = max(patient_label.get(pid, 0), int(lbl))
+    image_patient_label = np.array([patient_label[p] for p in patient_ids], dtype=np.int32)
+
+    # 80/20 patient-level test split
+    n_test_folds = max(2, int(round(1.0 / test_split)))
+    sgkf_test = StratifiedGroupKFold(n_splits=n_test_folds, shuffle=True,
+                                     random_state=random_state)
+    train_val_idx, test_indices = next(
+        iter(sgkf_test.split(labels, image_patient_label, groups=groups))
+    )
+
+    # 5-fold CV on the remaining train/val pool
+    sgkf_cv = StratifiedGroupKFold(n_splits=n_splits, shuffle=True,
+                                   random_state=random_state)
+    fold_indices = []
+    tv_labels = image_patient_label[train_val_idx]
+    tv_groups = groups[train_val_idx]
+    for fi, (tr, vl) in enumerate(sgkf_cv.split(
+            train_val_idx, tv_labels, groups=tv_groups)):
+        fold_indices.append({
+            'fold':      fi,
+            'train_idx': train_val_idx[tr],
+            'val_idx':   train_val_idx[vl],
+        })
+
+    print(f"Patient-level split: {len(unique_patients)} patients, "
+          f"test={len(test_indices)} images, "
+          f"train/val pool={len(train_val_idx)} images")
     return fold_indices, test_indices
 
 
@@ -437,7 +522,8 @@ class DFUModelTrainer:
         bce           = tf.keras.losses.BinaryCrossentropy()
         cw            = self._class_weights(y_tr)
         cw_t          = tf.constant([cw[0], cw[1]], dtype=tf.float32)
-        train_ds = self._make_dataset(X_tr, y_tr, params['batch_size'], augment=True)
+        bs = min(params['batch_size'], 16)  # L1/L2-SP holds pretrained weight constants and computes penalty inside GradientTape
+        train_ds = self._make_dataset(X_tr, y_tr, bs, augment=True)
         for epoch in range(total_epochs):
             for xb, yb in train_ds:
                 with tf.GradientTape() as tape:
@@ -593,8 +679,9 @@ class DFUModelTrainer:
         bce            = tf.keras.losses.BinaryCrossentropy()
         cw             = self._class_weights(y_tr)
         cw_t           = tf.constant([cw[0], cw[1]], dtype=tf.float32)
-        train_ds = self._make_dataset(X_tr, y_tr, params['batch_size'], augment=True)
-        val_ds   = self._make_dataset(X_val, y_val, params['batch_size'], augment=False)
+        bs = min(params['batch_size'], 16)  # L1/L2-SP holds pretrained weight constants and computes penalty inside GradientTape
+        train_ds = self._make_dataset(X_tr, y_tr, bs, augment=True)
+        val_ds   = self._make_dataset(X_val, y_val, bs, augment=False)
         best_loss, patience_cnt, best_w = float('inf'), 0, None
         for epoch in range(max_epochs):
             for xb, yb in train_ds:
@@ -645,8 +732,9 @@ class DFUModelTrainer:
         bce       = tf.keras.losses.BinaryCrossentropy()
         cw        = self._class_weights(y_tr)
         cw_t      = tf.constant([cw[0], cw[1]], dtype=tf.float32)
-        train_ds  = self._make_dataset(X_tr, y_tr, params['batch_size'], augment=True)
-        val_ds    = self._make_dataset(X_val, y_val, params['batch_size'], augment=False)
+        bs = min(params['batch_size'], 8)  # Auto-RGN holds all layer gradients in memory at once
+        train_ds  = self._make_dataset(X_tr, y_tr, bs, augment=True)
+        val_ds    = self._make_dataset(X_val, y_val, bs, augment=False)
         best_loss, patience_cnt, best_w = float('inf'), 0, None
         for epoch in range(max_epochs):
             for xb, yb in train_ds:

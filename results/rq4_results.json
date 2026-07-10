@@ -1,0 +1,6 @@
+{
+  "combo_id": "ConvNeXt-Tiny_LP-FT_S2",
+  "backbone": "ConvNeXt-Tiny",
+  "input_strategy": "S2",
+  "model": "S2_best_final_retrain"
+}

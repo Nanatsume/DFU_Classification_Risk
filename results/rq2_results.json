@@ -1,4 +1,80 @@
 {
-  "best_model": "ConvNeXt-Tiny",
-  "model": "final_retrain"
+  "S1_best": {
+    "combo_id": "ConvNeXt-Tiny_LP-FT_S1",
+    "backbone": "ConvNeXt-Tiny",
+    "strategy": "LP-FT",
+    "input_strategy": "S1",
+    "retrain_epochs": {
+      "phase1": 50,
+      "phase2": 50
+    },
+    "threshold": 0.5,
+    "cv_metrics": {
+      "mean": {
+        "auc": 0.9664468864468866,
+        "sens": 0.9435897435897436,
+        "spec": 0.8466666666666667,
+        "prec": 0.9436808719735549,
+        "f1": 0.9429320947042467,
+        "acc": 0.9174004192872118
+      },
+      "std": {
+        "auc": 0.015472817303436128,
+        "sens": 0.04971979340939824,
+        "spec": 0.03077237032648289,
+        "prec": 0.008830515006867047,
+        "f1": 0.02614435284631835,
+        "acc": 0.0353135926608368
+      }
+    },
+    "test_metrics": {
+      "sensitivity": 0.8979591836734694,
+      "specificity": 0.9444444444444444,
+      "ppv": 0.9777777777777777,
+      "npv": 0.7727272727272727,
+      "f1": 0.9361702127659575,
+      "auc_roc": 0.9478458049886621
+    },
+    "final_model": "./model_checkpoints/ConvNeXt-Tiny_LP-FT_S1_final_retrain.keras",
+    "test_probs_path": "./results/S1_best_test_probs.npy"
+  },
+  "S2_best": {
+    "combo_id": "ConvNeXt-Tiny_LP-FT_S2",
+    "backbone": "ConvNeXt-Tiny",
+    "strategy": "LP-FT",
+    "input_strategy": "S2",
+    "retrain_epochs": {
+      "phase1": 50,
+      "phase2": 50
+    },
+    "threshold": 0.5,
+    "cv_metrics": {
+      "mean": {
+        "auc": 0.9802686202686204,
+        "sens": 0.9743589743589745,
+        "spec": 0.8885714285714286,
+        "prec": 0.9598400315986966,
+        "f1": 0.9668231768231769,
+        "acc": 0.9512928022361985
+      },
+      "std": {
+        "auc": 0.008024718766571078,
+        "sens": 0.0229340305384594,
+        "spec": 0.0348107940618992,
+        "prec": 0.01161712895888824,
+        "f1": 0.010504908909755568,
+        "acc": 0.015100808718049558
+      }
+    },
+    "test_metrics": {
+      "sensitivity": 0.8571428571428571,
+      "specificity": 0.9444444444444444,
+      "ppv": 0.9767441860465116,
+      "npv": 0.7083333333333334,
+      "f1": 0.9130434782608695,
+      "auc_roc": 0.9852607709750567
+    },
+    "final_model": "./model_checkpoints/ConvNeXt-Tiny_LP-FT_S2_final_retrain.keras",
+    "test_probs_path": "./results/S2_best_test_probs.npy"
+  }
 }

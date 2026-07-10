@@ -1,0 +1,87 @@
+[2026-07-04 11:03:00] === Log file: ./results/rq1_ResNet50_L2-SP_S2_log_20260704_110300.txt ===
+[2026-07-04 11:03:00] 
+################################################################################
+# COMBO: ResNet50_L2-SP_S2
+################################################################################
+
+[2026-07-04 11:03:01] Loaded INAOE: 334 images, shape=(334, 224, 224, 3), CT=90, DM=244
+[2026-07-04 11:03:01] 
+================================================================================
+StrategyTuner: ResNet50_L2-SP_S2/L2-SP (10 trials × fold1)
+================================================================================
+[2026-07-04 11:03:02] 
+================================================================================
+L2-SP — ResNet50_L2-SP_S2_trial1_fold1
+================================================================================
+[2026-07-04 11:03:13]   Trial 1 failed: Exception encountered when calling BatchNormalization.call().
+
+[1m{{function_node __wrapped__Mul_device_/job:localhost/replica:0/task:0/device:GPU:0}} failed to allocate memory [Op:Mul] name: [0m
+
+Arguments received by BatchNormalization.call():
+  • inputs=tf.Tensor(shape=(64, 14, 14, 1024), dtype=float32)
+  • training=True
+  • mask=None
+[2026-07-04 11:03:24]   Trial 2 failed: {{function_node __wrapped__StatelessRandomUniformV2_device_/job:localhost/replica:0/task:0/device:GPU:0}} OOM when allocating tensor with shape[1,1,1024,2048] and type float on /job:localhost/replica:0/task:0/device:GPU:0 by allocator GPU_0_bfc [Op:StatelessRandomUniformV2] name: 
+[2026-07-04 11:03:25] 
+================================================================================
+L2-SP — ResNet50_L2-SP_S2_trial3_fold1
+================================================================================
+[2026-07-04 11:03:35]   Trial 3 failed: Exception encountered when calling BatchNormalization.call().
+
+[1m{{function_node __wrapped__SquaredDifference_device_/job:localhost/replica:0/task:0/device:GPU:0}} failed to allocate memory [Op:SquaredDifference] name: [0m
+
+Arguments received by BatchNormalization.call():
+  • inputs=tf.Tensor(shape=(64, 14, 14, 1024), dtype=float32)
+  • training=True
+  • mask=None
+[2026-07-04 11:03:46]   Trial 4 failed: {{function_node __wrapped__AddV2_device_/job:localhost/replica:0/task:0/device:GPU:0}} failed to allocate memory [Op:AddV2] name: 
+[2026-07-04 11:03:47] 
+================================================================================
+L2-SP — ResNet50_L2-SP_S2_trial5_fold1
+================================================================================
+[2026-07-04 11:03:58]   Trial 5 failed: Exception encountered when calling BatchNormalization.call().
+
+[1m{{function_node __wrapped__SquaredDifference_device_/job:localhost/replica:0/task:0/device:GPU:0}} failed to allocate memory [Op:SquaredDifference] name: [0m
+
+Arguments received by BatchNormalization.call():
+  • inputs=tf.Tensor(shape=(64, 14, 14, 1024), dtype=float32)
+  • training=True
+  • mask=None
+[2026-07-04 11:04:08]   Trial 6 failed: {{function_node __wrapped__StatelessRandomUniformV2_device_/job:localhost/replica:0/task:0/device:GPU:0}} OOM when allocating tensor with shape[3,3,512,512] and type float on /job:localhost/replica:0/task:0/device:GPU:0 by allocator GPU_0_bfc [Op:StatelessRandomUniformV2] name: 
+[2026-07-04 11:04:09] 
+================================================================================
+L2-SP — ResNet50_L2-SP_S2_trial7_fold1
+================================================================================
+[2026-07-04 11:04:20]   Trial 7 failed: Exception encountered when calling BatchNormalization.call().
+
+[1m{{function_node __wrapped__SquaredDifference_device_/job:localhost/replica:0/task:0/device:GPU:0}} failed to allocate memory [Op:SquaredDifference] name: [0m
+
+Arguments received by BatchNormalization.call():
+  • inputs=tf.Tensor(shape=(64, 14, 14, 1024), dtype=float32)
+  • training=True
+  • mask=None
+[2026-07-04 11:04:31]   Trial 8 failed: {{function_node __wrapped__AddV2_device_/job:localhost/replica:0/task:0/device:GPU:0}} failed to allocate memory [Op:AddV2] name: 
+[2026-07-04 11:04:32] 
+================================================================================
+L2-SP — ResNet50_L2-SP_S2_trial9_fold1
+================================================================================
+[2026-07-04 11:04:42]   Trial 9 failed: Exception encountered when calling Activation.call().
+
+[1m{{function_node __wrapped__Relu_device_/job:localhost/replica:0/task:0/device:GPU:0}} failed to allocate memory [Op:Relu] name: [0m
+
+Arguments received by Activation.call():
+  • inputs=tf.Tensor(shape=(64, 14, 14, 1024), dtype=float32)
+[2026-07-04 11:04:53]   Trial 10 failed: {{function_node __wrapped__StatelessRandomUniformV2_device_/job:localhost/replica:0/task:0/device:GPU:0}} OOM when allocating tensor with shape[3,3,512,512] and type float on /job:localhost/replica:0/task:0/device:GPU:0 by allocator GPU_0_bfc [Op:StatelessRandomUniformV2] name: 
+[2026-07-04 11:04:53] 
+✓ Best fold1 AUC: -0.000000
+[2026-07-04 11:04:53] Best params: {'dropout_rate': 0.15503043695984914, 'l2_reg': 0.00791507439765621, 'dense_units_1': 512, 'dense_units_2': 32, 'batch_size': 64, 'optimizer': 'adam', 'lr': 0.0002440060709081752, 'alpha': 0.0021751953118777636, 'beta': 0.00019949166150633933}
+[2026-07-04 11:04:53] ✓ best_params → ./results/rq1/ResNet50_L2-SP_S2/best_params.json
+[2026-07-04 11:04:53] 
+================================================================================
+FOLD 1/5: ResNet50_L2-SP_S2
+================================================================================
+[2026-07-04 11:04:53] Train: 213  Val: 54
+[2026-07-04 11:04:54] 
+================================================================================
+L2-SP — ResNet50_L2-SP_S2_Fold1
+================================================================================

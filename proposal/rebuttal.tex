@@ -1,0 +1,254 @@
+\documentclass[12pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[
+  a4paper,
+  top=2.5cm, bottom=3cm,
+  left=2.5cm, right=3.8cm,
+  marginparwidth=2.8cm,
+  marginparsep=0.5cm
+]{geometry}
+\usepackage{xcolor}
+\usepackage{marginnote}
+\usepackage{microtype}
+\usepackage{parskip}
+\usepackage{titlesec}
+\usepackage{float}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{caption}
+
+% ── Colours ───────────────────────────────────────────────────────────────────
+\definecolor{respblue}{RGB}{0,48,128}
+\definecolor{cidred}{RGB}{204,0,0}
+
+% ── Custom commands ───────────────────────────────────────────────────────────
+% Comment identifier  (red, underlined)
+\newcommand{\cid}[1]{{\color{cidred}\underline{#1}}}
+
+% Margin section reference
+\newcommand{\mref}[1]{%
+  \marginnote{%
+    \color{respblue}\scriptsize
+    \rule[-0.3ex]{0.6pt}{1.4ex}\hspace{4pt}%
+    \parbox[t]{2.4cm}{\raggedright #1}%
+  }%
+}
+
+% Response environment (blue text)
+\newenvironment{response}{%
+  \par\color{respblue}%
+}{\par}
+
+% Block-quote of text added to the proposal
+\newenvironment{quotedaddition}{%
+  \begin{quote}\color{respblue}%
+}{\end{quote}}
+
+% ── Section heading style ─────────────────────────────────────────────────────
+\titleformat{\section}[block]
+  {\normalfont\large\bfseries}{}{0pt}{}
+  [\vspace{-6pt}\rule{\linewidth}{0.8pt}]
+\titlespacing{\section}{0pt}{18pt}{8pt}
+
+\setlength{\parskip}{0.6em}
+\setlength{\parindent}{0pt}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\begin{document}
+
+\begin{center}
+  {\large\bfseries Responses to the Examination Committee}\\[5pt]
+  {\normalsize Development of a Predictive Model for Diabetic Foot Risk Using\\
+  Podoscope Data with XAI-Based Explanations}\\[6pt]
+  {\normalsize July 6, 2026}
+\end{center}
+
+\medskip\hrule\medskip
+
+\setlength{\parindent}{1.5em}
+
+We have carefully read the comments of the Examination Committee regarding our thesis proposal and have extensively revised the proposal to address the points raised during the examination on July~1, 2026.
+
+We would like to thank Asst.\ Prof.\ Saneh Khuenkaew and Assoc.\ Prof.\ Dr.\ Worapan Kusakunniran for their thorough and constructive feedback. We believe the manuscript has improved greatly as a result of these comments. We carefully addressed all eleven points to improve the proposal and believe the modifications have addressed the concerns raised.
+
+With this letter, we provide each comment from the examination, followed by our response explaining the reasoning behind the concern and describing how the proposal has been revised. The annotations in the margin indicate the section of the proposal that was modified or extended.
+
+\setlength{\parindent}{0pt}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section*{Response to Asst.\ Prof.\ Saneh Khuenkaew}
+
+% ── C1 ────────────────────────────────────────────────────────────────────────
+\cid{C1} The inclusion criteria should specify Type~2 Diabetes Mellitus patients only, as Type~1 and Type~2 DM have different pathogeneses. Congenital foot deformities belong in the inclusion criteria rather than the exclusion criteria, since they are indicators of IWGDF risk category~2 or above. The criteria should also state explicitly that participants must be cognitively alert and able to follow verbal commands.
+
+\mref{\S~3.2.5\\[2pt]Inclusion and\\Exclusion\\Criteria}
+\begin{response}
+\underline{Response:} We thank the Committee for this guidance and agree with all three points. On the type of diabetes, Type~1 and Type~2 DM have fundamentally distinct pathogeneses, with Type~1 arising from autoimmune destruction of insulin-producing pancreatic beta cells and Type~2 from progressive insulin resistance, which may produce different complication patterns relevant to the diabetic foot ulcer risk pathway. Restricting the inclusion criteria to Type~2 DM therefore reduces confounding and improves sample homogeneity.
+
+Regarding foot deformities, we agree with the reclassification. Congenital foot deformities produce the same mechanical pressure concentration patterns that elevate ulceration risk, and excluding them on the basis of origin was inconsistent with the study's screening objective. The criterion has accordingly been moved from the exclusion list to the inclusion list, with the updated wording specifying that patients with foot deformities, regardless of diabetic origin, are explicitly included. Section~3.2.5 has been updated to reflect this change.
+
+Finally, we fully agree that cognitive alertness is a necessary inclusion criterion. The ability to perceive and follow verbal instructions affects the reliability of LOPS assessment, which relies primarily on patient-reported sensation, and is equally necessary for maintaining a correct standing posture during photo-podoscope image acquisition. A patient who cannot follow instructions may compromise both image quality and patient safety during the standing examination. Section~3.2.5 has been updated to reflect all three changes.
+\end{response}
+
+% ── C2 ────────────────────────────────────────────────────────────────────────
+\cid{C2} The exclusion criterion on lower-limb amputation should be more specific. Only patients with bilateral lower-limb amputation should be excluded, since a patient who still has one weight-bearing limb is able to complete the assessment.
+
+\mref{\S~3.2.5\\[2pt]Exclusion\\Criteria}
+\begin{response}
+\underline{Response:} We agree that the wording requires refinement. The original wording, ``history of lower-limb amputation'', without further qualification, was broader than intended. It would exclude any patient who has lost a limb, including those who have lost only one leg but retain a functioning weight-bearing foot on the other side. The actual intent of this criterion is simply to exclude patients who cannot stand on the podoscope platform, and a patient with unilateral amputation is still able to do so. Furthermore, patients with a history of amputation fall under IWGDF Category~3, the highest risk stratum, meaning that data from their remaining foot is among the most clinically important the study can collect. Excluding these patients would therefore remove precisely the cases the model most needs to learn from. The exclusion criterion has accordingly been revised to specify ``bilateral lower-limb amputation'', which is the condition that actually prevents a patient from completing the assessment. Section~3.2.5 has been updated accordingly.
+\end{response}
+
+% ── C3 ────────────────────────────────────────────────────────────────────────
+\cid{C3} The study setting description is not specific enough. Rather than naming the hospital alone, it should identify the diabetic clinic or outpatient diabetic care unit, as this more accurately reflects where the target patient population is seen.
+
+\mref{\S~3.2.3\\[2pt]Data Source}
+\begin{response}
+\underline{Response:} We agree with this recommendation and clarify our revision below. Describing the setting simply as primary care is still too broad and does not convey the specific care unit where the target population is actually seen. The target population of this study, adults with Type~2 Diabetes Mellitus under continuous outpatient management, is seen specifically in the diabetic clinic, where glycaemic monitoring and foot screening are already part of routine care. Naming the clinic explicitly aligns directly with the revised inclusion criteria and situates the screening tool in the actual clinical setting where it would be used. The data source description in Section~3.2.3 has accordingly been revised to explicitly identify the diabetic clinic.
+\end{response}
+
+% ── C4 ────────────────────────────────────────────────────────────────────────
+\cid{C4} The 10-gram monofilament test and the Ankle-Brachial Index are the standard clinical tools for diagnosing LOPS and PAD respectively, yet they are not mentioned in the Chapter~2 literature review or in the overall study design. These should be included, as they are the instruments used to assign each patient's IWGDF risk category.
+
+\mref{\S~2.3\\[2pt]Clinical\\Assessment\\Methods\\[4pt]\S~3.3\\[2pt]Data\\Annotation}
+\begin{response}
+\underline{Response:} The Committee is right to highlight this. The monofilament test and the ABI are not just background context, since they are the instruments that determine each patient's IWGDF risk category, and that category becomes the label the model is trained to predict. A reader who does not understand these instruments cannot fully understand how the classification labels are produced. Both instruments were already described in Section~2.3, but not in sufficient detail. Furthermore, there was no explicit connection drawn to the data collection section in Section~3.3, meaning a reader could finish Section~2.3 without realising that monofilament and ABI assessments take place during every data collection session alongside the foot image. A forward-reference paragraph has been added at the end of Section~2.2 to make this connection clear, noting that the results of both assessments, together with physician review of the IWGDF criteria, form the risk label paired with each image.
+\end{response}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section*{Response to Assoc.\ Prof.\ Dr.\ Worapan Kusakunniran}
+
+% ── C5 ────────────────────────────────────────────────────────────────────────
+\cid{C5} Rather than limiting the model to binary classification, this study should explore whether it can distinguish patients across all four IWGDF risk categories (0, 1, 2, and~3). Demonstrating this staging capability would substantially strengthen the clinical contribution of the work.
+
+\mref{\S~1.3\\Research\\Question (RQ5)\\[4pt]\S~3.7\\Evaluation\\Plan}
+\begin{response}
+\underline{Response:} This suggestion genuinely changes the scope of the study, and we agree it strengthens the work. Binary classification tells a clinician whether a patient needs attention, but not how urgently or what intervention is appropriate. Clinically, the appropriate management response differs substantially across the four IWGDF categories, with category~0 patients receiving standard self-care education, category~1 patients requiring annual foot examination, category~2 patients requiring examination every three to six months with possible offloading or orthotic intervention, and category~3 patients requiring intensive monitoring every one to three months. A model that can distinguish these four levels would support triage and resource allocation in ways that binary output cannot. Whether plantar pressure images carry enough signal to support four-class staging is genuinely uncertain, since conditions such as LOPS and PAD without structural deformity may not produce a distinct pressure signature, so we treat this as an exploratory experiment rather than a primary claim. The output layer has been extended to four units with softmax activation, trained with categorical cross-entropy loss and inverse-frequency class weighting, and performance will be reported using per-class sensitivity, macro-averaged AUC-ROC, and a confusion matrix. This extension has been incorporated as RQ5 in Section~1.3, with a corresponding evaluation plan in Section~3.7 of the revised proposal.
+\end{response}
+
+% ── C6 ────────────────────────────────────────────────────────────────────────
+\cid{C6} The use of the term ``early detection'' appears to overclaim what this study can actually demonstrate. IWGDF Category~1 is defined by LOPS and PAD, which are neurological and vascular conditions that are not directly observable in plantar pressure images. A patient with Category~1 risk arising from LOPS alone but with no structural foot abnormality may produce a completely normal-looking pressure image.
+
+\mref{\S~3.2.1\\Classification\\Labels}
+\begin{response}
+\underline{Response:} This concern is well-founded. The IWGDF classification assigns risk on the basis of LOPS, PAD, and structural foot deformity or previous ulcer. A plantar pressure image encodes the mechanical load pattern across the foot surface, which reflects structural changes such as high forefoot loading or deformity-related contact patterns, but it does not capture neurological function or vascular status. A category~1 patient whose risk arises from LOPS alone, with no structural deformity, may produce a completely normal-looking pressure image, because the relevant clinical signal simply does not appear in this modality. Calling this ``early detection'' implies the model can find risk before it is clinically visible, which is more than a pressure-based image can offer. The more honest framing is ``risk screening'', which positions the tool as a way to flag abnormal pressure patterns for clinical follow-up rather than a replacement for monofilament and ABI testing. The term has been revised throughout the proposal, and Section~3.2.1 has been updated accordingly.
+\end{response}
+
+% ── C7 ────────────────────────────────────────────────────────────────────────
+\cid{C7} It would be worth investigating whether a single model trained on images from both feet performs adequately, or whether separate models for the left and right foot would be more appropriate.
+
+\mref{\S~1.3\\Research\\Questions\\[4pt]\S~3.7\\Evaluation\\Plan}
+\begin{response}
+\underline{Response:} We agree that this is worth investigating, and the choice to use a single unified model rather than separate models for the left and right foot was an intentional design decision, made for three reasons.
+
+First, under the IWGDF framework, risk is already assessed independently for each foot. Pressure patterns associated with neuropathy, structural deformity, and high-risk weight-bearing regions are not inherently dependent on laterality at the feature level. In response to the Committee's suggestion on this point, we have added Research Question~2 (RQ2) to formally and empirically test this issue, comparing a single unified model trained on both feet in their original orientation~(S1) against the same model trained after horizontally flipping the left foot to match the right foot's orientation~(S2). The result of RQ2 will provide empirical evidence on whether orientation normalisation significantly improves learning for the unified model, rather than relying on theoretical reasoning alone.
+
+Second, splitting the dataset by laterality would reduce the number of training images from approximately 600 to approximately 300 per model, which represents a substantial loss of data given the limited dataset size in this study.
+
+Third, although the model in this study predicts at the foot level, combining the predictions of both feet from the same patient into a single patient-level outcome remains feasible at a later stage without requiring separate models by laterality. For example, a patient could be classified as at risk if either foot is predicted positive, which aligns naturally with clinical practice. Because this aggregation is a post-processing step, it does not affect the current model design, and we reserve this direction for future work.
+
+This clarification and the corresponding research question have been added to Sections~1.3 and~3.7 of the revised proposal.
+\end{response}
+
+% ── C8 ────────────────────────────────────────────────────────────────────────
+\cid{C8} The feature counts reported in the baseline feature table appear lower than expected. Descriptors such as LBP and HOG typically produce hundreds or thousands of raw dimensions, yet the table shows only a small number of features per descriptor. It would be helpful to clarify the actual feature dimensions being used and how the dimensionality was reduced.
+
+\mref{\S~3.4.1\\Baseline\\Feature\\Extraction}
+\begin{response}
+\underline{Response:} We thank the Committee for this observation and agree that the proposal did not explain the feature extraction clearly enough. Raw GLCM matrices can span thousands of cells depending on the number of grey levels, raw LBP histograms can have 256 or more bins, and raw HOG vectors can reach thousands of dimensions depending on image resolution and cell configuration. Feeding representations of that size into a classifier trained on fewer than 600 images would create a feature space far larger than the training set, making overfitting almost certain. The baseline method from Bansal et al.\ (2024) does not use the raw descriptors. For GLCM, the RGB image is first converted to grayscale and an 8$\times$8 GLCM matrix is computed at four orientations (0\textdegree, 45\textdegree, 90\textdegree, and 135\textdegree). From each orientation, four features are extracted, Contrast, Correlation, Energy, and Homogeneity, yielding 16 GLCM features in total.
+
+For LBP, each pixel is encoded by comparing its intensity with those of its neighbouring pixels, producing a binary pattern that is rotation and illumination invariant. The result is summarised as an LBP co-occurrence matrix from which eight statistical values are extracted, comprising Mean, Variance, Entropy, Skewness, Kurtosis, Energy, Contrast, and Correlation. Note that Contrast and Correlation here are derived from the LBP co-occurrence structure and are therefore distinct from the GLCM features of the same name.
+
+For HOG, the image is divided into 8$\times$8 pixel cells, a gradient orientation histogram is computed per cell, adjacent 2$\times$2 cells are merged into overlapping blocks, and the block-level feature vectors are normalised before concatenation. From this representation, eight statistical values are extracted, comprising Mean, Variance, Standard Deviation, Skewness, Kurtosis, Median, Maximum, and Minimum. Both descriptors therefore contribute 8 features each, rather than the hundreds or thousands of dimensions produced by their raw representations. Table~\ref{tab:baseline_features}, reproduced from Bansal \& Vidyarthi (2024)~[37], summarises the feature counts for each descriptor and confirms that the compact feature vector is a deliberate design choice of the baseline method, not an error in reporting. A clarifying paragraph with these details has been added to Section~3.4.1.
+
+\begin{center}
+\captionsetup{justification=centering, labelfont={color=respblue}, textfont={color=respblue}}
+\captionof{table}{Total number of features extracted per descriptor.\\[2pt]
+Reproduced from Bansal \& Vidyarthi (2024)~[37].}
+\label{tab:baseline_features}
+\vspace{0.6em}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Features} & \textbf{Count per Orientation} & \textbf{Orientations} & \textbf{Total} \\
+\midrule
+GLCM-based & 4 & 4 & 16 \\
+LBP-based  & 8 & 1 & 8  \\
+HOG-based  & 8 & 1 & 8  \\
+\midrule
+\textbf{Total} & & & \textbf{32} \\
+\bottomrule
+\end{tabular}
+\par\vspace{0.4em}
+\raggedright\small\textsuperscript{[37]}Bansal, N.\ \& Vidyarthi, A.\ (2024). Multivariate Feature-based Analysis of the Diabetic Foot Ulcers Using Machine Learning Classifiers. \textit{Proc.\ 16th Int.\ Conf.\ Contemporary Computing}.
+\end{center}
+\end{response}
+
+% ── C9 ────────────────────────────────────────────────────────────────────────
+\cid{C9} Cross-validation results should be reported as mean~$\pm$~SD across all folds rather than as a single figure, so that the stability of the model's performance can be properly assessed and the results do not rely on any one fold's outcome.
+
+\mref{\S~3.6\\Evaluation Plan\\[4pt]\S~3.7\\Preliminary\\Results}
+\begin{response}
+\underline{Response:} We agree with this recommendation. In five-fold cross-validation with 300 patients, each test fold contains roughly 60 patients. With a pilot dataset of this size, fold variability will naturally be higher than in large-scale studies, as the performance on any one fold is sensitive to which specific patients happen to fall within it. Reporting a single figure hides this variability and may give the impression that the model's performance is more stable than it actually is. Reporting mean~$\pm$~SD across all five folds makes the fold-to-fold variation visible, so a reader can judge whether performance is consistent or driven by one particularly favourable partition. The preliminary results table in Section~3.7 and the evaluation plan in Section~3.6 have been updated to report all metrics in mean~$\pm$~SD format, as recommended.
+\end{response}
+
+% ── C10 ───────────────────────────────────────────────────────────────────────
+\cid{C10} From what is presented in the proposal, the training approach uses LP-FT, which first freezes the entire backbone and then unfreezes it completely in the second phase. Is this the only strategy being considered? Would it also be possible to unfreeze only a portion of the backbone layers in the second phase, such as 50\% or 30\%?
+
+\mref{\S~1.3\\Research\\Questions\\[4pt]\S~3.6.3.3\\Fine-Tuning\\Strategies\\[4pt]\S~3.7\\Evaluation\\Plan}
+\begin{response}
+\underline{Response:} We thank the Committee for this question. In the original proposal, LP-FT was taken from Dávila et al.\ (2024)~[28] as the initial fine-tuning strategy, without expanding to the full set of strategies they evaluated. In that design, LP-FT operates in two phases, with Phase 1 training the classification head while the backbone remains frozen, and Phase 2 unfreezing the entire backbone for full model fine-tuning. This positions LP-FT as the opposite extreme to Full Fine-Tuning (FT), which trains all layers jointly from the start. That said, the idea of unfreezing only a portion of the backbone, as the Committee raised, is an important one, and it is already covered within the set of eight fine-tuning strategies used in this study through Gradual Unfreeze Last-to-First (G-LF) and Gradual Unfreeze First-to-Last (G-FL). Both of these strategies unfreeze the backbone incrementally according to a scheduled interval, rather than unfreezing a fixed proportion in a single step. This allows the effect of partial unfreezing to be observed across multiple depths of the backbone, including ranges comparable to the 30 to 50 percent the Committee raised as an example, though not fixed at a single static percentage but tested progressively throughout training.
+
+Following the Committee's observation, and noting that Dávila et al.\ (2024)~[28] found no single fine-tuning strategy to universally outperform others across architectures and medical image types, we have expanded the evaluation to include all eight strategies from that study, and the comparative results will be reported in RQ1.
+\end{response}
+
+{\color{respblue}\raggedright\small\textsuperscript{[28]}Davila, A., Colan, J., \& Hasegawa, Y.\ (2024). Comparison of fine-tuning strategies for transfer learning in medical image classification. \textit{Image and Vision Computing}, 146, 105012.\par}
+
+% ── C11 ───────────────────────────────────────────────────────────────────────
+\cid{C11} The proposal mentions the use of McNemar's Test and DeLong's Test as the statistical significance tests for model comparison, but this choice has not been clearly justified. It would be helpful to explain what each test evaluates, why these two specific tests were selected, and why they are appropriate for this study's evaluation design.
+
+\mref{\S~2.8.3\\Statistical\\Significance\\Tests}
+\begin{response}
+\underline{Response:} We thank the committee for this comment. As for the rationale behind the two statistical tests used to compare the proposed model against the baseline (RQ3), we explain each below.
+
+DeLong's test is a non-parametric test for comparing two correlated AUC-ROC values obtained from the same test set. Rather than relying on predictions that have already been converted into risk/no-risk decisions at a fixed threshold, it works directly on the probability scores each model assigns to every sample. Specifically, it computes the variance of each model's AUC-ROC and the covariance between the two AUC-ROC values, then derives a $Z$-statistic indicating whether the observed AUC-ROC difference is real or simply due to sampling variability.
+
+In contrast, McNemar's test compares paired binary outcomes at a fixed threshold using a $2 \times 2$ contingency table that cross-tabulates each model's correct and incorrect predictions for the same samples. The test then focuses specifically on the discordant pairs, meaning cases where one model gets a sample right while the other gets it wrong. This distinction is important because a deployed system makes decisions at a fixed threshold, not from the AUC-ROC value itself. So even if AUC-ROC shows a model has better theoretical discriminative capability, McNemar's test tells us whether that advantage actually shows up in the decisions that would affect patients in practice.
+
+In summary, since AUC-ROC serves as our model comparison and selection criterion, DeLong's test serves as the primary significance test. McNemar's test is used as a secondary check at the default 0.5 decision threshold, with no threshold optimization applied at this stage. Both tests will also be used to validate the S1 and S2 comparisons (RQ2).
+
+To make this concrete, we illustrate both tests using the preliminary evaluation on the 67-sample INAOE held-out test set (proposed CNN vs.\ Baseline Model).
+
+\textbf{DeLong's Test.}
+Applying DeLong et al.'s (1988) method to the preliminary data yields:
+\begin{align*}
+\text{AUC}_\text{CNN}      &= 0.9853 \\
+\text{AUC}_\text{Baseline} &= 0.9773 \\
+\Delta\text{AUC}           &= +0.0079, \quad Z = 0.6410, \quad p = 0.5215
+\end{align*}
+While the CNN shows a slightly higher AUC-ROC, the difference is not statistically significant ($p = 0.5215$). Therefore, we cannot conclude that the CNN has significantly better discriminative ability than the Baseline Model.
+
+\textbf{McNemar's Test.} Applying the continuity-corrected McNemar's statistic to the contingency table below ($n = 67$, threshold $= 0.5$):
+
+\begin{center}
+\captionsetup{justification=centering, labelfont={color=respblue}, textfont={color=respblue}}
+\captionof{table}{Contingency table of binary predictions: Proposed CNN vs.\ Baseline Model.}
+\label{tab:mcnemar_prelim}
+\vspace{0.6em}
+\begin{tabular}{lcc}
+\toprule
+ & \textbf{Baseline Correct} & \textbf{Baseline Wrong} \\
+\midrule
+\textbf{CNN Correct} & $a = 56$ & $b = 3$ \\
+\textbf{CNN Wrong}   & $c = 7$  & $d = 1$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+With $b = 3$ and $c = 7$ discordant pairs ($b + c = 10$; the 57 concordant cases are discarded), we obtain $p = 0.3438$. Since $p > 0.05$, we cannot conclude that the two models produce significantly different referral decisions at this threshold.
+
+Although the results from both tests are non-significant, this does not mean the two models perform equally well. This may in part be due to the small test set size ($n = 67$), which provides insufficient statistical power to detect a real difference even if one exists.
+\end{response}
+
+\end{document}

@@ -70,9 +70,9 @@ def main():
         log(f"✓ Already complete — skipping.")
         return
 
-    # ConvNeXt-Tiny needs smaller batch size to avoid OOM
+    # ConvNeXt-Tiny OOMs at batch_size=32 on G-LF and similar strategies
     if backbone == 'ConvNeXt-Tiny':
-        CONFIG['batch_size_default'] = 32
+        CONFIG['batch_size_default'] = 16
     else:
         CONFIG['batch_size_default'] = 64
 
@@ -90,12 +90,15 @@ def main():
             best_params = json.load(f)
         log(f"✓ Loaded best_params — skipping tuning")
     else:
+        # G-FL recompiles the model once per block (5×/trial); TF tracing accumulates
+        # across trials and crashes around trial 7 on ConvNeXt-Tiny. Cap at 5 trials.
+        n_trials = 5 if (strategy == 'G-FL' and backbone == 'ConvNeXt-Tiny') else CONFIG['n_bo_trials']
         tuner = StrategyTuner(
             model_name=f'{combo_id}',
             base_model_fn=base_model_fn,
             strategy=strategy,
             backbone_name=backbone,
-            n_trials=CONFIG['n_bo_trials'],
+            n_trials=n_trials,
             log=log,
         )
         best_params = tuner.optimize(images, labels, fold_indices)

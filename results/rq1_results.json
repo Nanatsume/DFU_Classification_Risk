@@ -1,31 +1,731 @@
 {
-  "best_model": "ConvNeXt-Tiny",
-  "criteria": {
-    "auc": 0.8,
-    "sens": 0.85,
-    "spec": 0.7
+  "S1_best": {
+    "combo_id": "ConvNeXt-Tiny_G-LF_S1",
+    "backbone": "ConvNeXt-Tiny",
+    "strategy": "G-LF",
+    "input_strategy": "S1",
+    "cv_metrics": {
+      "mean": {
+        "auc": 0.9751892551892553,
+        "sens": 0.9743589743589742,
+        "spec": 0.778095238095238,
+        "prec": 0.9222822299651569,
+        "f1": 0.9475269573370839,
+        "acc": 0.921383647798742
+      },
+      "std": {
+        "auc": 0.01404680051252288,
+        "sens": 0.0229340305384594,
+        "spec": 0.023054701784590893,
+        "prec": 0.010009222519464732,
+        "f1": 0.014880534263297255,
+        "acc": 0.02158413027460588
+      }
+    },
+    "avg_epochs": {
+      "phase1": 50,
+      "phase2": null
+    },
+    "per_fold": [
+      {
+        "auc": 0.9846153846153847,
+        "sens": 0.9487179487179487,
+        "spec": 0.7333333333333333,
+        "prec": 0.9024390243902439,
+        "f1": 0.9249999999999999,
+        "acc": 0.8888888888888888,
+        "fold": 1
+      },
+      {
+        "auc": 0.982905982905983,
+        "sens": 1.0,
+        "spec": 0.8,
+        "prec": 0.9285714285714286,
+        "f1": 0.962962962962963,
+        "acc": 0.9444444444444444,
+        "fold": 2
+      },
+      {
+        "auc": 0.9688644688644689,
+        "sens": 0.9743589743589743,
+        "spec": 0.7857142857142857,
+        "prec": 0.926829268292683,
+        "f1": 0.9500000000000001,
+        "acc": 0.9245283018867925,
+        "fold": 3
+      },
+      {
+        "auc": 0.9505494505494505,
+        "sens": 0.9487179487179487,
+        "spec": 0.7857142857142857,
+        "prec": 0.925,
+        "f1": 0.9367088607594937,
+        "acc": 0.9056603773584906,
+        "fold": 4
+      },
+      {
+        "auc": 0.989010989010989,
+        "sens": 1.0,
+        "spec": 0.7857142857142857,
+        "prec": 0.9285714285714286,
+        "f1": 0.962962962962963,
+        "acc": 0.9433962264150944,
+        "fold": 5
+      }
+    ]
   },
-  "comparison": [
+  "S2_best": {
+    "combo_id": "ConvNeXt-Tiny_LP-FT_S2",
+    "backbone": "ConvNeXt-Tiny",
+    "strategy": "LP-FT",
+    "input_strategy": "S2",
+    "cv_metrics": {
+      "mean": {
+        "auc": 0.9802686202686204,
+        "sens": 0.9743589743589745,
+        "spec": 0.8885714285714286,
+        "prec": 0.9598400315986966,
+        "f1": 0.9668231768231769,
+        "acc": 0.9512928022361985
+      },
+      "std": {
+        "auc": 0.008024718766571078,
+        "sens": 0.0229340305384594,
+        "spec": 0.0348107940618992,
+        "prec": 0.01161712895888824,
+        "f1": 0.010504908909755568,
+        "acc": 0.015100808718049558
+      }
+    },
+    "avg_epochs": {
+      "phase1": 50,
+      "phase2": 50
+    },
+    "per_fold": [
+      {
+        "auc": 0.9846153846153847,
+        "sens": 0.9487179487179487,
+        "spec": 0.9333333333333333,
+        "prec": 0.9736842105263158,
+        "f1": 0.9610389610389611,
+        "acc": 0.9444444444444444,
+        "fold": 1
+      },
+      {
+        "auc": 0.9863247863247864,
+        "sens": 1.0,
+        "spec": 0.8666666666666667,
+        "prec": 0.9512195121951219,
+        "f1": 0.975,
+        "acc": 0.9629629629629629,
+        "fold": 2
+      },
+      {
+        "auc": 0.968864468864469,
+        "sens": 1.0,
+        "spec": 0.8571428571428571,
+        "prec": 0.9512195121951219,
+        "f1": 0.975,
+        "acc": 0.9622641509433962,
+        "fold": 3
+      },
+      {
+        "auc": 0.9725274725274725,
+        "sens": 0.9487179487179487,
+        "spec": 0.8571428571428571,
+        "prec": 0.9487179487179487,
+        "f1": 0.9487179487179487,
+        "acc": 0.9245283018867925,
+        "fold": 4
+      },
+      {
+        "auc": 0.989010989010989,
+        "sens": 0.9743589743589743,
+        "spec": 0.9285714285714286,
+        "prec": 0.9743589743589743,
+        "f1": 0.9743589743589743,
+        "acc": 0.9622641509433962,
+        "fold": 5
+      }
+    ]
+  },
+  "all_results": [
     {
-      "name": "EfficientNetB0",
-      "auc": 0.9565811965811966,
-      "sens": 0.9384615384615385,
-      "spec": 0.8047619047619048,
-      "qualifies": true
+      "combo_id": "ConvNeXt-Tiny_LP-FT_S2",
+      "backbone": "ConvNeXt-Tiny",
+      "strategy": "LP-FT",
+      "input_strategy": "S2",
+      "mean_auc": 0.9802686202686204,
+      "std_auc": 0.008024718766571078,
+      "mean_sens": 0.9743589743589745,
+      "mean_spec": 0.8885714285714286,
+      "mean_f1": 0.9668231768231769,
+      "mean_acc": 0.9512928022361985
     },
     {
-      "name": "ResNet50",
-      "auc": 0.9222954822954822,
-      "sens": 0.9538461538461538,
-      "spec": 0.6504761904761904,
-      "qualifies": false
+      "combo_id": "ConvNeXt-Tiny_G-LF_S1",
+      "backbone": "ConvNeXt-Tiny",
+      "strategy": "G-LF",
+      "input_strategy": "S1",
+      "mean_auc": 0.9751892551892553,
+      "std_auc": 0.01404680051252288,
+      "mean_sens": 0.9743589743589742,
+      "mean_spec": 0.778095238095238,
+      "mean_f1": 0.9475269573370839,
+      "mean_acc": 0.921383647798742
     },
     {
-      "name": "ConvNeXt-Tiny",
-      "auc": 0.9644200244200245,
-      "sens": 0.9435897435897436,
-      "spec": 0.8057142857142857,
-      "qualifies": true
+      "combo_id": "ConvNeXt-Tiny_FT_S2",
+      "backbone": "ConvNeXt-Tiny",
+      "strategy": "FT",
+      "input_strategy": "S2",
+      "mean_auc": 0.9731623931623933,
+      "std_auc": 0.011315302315784828,
+      "mean_sens": 0.9538461538461538,
+      "mean_spec": 0.8323809523809522,
+      "mean_f1": 0.9464345312446578,
+      "mean_acc": 0.921383647798742
+    },
+    {
+      "combo_id": "ConvNeXt-Tiny_G-FL_S2",
+      "backbone": "ConvNeXt-Tiny",
+      "strategy": "G-FL",
+      "input_strategy": "S2",
+      "mean_auc": 0.9714529914529916,
+      "std_auc": 0.012655228533655935,
+      "mean_sens": 0.9487179487179487,
+      "mean_spec": 0.8466666666666667,
+      "mean_f1": 0.9463119159321691,
+      "mean_acc": 0.9212438853948287
+    },
+    {
+      "combo_id": "ConvNeXt-Tiny_G-FL_S1",
+      "backbone": "ConvNeXt-Tiny",
+      "strategy": "G-FL",
+      "input_strategy": "S1",
+      "mean_auc": 0.9684249084249086,
+      "std_auc": 0.02053165017506621,
+      "mean_sens": 0.9487179487179487,
+      "mean_spec": 0.8857142857142858,
+      "mean_f1": 0.9533285233285234,
+      "mean_acc": 0.9323549965059399
+    },
+    {
+      "combo_id": "ConvNeXt-Tiny_LP-FT_S1",
+      "backbone": "ConvNeXt-Tiny",
+      "strategy": "LP-FT",
+      "input_strategy": "S1",
+      "mean_auc": 0.9664468864468866,
+      "std_auc": 0.015472817303436128,
+      "mean_sens": 0.9435897435897436,
+      "mean_spec": 0.8466666666666667,
+      "mean_f1": 0.9429320947042467,
+      "mean_acc": 0.9174004192872118
+    },
+    {
+      "combo_id": "ResNet50_FT_S2",
+      "backbone": "ResNet50",
+      "strategy": "FT",
+      "input_strategy": "S2",
+      "mean_auc": 0.9641025641025642,
+      "std_auc": 0.016672099907376784,
+      "mean_sens": 0.9897435897435898,
+      "mean_spec": 0.6942857142857143,
+      "mean_f1": 0.9414956699731489,
+      "mean_acc": 0.9102026554856744
+    },
+    {
+      "combo_id": "ConvNeXt-Tiny_FT_S1",
+      "backbone": "ConvNeXt-Tiny",
+      "strategy": "FT",
+      "input_strategy": "S1",
+      "mean_auc": 0.9599511599511599,
+      "std_auc": 0.030320683530335873,
+      "mean_sens": 0.9589743589743589,
+      "mean_spec": 0.7914285714285715,
+      "mean_f1": 0.9422491178720358,
+      "mean_acc": 0.9139762403913346
+    },
+    {
+      "combo_id": "EfficientNetB0_LP-FT_S2",
+      "backbone": "EfficientNetB0",
+      "strategy": "LP-FT",
+      "input_strategy": "S2",
+      "mean_auc": 0.9539194139194139,
+      "std_auc": 0.01863227059703318,
+      "mean_sens": 0.9384615384615383,
+      "mean_spec": 0.8447619047619048,
+      "mean_f1": 0.940915750915751,
+      "mean_acc": 0.9136268343815515
+    },
+    {
+      "combo_id": "EfficientNetB0_LP_S2",
+      "backbone": "EfficientNetB0",
+      "strategy": "LP",
+      "input_strategy": "S2",
+      "mean_auc": 0.9538461538461538,
+      "std_auc": 0.01726048371061185,
+      "mean_sens": 0.9282051282051281,
+      "mean_spec": 0.8047619047619048,
+      "mean_f1": 0.9280524649678548,
+      "mean_acc": 0.8950384346610761
+    },
+    {
+      "combo_id": "EfficientNetB0_LP-FT_S1",
+      "backbone": "EfficientNetB0",
+      "strategy": "LP-FT",
+      "input_strategy": "S1",
+      "mean_auc": 0.9536996336996335,
+      "std_auc": 0.021427287773455244,
+      "mean_sens": 0.9589743589743589,
+      "mean_spec": 0.7752380952380953,
+      "mean_f1": 0.9397207134282016,
+      "mean_acc": 0.9099231306778476
+    },
+    {
+      "combo_id": "EfficientNetB0_LP_S1",
+      "backbone": "EfficientNetB0",
+      "strategy": "LP",
+      "input_strategy": "S1",
+      "mean_auc": 0.9516727716727716,
+      "std_auc": 0.013973162726024382,
+      "mean_sens": 0.9435897435897436,
+      "mean_spec": 0.7609523809523809,
+      "mean_f1": 0.9294444444444444,
+      "mean_acc": 0.8949685534591196
+    },
+    {
+      "combo_id": "ConvNeXt-Tiny_LP_S2",
+      "backbone": "ConvNeXt-Tiny",
+      "strategy": "LP",
+      "input_strategy": "S2",
+      "mean_auc": 0.947960927960928,
+      "std_auc": 0.017093389138997925,
+      "mean_sens": 0.923076923076923,
+      "mean_spec": 0.8733333333333333,
+      "mean_f1": 0.9375075375075376,
+      "mean_acc": 0.910062893081761
+    },
+    {
+      "combo_id": "EfficientNetB0_G-FL_S1",
+      "backbone": "EfficientNetB0",
+      "strategy": "G-FL",
+      "input_strategy": "S1",
+      "mean_auc": 0.9427838827838828,
+      "std_auc": 0.009457393413350829,
+      "mean_sens": 0.8666666666666666,
+      "mean_spec": 0.8476190476190476,
+      "mean_f1": 0.9006546373306936,
+      "mean_acc": 0.8613556953179595
+    },
+    {
+      "combo_id": "ConvNeXt-Tiny_LP_S1",
+      "backbone": "ConvNeXt-Tiny",
+      "strategy": "LP",
+      "input_strategy": "S1",
+      "mean_auc": 0.9368986568986569,
+      "std_auc": 0.01820027549113818,
+      "mean_sens": 0.8769230769230768,
+      "mean_spec": 0.8028571428571428,
+      "mean_f1": 0.8989925703722685,
+      "mean_acc": 0.8578616352201258
+    },
+    {
+      "combo_id": "ResNet50_LP-FT_S1",
+      "backbone": "ResNet50",
+      "strategy": "LP-FT",
+      "input_strategy": "S1",
+      "mean_auc": 0.935873015873016,
+      "std_auc": 0.029385458698463474,
+      "mean_sens": 0.9384615384615383,
+      "mean_spec": 0.7476190476190476,
+      "mean_f1": 0.9237684131889814,
+      "mean_acc": 0.8876310272536687
+    },
+    {
+      "combo_id": "ResNet50_LP-FT_S2",
+      "backbone": "ResNet50",
+      "strategy": "LP-FT",
+      "input_strategy": "S2",
+      "mean_auc": 0.9356288156288157,
+      "std_auc": 0.02549869210896017,
+      "mean_sens": 0.9641025641025642,
+      "mean_spec": 0.6409523809523809,
+      "mean_f1": 0.9195110438032484,
+      "mean_acc": 0.8765199161425578
+    },
+    {
+      "combo_id": "ResNet50_LP_S2",
+      "backbone": "ResNet50",
+      "strategy": "LP",
+      "input_strategy": "S2",
+      "mean_auc": 0.9328693528693529,
+      "std_auc": 0.031849217109527914,
+      "mean_sens": 0.9128205128205128,
+      "mean_spec": 0.7247619047619048,
+      "mean_f1": 0.9039123815706095,
+      "mean_acc": 0.8614255765199161
+    },
+    {
+      "combo_id": "EfficientNetB0_G-FL_S2",
+      "backbone": "EfficientNetB0",
+      "strategy": "G-FL",
+      "input_strategy": "S2",
+      "mean_auc": 0.9314774114774114,
+      "std_auc": 0.03494465391509915,
+      "mean_sens": 0.9384615384615385,
+      "mean_spec": 0.7504761904761904,
+      "mean_f1": 0.923716049382716,
+      "mean_acc": 0.8876310272536688
+    },
+    {
+      "combo_id": "ResNet50_G-FL_S1",
+      "backbone": "ResNet50",
+      "strategy": "G-FL",
+      "input_strategy": "S1",
+      "mean_auc": 0.9312820512820512,
+      "std_auc": 0.012468963468570491,
+      "mean_sens": 0.9897435897435898,
+      "mean_spec": 0.4866666666666667,
+      "mean_f1": 0.9085717448945237,
+      "mean_acc": 0.8540181691125088
+    },
+    {
+      "combo_id": "ResNet50_G-LF_S2",
+      "backbone": "ResNet50",
+      "strategy": "G-LF",
+      "input_strategy": "S2",
+      "mean_auc": 0.9306471306471307,
+      "std_auc": 0.05960032025844156,
+      "mean_sens": 0.9692307692307691,
+      "mean_spec": 0.5771428571428572,
+      "mean_f1": 0.9143002561727573,
+      "mean_acc": 0.8648497554157932
+    },
+    {
+      "combo_id": "ResNet50_G-LF_S1",
+      "backbone": "ResNet50",
+      "strategy": "G-LF",
+      "input_strategy": "S1",
+      "mean_auc": 0.9263247863247862,
+      "std_auc": 0.0322985265765947,
+      "mean_sens": 0.9897435897435898,
+      "mean_spec": 0.4809523809523809,
+      "mean_f1": 0.90922914779181,
+      "mean_acc": 0.8536687631027254
+    },
+    {
+      "combo_id": "ResNet50_LP_S1",
+      "backbone": "ResNet50",
+      "strategy": "LP",
+      "input_strategy": "S1",
+      "mean_auc": 0.9254700854700854,
+      "std_auc": 0.027979274283533428,
+      "mean_sens": 0.8871794871794872,
+      "mean_spec": 0.7514285714285714,
+      "mean_f1": 0.8958022009369891,
+      "mean_acc": 0.8501747030048918
+    },
+    {
+      "combo_id": "ConvNeXt-Tiny_L1-SP_S2",
+      "backbone": "ConvNeXt-Tiny",
+      "strategy": "L1-SP",
+      "input_strategy": "S2",
+      "mean_auc": 0.9223931623931625,
+      "std_auc": 0.022680090285068892,
+      "mean_sens": 0.9897435897435898,
+      "mean_spec": 0.460952380952381,
+      "mean_f1": 0.9049039404122133,
+      "mean_acc": 0.846680642907058
+    },
+    {
+      "combo_id": "EfficientNetB0_G-LF_S1",
+      "backbone": "EfficientNetB0",
+      "strategy": "G-LF",
+      "input_strategy": "S1",
+      "mean_auc": 0.9217094017094016,
+      "std_auc": 0.016575315311374354,
+      "mean_sens": 0.876923076923077,
+      "mean_spec": 0.5352380952380952,
+      "mean_f1": 0.8430690360083581,
+      "mean_acc": 0.782879105520615
+    },
+    {
+      "combo_id": "ResNet50_FT_S1",
+      "backbone": "ResNet50",
+      "strategy": "FT",
+      "input_strategy": "S1",
+      "mean_auc": 0.9165567765567765,
+      "std_auc": 0.017400634010122307,
+      "mean_sens": 0.923076923076923,
+      "mean_spec": 0.7095238095238094,
+      "mean_f1": 0.9087989852567396,
+      "mean_acc": 0.8651991614255765
+    },
+    {
+      "combo_id": "ConvNeXt-Tiny_L1-SP_S1",
+      "backbone": "ConvNeXt-Tiny",
+      "strategy": "L1-SP",
+      "input_strategy": "S1",
+      "mean_auc": 0.9044688644688644,
+      "std_auc": 0.031161386473156836,
+      "mean_sens": 0.9794871794871796,
+      "mean_spec": 0.45619047619047615,
+      "mean_f1": 0.8987648363114648,
+      "mean_acc": 0.8389238294898671
+    },
+    {
+      "combo_id": "ResNet50_G-FL_S2",
+      "backbone": "ResNet50",
+      "strategy": "G-FL",
+      "input_strategy": "S2",
+      "mean_auc": 0.904078144078144,
+      "std_auc": 0.03512806719766085,
+      "mean_sens": 0.9692307692307693,
+      "mean_spec": 0.480952380952381,
+      "mean_f1": 0.8980204048421301,
+      "mean_acc": 0.8388539482879105
+    },
+    {
+      "combo_id": "EfficientNetB0_G-LF_S2",
+      "backbone": "EfficientNetB0",
+      "strategy": "G-LF",
+      "input_strategy": "S2",
+      "mean_auc": 0.8682539682539684,
+      "std_auc": 0.05121362956874938,
+      "mean_sens": 0.6461538461538462,
+      "mean_spec": 0.8352380952380953,
+      "mean_f1": 0.7456849043512737,
+      "mean_acc": 0.6965059399021664
+    },
+    {
+      "combo_id": "ConvNeXt-Tiny_G-LF_S2",
+      "backbone": "ConvNeXt-Tiny",
+      "strategy": "G-LF",
+      "input_strategy": "S2",
+      "mean_auc": 0.8675457875457877,
+      "std_auc": 0.22162312943860232,
+      "mean_sens": 0.9846153846153847,
+      "mean_spec": 0.7171428571428571,
+      "mean_f1": 0.9467704139269472,
+      "mean_acc": 0.9136268343815515
+    },
+    {
+      "combo_id": "EfficientNetB0_FT_S1",
+      "backbone": "EfficientNetB0",
+      "strategy": "FT",
+      "input_strategy": "S1",
+      "mean_auc": 0.8675457875457877,
+      "std_auc": 0.07461408088398704,
+      "mean_sens": 0.9076923076923077,
+      "mean_spec": 0.35523809523809524,
+      "mean_f1": 0.8390678950525808,
+      "mean_acc": 0.7566736547868624
+    },
+    {
+      "combo_id": "ConvNeXt-Tiny_Auto-RGN_S2",
+      "backbone": "ConvNeXt-Tiny",
+      "strategy": "Auto-RGN",
+      "input_strategy": "S2",
+      "mean_auc": 0.8581440781440781,
+      "std_auc": 0.041250647580271436,
+      "mean_sens": 0.9897435897435898,
+      "mean_spec": 0.18095238095238092,
+      "mean_f1": 0.8636996336996337,
+      "mean_acc": 0.7716981132075472
+    },
+    {
+      "combo_id": "ConvNeXt-Tiny_Auto-RGN_S1",
+      "backbone": "ConvNeXt-Tiny",
+      "strategy": "Auto-RGN",
+      "input_strategy": "S1",
+      "mean_auc": 0.8546031746031746,
+      "std_auc": 0.05205060466759041,
+      "mean_sens": 0.9897435897435898,
+      "mean_spec": 0.15047619047619049,
+      "mean_f1": 0.8597962823806655,
+      "mean_acc": 0.764011180992313
+    },
+    {
+      "combo_id": "ResNet50_L2-SP_S2",
+      "backbone": "ResNet50",
+      "strategy": "L2-SP",
+      "input_strategy": "S2",
+      "mean_auc": 0.8084493284493284,
+      "std_auc": 0.1228555483371509,
+      "mean_sens": 0.9384615384615385,
+      "mean_spec": 0.32190476190476186,
+      "mean_f1": 0.8564429437386318,
+      "mean_acc": 0.7715583508036339
+    },
+    {
+      "combo_id": "ResNet50_L2-SP_S1",
+      "backbone": "ResNet50",
+      "strategy": "L2-SP",
+      "input_strategy": "S1",
+      "mean_auc": 0.7762637362637363,
+      "std_auc": 0.12140069760270085,
+      "mean_sens": 0.8615384615384617,
+      "mean_spec": 0.41999999999999993,
+      "mean_f1": 0.8263579552084191,
+      "mean_acc": 0.7418588399720475
+    },
+    {
+      "combo_id": "EfficientNetB0_FT_S2",
+      "backbone": "EfficientNetB0",
+      "strategy": "FT",
+      "input_strategy": "S2",
+      "mean_auc": 0.7647619047619048,
+      "std_auc": 0.20156113599990666,
+      "mean_sens": 0.7538461538461538,
+      "mean_spec": 0.5085714285714286,
+      "mean_f1": 0.7250296283344018,
+      "mean_acc": 0.6897973445143257
+    },
+    {
+      "combo_id": "EfficientNetB0_L2-SP_S1",
+      "backbone": "EfficientNetB0",
+      "strategy": "L2-SP",
+      "input_strategy": "S1",
+      "mean_auc": 0.6957509157509157,
+      "std_auc": 0.15745440927905072,
+      "mean_sens": 0.8256410256410257,
+      "mean_spec": 0.3771428571428571,
+      "mean_f1": 0.7936800413516831,
+      "mean_acc": 0.7046820405310972
+    },
+    {
+      "combo_id": "ResNet50_L1-SP_S1",
+      "backbone": "ResNet50",
+      "strategy": "L1-SP",
+      "input_strategy": "S1",
+      "mean_auc": 0.6836630036630036,
+      "std_auc": 0.09692930016866246,
+      "mean_sens": 0.9948717948717949,
+      "mean_spec": 0.013333333333333332,
+      "mean_f1": 0.843478260869565,
+      "mean_acc": 0.730398322851153
+    },
+    {
+      "combo_id": "EfficientNetB0_L1-SP_S1",
+      "backbone": "EfficientNetB0",
+      "strategy": "L1-SP",
+      "input_strategy": "S1",
+      "mean_auc": 0.656947496947497,
+      "std_auc": 0.13375809739762956,
+      "mean_sens": 0.5487179487179488,
+      "mean_spec": 0.598095238095238,
+      "mean_f1": 0.6357318522227609,
+      "mean_acc": 0.5614954577218728
+    },
+    {
+      "combo_id": "ConvNeXt-Tiny_L2-SP_S1",
+      "backbone": "ConvNeXt-Tiny",
+      "strategy": "L2-SP",
+      "input_strategy": "S1",
+      "mean_auc": 0.644957264957265,
+      "std_auc": 0.1601584727773862,
+      "mean_sens": 1.0,
+      "mean_spec": 0.0,
+      "mean_f1": 0.8441795231416549,
+      "mean_acc": 0.730398322851153
+    },
+    {
+      "combo_id": "EfficientNetB0_L1-SP_S2",
+      "backbone": "EfficientNetB0",
+      "strategy": "L1-SP",
+      "input_strategy": "S2",
+      "mean_auc": 0.6387301587301588,
+      "std_auc": 0.09681267478899767,
+      "mean_sens": 0.6871794871794872,
+      "mean_spec": 0.44571428571428573,
+      "mean_f1": 0.7144073767729682,
+      "mean_acc": 0.6215234102026554
+    },
+    {
+      "combo_id": "EfficientNetB0_Auto-RGN_S1",
+      "backbone": "EfficientNetB0",
+      "strategy": "Auto-RGN",
+      "input_strategy": "S1",
+      "mean_auc": 0.6195604395604395,
+      "std_auc": 0.12808095387731425,
+      "mean_sens": 0.4717948717948718,
+      "mean_spec": 0.6599999999999999,
+      "mean_f1": 0.521092568778739,
+      "mean_acc": 0.5258560447239693
+    },
+    {
+      "combo_id": "ConvNeXt-Tiny_L2-SP_S2",
+      "backbone": "ConvNeXt-Tiny",
+      "strategy": "L2-SP",
+      "input_strategy": "S2",
+      "mean_auc": 0.5984126984126984,
+      "std_auc": 0.1552117618645377,
+      "mean_sens": 1.0,
+      "mean_spec": 0.0,
+      "mean_f1": 0.8441795231416549,
+      "mean_acc": 0.730398322851153
+    },
+    {
+      "combo_id": "ResNet50_Auto-RGN_S2",
+      "backbone": "ResNet50",
+      "strategy": "Auto-RGN",
+      "input_strategy": "S2",
+      "mean_auc": 0.5709401709401709,
+      "std_auc": 0.09113411120343545,
+      "mean_sens": 0.44102564102564107,
+      "mean_spec": 0.6323809523809525,
+      "mean_f1": 0.5106588940653041,
+      "mean_acc": 0.4946890286512928
+    },
+    {
+      "combo_id": "ResNet50_Auto-RGN_S1",
+      "backbone": "ResNet50",
+      "strategy": "Auto-RGN",
+      "input_strategy": "S1",
+      "mean_auc": 0.5552136752136752,
+      "std_auc": 0.12703867054385087,
+      "mean_sens": 0.5282051282051281,
+      "mean_spec": 0.5180952380952382,
+      "mean_f1": 0.5521048999309869,
+      "mean_acc": 0.5288609364081063
+    },
+    {
+      "combo_id": "EfficientNetB0_L2-SP_S2",
+      "backbone": "EfficientNetB0",
+      "strategy": "L2-SP",
+      "input_strategy": "S2",
+      "mean_auc": 0.5532844932844933,
+      "std_auc": 0.17047187905079367,
+      "mean_sens": 0.5897435897435898,
+      "mean_spec": 0.5047619047619047,
+      "mean_f1": 0.625773995907452,
+      "mean_acc": 0.5648497554157932
+    },
+    {
+      "combo_id": "ResNet50_L1-SP_S2",
+      "backbone": "ResNet50",
+      "strategy": "L1-SP",
+      "input_strategy": "S2",
+      "mean_auc": 0.5470085470085471,
+      "std_auc": 0.18340438199999762,
+      "mean_sens": 0.8051282051282052,
+      "mean_spec": 0.3190476190476191,
+      "mean_f1": 0.7735307636779856,
+      "mean_acc": 0.6742138364779875
+    },
+    {
+      "combo_id": "EfficientNetB0_Auto-RGN_S2",
+      "backbone": "EfficientNetB0",
+      "strategy": "Auto-RGN",
+      "input_strategy": "S2",
+      "mean_auc": 0.5356288156288157,
+      "std_auc": 0.08990945608351826,
+      "mean_sens": 0.6256410256410256,
+      "mean_spec": 0.4133333333333333,
+      "mean_f1": 0.5753296982021843,
+      "mean_acc": 0.5696715583508036
     }
-  ]
+  ],
+  "missing_combos": []
 }

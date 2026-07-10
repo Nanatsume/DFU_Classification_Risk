@@ -1,0 +1,400 @@
+[2026-07-04 14:23:00] === Log file: ./results/rq1_ConvNeXt-Tiny_G-LF_S2_log_20260704_142300.txt ===
+[2026-07-04 14:23:00] 
+################################################################################
+# COMBO: ConvNeXt-Tiny_G-LF_S2
+################################################################################
+
+[2026-07-04 14:23:00] Loaded INAOE: 334 images, shape=(334, 224, 224, 3), CT=90, DM=244
+[2026-07-04 14:23:00] 
+================================================================================
+StrategyTuner: ConvNeXt-Tiny_G-LF_S2/G-LF (10 trials × fold1)
+================================================================================
+[2026-07-04 14:23:01] 
+================================================================================
+G-LF — ConvNeXt-Tiny_G-LF_S2_trial1_fold1
+================================================================================
+[2026-07-04 14:23:02]   Block 1/5: unfreezing 21 layers, budget 10 epochs
+[2026-07-04 14:24:01]   Block 2/5: unfreezing 64 layers, budget 10 epochs
+[2026-07-04 14:25:11]   Block 3/5: unfreezing 22 layers, budget 10 epochs
+[2026-07-04 14:26:29]   Block 4/5: unfreezing 22 layers, budget 10 epochs
+[2026-07-04 14:27:56]   Block 5/5: unfreezing 1 layers, budget 10 epochs
+[2026-07-04 14:29:23]   G-LF done. Total epochs used: 50
+[2026-07-04 14:29:34]   Trial 1: fold1 AUC=0.9932  params={'dropout_rate': 0.15503043695984914, 'l2_reg': 0.00791507439765621, 'dense_units_1': 512, 'dense_units_2': 32, 'batch_size': 32, 'optimizer': 'adam', 'lr': 0.0002440060709081752}
+[2026-07-04 14:29:35] 
+================================================================================
+G-LF — ConvNeXt-Tiny_G-LF_S2_trial2_fold1
+================================================================================
+[2026-07-04 14:29:35]   Block 1/5: unfreezing 21 layers, budget 10 epochs
+[2026-07-04 14:30:22]   Block 2/5: unfreezing 64 layers, budget 10 epochs
+[2026-07-04 14:31:32]   Block 3/5: unfreezing 22 layers, budget 10 epochs
+[2026-07-04 14:32:51]   Block 4/5: unfreezing 22 layers, budget 10 epochs
+[2026-07-04 14:34:19]   Block 5/5: unfreezing 1 layers, budget 10 epochs
+[2026-07-04 14:35:45]   G-LF done. Total epochs used: 50
+[2026-07-04 14:35:58]   Trial 2: fold1 AUC=0.9897  params={'dropout_rate': 0.3228119563599944, 'l2_reg': 0.05112443931364687, 'dense_units_1': 512, 'dense_units_2': 128, 'batch_size': 32, 'optimizer': 'adam', 'lr': 7.864749246304417e-05}
+[2026-07-04 14:35:59] 
+================================================================================
+G-LF — ConvNeXt-Tiny_G-LF_S2_trial3_fold1
+================================================================================
+[2026-07-04 14:35:59]   Block 1/5: unfreezing 21 layers, budget 10 epochs
+[2026-07-04 14:36:46]   Block 2/5: unfreezing 64 layers, budget 10 epochs
+[2026-07-04 14:37:57]   Block 3/5: unfreezing 22 layers, budget 10 epochs
+[2026-07-04 14:39:14]   Block 4/5: unfreezing 22 layers, budget 10 epochs
+[2026-07-04 14:40:42]   Block 5/5: unfreezing 1 layers, budget 10 epochs
+[2026-07-04 14:42:11]   G-LF done. Total epochs used: 50
+[2026-07-04 14:42:23]   Trial 3: fold1 AUC=0.9761  params={'dropout_rate': 0.3242561910239515, 'l2_reg': 4.483218858527927e-06, 'dense_units_1': 512, 'dense_units_2': 32, 'batch_size': 32, 'optimizer': 'adam', 'lr': 2.3406492014301736e-05}
+[2026-07-04 14:42:25] 
+================================================================================
+G-LF — ConvNeXt-Tiny_G-LF_S2_trial4_fold1
+================================================================================
+[2026-07-04 14:42:26]   Block 1/5: unfreezing 21 layers, budget 10 epochs
+[2026-07-04 14:43:15]   Block 2/5: unfreezing 64 layers, budget 10 epochs
+[2026-07-04 14:44:28]   Block 3/5: unfreezing 22 layers, budget 10 epochs
+[2026-07-04 14:45:47]   Block 4/5: unfreezing 22 layers, budget 10 epochs
+[2026-07-04 14:46:19]   Trial 4 failed: Graph execution error:
+
+Detected at node gradient_tape/functional_4_1/convnext_tiny_1/convnext_tiny_stage_3_block_2_pointwise_conv_2_1/MatMul/Sum_1 defined at (most recent call last):
+  File "/home/ntphoto/Project/rq1_run_combo.py", line 209, in <module>
+
+  File "/home/ntphoto/Project/rq1_run_combo.py", line 101, in main
+
+  File "/home/ntphoto/Project/dfu_common.py", line 1199, in optimize
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/GPyOpt/core/bo.py", line 151, in run_optimization
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/GPyOpt/core/bo.py", line 197, in evaluate_objective
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/GPyOpt/core/task/objective.py", line 50, in evaluate
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/GPyOpt/core/task/objective.py", line 74, in _eval_func
+
+  File "/home/ntphoto/Project/dfu_common.py", line 1193, in <lambda>
+
+  File "/home/ntphoto/Project/dfu_common.py", line 1167, in _evaluate
+
+  File "/home/ntphoto/Project/dfu_common.py", line 573, in train_with_strategy
+
+  File "/home/ntphoto/Project/dfu_common.py", line 641, in _train_gradual
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/utils/traceback_utils.py", line 117, in error_handler
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/backend/tensorflow/trainer.py", line 399, in fit
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/backend/tensorflow/trainer.py", line 241, in function
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/backend/tensorflow/trainer.py", line 154, in multi_step_on_iterator
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/backend/tensorflow/trainer.py", line 125, in wrapper
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/backend/tensorflow/trainer.py", line 134, in one_step_on_data
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/backend/tensorflow/trainer.py", line 81, in train_step
+
+OOM when allocating tensor with shape[2359296] and type float on /job:localhost/replica:0/task:0/device:GPU:0 by allocator GPU_0_bfc
+	 [[{{node gradient_tape/functional_4_1/convnext_tiny_1/convnext_tiny_stage_3_block_2_pointwise_conv_2_1/MatMul/Sum_1}}]]
+Hint: If you want to see a list of allocated tensors when OOM happens, add report_tensor_allocations_upon_oom to RunOptions for current allocation info. This isn't available when running in Eager mode.
+ [Op:__inference_multi_step_on_iterator_687234]
+[2026-07-04 14:46:24] 
+================================================================================
+G-LF — ConvNeXt-Tiny_G-LF_S2_trial5_fold1
+================================================================================
+[2026-07-04 14:46:24]   Block 1/5: unfreezing 21 layers, budget 10 epochs
+[2026-07-04 14:47:24]   Block 2/5: unfreezing 64 layers, budget 10 epochs
+[2026-07-04 14:48:40]   Block 3/5: unfreezing 22 layers, budget 10 epochs
+[2026-07-04 14:50:07]   Block 4/5: unfreezing 22 layers, budget 10 epochs
+[2026-07-04 14:51:32]   Trial 5 failed: Graph execution error:
+
+Detected at node gradient_tape/functional_4_1/convnext_tiny_1/convnext_tiny_stage_3_block_2_pointwise_conv_2_1/MatMul/MatMul_1 defined at (most recent call last):
+  File "/home/ntphoto/Project/rq1_run_combo.py", line 209, in <module>
+
+  File "/home/ntphoto/Project/rq1_run_combo.py", line 101, in main
+
+  File "/home/ntphoto/Project/dfu_common.py", line 1199, in optimize
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/GPyOpt/core/bo.py", line 151, in run_optimization
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/GPyOpt/core/bo.py", line 197, in evaluate_objective
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/GPyOpt/core/task/objective.py", line 50, in evaluate
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/GPyOpt/core/task/objective.py", line 74, in _eval_func
+
+  File "/home/ntphoto/Project/dfu_common.py", line 1193, in <lambda>
+
+  File "/home/ntphoto/Project/dfu_common.py", line 1167, in _evaluate
+
+  File "/home/ntphoto/Project/dfu_common.py", line 573, in train_with_strategy
+
+  File "/home/ntphoto/Project/dfu_common.py", line 641, in _train_gradual
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/utils/traceback_utils.py", line 117, in error_handler
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/backend/tensorflow/trainer.py", line 399, in fit
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/backend/tensorflow/trainer.py", line 241, in function
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/backend/tensorflow/trainer.py", line 154, in multi_step_on_iterator
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/backend/tensorflow/trainer.py", line 125, in wrapper
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/backend/tensorflow/trainer.py", line 134, in one_step_on_data
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/backend/tensorflow/trainer.py", line 81, in train_step
+
+OOM when allocating tensor with shape[32,7,3072,768] and type float on /job:localhost/replica:0/task:0/device:GPU:0 by allocator GPU_0_bfc
+	 [[{{node gradient_tape/functional_4_1/convnext_tiny_1/convnext_tiny_stage_3_block_2_pointwise_conv_2_1/MatMul/MatMul_1}}]]
+Hint: If you want to see a list of allocated tensors when OOM happens, add report_tensor_allocations_upon_oom to RunOptions for current allocation info. This isn't available when running in Eager mode.
+ [Op:__inference_multi_step_on_iterator_820623]
+[2026-07-04 14:51:37] 
+================================================================================
+G-LF — ConvNeXt-Tiny_G-LF_S2_trial6_fold1
+================================================================================
+[2026-07-04 14:51:37]   Block 1/5: unfreezing 21 layers, budget 10 epochs
+[2026-07-04 14:52:48]   Trial 6 failed: Graph execution error:
+
+Detected at node gradient_tape/functional_4_1/convnext_tiny_1/convnext_tiny_stage_3_block_2_pointwise_conv_2_1/MatMul/MatMul_1 defined at (most recent call last):
+  File "/home/ntphoto/Project/rq1_run_combo.py", line 209, in <module>
+
+  File "/home/ntphoto/Project/rq1_run_combo.py", line 101, in main
+
+  File "/home/ntphoto/Project/dfu_common.py", line 1199, in optimize
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/GPyOpt/core/bo.py", line 151, in run_optimization
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/GPyOpt/core/bo.py", line 197, in evaluate_objective
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/GPyOpt/core/task/objective.py", line 50, in evaluate
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/GPyOpt/core/task/objective.py", line 74, in _eval_func
+
+  File "/home/ntphoto/Project/dfu_common.py", line 1193, in <lambda>
+
+  File "/home/ntphoto/Project/dfu_common.py", line 1167, in _evaluate
+
+  File "/home/ntphoto/Project/dfu_common.py", line 573, in train_with_strategy
+
+  File "/home/ntphoto/Project/dfu_common.py", line 641, in _train_gradual
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/utils/traceback_utils.py", line 117, in error_handler
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/backend/tensorflow/trainer.py", line 399, in fit
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/backend/tensorflow/trainer.py", line 241, in function
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/backend/tensorflow/trainer.py", line 154, in multi_step_on_iterator
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/backend/tensorflow/trainer.py", line 125, in wrapper
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/backend/tensorflow/trainer.py", line 134, in one_step_on_data
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/backend/tensorflow/trainer.py", line 81, in train_step
+
+OOM when allocating tensor with shape[32,7,3072,768] and type float on /job:localhost/replica:0/task:0/device:GPU:0 by allocator GPU_0_bfc
+	 [[{{node gradient_tape/functional_4_1/convnext_tiny_1/convnext_tiny_stage_3_block_2_pointwise_conv_2_1/MatMul/MatMul_1}}]]
+Hint: If you want to see a list of allocated tensors when OOM happens, add report_tensor_allocations_upon_oom to RunOptions for current allocation info. This isn't available when running in Eager mode.
+ [Op:__inference_multi_step_on_iterator_838639]
+[2026-07-04 14:52:53] 
+================================================================================
+G-LF — ConvNeXt-Tiny_G-LF_S2_trial7_fold1
+================================================================================
+[2026-07-04 14:52:53]   Block 1/5: unfreezing 21 layers, budget 10 epochs
+[2026-07-04 14:54:06]   Trial 7 failed: Graph execution error:
+
+Detected at node gradient_tape/functional_4_1/convnext_tiny_1/convnext_tiny_stage_3_block_2_pointwise_conv_2_1/MatMul/MatMul_1 defined at (most recent call last):
+  File "/home/ntphoto/Project/rq1_run_combo.py", line 209, in <module>
+
+  File "/home/ntphoto/Project/rq1_run_combo.py", line 101, in main
+
+  File "/home/ntphoto/Project/dfu_common.py", line 1199, in optimize
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/GPyOpt/core/bo.py", line 151, in run_optimization
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/GPyOpt/core/bo.py", line 197, in evaluate_objective
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/GPyOpt/core/task/objective.py", line 50, in evaluate
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/GPyOpt/core/task/objective.py", line 74, in _eval_func
+
+  File "/home/ntphoto/Project/dfu_common.py", line 1193, in <lambda>
+
+  File "/home/ntphoto/Project/dfu_common.py", line 1167, in _evaluate
+
+  File "/home/ntphoto/Project/dfu_common.py", line 573, in train_with_strategy
+
+  File "/home/ntphoto/Project/dfu_common.py", line 641, in _train_gradual
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/utils/traceback_utils.py", line 117, in error_handler
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/backend/tensorflow/trainer.py", line 399, in fit
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/backend/tensorflow/trainer.py", line 241, in function
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/backend/tensorflow/trainer.py", line 154, in multi_step_on_iterator
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/backend/tensorflow/trainer.py", line 125, in wrapper
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/backend/tensorflow/trainer.py", line 134, in one_step_on_data
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/backend/tensorflow/trainer.py", line 81, in train_step
+
+OOM when allocating tensor with shape[32,7,3072,768] and type float on /job:localhost/replica:0/task:0/device:GPU:0 by allocator GPU_0_bfc
+	 [[{{node gradient_tape/functional_4_1/convnext_tiny_1/convnext_tiny_stage_3_block_2_pointwise_conv_2_1/MatMul/MatMul_1}}]]
+Hint: If you want to see a list of allocated tensors when OOM happens, add report_tensor_allocations_upon_oom to RunOptions for current allocation info. This isn't available when running in Eager mode.
+ [Op:__inference_multi_step_on_iterator_856655]
+[2026-07-04 14:54:13] 
+================================================================================
+G-LF — ConvNeXt-Tiny_G-LF_S2_trial8_fold1
+================================================================================
+[2026-07-04 14:54:13]   Block 1/5: unfreezing 21 layers, budget 10 epochs
+[2026-07-04 14:55:24]   Trial 8 failed: Graph execution error:
+
+Detected at node gradient_tape/functional_4_1/convnext_tiny_1/convnext_tiny_stage_3_block_2_pointwise_conv_2_1/MatMul/MatMul_1 defined at (most recent call last):
+  File "/home/ntphoto/Project/rq1_run_combo.py", line 209, in <module>
+
+  File "/home/ntphoto/Project/rq1_run_combo.py", line 101, in main
+
+  File "/home/ntphoto/Project/dfu_common.py", line 1199, in optimize
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/GPyOpt/core/bo.py", line 151, in run_optimization
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/GPyOpt/core/bo.py", line 197, in evaluate_objective
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/GPyOpt/core/task/objective.py", line 50, in evaluate
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/GPyOpt/core/task/objective.py", line 74, in _eval_func
+
+  File "/home/ntphoto/Project/dfu_common.py", line 1193, in <lambda>
+
+  File "/home/ntphoto/Project/dfu_common.py", line 1167, in _evaluate
+
+  File "/home/ntphoto/Project/dfu_common.py", line 573, in train_with_strategy
+
+  File "/home/ntphoto/Project/dfu_common.py", line 641, in _train_gradual
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/utils/traceback_utils.py", line 117, in error_handler
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/backend/tensorflow/trainer.py", line 399, in fit
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/backend/tensorflow/trainer.py", line 241, in function
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/backend/tensorflow/trainer.py", line 154, in multi_step_on_iterator
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/backend/tensorflow/trainer.py", line 125, in wrapper
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/backend/tensorflow/trainer.py", line 134, in one_step_on_data
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/backend/tensorflow/trainer.py", line 81, in train_step
+
+OOM when allocating tensor with shape[32,7,3072,768] and type float on /job:localhost/replica:0/task:0/device:GPU:0 by allocator GPU_0_bfc
+	 [[{{node gradient_tape/functional_4_1/convnext_tiny_1/convnext_tiny_stage_3_block_2_pointwise_conv_2_1/MatMul/MatMul_1}}]]
+Hint: If you want to see a list of allocated tensors when OOM happens, add report_tensor_allocations_upon_oom to RunOptions for current allocation info. This isn't available when running in Eager mode.
+ [Op:__inference_multi_step_on_iterator_874671]
+[2026-07-04 14:55:29] 
+================================================================================
+G-LF — ConvNeXt-Tiny_G-LF_S2_trial9_fold1
+================================================================================
+[2026-07-04 14:55:30]   Block 1/5: unfreezing 21 layers, budget 10 epochs
+[2026-07-04 14:56:40]   Trial 9 failed: Graph execution error:
+
+Detected at node gradient_tape/functional_4_1/convnext_tiny_1/convnext_tiny_stage_3_block_2_pointwise_conv_2_1/MatMul/MatMul_1 defined at (most recent call last):
+  File "/home/ntphoto/Project/rq1_run_combo.py", line 209, in <module>
+
+  File "/home/ntphoto/Project/rq1_run_combo.py", line 101, in main
+
+  File "/home/ntphoto/Project/dfu_common.py", line 1199, in optimize
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/GPyOpt/core/bo.py", line 151, in run_optimization
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/GPyOpt/core/bo.py", line 197, in evaluate_objective
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/GPyOpt/core/task/objective.py", line 50, in evaluate
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/GPyOpt/core/task/objective.py", line 74, in _eval_func
+
+  File "/home/ntphoto/Project/dfu_common.py", line 1193, in <lambda>
+
+  File "/home/ntphoto/Project/dfu_common.py", line 1167, in _evaluate
+
+  File "/home/ntphoto/Project/dfu_common.py", line 573, in train_with_strategy
+
+  File "/home/ntphoto/Project/dfu_common.py", line 641, in _train_gradual
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/utils/traceback_utils.py", line 117, in error_handler
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/backend/tensorflow/trainer.py", line 399, in fit
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/backend/tensorflow/trainer.py", line 241, in function
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/backend/tensorflow/trainer.py", line 154, in multi_step_on_iterator
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/backend/tensorflow/trainer.py", line 125, in wrapper
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/backend/tensorflow/trainer.py", line 134, in one_step_on_data
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/backend/tensorflow/trainer.py", line 81, in train_step
+
+OOM when allocating tensor with shape[32,7,3072,768] and type float on /job:localhost/replica:0/task:0/device:GPU:0 by allocator GPU_0_bfc
+	 [[{{node gradient_tape/functional_4_1/convnext_tiny_1/convnext_tiny_stage_3_block_2_pointwise_conv_2_1/MatMul/MatMul_1}}]]
+Hint: If you want to see a list of allocated tensors when OOM happens, add report_tensor_allocations_upon_oom to RunOptions for current allocation info. This isn't available when running in Eager mode.
+ [Op:__inference_multi_step_on_iterator_892687]
+[2026-07-04 14:56:45] 
+================================================================================
+G-LF — ConvNeXt-Tiny_G-LF_S2_trial10_fold1
+================================================================================
+[2026-07-04 14:56:45]   Block 1/5: unfreezing 21 layers, budget 10 epochs
+[2026-07-04 14:57:55]   Trial 10 failed: Graph execution error:
+
+Detected at node gradient_tape/functional_4_1/convnext_tiny_1/convnext_tiny_stage_3_block_2_pointwise_conv_2_1/MatMul/MatMul_1 defined at (most recent call last):
+  File "/home/ntphoto/Project/rq1_run_combo.py", line 209, in <module>
+
+  File "/home/ntphoto/Project/rq1_run_combo.py", line 101, in main
+
+  File "/home/ntphoto/Project/dfu_common.py", line 1199, in optimize
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/GPyOpt/core/bo.py", line 151, in run_optimization
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/GPyOpt/core/bo.py", line 197, in evaluate_objective
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/GPyOpt/core/task/objective.py", line 50, in evaluate
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/GPyOpt/core/task/objective.py", line 74, in _eval_func
+
+  File "/home/ntphoto/Project/dfu_common.py", line 1193, in <lambda>
+
+  File "/home/ntphoto/Project/dfu_common.py", line 1167, in _evaluate
+
+  File "/home/ntphoto/Project/dfu_common.py", line 573, in train_with_strategy
+
+  File "/home/ntphoto/Project/dfu_common.py", line 641, in _train_gradual
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/utils/traceback_utils.py", line 117, in error_handler
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/backend/tensorflow/trainer.py", line 399, in fit
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/backend/tensorflow/trainer.py", line 241, in function
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/backend/tensorflow/trainer.py", line 154, in multi_step_on_iterator
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/backend/tensorflow/trainer.py", line 125, in wrapper
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/backend/tensorflow/trainer.py", line 134, in one_step_on_data
+
+  File "/home/ntphoto/miniconda3/envs/tf_gpu/lib/python3.11/site-packages/keras/src/backend/tensorflow/trainer.py", line 81, in train_step
+
+OOM when allocating tensor with shape[32,7,3072,768] and type float on /job:localhost/replica:0/task:0/device:GPU:0 by allocator GPU_0_bfc
+	 [[{{node gradient_tape/functional_4_1/convnext_tiny_1/convnext_tiny_stage_3_block_2_pointwise_conv_2_1/MatMul/MatMul_1}}]]
+Hint: If you want to see a list of allocated tensors when OOM happens, add report_tensor_allocations_upon_oom to RunOptions for current allocation info. This isn't available when running in Eager mode.
+ [Op:__inference_multi_step_on_iterator_910703]
+[2026-07-04 14:58:00] 
+✓ Best fold1 AUC: 0.993162
+[2026-07-04 14:58:00] Best params: {'dropout_rate': 0.15503043695984914, 'l2_reg': 0.00791507439765621, 'dense_units_1': 512, 'dense_units_2': 32, 'batch_size': 32, 'optimizer': 'adam', 'lr': 0.0002440060709081752}
+[2026-07-04 14:58:04] ✓ best_params → ./results/rq1/ConvNeXt-Tiny_G-LF_S2/best_params.json
+[2026-07-04 14:58:04] 
+================================================================================
+FOLD 1/5: ConvNeXt-Tiny_G-LF_S2
+================================================================================
+[2026-07-04 14:58:04] Train: 213  Val: 54
+[2026-07-04 14:58:05] 
+================================================================================
+G-LF — ConvNeXt-Tiny_G-LF_S2_Fold1
+================================================================================
+[2026-07-04 14:58:05]   Block 1/5: unfreezing 21 layers, budget 10 epochs

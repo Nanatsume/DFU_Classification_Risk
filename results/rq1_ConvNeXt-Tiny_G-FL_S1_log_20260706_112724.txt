@@ -1,0 +1,92 @@
+[2026-07-06 11:27:24] === Log file: ./results/rq1_ConvNeXt-Tiny_G-FL_S1_log_20260706_112724.txt ===
+[2026-07-06 11:27:24] 
+################################################################################
+# COMBO: ConvNeXt-Tiny_G-FL_S1
+################################################################################
+
+[2026-07-06 11:27:24] Loaded INAOE: 334 images, shape=(334, 224, 224, 3), CT=90, DM=244
+[2026-07-06 11:27:24] ✓ Loaded best_params — skipping tuning
+[2026-07-06 11:27:24] ✓ Fold 1: loading checkpoint
+[2026-07-06 11:27:45] 
+================================================================================
+FOLD 2/5: ConvNeXt-Tiny_G-FL_S1
+================================================================================
+[2026-07-06 11:27:45] Train: 213  Val: 54
+[2026-07-06 11:27:46] 
+================================================================================
+G-FL — ConvNeXt-Tiny_G-FL_S1_Fold2
+================================================================================
+[2026-07-06 11:27:46]   Block 1/5: unfreezing 1 layers, budget 10 epochs
+[2026-07-06 11:29:01]   Block 2/5: unfreezing 22 layers, budget 10 epochs
+[2026-07-06 11:30:10]   Block 3/5: unfreezing 22 layers, budget 10 epochs
+[2026-07-06 11:31:21]   Block 4/5: unfreezing 64 layers, budget 10 epochs
+[2026-07-06 11:32:45]   Block 5/5: unfreezing 21 layers, budget 10 epochs
+[2026-07-06 11:34:15]   G-FL done. Total epochs used: 50
+[2026-07-06 11:34:27] Model saved to ./results/rq1/ConvNeXt-Tiny_G-FL_S1/fold2_final.keras
+[2026-07-06 11:34:27] ✓ Fold 2 complete  epochs={'phase1': 50, 'phase2': None}
+[2026-07-06 11:34:28] 
+================================================================================
+FOLD 3/5: ConvNeXt-Tiny_G-FL_S1
+================================================================================
+[2026-07-06 11:34:28] Train: 214  Val: 53
+[2026-07-06 11:34:29] 
+================================================================================
+G-FL — ConvNeXt-Tiny_G-FL_S1_Fold3
+================================================================================
+[2026-07-06 11:34:29]   Block 1/5: unfreezing 1 layers, budget 10 epochs
+[2026-07-06 11:35:37]   Block 2/5: unfreezing 22 layers, budget 10 epochs
+[2026-07-06 11:36:46]   Block 3/5: unfreezing 22 layers, budget 10 epochs
+[2026-07-06 11:37:58]   Block 4/5: unfreezing 64 layers, budget 10 epochs
+[2026-07-06 11:39:23]   Block 5/5: unfreezing 21 layers, budget 10 epochs
+[2026-07-06 11:40:57]   G-FL done. Total epochs used: 50
+[2026-07-06 11:41:13] Model saved to ./results/rq1/ConvNeXt-Tiny_G-FL_S1/fold3_final.keras
+[2026-07-06 11:41:13] ✓ Fold 3 complete  epochs={'phase1': 50, 'phase2': None}
+[2026-07-06 11:41:15] 
+================================================================================
+FOLD 4/5: ConvNeXt-Tiny_G-FL_S1
+================================================================================
+[2026-07-06 11:41:15] Train: 214  Val: 53
+[2026-07-06 11:41:16] 
+================================================================================
+G-FL — ConvNeXt-Tiny_G-FL_S1_Fold4
+================================================================================
+[2026-07-06 11:41:16]   Block 1/5: unfreezing 1 layers, budget 10 epochs
+[2026-07-06 11:42:23]   Block 2/5: unfreezing 22 layers, budget 10 epochs
+[2026-07-06 11:43:32]   Block 3/5: unfreezing 22 layers, budget 10 epochs
+[2026-07-06 11:44:44]   Block 4/5: unfreezing 64 layers, budget 10 epochs
+[2026-07-06 11:46:08]   Block 5/5: unfreezing 21 layers, budget 10 epochs
+[2026-07-06 11:47:41]   G-FL done. Total epochs used: 50
+[2026-07-06 11:47:51] Model saved to ./results/rq1/ConvNeXt-Tiny_G-FL_S1/fold4_final.keras
+[2026-07-06 11:47:51] ✓ Fold 4 complete  epochs={'phase1': 50, 'phase2': None}
+[2026-07-06 11:47:53] 
+================================================================================
+FOLD 5/5: ConvNeXt-Tiny_G-FL_S1
+================================================================================
+[2026-07-06 11:47:53] Train: 214  Val: 53
+[2026-07-06 11:47:54] 
+================================================================================
+G-FL — ConvNeXt-Tiny_G-FL_S1_Fold5
+================================================================================
+[2026-07-06 11:47:54]   Block 1/5: unfreezing 1 layers, budget 10 epochs
+[2026-07-06 11:49:01]   Block 2/5: unfreezing 22 layers, budget 10 epochs
+[2026-07-06 11:50:10]   Block 3/5: unfreezing 22 layers, budget 10 epochs
+[2026-07-06 11:51:22]   Block 4/5: unfreezing 64 layers, budget 10 epochs
+[2026-07-06 11:52:49]   Block 5/5: unfreezing 21 layers, budget 10 epochs
+[2026-07-06 11:54:19]   G-FL done. Total epochs used: 50
+[2026-07-06 11:54:32] Model saved to ./results/rq1/ConvNeXt-Tiny_G-FL_S1/fold5_final.keras
+[2026-07-06 11:54:32] ✓ Fold 5 complete  epochs={'phase1': 50, 'phase2': None}
+[2026-07-06 11:54:35]   Fold 1:  AUC=0.9795  Sens=0.9231  Spec=1.0000  F1=0.9600
+[2026-07-06 11:54:35]   Fold 2:  AUC=1.0000  Sens=0.9744  Spec=1.0000  F1=0.9870
+[2026-07-06 11:54:35]   Fold 3:  AUC=0.9689  Sens=0.9744  Spec=0.7857  F1=0.9500
+[2026-07-06 11:54:35]   Fold 4:  AUC=0.9414  Sens=0.8718  Spec=0.8571  F1=0.9067
+[2026-07-06 11:54:35]   Fold 5:  AUC=0.9524  Sens=1.0000  Spec=0.7857  F1=0.9630
+[2026-07-06 11:54:35] 
+  Mean:  AUC=0.9684±0.0205  Sens=0.9487±0.0459  Spec=0.8857±0.0969
+[2026-07-06 11:54:35]   Avg epochs: phase1=50, phase2=None
+[2026-07-06 11:54:35] 
+✓ Metrics → ./results/rq1/ConvNeXt-Tiny_G-FL_S1/metrics.json
+[2026-07-06 11:54:35] 
+################################################################################
+# ConvNeXt-Tiny_G-FL_S1 COMPLETE
+################################################################################
+
