@@ -10,11 +10,9 @@ Master's thesis proposal, Mahidol University ICT.
 
 | RQ | Question |
 |----|---------|
-| **RQ1** | Which combination of CNN backbone × fine-tuning strategy × input orientation achieves the highest AUC-ROC? (48 combinations) |
-| **RQ2** | Does flipping the left foot image to match right-foot orientation (S2) significantly outperform original orientation (S1)? |
-| **RQ3** | How does the best CNN model compare with a Traditional ML baseline (AdaBoost + Khandakar thermal features)? |
-| **RQ4** | How do Grad-CAM, Grad-CAM++, and Eigen-CAM compare in localizing pressure risk regions? |
-| **RQ5** | Can the best CNN model distinguish between all four IWGDF risk categories (0–3)? *(exploratory, podoscope dataset only)* |
+| **RQ1** | Which combination of CNN backbone, fine-tuning strategy, and input orientation strategy achieves the highest AUC-ROC for DFU risk prediction? (48 combinations) |
+| **RQ2** | How does the best CNN model compare with a Traditional ML baseline using handcrafted features? |
+| **RQ3** | How do Grad-CAM, Grad-CAM++, and Eigen-CAM compare in localizing pressure risk regions, as evaluated by a top-region pointing game against expert-defined bounding boxes? |
 
 ---
 
@@ -47,7 +45,7 @@ Master's thesis proposal, Mahidol University ICT.
 - Expert wound-care nurse conducts full clinical assessment (monofilament test, tuning fork, ABI, visual inspection) alongside image capture
 - Specialist doctor reviews findings, assigns IWGDF category (0–3), and marks ROI bounding boxes for XAI evaluation using VIA2
 - Binary label: Cat 0 = negative, Cat 1/2/3 = positive
-- Full 4-class label (0–3) also retained for RQ5
+- Full 4-class label (0–3) retained for potential future work
 
 **Splits** (Seed=42, stratified, patient-level):
 ```
@@ -66,12 +64,12 @@ Each foot is annotated independently (left and right feet can have different IWG
 Despite image-level prediction, the 80/20 train/test split and 5-fold CV are stratified at the *patient* level so that both feet of the same patient always stay in the same partition, preventing data leakage.
 
 **Binary labels: IWGDF Cat 0 = negative, Cat 1+2+3 = positive.**
-The goal is *risk screening*, not severity grading. Any identifiable risk warrants clinical follow-up, so categories 1–3 are collapsed into a single positive class. Full four-class IWGDF labels (0–3) are retained for RQ5.
+The goal is *risk screening*, not severity grading. Any identifiable risk warrants clinical follow-up, so categories 1–3 are collapsed into a single positive class. Full four-class IWGDF labels (0–3) are retained for potential future work.
 
-**Primary metrics: Sensitivity and Specificity — not Accuracy.**
-The INAOE dataset is imbalanced (CT:DM = 90:244). A majority-class predictor achieves >70% accuracy while providing no clinical value. Sensitivity captures missed at-risk patients; Specificity captures unnecessary referrals. Accuracy is reported for completeness only.
+**Two-level primary metric framework.**
+AUC-ROC is the primary metric for model comparison and selection (threshold-independent, drives RQ1 configuration selection and RQ2 significance test). Sensitivity is the primary clinical metric, as missing an at-risk patient carries greater cost than a false referral. Specificity, PPV, NPV, and F1-Score are reported as secondary metrics.
 
-**Statistical tests for RQ2 and RQ3: McNemar's + DeLong's.**
+**Statistical tests for RQ2: McNemar's + DeLong's.**
 McNemar's tests whether models make different errors on the same individual samples (decision level). DeLong's tests whether AUC-ROC values differ significantly (ranking level). Both are needed because a model can have similar binary decisions but meaningfully different discriminative ability.
 
 ---
@@ -98,7 +96,7 @@ McNemar's tests whether models make different errors on the same individual samp
 
 ---
 
-## Baseline Model (RQ3)
+## Baseline Model (RQ2)
 
 AdaBoost classifier with handcrafted features. The feature set differs between the preliminary and target studies.
 
@@ -119,24 +117,11 @@ AdaBoost classifier with handcrafted features. The feature set differs between t
 
 ---
 
-## XAI Methods (RQ4)
+## XAI Methods (RQ3)
 
 Grad-CAM, Grad-CAM++, and Eigen-CAM applied to the final model. Evaluated via **top-region pointing game** against expert-annotated ROI bounding boxes (top-5% activation, spatial tolerance τ=15px).
 
 ---
-
-## Multiclass Extension (RQ5)
-
-The best CNN backbone from RQ1 is adapted for four-class IWGDF risk category classification (Cat 0, 1, 2, 3) by replacing the binary output head with a softmax layer. All other components (backbone, GAP, Dense layers) remain unchanged.
-
-| Item | Detail |
-|------|--------|
-| Output head | Dense(4, softmax) — replaces Dense(1, sigmoid) |
-| Loss | Categorical cross-entropy |
-| Class weighting | Inverse class frequency per fold |
-| Evaluation | Per-class sensitivity (one-vs-rest), macro AUC-ROC, confusion matrix |
-| Significance tests | None — treated as exploratory |
-| Dataset | Podoscope dataset only — INAOE has no IWGDF subcategory labels |
 
 ---
 
@@ -148,9 +133,8 @@ Project/
 ├── rq1_run_combo.py           # Train one combo (backbone × strategy × input), resume-aware
 ├── rq1_run_all.sh             # Loop over all 48 combos sequentially
 ├── rq1_compare.py             # Summarise RQ1 results, select best config
-├── rq2_final_eval.py          # Retrain best S1+S2 configs, evaluate on test set
-├── rq3_comparison.py          # AdaBoost baseline (full 39-feature Khandakar pipeline)
-├── rq4_xai.py                 # Grad-CAM / Grad-CAM++ / Eigen-CAM + pointing game
+├── rq3_comparison.py          # RQ2: AdaBoost baseline comparison
+├── rq4_xai.py                 # RQ3: Grad-CAM / Grad-CAM++ / Eigen-CAM + pointing game
 ├── Model/
 │   └── split_feet.py          # Left/right foot separation from podoscope images
 ├── results/
@@ -175,13 +159,10 @@ bash rq1_run_all.sh >> rq1_run_all.log 2>&1 &
 # RQ1 — summarise results and select best config
 python rq1_compare.py
 
-# RQ2 — retrain best S1 and S2 configs, compare on test set
-python rq2_final_eval.py
-
-# RQ3 — AdaBoost baseline comparison
+# RQ2 — AdaBoost baseline comparison
 python rq3_comparison.py
 
-# RQ4 — XAI heatmaps + pointing game
+# RQ3 — XAI heatmaps + pointing game
 python rq4_xai.py
 ```
 
@@ -212,7 +193,7 @@ RQ1 full 48-combo run currently in progress. Partial results (mean ± SD across 
 | Augmentation | RandomRotation(±10°), training only |
 | Epoch policy | CV uses early stopping; final retrain uses mean stopped epoch across folds |
 | Results location | `results/rq1/<combo>/` — best_params, fold checkpoints, val_preds, metrics |
-| Khandakar cache | `model_checkpoints/khandakar_features_39.npz` (auto-generated on first RQ3 run) |
+| Khandakar cache | `model_checkpoints/khandakar_features_39.npz` (auto-generated on first RQ2 run) |
 | BO trials | 10 trials for all strategies |
 | G-LF/G-FL blocks | EfficientNetB0 uses 5 merged block groups (stem, block1+2, block3+4, block5+6, block7+top); ResNet50 and ConvNeXt-Tiny use 5 natural groups each |
 | WSL memory | Requires `C:\Users\<user>\.wslconfig` with `memory=12GB` and `swap=16GB` — G-LF/G-FL accumulate TF graph state and will trigger WSL kernel restart without this cap |
