@@ -1,4 +1,4 @@
-<title>Research Data Recording Form — DFU Risk Classification</title>
+<title>Case Record Form — DFU Risk Prediction Study</title>
 <style>
 :root {
   --ink:        #18263A;
@@ -230,8 +230,8 @@ body {
 
   <!-- Header -->
   <div class="doc-header">
-    <div class="doc-eyebrow">Research Data Recording Form &nbsp;·&nbsp; Per-Patient Session Record</div>
-    <div class="doc-title">CNN-based DFU Risk Classification Using Plantar Pressure Footprint Images</div>
+    <div class="doc-eyebrow">Case Record Form</div>
+    <div class="doc-title">Development of a Predictive Model for Diabetic Foot Risk Using Podoscope Data with XAI-Based Explanations</div>
     <div class="doc-sub">Buddhachinaraj Hospital, Phitsanulok &nbsp;·&nbsp; Faculty of ICT, Mahidol University</div>
     <div class="meta-row">
       <div class="meta-field">
@@ -260,7 +260,7 @@ body {
       <span class="ablock-title">Eligibility Screening</span>
     </div>
     <div style="font-size:10px;color:var(--ink-soft);margin-bottom:0.5rem;font-style:italic">
-      Inclusion — all must be met &nbsp;|&nbsp; Exclusion — any one ticked = stop immediately
+      Inclusion — all must be met &nbsp;|&nbsp; Exclusion — any one ticked = ineligible, do not enrol
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.3rem 2rem">
       <div>
@@ -268,14 +268,14 @@ body {
         <div class="screen-item"><span class="cbox"></span><span>Diagnosed T2DM</span></div>
         <div class="screen-item"><span class="cbox"></span><span>Age ≥ 18 years</span></div>
         <div class="screen-item"><span class="cbox"></span><span>Able to stand on podoscope (incl. unilateral amputees who can bear weight)</span></div>
-        <div class="screen-item"><span class="cbox"></span><span>Cognitively alert, able to follow verbal instructions</span></div>
+        <div class="screen-item"><span class="cbox"></span><span>Passes Mini-Cog assessment (score ≥ 3/5)</span></div>
       </div>
       <div>
         <div style="font-size:9.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--warn);margin-bottom:0.35rem;font-weight:700">Exclusion</div>
         <div class="screen-item"><span class="cbox w"></span><span>Open wound / active ulcer / infection on plantar surface</span></div>
         <div class="screen-item"><span class="cbox w"></span><span>Bilateral lower-limb amputation</span></div>
         <div class="screen-item"><span class="cbox w"></span><span>Uncontrolled autoimmune / connective tissue disease (SLE, vasculitis, RA)</span></div>
-        <div class="screen-item"><span class="cbox w"></span><span>Prior participation in this study <span class="screen-sub">Verify research ID registry before enrolling</span></span></div>
+        <div class="screen-item"><span class="cbox w"></span><span>Unable to complete full clinical assessment (LOPS, PAD, foot inspection)</span></div>
       </div>
     </div>
     <div class="result-row">
@@ -311,19 +311,12 @@ body {
           <div class="ci"><span class="cbox"></span> LOPS (≥2 sites failed)</div>
         </div>
 
-        <div class="flbl">128 Hz Tuning Fork <span class="flbl-note">distal phalanx, 1st toe</span></div>
-        <div class="choices">
-          <div class="ci"><span class="cbox"></span> Normal</div>
-          <div class="ci"><span class="cbox"></span> Reduced</div>
-          <div class="ci"><span class="cbox"></span> Absent</div>
+        <div class="flbl">128 Hz Tuning Fork <span class="flbl-note">dorsal aspect, distal phalanx, 1st toe</span></div>
+        <div class="choices" style="flex-direction:column;gap:0.2rem">
+          <div class="ci"><span class="cbox"></span> Normal — correct ≥ 2/3 trials</div>
+          <div class="ci"><span class="cbox"></span> Abnormal — incorrect ≥ 2/3 trials</div>
         </div>
 
-        <div class="flbl">Ipswich Touch Test <span class="flbl-note">if above tools unavailable</span></div>
-        <div class="choices">
-          <div class="ci"><span class="cbox"></span> Intact</div>
-          <div class="ci"><span class="cbox"></span> LOPS (fail ≥2 sites)</div>
-          <div class="ci"><span class="cbox"></span> N/A</div>
-        </div>
       </div>
 
       <div class="foot-col">
@@ -340,24 +333,17 @@ body {
           <div class="ci"><span class="cbox"></span> LOPS (≥2 sites failed)</div>
         </div>
 
-        <div class="flbl">128 Hz Tuning Fork <span class="flbl-note">distal phalanx, 1st toe</span></div>
-        <div class="choices">
-          <div class="ci"><span class="cbox"></span> Normal</div>
-          <div class="ci"><span class="cbox"></span> Reduced</div>
-          <div class="ci"><span class="cbox"></span> Absent</div>
+        <div class="flbl">128 Hz Tuning Fork <span class="flbl-note">dorsal aspect, distal phalanx, 1st toe</span></div>
+        <div class="choices" style="flex-direction:column;gap:0.2rem">
+          <div class="ci"><span class="cbox"></span> Normal — correct ≥ 2/3 trials</div>
+          <div class="ci"><span class="cbox"></span> Abnormal — incorrect ≥ 2/3 trials</div>
         </div>
 
-        <div class="flbl">Ipswich Touch Test <span class="flbl-note">if above tools unavailable</span></div>
-        <div class="choices">
-          <div class="ci"><span class="cbox"></span> Intact</div>
-          <div class="ci"><span class="cbox"></span> LOPS (fail ≥2 sites)</div>
-          <div class="ci"><span class="cbox"></span> N/A</div>
-        </div>
       </div>
     </div>
 
     <div class="sdiv"></div>
-    <div style="display:flex;gap:2rem;flex-wrap:wrap">
+    <div class="bilateral">
       <div><span class="smry-lbl">Left LOPS:</span>
         <span class="ci" style="display:inline-flex"><span class="cbox"></span>&nbsp;Present</span>&nbsp;&nbsp;
         <span class="ci" style="display:inline-flex"><span class="cbox"></span>&nbsp;Absent</span>
@@ -668,7 +654,7 @@ body {
 
   <div class="doc-footer">
     <span>Research ID: P___ &nbsp;·&nbsp; Page 1 / 1</span>
-    <span>CNN-based DFU Risk Classification &nbsp;·&nbsp; Faculty of ICT, Mahidol University</span>
+    <span>DFU Risk Prediction Study &nbsp;·&nbsp; Faculty of ICT, Mahidol University</span>
   </div>
 
 </div>

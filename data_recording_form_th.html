@@ -1,0 +1,608 @@
+<title>แบบบันทึกข้อมูล — การศึกษาความเสี่ยงเท้าเบาหวาน</title>
+<style>
+:root {
+  --ink:        #18263A;
+  --ink-mid:    #3A5268;
+  --ink-soft:   #608098;
+  --accent:     #1A5C8A;
+  --accent-lt:  #EBF2F7;
+  --rule:       #B0C4D4;
+  --rule-lt:    #D5E3EE;
+  --surface:    #FFFFFF;
+  --bg:         #F0F4F8;
+  --neuro-bar:  #2E72B8;
+  --neuro-bg:   #EAF1FA;
+  --pad-bar:    #7A2E00;
+  --pad-bg:     #FDF0E8;
+  --struct-bar: #1A6B40;
+  --struct-bg:  #E8F5EE;
+  --img-bar:    #2A6060;
+  --img-bg:     #E8F4F4;
+  --phys-bar:   #5A3060;
+  --phys-bg:    #F4EEF8;
+  --warn:       #7A2000;
+  --warn-bg:    #FFF0EB;
+  --warn-bd:    #DDA090;
+  --pass:       #0A5230;
+  --pass-bg:    #E8F5EE;
+  --pass-bd:    #80C8A0;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ink:#D0E4F5; --ink-mid:#8AAAC8; --ink-soft:#587890;
+    --accent:#60A8D8; --accent-lt:#0A1C30;
+    --rule:#2A4060; --rule-lt:#182E42;
+    --surface:#0C1C2C; --bg:#060E18;
+    --neuro-bar:#4A92E0; --neuro-bg:#061828;
+    --pad-bar:#E08060; --pad-bg:#1A0800;
+    --struct-bar:#40B870; --struct-bg:#001808;
+    --img-bar:#40A0A0; --img-bg:#001818;
+    --phys-bar:#B080D0; --phys-bg:#180820;
+    --warn:#FFB090; --warn-bg:#200800; --warn-bd:#703020;
+    --pass:#80D0A0; --pass-bg:#001A0E; --pass-bd:#205840;
+  }
+}
+:root[data-theme="light"] {
+  --ink:#18263A; --ink-mid:#3A5268; --ink-soft:#608098;
+  --accent:#1A5C8A; --accent-lt:#EBF2F7;
+  --rule:#B0C4D4; --rule-lt:#D5E3EE;
+  --surface:#FFFFFF; --bg:#F0F4F8;
+  --neuro-bar:#2E72B8; --neuro-bg:#EAF1FA;
+  --pad-bar:#7A2E00; --pad-bg:#FDF0E8;
+  --struct-bar:#1A6B40; --struct-bg:#E8F5EE;
+  --img-bar:#2A6060; --img-bg:#E8F4F4;
+  --phys-bar:#5A3060; --phys-bg:#F4EEF8;
+  --warn:#7A2000; --warn-bg:#FFF0EB; --warn-bd:#DDA090;
+  --pass:#0A5230; --pass-bg:#E8F5EE; --pass-bd:#80C8A0;
+}
+:root[data-theme="dark"] {
+  --ink:#D0E4F5; --ink-mid:#8AAAC8; --ink-soft:#587890;
+  --accent:#60A8D8; --accent-lt:#0A1C30;
+  --rule:#2A4060; --rule-lt:#182E42;
+  --surface:#0C1C2C; --bg:#060E18;
+  --neuro-bar:#4A92E0; --neuro-bg:#061828;
+  --pad-bar:#E08060; --pad-bg:#1A0800;
+  --struct-bar:#40B870; --struct-bg:#001808;
+  --img-bar:#40A0A0; --img-bg:#001818;
+  --phys-bar:#B080D0; --phys-bg:#180820;
+  --warn:#FFB090; --warn-bg:#200800; --warn-bd:#703020;
+  --pass:#80D0A0; --pass-bg:#001A0E; --pass-bd:#205840;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg); color: var(--ink);
+  font-family: system-ui, -apple-system, "Segoe UI", "Noto Sans Thai", sans-serif;
+  font-size: 12.5px; line-height: 1.6;
+  padding: 1.5rem 1rem 3rem;
+  -webkit-font-smoothing: antialiased;
+}
+.page {
+  max-width: 800px; margin: 0 auto;
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  padding: 2rem 2.5rem 2.5rem;
+}
+
+/* Header */
+.doc-header { border-bottom: 2.5px solid var(--accent); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+.doc-eyebrow { font-size: 9.5px; letter-spacing: 0.13em; text-transform: uppercase; color: var(--ink-soft); margin-bottom: 0.25rem; }
+.doc-title { font-family: Georgia, serif; font-size: 16px; font-weight: normal; color: var(--accent); line-height: 1.3; margin-bottom: 0.15rem; }
+.doc-sub { font-size: 11px; color: var(--ink-mid); margin-bottom: 0.75rem; }
+.meta-row { display: flex; gap: 2rem; flex-wrap: wrap; margin-top: 0.75rem; align-items: flex-end; }
+.meta-field { display: flex; flex-direction: column; gap: 2px; }
+.meta-lbl { font-size: 9px; letter-spacing: 0.11em; text-transform: uppercase; color: var(--ink-soft); }
+.meta-box { border-bottom: 1.5px solid var(--rule); min-width: 90px; height: 22px; padding: 0 4px; font-size: 12px; }
+.meta-box.id { font-family: "SF Mono", Consolas, monospace; color: var(--accent); font-weight: 700; min-width: 70px; }
+
+/* Assessment Block */
+.ablock { margin-bottom: 1.2rem; border-left: 3.5px solid var(--accent); padding-left: 1rem; }
+.ablock.neuro  { border-left-color: var(--neuro-bar); }
+.ablock.pad    { border-left-color: var(--pad-bar); }
+.ablock.struct { border-left-color: var(--struct-bar); }
+.ablock.img    { border-left-color: var(--img-bar); }
+.ablock.phys   { border-left-color: var(--phys-bar); }
+.ablock.screen { border-left-color: var(--warn); }
+
+.ablock-head { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.7rem; }
+.ablock-letter { font-family: Georgia, serif; font-size: 11px; color: var(--ink-soft); min-width: 18px; }
+.ablock-title { font-size: 13px; font-weight: 700; color: var(--ink); }
+.ablock-cat {
+  font-size: 9.5px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 1px 8px; margin-left: 0.4rem;
+}
+.cat-neuro  { background: var(--neuro-bg);  color: var(--neuro-bar); }
+.cat-pad    { background: var(--pad-bg);    color: var(--pad-bar); }
+.cat-struct { background: var(--struct-bg); color: var(--struct-bar); }
+.cat-img    { background: var(--img-bg);    color: var(--img-bar); }
+.cat-phys   { background: var(--phys-bg);   color: var(--phys-bar); }
+
+/* Bilateral */
+.bilateral { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem 1.8rem; }
+.foot-hd {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--accent); padding-bottom: 3px;
+  border-bottom: 1px solid var(--rule-lt); margin-bottom: 0.5rem;
+}
+
+/* Field label */
+.flbl {
+  font-size: 9.5px; color: var(--ink-soft);
+  text-transform: uppercase; letter-spacing: 0.08em;
+  margin-top: 0.55rem; margin-bottom: 0.2rem;
+}
+.flbl:first-child { margin-top: 0; }
+.flbl-note { font-size: 9px; color: var(--ink-soft); font-style: italic; margin-left: 0.3rem; text-transform: none; letter-spacing: 0; }
+.def-group-lbl { font-size: 9px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: var(--struct-bar); margin-top: 0.2rem; margin-bottom: 0.15rem; }
+
+/* Choices */
+.choices { display: flex; flex-wrap: wrap; gap: 0.3rem 1rem; margin-bottom: 0.1rem; }
+.ci { display: flex; align-items: center; gap: 0.3rem; font-size: 12px; color: var(--ink); }
+.cbox { width: 12px; height: 12px; border: 1.5px solid var(--rule); display: inline-block; flex-shrink: 0; }
+.cbox.w { border-color: var(--warn-bd); }
+
+/* Monofilament sites */
+.mono-grid { display: flex; gap: 4px; margin-bottom: 0.3rem; }
+.mono-site {
+  border: 1px solid var(--rule-lt); background: var(--accent-lt);
+  padding: 4px 6px; text-align: center; font-size: 9.5px;
+  color: var(--ink-mid); line-height: 1.4; flex: 1;
+}
+.site-lbl { font-size: 8.5px; color: var(--ink-soft); display: block; }
+.site-box { width: 14px; height: 14px; border: 1px solid var(--rule); background: var(--surface); display: inline-block; margin-top: 2px; }
+
+/* Pulse table */
+.pulse-table { width: 100%; border-collapse: collapse; font-size: 11.5px; margin-bottom: 0.3rem; }
+.pulse-table th {
+  font-size: 9px; letter-spacing: 0.09em; text-transform: uppercase;
+  color: var(--ink-soft); text-align: left; padding: 2px 6px;
+  border-bottom: 1px solid var(--rule-lt); font-weight: 600;
+}
+.pulse-table td { padding: 3px 6px; border-bottom: 1px solid var(--rule-lt); }
+.pulse-table td:first-child { font-size: 11.5px; color: var(--ink-mid); }
+
+/* Value box */
+.val-box {
+  border-bottom: 1.5px solid var(--rule); width: 55px; height: 20px;
+  display: inline-block; font-family: "SF Mono", Consolas, monospace; font-size: 12px;
+}
+
+/* Write line */
+.wline { border-bottom: 1px solid var(--rule); height: 18px; display: block; margin-top: 2px; }
+.wline-row { display: flex; align-items: flex-end; gap: 0.5rem; flex-wrap: wrap; }
+.wlbl { font-size: 10.5px; color: var(--ink-mid); white-space: nowrap; }
+
+/* Section divider */
+.sdiv { border-top: 1px dashed var(--rule-lt); margin: 0.75rem 0; }
+
+/* Summary */
+.smry-lbl { font-size: 10px; color: var(--ink-soft); letter-spacing: 0.08em; text-transform: uppercase; margin-right: 0.3rem; }
+
+/* Screen items */
+.screen-item { display: grid; grid-template-columns: 14px 1fr; gap: 0 0.5rem; margin-bottom: 0.35rem; }
+.screen-sub { font-size: 10.5px; color: var(--ink-soft); display: block; }
+.result-row { display: flex; gap: 1.5rem; align-items: center; margin-top: 0.6rem; flex-wrap: wrap; }
+.rbadge { padding: 2px 12px; font-size: 11px; font-weight: 700; border: 1.5px solid; letter-spacing: 0.03em; }
+.smry-neg { color: var(--pass); background: var(--pass-bg); border-color: var(--pass-bd); }
+.smry-pos { color: var(--warn); background: var(--warn-bg); border-color: var(--warn-bd); }
+
+/* Image ID */
+.img-id {
+  font-family: "SF Mono", Consolas, monospace; font-size: 13px; font-weight: 700;
+  color: var(--img-bar); border: 1.5px solid var(--rule); padding: 3px 10px;
+  display: inline-block; letter-spacing: 0.08em;
+}
+
+/* IWGDF boxes */
+.iwgdf-row { display: flex; gap: 0.4rem; }
+.iwgdf-box {
+  width: 34px; height: 34px; border: 1.5px solid var(--rule);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; font-weight: 700; font-family: Georgia, serif; color: var(--ink-mid);
+}
+
+/* Signatures */
+.sig-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem 2rem; margin-top: 0.75rem; }
+.sig-block { display: flex; flex-direction: column; gap: 5px; }
+.sig-line { border-bottom: 1.5px solid var(--rule); height: 28px; }
+.sig-cap { font-size: 10px; color: var(--ink-soft); }
+
+/* Notes */
+.notes-box { border: 1px solid var(--rule-lt); background: var(--accent-lt); height: 56px; padding: 4px 6px; }
+
+/* Footer */
+.doc-footer {
+  margin-top: 1.5rem; padding-top: 0.6rem;
+  border-top: 1px solid var(--rule-lt);
+  display: flex; justify-content: space-between;
+  font-size: 9.5px; color: var(--ink-soft);
+}
+
+@media print {
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  body { background: white !important; padding: 0; font-size: 11px; }
+  .page { border: none; padding: 1rem 1.5rem; max-width: 100%; }
+  .ablock { page-break-inside: avoid; break-inside: avoid; }
+}
+</style>
+
+<div class="page">
+
+  <!-- Header -->
+  <div class="doc-header">
+    <div class="doc-eyebrow">แบบบันทึกข้อมูล (Case Record Form)</div>
+    <div class="doc-title">โครงการพัฒนาแบบจำลองทำนายความเสี่ยงแผลเบาหวานที่เท้าโดยใช้ข้อมูลโพโดสโคปร่วมกับการอธิบายผลด้วยปัญญาประดิษฐ์แบบอธิบายได้ (XAI)</div>
+    <div class="doc-sub">โรงพยาบาลพุทธชินราช พิษณุโลก และ คณะเทคโนโลยีสารสนเทศและการสื่อสาร มหาวิทยาลัยมหิดล</div>
+    <div class="meta-row">
+      <div class="meta-field">
+        <span class="meta-lbl">รหัสวิจัย</span>
+        <div class="meta-box id">P ____</div>
+      </div>
+      <div class="meta-field">
+        <span class="meta-lbl">วันที่</span>
+        <div class="meta-box">___ / ___ / ___</div>
+      </div>
+      <div class="meta-field">
+        <span class="meta-lbl">พยาบาล</span>
+        <div class="meta-box" style="min-width:150px"></div>
+      </div>
+      <div class="meta-field">
+        <span class="meta-lbl">แพทย์ผู้ตรวจ</span>
+        <div class="meta-box" style="min-width:150px"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ก: คัดกรองผู้เข้าร่วม -->
+  <div class="ablock screen">
+    <div class="ablock-head">
+      <span class="ablock-letter">ก</span>
+      <span class="ablock-title">การคัดกรองผู้เข้าร่วมวิจัย</span>
+    </div>
+    <div style="font-size:10px;color:var(--ink-soft);margin-bottom:0.5rem;font-style:italic">
+      เกณฑ์รวม — ต้องผ่านทุกข้อ &nbsp;|&nbsp; เกณฑ์ยกเว้น — ติ๊กข้อใดข้อหนึ่ง = ไม่ผ่านเกณฑ์ ห้ามรับเข้าร่วม
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.3rem 2rem">
+      <div>
+        <div style="font-size:9.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--pass);margin-bottom:0.35rem;font-weight:700">เกณฑ์รวม</div>
+        <div class="screen-item"><span class="cbox"></span><span>ได้รับการวินิจฉัยว่าเป็นเบาหวานชนิดที่ 2</span></div>
+        <div class="screen-item"><span class="cbox"></span><span>อายุ ≥ 18 ปี</span></div>
+        <div class="screen-item"><span class="cbox"></span><span>สามารถยืนบนโพโดสโคปได้ด้วยตนเอง</span></div>
+        <div class="screen-item"><span class="cbox"></span><span>ผ่านการประเมินด้านการรับรู้และสติปัญญาด้วย Mini-Cog (คะแนน ≥ 3/5)</span></div>
+      </div>
+      <div>
+        <div style="font-size:9.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--warn);margin-bottom:0.35rem;font-weight:700">เกณฑ์ยกเว้น</div>
+        <div class="screen-item"><span class="cbox w"></span><span>มีบาดแผลเปิด / แผลอักเสบ / การติดเชื้อที่ฝ่าเท้าข้างที่จะถ่ายภาพ</span></div>
+        <div class="screen-item"><span class="cbox w"></span><span>ถูกตัดขาทั้งสองข้าง</span></div>
+        <div class="screen-item"><span class="cbox w"></span><span>โรคภูมิคุ้มกันทำลายตนเอง / เนื้อเยื่อเกี่ยวพันที่ควบคุมไม่ได้ (SLE, หลอดเลือดอักเสบ, RA)</span></div>
+        <div class="screen-item"><span class="cbox w"></span><span>ไม่สามารถรับการประเมินทางคลินิกครบถ้วน (LOPS, PAD, การตรวจเท้า)</span></div>
+      </div>
+    </div>
+    <div class="result-row">
+      <div style="display:flex;align-items:center;gap:0.4rem"><span class="cbox"></span><span class="rbadge smry-neg">✓ ผ่านเกณฑ์ — ดำเนินการต่อ</span></div>
+      <div style="display:flex;align-items:center;gap:0.4rem"><span class="cbox w"></span><span class="rbadge smry-pos">✗ ไม่ผ่านเกณฑ์ — หยุด</span></div>
+    </div>
+    <div class="wline-row" style="margin-top:0.35rem">
+      <span class="wlbl">เหตุผล (กรณีไม่ผ่านเกณฑ์):</span>
+      <span class="wline" style="flex:1"></span>
+    </div>
+  </div>
+
+  <!-- ข: การประเมินระบบประสาท -->
+  <div class="ablock neuro">
+    <div class="ablock-head">
+      <span class="ablock-letter">ข</span>
+      <span class="ablock-title">การประเมินภาวะสูญเสียการรับความรู้สึก <span class="ablock-cat cat-neuro">Loss of Protective Sensation (LOPS)</span></span>
+    </div>
+
+    <div class="bilateral">
+      <div class="foot-col">
+        <div class="foot-hd">เท้าซ้าย</div>
+
+        <div class="flbl">เส้นใยโมโนฟิลาเมนต์ 10 กรัม (Monofilament) <span class="flbl-note">ทำเครื่องหมาย: ✓ รู้สึก / ✗ ไม่รู้สึก</span></div>
+        <div class="mono-grid">
+          <div class="mono-site"><span class="site-lbl">หัวแม่เท้า</span><span class="site-box"></span></div>
+          <div class="mono-site"><span class="site-lbl">MTH ที่ 1</span><span class="site-box"></span></div>
+          <div class="mono-site"><span class="site-lbl">MTH ที่ 5</span><span class="site-box"></span></div>
+        </div>
+        <div class="choices" style="margin-top:2px">
+          <div class="ci"><span class="cbox"></span> ปกติ</div>
+          <div class="ci"><span class="cbox"></span> LOPS (≥ 2 จุดไม่รู้สึก)</div>
+        </div>
+
+        <div class="flbl">ส้อมเสียง 128 Hz (Tuning Fork) <span class="flbl-note">ด้านหลังของกระดูกปลายนิ้วหัวแม่เท้า</span></div>
+        <div class="choices" style="flex-direction:column;gap:0.2rem">
+          <div class="ci"><span class="cbox"></span> ปกติ — รับรู้การสั่นได้ถูกต้องอย่างน้อย 2 ใน 3 ครั้ง</div>
+          <div class="ci"><span class="cbox"></span> LOPS — รับรู้ได้ไม่ถูกต้องอย่างน้อย 2 ใน 3 ครั้ง</div>
+        </div>
+      </div>
+
+      <div class="foot-col">
+        <div class="foot-hd">เท้าขวา</div>
+
+        <div class="flbl">เส้นใยโมโนฟิลาเมนต์ 10 กรัม (Monofilament) <span class="flbl-note">ทำเครื่องหมาย: ✓ รู้สึก / ✗ ไม่รู้สึก</span></div>
+        <div class="mono-grid">
+          <div class="mono-site"><span class="site-lbl">หัวแม่เท้า</span><span class="site-box"></span></div>
+          <div class="mono-site"><span class="site-lbl">MTH ที่ 1</span><span class="site-box"></span></div>
+          <div class="mono-site"><span class="site-lbl">MTH ที่ 5</span><span class="site-box"></span></div>
+        </div>
+        <div class="choices" style="margin-top:2px">
+          <div class="ci"><span class="cbox"></span> ปกติ</div>
+          <div class="ci"><span class="cbox"></span> LOPS (≥ 2 จุดไม่รู้สึก)</div>
+        </div>
+
+        <div class="flbl">ส้อมเสียง 128 Hz (Tuning Fork) <span class="flbl-note">ด้านหลังของกระดูกปลายนิ้วหัวแม่เท้า</span></div>
+        <div class="choices" style="flex-direction:column;gap:0.2rem">
+          <div class="ci"><span class="cbox"></span> ปกติ — รับรู้การสั่นได้ถูกต้องอย่างน้อย 2 ใน 3 ครั้ง</div>
+          <div class="ci"><span class="cbox"></span> LOPS — รับรู้ได้ไม่ถูกต้องอย่างน้อย 2 ใน 3 ครั้ง</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ค: การประเมินหลอดเลือดแดงส่วนปลาย -->
+  <div class="ablock pad">
+    <div class="ablock-head">
+      <span class="ablock-letter">ค</span>
+      <span class="ablock-title">การประเมินหลอดเลือดแดงส่วนปลาย <span class="ablock-cat cat-pad">Peripheral Arterial Disease (PAD)</span></span>
+    </div>
+
+    <div class="bilateral">
+      <div class="foot-col">
+        <div class="foot-hd">เท้าซ้าย / ขาซ้าย</div>
+
+        <div class="flbl">ดัชนีข้อเท้าต่อแขน (ABI)</div>
+        <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.3rem;flex-wrap:wrap">
+          <span class="wlbl">ค่า:</span><span class="val-box"></span>
+        </div>
+        <div class="choices" style="flex-direction:column;gap:0.2rem">
+          <div class="ci"><span class="cbox"></span> ปกติ (0.9 – 1.3)</div>
+          <div class="ci"><span class="cbox"></span> PAD (&lt; 0.9)</div>
+          <div class="ci"><span class="cbox"></span> ภาวะหลอดเลือดแข็งตัว (&gt; 1.3)</div>
+        </div>
+
+        <div class="flbl">ดัชนีนิ้วเท้าต่อแขน (TBI) <span class="flbl-note">กรณี ABI &gt; 1.3</span></div>
+        <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap">
+          <span class="wlbl">ค่า:</span><span class="val-box"></span>
+          <div class="ci"><span class="cbox"></span> PAD (&lt; 0.70)</div>
+          <div class="ci"><span class="cbox"></span> ปกติ (≥ 0.70)</div>
+        </div>
+      </div>
+
+      <div class="foot-col">
+        <div class="foot-hd">เท้าขวา / ขาขวา</div>
+
+        <div class="flbl">ดัชนีข้อเท้าต่อแขน (ABI)</div>
+        <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.3rem;flex-wrap:wrap">
+          <span class="wlbl">ค่า:</span><span class="val-box"></span>
+        </div>
+        <div class="choices" style="flex-direction:column;gap:0.2rem">
+          <div class="ci"><span class="cbox"></span> ปกติ (0.9 – 1.3)</div>
+          <div class="ci"><span class="cbox"></span> PAD (&lt; 0.9)</div>
+          <div class="ci"><span class="cbox"></span> ภาวะหลอดเลือดแข็งตัว (&gt; 1.3)</div>
+        </div>
+
+        <div class="flbl">ดัชนีนิ้วเท้าต่อแขน (TBI) <span class="flbl-note">กรณี ABI &gt; 1.3</span></div>
+        <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap">
+          <span class="wlbl">ค่า:</span><span class="val-box"></span>
+          <div class="ci"><span class="cbox"></span> PAD (&lt; 0.70)</div>
+          <div class="ci"><span class="cbox"></span> ปกติ (≥ 0.70)</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ง: การตรวจความผิดปกติเท้า -->
+  <div class="ablock struct">
+    <div class="ablock-head">
+      <span class="ablock-letter">ง</span>
+      <span class="ablock-title">การตรวจความผิดปกติของเท้า <span class="ablock-cat cat-struct">Foot Deformities</span></span>
+    </div>
+    <div class="bilateral">
+      <div class="foot-col">
+        <div class="foot-hd">เท้าซ้าย</div>
+
+        <div class="flbl">ความผิดปกติ — ทำเครื่องหมายทั้งหมดที่พบ</div>
+
+        <div class="def-group-lbl">ความผิดปกติของนิ้วเท้า</div>
+        <div class="choices" style="flex-direction:column;gap:0.18rem">
+          <div class="ci"><span class="cbox"></span> นิ้วเท้าโก่ง (Hammer toe)</div>
+          <div class="ci"><span class="cbox"></span> นิ้วเท้าพับ (Mallet toe)</div>
+          <div class="ci"><span class="cbox"></span> นิ้วเท้างอ (Claw toe)</div>
+          <div class="ci"><span class="cbox"></span> นิ้วหัวแม่เท้าเอียง (Hallux valgus)</div>
+        </div>
+
+        <div class="def-group-lbl" style="margin-top:0.35rem">อุ้งเท้าและฝ่าเท้า</div>
+        <div class="choices" style="flex-direction:column;gap:0.18rem">
+          <div class="ci"><span class="cbox"></span> หัวกระดูก Metatarsal โปน</div>
+          <div class="ci"><span class="cbox"></span> กระดูกยื่นผิดปกติขนาดใหญ่</div>
+          <div class="ci"><span class="cbox"></span> เท้าโก่ง อุ้งเท้าสูง (Pes cavus)</div>
+          <div class="ci"><span class="cbox"></span> เท้าแบน (Pes planus)</div>
+          <div class="ci"><span class="cbox"></span> เท้าจิก (Pes equinus)</div>
+        </div>
+
+        <div class="def-group-lbl" style="margin-top:0.35rem">ข้อต่อและกระดูก</div>
+        <div class="choices" style="flex-direction:column;gap:0.18rem">
+          <div class="ci"><span class="cbox"></span> เท้าผิดรูปจากโรคชาร์โคต์ (Charcot neuro-osteoarthropathy)</div>
+          <div class="ci"><span class="cbox"></span> การเคลื่อนไหวข้อต่อจำกัด</div>
+        </div>
+
+        <div class="def-group-lbl" style="margin-top:0.35rem">การเปลี่ยนแปลงโครงสร้างจากประวัติ</div>
+        <div class="choices" style="flex-direction:column;gap:0.18rem">
+          <div class="ci"><span class="cbox"></span> บาดเจ็บที่เท้าที่หายแล้ว</div>
+          <div class="ci"><span class="cbox"></span> การผ่าตัดเท้าอื่นๆ</div>
+        </div>
+
+      </div>
+
+      <div class="foot-col">
+        <div class="foot-hd">เท้าขวา</div>
+
+        <div class="flbl">ความผิดปกติ — ทำเครื่องหมายทั้งหมดที่พบ</div>
+
+        <div class="def-group-lbl">ความผิดปกติของนิ้วเท้า</div>
+        <div class="choices" style="flex-direction:column;gap:0.18rem">
+          <div class="ci"><span class="cbox"></span> นิ้วเท้าโก่ง (Hammer toe)</div>
+          <div class="ci"><span class="cbox"></span> นิ้วเท้าพับ (Mallet toe)</div>
+          <div class="ci"><span class="cbox"></span> นิ้วเท้างอ (Claw toe)</div>
+          <div class="ci"><span class="cbox"></span> นิ้วหัวแม่เท้าเอียง (Hallux valgus)</div>
+        </div>
+
+        <div class="def-group-lbl" style="margin-top:0.35rem">อุ้งเท้าและฝ่าเท้า</div>
+        <div class="choices" style="flex-direction:column;gap:0.18rem">
+          <div class="ci"><span class="cbox"></span> หัวกระดูก Metatarsal โปน</div>
+          <div class="ci"><span class="cbox"></span> กระดูกยื่นผิดปกติขนาดใหญ่</div>
+          <div class="ci"><span class="cbox"></span> เท้าโก่ง อุ้งเท้าสูง (Pes cavus)</div>
+          <div class="ci"><span class="cbox"></span> เท้าแบน (Pes planus)</div>
+          <div class="ci"><span class="cbox"></span> เท้าจิก (Pes equinus)</div>
+        </div>
+
+        <div class="def-group-lbl" style="margin-top:0.35rem">ข้อต่อและกระดูก</div>
+        <div class="choices" style="flex-direction:column;gap:0.18rem">
+          <div class="ci"><span class="cbox"></span> เท้าผิดรูปจากโรคชาร์โคต์ (Charcot neuro-osteoarthropathy)</div>
+          <div class="ci"><span class="cbox"></span> การเคลื่อนไหวข้อต่อจำกัด</div>
+        </div>
+
+        <div class="def-group-lbl" style="margin-top:0.35rem">การเปลี่ยนแปลงโครงสร้างจากประวัติ</div>
+        <div class="choices" style="flex-direction:column;gap:0.18rem">
+          <div class="ci"><span class="cbox"></span> บาดเจ็บที่เท้าที่หายแล้ว</div>
+          <div class="ci"><span class="cbox"></span> การผ่าตัดเท้าอื่นๆ</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- จ: อื่นๆ -->
+  <div class="ablock" style="border-left-color:var(--accent)">
+    <div class="ablock-head">
+      <span class="ablock-letter">จ</span>
+      <span class="ablock-title">อื่นๆ</span>
+    </div>
+    <div class="bilateral">
+      <div class="foot-col">
+        <div class="foot-hd">เท้าซ้าย</div>
+        <div class="flbl">ประวัติแผลเบาหวานที่เท้า</div>
+        <div class="choices" style="flex-direction:column;gap:0.2rem">
+          <div class="ci"><span class="cbox"></span> ไม่มีประวัติ</div>
+          <div class="ci"><span class="cbox"></span> มีประวัติแผล</div>
+        </div>
+        <div class="flbl" style="margin-top:0.3rem">การตัดรยางค์ล่าง (Lower-extremity amputation)</div>
+        <div class="choices" style="flex-direction:column;gap:0.18rem">
+          <div class="ci"><span class="cbox"></span> ไม่มี</div>
+          <div class="ci"><span class="cbox"></span> Major — เหนือข้อเท้าขึ้นไป</div>
+          <div class="ci"><span class="cbox"></span> Minor — ตัดนิ้วเท้า (Digital amputation)</div>
+          <div class="ci"><span class="cbox"></span> Minor — ตัดส่วนหน้าเท้า เหลือส้นเท้า (Transmetatarsal · TMA)</div>
+          <div class="ci"><span class="cbox"></span> Minor — ตัดกลางเท้า ระดับ Chopart / Lisfranc</div>
+        </div>
+      </div>
+      <div class="foot-col">
+        <div class="foot-hd">เท้าขวา</div>
+        <div class="flbl">ประวัติแผลเบาหวานที่เท้า</div>
+        <div class="choices" style="flex-direction:column;gap:0.2rem">
+          <div class="ci"><span class="cbox"></span> ไม่มีประวัติ</div>
+          <div class="ci"><span class="cbox"></span> มีประวัติแผล</div>
+        </div>
+        <div class="flbl" style="margin-top:0.3rem">การตัดรยางค์ล่าง (Lower-extremity amputation)</div>
+        <div class="choices" style="flex-direction:column;gap:0.18rem">
+          <div class="ci"><span class="cbox"></span> ไม่มี</div>
+          <div class="ci"><span class="cbox"></span> Major — เหนือข้อเท้าขึ้นไป</div>
+          <div class="ci"><span class="cbox"></span> Minor — ตัดนิ้วเท้า (Digital amputation)</div>
+          <div class="ci"><span class="cbox"></span> Minor — ตัดส่วนหน้าเท้า เหลือส้นเท้า (Transmetatarsal · TMA)</div>
+          <div class="ci"><span class="cbox"></span> Minor — ตัดกลางเท้า ระดับ Chopart / Lisfranc</div>
+        </div>
+      </div>
+    </div>
+    <div class="sdiv"></div>
+    <div class="flbl">ไตวายระยะสุดท้าย (End-stage renal disease · ESRD)</div>
+    <div class="choices">
+      <div class="ci"><span class="cbox"></span> ไม่มี</div>
+      <div class="ci"><span class="cbox"></span> มี</div>
+    </div>
+  </div>
+
+  <!-- ฉ: การให้ annotation โดยแพทย์ -->
+  <div class="ablock phys">
+    <div class="ablock-head">
+      <span class="ablock-letter">ฉ</span>
+      <span class="ablock-title">การให้ Annotation โดยแพทย์ <span class="ablock-cat cat-phys">การจัดประเภท IWGDF และ ROI</span></span>
+    </div>
+    <div class="bilateral">
+      <div class="foot-col">
+        <div class="foot-hd">เท้าซ้าย</div>
+        <div class="flbl">ประเภทความเสี่ยง IWGDF — กากบาทข้อที่เลือก</div>
+        <div class="iwgdf-row">
+          <div class="iwgdf-box">0</div>
+          <div class="iwgdf-box">1</div>
+          <div class="iwgdf-box">2</div>
+          <div class="iwgdf-box">3</div>
+        </div>
+        <div style="font-size:9px;color:var(--ink-soft);margin-top:3px;line-height:1.6">
+          0 ไม่มี LOPS ไม่มี PAD<br>
+          1 มี LOPS หรือ PAD<br>
+          2 LOPS + PAD หรืออย่างใดอย่างหนึ่ง + ความผิดปกติของเท้า<br>
+          3 มีประวัติแผล / ตัดรยางค์ส่วนล่าง / ไตวายระยะสุดท้าย
+        </div>
+        <div class="flbl" style="margin-top:0.5rem">การจัดกลุ่ม (Binary Label)</div>
+        <div class="choices">
+          <div class="ci"><span class="cbox"></span> <strong>Negative</strong> (ประเภท 0)</div>
+          <div class="ci"><span class="cbox"></span> <strong>Positive</strong> (ประเภท 1–3)</div>
+        </div>
+        <div class="flbl" style="margin-top:0.5rem">ROI ใน VIA2 <span class="flbl-note">เฉพาะกรณี Positive</span></div>
+        <div class="choices" style="flex-direction:column;gap:0.2rem">
+          <div class="ci"><span class="cbox"></span> พบบริเวณแรงกดที่เสี่ยง</div>
+          <div class="ci"><span class="cbox"></span> ไม่พบบริเวณแรงกดที่เสี่ยง</div>
+        </div>
+      </div>
+      <div class="foot-col">
+        <div class="foot-hd">เท้าขวา</div>
+        <div class="flbl">ประเภทความเสี่ยง IWGDF — กากบาทข้อที่เลือก</div>
+        <div class="iwgdf-row">
+          <div class="iwgdf-box">0</div>
+          <div class="iwgdf-box">1</div>
+          <div class="iwgdf-box">2</div>
+          <div class="iwgdf-box">3</div>
+        </div>
+        <div style="font-size:9px;color:var(--ink-soft);margin-top:3px;line-height:1.6">
+          0 ไม่มี LOPS ไม่มี PAD<br>
+          1 มี LOPS หรือ PAD<br>
+          2 LOPS + PAD หรืออย่างใดอย่างหนึ่ง + ความผิดปกติของเท้า<br>
+          3 มีประวัติแผล / ตัดรยางค์ส่วนล่าง / ไตวายระยะสุดท้าย
+        </div>
+        <div class="flbl" style="margin-top:0.5rem">การจัดกลุ่ม (Binary Label)</div>
+        <div class="choices">
+          <div class="ci"><span class="cbox"></span> <strong>Negative</strong> (ประเภท 0)</div>
+          <div class="ci"><span class="cbox"></span> <strong>Positive</strong> (ประเภท 1–3)</div>
+        </div>
+        <div class="flbl" style="margin-top:0.5rem">ROI ใน VIA2 <span class="flbl-note">เฉพาะกรณี Positive</span></div>
+        <div class="choices" style="flex-direction:column;gap:0.2rem">
+          <div class="ci"><span class="cbox"></span> พบบริเวณแรงกดที่เสี่ยง</div>
+          <div class="ci"><span class="cbox"></span> ไม่พบบริเวณแรงกดที่เสี่ยง</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top:1.2rem;padding-top:0.8rem;border-top:1px solid var(--rule-lt)">
+    <div class="flbl">หมายเหตุ</div>
+    <div class="notes-box"></div>
+    <div class="sig-row">
+      <div class="sig-block">
+        <div class="sig-line"></div>
+        <div class="sig-cap">ลายมือชื่อพยาบาล &nbsp;&nbsp; วันที่: ___/___/___</div>
+      </div>
+      <div class="sig-block">
+        <div class="sig-line"></div>
+        <div class="sig-cap">ลายมือชื่อแพทย์ &nbsp;&nbsp; วันที่: ___/___/___</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc-footer">
+    <span>หน้า 1 / 1</span>
+    <span>การศึกษาความเสี่ยงเท้าเบาหวาน &nbsp;·&nbsp; โรงพยาบาลพุทธชินราช พิษณุโลก และ คณะ ICT มหาวิทยาลัยมหิดล</span>
+  </div>
+
+</div>

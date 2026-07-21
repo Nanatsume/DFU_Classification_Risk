@@ -1,0 +1,29 @@
+[2026-07-10 15:02:47] === Log file: ./results/rq3_log_20260710_150247.txt ===
+[2026-07-10 15:02:48] Loaded INAOE: 334 images, shape=(334, 224, 224, 3), CT=90, DM=244
+[2026-07-10 15:02:48] Loading proposed model: ./model_checkpoints/ConvNeXt-Tiny_LP-FT_S2_final_retrain.keras
+[2026-07-10 15:02:49] Building CAM models ...
+[2026-07-10 15:02:49]   feat_model output : (None, 7, 7, 768)
+[2026-07-10 15:02:49]   classifier input  : (None, 7, 7, 768)
+[2026-07-10 15:02:52] Confident correct DM samples available: 42 → using 4
+[2026-07-10 15:02:52] Confident correct CT samples available: 17 → using 4
+[2026-07-10 15:02:52] 
+================================================================================
+[2026-07-10 15:02:52] RQ4: XAI VISUALISATIONS (S2_best) — ConvNeXt-Tiny_LP-FT_S2
+[2026-07-10 15:02:52] ================================================================================
+[2026-07-10 15:02:52] NOTE: Pointing-game evaluation deferred (no ground-truth bboxes yet)
+
+[2026-07-10 15:02:54]   Saved: ./results/rq3_xai/sample01_DM.png
+[2026-07-10 15:02:57]   Saved: ./results/rq3_xai/sample02_DM.png
+[2026-07-10 15:02:59]   Saved: ./results/rq3_xai/sample03_DM.png
+[2026-07-10 15:03:01]   Saved: ./results/rq3_xai/sample04_DM.png
+[2026-07-10 15:03:04]   Saved: ./results/rq3_xai/sample05_CT.png
+[2026-07-10 15:03:06]   Saved: ./results/rq3_xai/sample06_CT.png
+[2026-07-10 15:03:08]   Saved: ./results/rq3_xai/sample07_CT.png
+[2026-07-10 15:03:10]   Saved: ./results/rq3_xai/sample08_CT.png
+[2026-07-10 15:03:10] 
+✓ 8 figures saved to ./results/rq3_xai/
+[2026-07-10 15:03:10] 
+⚠ Pointing game skipped — annotations.json not found
+[2026-07-10 15:03:10]    Expected at: /home/ntphoto/DFU/INAOE_S2/annotations.json
+[2026-07-10 15:03:10]    See the TODO comment near the top of this file for the required format.
+[2026-07-10 15:03:10] ✓ Results → ./results/rq3_results.json

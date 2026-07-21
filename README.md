@@ -98,10 +98,11 @@ McNemar's tests whether models make different errors on the same individual samp
 
 ## Baseline Model (RQ2)
 
-AdaBoost classifier with handcrafted features. The feature set differs between the preliminary and target studies.
+Handcrafted feature extraction followed by a systematic evaluation of all combinations of ranking methods, classifiers, and feature counts, following the methodology of Khandakar et al. (2021). The feature set differs between the preliminary and target studies.
 
-**Preliminary (INAOE proxy):** Khandakar et al. (2021) top-10 thermal features, extracted from raw pixel temperature maps and angiosome CSV files of the INAOE dataset — the same dataset and features on which Khandakar et al. originally demonstrated strong AdaBoost performance.
-- Features: Age, Gender, TCI, HighestTemp, NTR class fractions (5), zone statistics (Mean, Median, SD, ET, ETD, HSE) for 5 angiosome zones
+**Preliminary (INAOE proxy):** 39 thermal features extracted from raw pixel temperature maps and angiosome CSV files of the INAOE dataset, replicating the full Khandakar et al. (2021) pipeline.
+- Features: Age, Gender, TCI, HighestTemp, NTR class fractions (5), zone statistics (Mean, Median, SD, ET, ETD, HSE = |Cl − ET|) for 5 angiosome zones
+- **Preliminary result:** Best = XGBoost ranking + MLP + top 22 features → CV AUC 0.9950 ± 0.0058, Test AUC 0.9966
 
 **Target (Podoscope dataset):** Our own 43 handcrafted features extracted from plantar pressure footprint images, grouped into four categories.
 
@@ -113,7 +114,7 @@ AdaBoost classifier with handcrafted features. The feature set differs between t
 | Geometric | Foot arch indices and regional pressure areas | 11 |
 | **Total** | | **43** |
 
-**Pipeline (both datasets):** Correlation filter (>95%) → SMOTE → ensemble importance ranking (XGBoost + RF + ExtraTree) → top subset → AdaBoost (decision stump, balanced class weight)
+**Pipeline (both datasets):** Correlation filter (>95%) → 3 ranking methods (XGBoost + RF + ExtraTree) × 10 classifiers (AdaBoost, RF, ExtraTree, GradientBoosting, SVM, KNN, XGBoost, LogisticRegression, LDA, MLP) × 1..N feature counts → evaluate all combinations under 5-fold CV → best combination → retrain on full 80% training set
 
 ---
 
@@ -133,13 +134,15 @@ Project/
 ├── rq1_run_combo.py           # Train one combo (backbone × strategy × input), resume-aware
 ├── rq1_run_all.sh             # Loop over all 48 combos sequentially
 ├── rq1_compare.py             # Summarise RQ1 results, select best config
-├── rq3_comparison.py          # RQ2: AdaBoost baseline comparison
-├── rq4_xai.py                 # RQ3: Grad-CAM / Grad-CAM++ / Eigen-CAM + pointing game
+├── rq1_final_eval.py          # Retrain S2_best on full 80%, evaluate on test set
+├── rq2_baseline.py            # RQ2: Khandakar pipeline — all combinations (3 ranking × 10 clf × N features)
+├── rq2_compare.py             # RQ2: CNN vs Baseline comparison + DeLong's + McNemar's
+├── rq3_xai.py                 # RQ3: Grad-CAM / Grad-CAM++ / Eigen-CAM + pointing game
 ├── Model/
 │   └── split_feet.py          # Left/right foot separation from podoscope images
 ├── results/
 │   ├── rq1/                   # Per-combo: best_params.json, metrics.json, fold*.keras, val_preds.npz
-│   ├── rq4_xai/               # CAM heatmap images
+│   ├── rq3_xai/               # CAM heatmap images
 │   └── *.json / *.npy         # Final eval results
 └── 69b7a55ef1c9f8e33a9cbb5a/  # LaTeX thesis proposal
     ├── chapter1.tex
@@ -159,11 +162,17 @@ bash rq1_run_all.sh >> rq1_run_all.log 2>&1 &
 # RQ1 — summarise results and select best config
 python rq1_compare.py
 
-# RQ2 — AdaBoost baseline comparison
-python rq3_comparison.py
+# RQ1 — retrain best model (S2) on full 80%, evaluate on held-out test set
+python rq1_final_eval.py
+
+# RQ2 — Khandakar pipeline: evaluate all 780 combinations → select best model
+python rq2_baseline.py
+
+# RQ2 — CNN vs Baseline comparison + statistical tests
+python rq2_compare.py
 
 # RQ3 — XAI heatmaps + pointing game
-python rq4_xai.py
+python rq3_xai.py
 ```
 
 ---

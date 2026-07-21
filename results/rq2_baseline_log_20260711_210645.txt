@@ -1,0 +1,84 @@
+[2026-07-11 21:06:45] === Log file: ./results/rq2_baseline_log_20260711_210645.txt ===
+[2026-07-11 21:06:46] Loaded INAOE: 334 images, shape=(334, 224, 224, 3), CT=90, DM=244
+[2026-07-11 21:06:46] ✓ Loading cached 39-feature matrix: ./model_checkpoints/khandakar_features_39_v2.npz
+[2026-07-11 21:06:46] Train: 267  |  Test: 67
+[2026-07-11 21:06:46] 
+================================================================================
+[2026-07-11 21:06:46] Step 1: Correlation-based feature filtering (threshold=0.95)
+[2026-07-11 21:06:46] ================================================================================
+[2026-07-11 21:06:46]   Correlation filter (>95%): 39 -> 26 features  (dropped 13)
+[2026-07-11 21:06:46]   Features available for ranking: 26
+[2026-07-11 21:06:46] 
+================================================================================
+[2026-07-11 21:06:46] Step 1b: Correlation heatmaps (before and after filter)
+[2026-07-11 21:06:46] ================================================================================
+[2026-07-11 21:06:46]   Saved: ./results/rq2_corr_heatmap_A_before.png
+[2026-07-11 21:06:46]   Saved: ./results/rq2_corr_heatmap_B_after.png
+[2026-07-11 21:06:46] 
+================================================================================
+[2026-07-11 21:06:46] Step 2: Compute feature rankings (RF, XGBoost, ExtraTree) on SMOTE training set
+[2026-07-11 21:06:46] ================================================================================
+[2026-07-11 21:06:46]   Computing RF feature ranking ...
+[2026-07-11 21:06:47]     Top 10: ['Age', 'MPA_ET', 'NTR_Class1', 'LPA_SD', 'MCA_SD', 'MPA_SD', 'TCI', 'MPA_ETD', 'NTR_Class2', 'LCA_Mean']
+[2026-07-11 21:06:47]   Computing XGBoost feature ranking ...
+[2026-07-11 21:06:47]     Top 10: ['Age', 'HighestTemp', 'NTR_Class4', 'MPA_ET', 'NTR_Class2', 'MCA_SD', 'TCI', 'MPA_SD', 'NTR_Class1', 'MCA_ETD']
+[2026-07-11 21:06:47]   Computing ExtraTree feature ranking ...
+[2026-07-11 21:06:47]     Top 10: ['Age', 'MPA_ET', 'Gender', 'TCI', 'NTR_Class1', 'LPA_SD', 'MCA_SD', 'MPA_SD', 'NTR_Class2', 'LCA_Mean']
+[2026-07-11 21:06:47] 
+================================================================================
+[2026-07-11 21:06:47] Step 3: Exhaustive search — 3 rankings x 10 classifiers x 26 feature counts = 780 combinations
+[2026-07-11 21:06:47] ================================================================================
+[2026-07-11 21:06:56]   [  30/780] RF         RandomForest         top 4 AUC=0.9856  elapsed=0.2min  ETA=3.9min
+[2026-07-11 21:07:15]   [  60/780] RF         ExtraTree            top 8 AUC=0.9899  elapsed=0.5min  ETA=5.6min
+[2026-07-11 21:07:27]   [  90/780] RF         GradientBoosting     top12 AUC=0.9899  elapsed=0.7min  ETA=5.2min
+[2026-07-11 21:07:35]   [ 120/780] RF         SVM                  top16 AUC=0.9875  elapsed=0.8min  ETA=4.4min
+[2026-07-11 21:07:36]   [ 150/780] RF         KNN                  top20 AUC=0.9726  elapsed=0.8min  ETA=3.4min
+[2026-07-11 21:07:40]   [ 180/780] RF         XGBoost              top24 AUC=0.9833  elapsed=0.9min  ETA=2.9min
+[2026-07-11 21:07:40]   [ 210/780] RF         LDA                  top 2 AUC=0.9840  elapsed=0.9min  ETA=2.4min
+[2026-07-11 21:07:50]   [ 240/780] RF         MLP                  top 6 AUC=0.9870  elapsed=1.0min  ETA=2.4min
+[2026-07-11 21:08:36]   [ 270/780] XGBoost    AdaBoost             top10 AUC=0.9909  elapsed=1.8min  ETA=3.4min
+[2026-07-11 21:08:50]   [ 300/780] XGBoost    RandomForest         top14 AUC=0.9878  elapsed=2.0min  ETA=3.3min
+[2026-07-11 21:09:06]   [ 330/780] XGBoost    ExtraTree            top18 AUC=0.9902  elapsed=2.3min  ETA=3.2min
+[2026-07-11 21:09:18]   [ 360/780] XGBoost    GradientBoosting     top22 AUC=0.9866  elapsed=2.5min  ETA=2.9min
+[2026-07-11 21:09:21]   [ 390/780] XGBoost    SVM                  top26 AUC=0.9918  elapsed=2.6min  ETA=2.6min
+[2026-07-11 21:09:23]   [ 420/780] XGBoost    XGBoost              top 4 AUC=0.9859  elapsed=2.6min  ETA=2.2min
+[2026-07-11 21:09:26]   [ 450/780] XGBoost    LogisticRegression   top 8 AUC=0.9856  elapsed=2.7min  ETA=1.9min
+[2026-07-11 21:09:27]   [ 480/780] XGBoost    LDA                  top12 AUC=0.9860  elapsed=2.7min  ETA=1.7min
+[2026-07-11 21:10:03]   [ 510/780] XGBoost    MLP                  top16 AUC=0.9863  elapsed=3.3min  ETA=1.7min
+[2026-07-11 21:10:32]   [ 540/780] ExtraTree  AdaBoost             top20 AUC=0.9935  elapsed=3.8min  ETA=1.7min
+[2026-07-11 21:10:50]   [ 570/780] ExtraTree  RandomForest         top24 AUC=0.9910  elapsed=4.0min  ETA=1.5min
+[2026-07-11 21:11:05]   [ 600/780] ExtraTree  GradientBoosting     top 2 AUC=0.9856  elapsed=4.3min  ETA=1.3min
+[2026-07-11 21:11:15]   [ 630/780] ExtraTree  SVM                  top 6 AUC=0.9878  elapsed=4.5min  ETA=1.1min
+[2026-07-11 21:11:16]   [ 660/780] ExtraTree  KNN                  top10 AUC=0.9821  elapsed=4.5min  ETA=0.8min
+[2026-07-11 21:11:19]   [ 690/780] ExtraTree  XGBoost              top14 AUC=0.9867  elapsed=4.5min  ETA=0.6min
+[2026-07-11 21:11:21]   [ 720/780] ExtraTree  LogisticRegression   top18 AUC=0.9896  elapsed=4.6min  ETA=0.4min
+[2026-07-11 21:11:22]   [ 750/780] ExtraTree  LDA                  top22 AUC=0.9885  elapsed=4.6min  ETA=0.2min
+[2026-07-11 21:12:12]   [ 780/780] ExtraTree  MLP                  top26 AUC=0.9929  elapsed=5.4min  ETA=0.0min
+[2026-07-11 21:12:12] 
+================================================================================
+[2026-07-11 21:12:12] Best combination: XGBoost + MLP + top 22 features  ->  CV AUC = 0.9950
+[2026-07-11 21:12:12] ================================================================================
+[2026-07-11 21:12:12]   Selected features: ['Age', 'HighestTemp', 'NTR_Class4', 'MPA_ET', 'NTR_Class2', 'MCA_SD', 'TCI', 'MPA_SD', 'NTR_Class1', 'MCA_ETD', 'NTR_Class3', 'LPA_ETD', 'LPA_SD', 'MPA_ETD', 'LCA_Mean', 'FullFoot_ETD', 'LPA_HSE', 'LCA_HSE', 'Gender', 'MPA_HSE', 'FullFoot_SD', 'LCA_SD']
+[2026-07-11 21:12:12] 
+================================================================================
+[2026-07-11 21:12:12] Step 3b: Feature importance plot (best ranking method)
+[2026-07-11 21:12:12] ================================================================================
+[2026-07-11 21:12:12]   Saved: ./results/rq2_feature_importance_XGBoost.png
+[2026-07-11 21:12:12] 
+================================================================================
+[2026-07-11 21:12:12] Step 4: Train final model on full training set
+[2026-07-11 21:12:12] ================================================================================
+[2026-07-11 21:12:12]   After SMOTE: 390 samples
+[2026-07-11 21:12:12] 
+================================================================================
+[2026-07-11 21:12:12] TEST RESULTS  (threshold=0.5)
+[2026-07-11 21:12:12] ================================================================================
+[2026-07-11 21:12:12]   sensitivity   : 0.9796
+[2026-07-11 21:12:12]   specificity   : 1.0000
+[2026-07-11 21:12:12]   ppv           : 1.0000
+[2026-07-11 21:12:12]   npv           : 0.9474
+[2026-07-11 21:12:12]   f1            : 0.9897
+[2026-07-11 21:12:12]   auc_roc       : 0.9966
+[2026-07-11 21:12:12] 
+✓ Test probs -> ./results/rq2_best_test_probs.npy
+[2026-07-11 21:12:12] ✓ Full results -> ./results/rq2_baseline_results.json
