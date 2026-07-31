@@ -1,0 +1,2046 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Texture Feature Explorer — GLCM / LBP / HOG</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+:root{
+  --bg:#14171A;
+  --panel:#1C2125;
+  --panel-2:#20262B;
+  --line:#31383D;
+  --text:#E8E6DF;
+  --dim:#8B9096;
+  --glcm:#E8A33D;
+  --lbp:#4FD1C5;
+  --hog:#E0608F;
+  --mask:#8DD35F;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:
+    radial-gradient(circle at 1px 1px, #262c31 1px, transparent 1px) 0 0/22px 22px,
+    var(--bg);
+  color:var(--text);
+  font-family:'IBM Plex Mono', monospace;
+  min-height:100vh;
+  padding:28px 20px 60px;
+}
+h1,h2,h3{font-family:'Space Grotesk',sans-serif; margin:0;}
+.wrap{max-width:1180px; margin:0 auto;}
+
+.header{margin-bottom:26px;}
+.eyebrow{
+  font-size:11px; letter-spacing:.18em; text-transform:uppercase;
+  color:var(--dim); margin-bottom:8px;
+}
+.header h1{font-size:30px; font-weight:700; letter-spacing:-.01em;}
+.header p{color:var(--dim); font-size:13.5px; max-width:660px; line-height:1.55; margin-top:8px;}
+
+.layout{
+  display:grid;
+  grid-template-columns:290px 1fr;
+  gap:18px;
+}
+@media (max-width:880px){ .layout{grid-template-columns:1fr;} }
+
+.panel{
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:18px;
+}
+.panel + .panel{margin-top:18px;}
+
+.section-title{
+  font-family:'Space Grotesk',sans-serif;
+  font-size:12px; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--dim); margin-bottom:12px; display:flex; align-items:center; gap:8px;
+}
+.section-title .n{
+  width:18px;height:18px;border-radius:4px;background:var(--panel-2);
+  border:1px solid var(--line); display:flex; align-items:center; justify-content:center;
+  font-size:10px; color:var(--text);
+}
+
+.dropzone{
+  border:1.5px dashed var(--line);
+  border-radius:8px;
+  padding:22px 14px;
+  text-align:center;
+  cursor:pointer;
+  font-size:12.5px;
+  color:var(--dim);
+  transition:.15s;
+}
+.dropzone:hover{border-color:#556; color:var(--text); background:var(--panel-2);}
+.dropzone.drag{border-color:var(--glcm); color:var(--text);}
+input[type=file]{display:none;}
+
+.btnrow{display:flex; gap:8px; margin-top:10px;}
+button.ghost{
+  flex:1;
+  background:var(--panel-2);
+  border:1px solid var(--line);
+  color:var(--text);
+  font-family:'IBM Plex Mono',monospace;
+  font-size:11.5px;
+  padding:9px 8px;
+  border-radius:6px;
+  cursor:pointer;
+  transition:.15s;
+}
+button.ghost:hover{border-color:#667; background:#252c31;}
+
+.stage{margin-top:16px;}
+.stage-row{display:flex; gap:8px; margin-top:10px;}
+.stage-item{flex:1; text-align:center;}
+.stage-item canvas{
+  width:100%; aspect-ratio:1/1; object-fit:contain;
+  background:#000; border-radius:6px; border:1px solid var(--line);
+  image-rendering:pixelated;
+  cursor:zoom-in;
+  transition:.15s;
+}
+.stage-item canvas:hover{border-color:var(--glcm); filter:brightness(1.15);}
+.stage-item span{display:block; margin-top:6px; font-size:9.5px; color:var(--dim); letter-spacing:.03em;}
+
+.zoom-modal{
+  display:none; position:fixed; inset:0; z-index:999;
+  background:rgba(8,10,11,0.92);
+  align-items:center; justify-content:center;
+  flex-direction:column; gap:14px;
+}
+.zoom-modal.open{display:flex;}
+.zoom-canvas-wrap{
+  max-width:88vw; max-height:66vh;
+  overflow:auto;
+  border-radius:10px; border:1px solid var(--line);
+  box-shadow:0 20px 60px rgba(0,0,0,0.5);
+  background:#000;
+  cursor:grab;
+}
+.zoom-canvas-wrap:active{cursor:grabbing;}
+.zoom-modal canvas{
+  image-rendering:pixelated;
+  display:block;
+}
+.zoom-modal .zoom-label{
+  font-family:'Space Grotesk',sans-serif; font-size:14px; color:var(--text);
+  letter-spacing:.04em;
+}
+.zoom-controls{
+  display:flex; align-items:center; gap:10px;
+  background:var(--panel-2); border:1px solid var(--line); border-radius:8px;
+  padding:8px 12px;
+}
+.zoom-controls button{
+  width:28px; height:28px; border-radius:6px;
+  background:var(--panel); border:1px solid var(--line); color:var(--text);
+  font-family:'IBM Plex Mono',monospace; font-size:14px; cursor:pointer;
+}
+.zoom-controls button:hover{border-color:var(--glcm);}
+.zoom-controls input[type=range]{width:140px; accent-color:var(--glcm);}
+.zoom-controls .zoom-pct{font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:var(--text); min-width:44px; text-align:center;}
+.zoom-controls .zoom-fit{font-size:11px; padding:0 10px; width:auto;}
+.zoom-modal .zoom-hint{font-size:11px; color:var(--dim);}
+
+.tabs{display:flex; gap:6px; margin-bottom:16px;}
+.tab{
+  flex:1;
+  padding:10px 8px;
+  text-align:center;
+  border-radius:7px;
+  border:1px solid var(--line);
+  background:var(--panel-2);
+  cursor:pointer;
+  font-family:'Space Grotesk',sans-serif;
+  font-size:13px; font-weight:600;
+  color:var(--dim);
+  transition:.15s;
+}
+.tab .dot{display:inline-block; width:7px; height:7px; border-radius:50%; margin-right:7px; opacity:.5;}
+.tab[data-t="glcm"] .dot{background:var(--glcm);}
+.tab[data-t="lbp"] .dot{background:var(--lbp);}
+.tab[data-t="hog"] .dot{background:var(--hog);}
+.tab.active{color:var(--text); border-color:#4a525a; background:#232a30;}
+.tab.active .dot{opacity:1;}
+
+.tabpanel{display:none;}
+.tabpanel.active{display:block;}
+
+.scope-row{display:flex; align-items:center; gap:10px; margin-bottom:16px; flex-wrap:wrap;}
+.scope-label{font-size:10.5px; color:var(--dim); letter-spacing:.06em; text-transform:uppercase;}
+.scope-toggle{display:flex; border:1px solid var(--line); border-radius:7px; overflow:hidden;}
+.scope-btn{
+  padding:8px 14px; font-family:'IBM Plex Mono',monospace; font-size:11.5px;
+  background:var(--panel-2); color:var(--dim); cursor:pointer; border:none;
+}
+.scope-btn.active{background:var(--mask); color:#0e1210; font-weight:600;}
+.scope-note{font-size:10.5px; color:var(--dim);}
+
+.glcm-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:12px;}
+@media (max-width:700px){.glcm-grid{grid-template-columns:repeat(2,1fr);}}
+.glcm-cell{text-align:center;}
+.glcm-cell canvas{width:100%; aspect-ratio:1/1; border-radius:6px; border:1px solid var(--line); image-rendering:pixelated;}
+.glcm-cell span{font-size:11px; color:var(--dim); display:block; margin-top:6px;}
+
+table.feat{width:100%; border-collapse:collapse; margin-top:16px; font-size:12px;}
+table.feat th{
+  text-align:left; color:var(--dim); font-weight:500; font-size:10.5px;
+  letter-spacing:.06em; text-transform:uppercase; padding:6px 8px;
+  border-bottom:1px solid var(--line);
+}
+table.feat td{padding:7px 8px; border-bottom:1px solid #262c31;}
+table.feat tr:hover td{background:var(--panel-2);}
+.tag{
+  display:inline-block; font-size:10px; padding:2px 7px; border-radius:20px;
+  border:1px solid var(--line); color:var(--dim);
+}
+
+.viz-row{display:flex; gap:16px; align-items:flex-start; flex-wrap:wrap;}
+.viz-col{flex:1; min-width:230px;}
+.viz-col canvas{width:100%; border-radius:6px; border:1px solid var(--line); background:#000; image-rendering:pixelated;}
+.viz-col.small canvas{aspect-ratio:1/1;}
+.caption{font-size:10.5px; color:var(--dim); margin-top:6px; line-height:1.5;}
+
+.formula{
+  font-size:11px; color:var(--dim); background:var(--panel-2);
+  border:1px solid var(--line); border-radius:6px; padding:10px 12px;
+  margin-top:14px; line-height:1.7;
+}
+.formula b{color:var(--text); font-weight:600;}
+
+.status{font-size:11.5px; color:var(--dim); margin-top:10px; min-height:14px;}
+.pill{color:var(--glcm);}
+
+.slider-row{display:flex; align-items:center; gap:10px; margin-top:12px;}
+.slider-row input[type=range]{flex:1; accent-color:var(--mask);}
+.slider-val{font-size:11.5px; color:var(--text); min-width:34px; text-align:right;}
+.check-row{display:flex; align-items:center; gap:8px; margin-top:10px; font-size:11.5px; color:var(--dim);}
+.check-row input{accent-color:var(--mask);}
+
+footer{margin-top:26px; font-size:11px; color:#5c636a; text-align:center;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="header">
+    <div class="eyebrow">Texture Feature Playground</div>
+    <h1>GLCM · LBP · HOG — feel how it actually works</h1>
+    <p>Upload your own image (or use a synthetic sample texture) and watch how each algorithm turns raw pixels into a handful of numbers summarising texture. Everything runs live in your browser — nothing is ever uploaded to a server.</p>
+  </div>
+
+  <div class="layout">
+    <!-- LEFT: input + pipeline -->
+    <div>
+      <div class="panel">
+        <div class="section-title"><span class="n">1</span> Input Image</div>
+        <div class="dropzone" id="dropzone" tabindex="0">
+          Click to choose a file, drag & drop, or paste (Ctrl+V)<br>(JPG / PNG)
+        </div>
+        <input type="file" id="fileInput" accept="image/*" style="display:none;">
+        <div class="btnrow">
+          <button class="ghost" id="sampleBrick">Brick</button>
+          <button class="ghost" id="sampleWeave">Weave</button>
+          <button class="ghost" id="sampleNoise">Noise</button>
+        </div>
+        <div class="status" id="status">No image loaded — try one of the sample textures above.</div>
+      </div>
+
+      <div class="panel stage">
+        <div class="section-title"><span class="n">2</span> Preprocessing Pipeline</div>
+        <div class="stage-row">
+          <div class="stage-item"><canvas id="cOrig" width="96" height="96"></canvas><span>Original</span></div>
+          <div class="stage-item"><canvas id="cGray" width="96" height="96"></canvas><span>Grayscale</span></div>
+          <div class="stage-item"><canvas id="cQuant" width="96" height="96"></canvas><span id="quantThumbLabel">8 Levels</span></div>
+          <div class="stage-item"><canvas id="cMaskThumb" width="96" height="96"></canvas><span>Mask</span></div>
+        </div>
+        <div class="formula" id="pipelineNote">
+          Resized to <b>224 × 224 px</b> (forced) before all feature extraction — needed to feed a pretrained model and to keep every image directly comparable. The methodology description didn't mention a resize step either way, so this isn't confirmed to match or differ from the paper. Converted to grayscale with <b>0.299R + 0.587G + 0.114B</b>.
+        </div>
+      </div>
+
+      <div class="panel" id="fullFeaturePanel">
+        <div class="section-title"><span class="n">3</span> Full (Non-Summarised) Feature Count</div>
+        <div class="caption">If GLCM/LBP/HOG were used <b>raw</b> — not reduced to summary statistics — this is how many dimensions the feature vector would actually have, assuming the standard preprocessing step of resizing to <b>224 × 224</b> (a common CNN-input convention) before extraction.</div>
+        <table class="feat" style="margin-top:12px;">
+          <thead><tr><th>Group</th><th>Full size</th><th>Used now (summary)</th></tr></thead>
+          <tbody>
+            <tr><td><span class="tag" style="border-color:var(--glcm); color:var(--glcm);">GLCM</span></td><td id="fcGlcmFull">—</td><td>16</td></tr>
+            <tr><td><span class="tag" style="border-color:var(--lbp); color:var(--lbp);">LBP</span></td><td id="fcLbpFull">—</td><td>8</td></tr>
+            <tr><td><span class="tag" style="border-color:var(--hog); color:var(--hog);">HOG</span></td><td id="fcHogFull">—</td><td>8</td></tr>
+            <tr><td><b>Total</b></td><td id="fcTotalFull"><b>—</b></td><td><b>32</b></td></tr>
+          </tbody>
+        </table>
+        <div class="formula" id="fcFormula">—</div>
+      </div>
+
+      <div class="panel">
+        <div class="section-title"><span class="n">4</span> Segmentation Mask (mask-aware features)</div>
+        <div class="caption">The paper's GLCM/LBP/HOG were designed for full-frame texture (no background). Since this dataset has pre-segmented objects on a solid background, an auto-detected foreground mask is offered here as an optional, disclosed deviation — so you can compare "full frame" vs "foreground only" side by side.</div>
+        <div class="status" id="maskStatus">—</div>
+        <div class="slider-row">
+          <span class="scope-label">Threshold</span>
+          <input type="range" id="threshSlider" min="0" max="255" value="127">
+          <span class="slider-val" id="threshVal">127</span>
+        </div>
+        <div class="check-row">
+          <input type="checkbox" id="invertMask"> <label for="invertMask">Invert foreground / background</label>
+        </div>
+        <div class="formula">
+          Direction (which side is background) is auto-detected with <b>Otsu's method</b> — the side matching the image border is assumed to be background. The cutoff itself defaults to <b>0</b> (only pure-black pixels count as background), which matches solid-black-background product/object photos without needing to touch the slider. Drag it up if your background isn't pure black. In mask-aware mode: GLCM only counts a pixel pair if <b>both</b> pixels are foreground · LBP only computes a code if the centre pixel and all 8 neighbours are foreground · HOG zeroes out gradients that would cross into background and drops any 2×2 block whose foreground coverage is below 50%.
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: feature tabs -->
+    <div class="panel">
+      <div class="scope-row">
+        <span class="scope-label">Feature scope:</span>
+        <div class="scope-toggle">
+          <button class="scope-btn" id="scopeFull">Full frame</button>
+          <button class="scope-btn active" id="scopeFg">Foreground only</button>
+        </div>
+        <span class="scope-note" id="scopeNote">pairs / neighbourhoods / blocks touching background are excluded</span>
+      </div>
+
+      <div class="tabs">
+        <div class="tab active" data-t="glcm"><span class="dot"></span>GLCM · 16 features</div>
+        <div class="tab" data-t="lbp"><span class="dot"></span>LBP · 8 features</div>
+        <div class="tab" data-t="hog"><span class="dot"></span>HOG · 8 features</div>
+      </div>
+
+      <!-- GLCM -->
+      <div class="tabpanel active" id="panel-glcm">
+        <div class="section-title" style="margin-bottom:6px;">Co-occurrence matrices — d = 1px, θ = 0° / 45° / 90° / 135°</div>
+        <div class="scope-row">
+          <span class="scope-label" style="white-space:nowrap;">Grey levels:</span>
+          <select id="glcmLevelsSelect" style="background:var(--panel-2); color:var(--text); border:1px solid var(--line); border-radius:7px; padding:8px 10px; font-family:'IBM Plex Mono',monospace; font-size:11.5px;">
+            <option value="4">4</option>
+            <option value="8" selected>8 (paper default)</option>
+            <option value="16">16</option>
+            <option value="32">32</option>
+            <option value="64">64</option>
+            <option value="128">128</option>
+            <option value="256">256 (no quantisation)</option>
+          </select>
+          <span class="scope-label" style="white-space:nowrap;">Quantisation:</span>
+          <select id="quantMethod" style="flex:1; background:var(--panel-2); color:var(--text); border:1px solid var(--line); border-radius:7px; padding:8px 10px; font-family:'IBM Plex Mono',monospace; font-size:11.5px;">
+            <option value="linear">Linear / uniform</option>
+            <option value="minmax">Min–Max range (opt-in via GrayLimits=[] in MATLAB)</option>
+            <option value="equalfreq">Equal-frequency (histogram-based)</option>
+          </select>
+        </div>
+        <div class="formula" id="glcmQuantNote">—</div>
+        <div class="scope-row" style="margin-top:10px;">
+          <span class="scope-label">Pooling:</span>
+          <div class="scope-toggle">
+            <button class="scope-btn active" id="glcmPoolGlobal">Global</button>
+            <button class="scope-btn" id="glcmPoolRegional">Regional 2×2 (4 zones)</button>
+          </div>
+          <span class="scope-note" id="glcmPoolNote"></span>
+        </div>
+        <div class="caption" id="glcmMatrixCaption" style="margin-top:10px;">Each cell of the 8×8 matrix is how often grey level <i>i</i> appears next to grey level <i>j</i>, 1 pixel apart, along that direction (brighter = more frequent).</div>
+        <div class="glcm-grid" id="glcmGrid" style="margin-top:12px;"></div>
+        <table class="feat">
+          <thead><tr><th>Zone</th><th>Angle</th><th>Contrast</th><th>Correlation</th><th>Energy</th><th>Homogeneity</th></tr></thead>
+          <tbody id="glcmTable"></tbody>
+        </table>
+        <div class="formula">
+          <b>Contrast</b> = Σᵢⱼ P(i,j)(i−j)² &nbsp;·&nbsp;
+          <b>Energy</b> = Σᵢⱼ P(i,j)² &nbsp;·&nbsp;
+          <b>Homogeneity</b> = Σᵢⱼ P(i,j)/(1+|i−j|) &nbsp;·&nbsp;
+          <b>Correlation</b> = Σᵢⱼ (i−μᵢ)(j−μⱼ)P(i,j) / (σᵢσⱼ)<br>
+          4 directions × 4 values = <b>16 features</b> per zone (Regional mode: 4 zones × 16 = 64)
+        </div>
+      </div>
+
+      <!-- LBP -->
+      <div class="tabpanel" id="panel-lbp">
+        <div class="section-title" style="margin-bottom:6px;">Local Binary Pattern</div>
+
+        <div class="scope-row" style="flex-wrap:wrap; gap:14px;">
+          <span class="scope-label" style="white-space:nowrap;">P (neighbours):</span>
+          <select id="lbpP" style="background:var(--panel-2); color:var(--text); border:1px solid var(--line); border-radius:7px; padding:7px 9px; font-family:'IBM Plex Mono',monospace; font-size:11.5px;">
+            <option value="4">4</option><option value="8" selected>8 [paper]</option><option value="12">12</option><option value="16">16</option>
+          </select>
+          <span class="scope-label" style="white-space:nowrap;">R (radius):</span>
+          <select id="lbpR" style="background:var(--panel-2); color:var(--text); border:1px solid var(--line); border-radius:7px; padding:7px 9px; font-family:'IBM Plex Mono',monospace; font-size:11.5px;">
+            <option value="1" selected>1 [paper]</option><option value="2">2</option><option value="3">3</option>
+          </select>
+          <span class="scope-label" style="white-space:nowrap;">Threshold:</span>
+          <select id="lbpCmp" style="background:var(--panel-2); color:var(--text); border:1px solid var(--line); border-radius:7px; padding:7px 9px; font-family:'IBM Plex Mono',monospace; font-size:11.5px;">
+            <option value="gte" selected>≥ center</option><option value="gt">&gt; center</option>
+          </select>
+        </div>
+
+        <div class="scope-row" style="margin-top:10px;">
+          <span class="scope-label">Encoding:</span>
+          <div class="scope-toggle">
+            <button class="scope-btn active" id="lbpModeFull">Full</button>
+            <button class="scope-btn" id="lbpModeUniform">Uniform</button>
+            <button class="scope-btn" id="lbpModeRiu2">Rotation-invariant uniform</button>
+          </div>
+        </div>
+
+        <div class="formula" id="lbpParamsNote">—</div>
+        <div class="scope-row" style="margin-top:10px;">
+          <span class="scope-label">Pooling:</span>
+          <div class="scope-toggle">
+            <button class="scope-btn active" id="lbpPoolGlobal">Global</button>
+            <button class="scope-btn" id="lbpPoolRegional">Regional 2×2 (4 zones)</button>
+          </div>
+        </div>
+
+        <div class="viz-row" style="margin-top:14px;" id="lbpVizRow">
+          <div class="viz-col small"><canvas id="cLbpImg" width="96" height="96"></canvas><div class="caption">LBP map: each pixel is replaced with a binary code from comparing it against its P surrounding neighbours.</div></div>
+          <div class="viz-col"><canvas id="cLbpHist" width="480" height="200"></canvas><div class="caption" id="lbpHistCaption">Histogram of LBP codes before summarising into 8 statistics.</div></div>
+        </div>
+        <table class="feat">
+          <thead><tr><th>Zone</th><th>Statistic</th><th>Value</th></tr></thead>
+          <tbody id="lbpTable"></tbody>
+        </table>
+        <div class="formula">
+          Per-pixel code = Σₚ₌₀^(P−1) [I(pₙ) op I(center)] · 2ᵖ — robust to monotonic lighting changes since only the comparison matters, not the raw value. <b>Uniform</b> collapses any code with more than 2 circular 0↔1 transitions into one "non-uniform" bin (P(P−1)+3 symbols total). <b>Rotation-invariant uniform</b> goes further — uniform patterns are also grouped by number of 1-bits regardless of rotation, giving just P+2 symbols. Whichever encoding is selected, the same 8 statistics (Mean, Variance, Entropy, Skewness, Kurtosis, Energy, Contrast, Correlation) are computed over it — per zone in Regional mode (4 zones × 8 = 32).
+        </div>
+      </div>
+
+      <!-- HOG -->
+      <div class="tabpanel" id="panel-hog">
+        <div class="section-title" style="margin-bottom:6px;">Histogram of Oriented Gradients</div>
+
+        <div class="scope-row" style="flex-wrap:wrap; gap:14px;">
+          <span class="scope-label" style="white-space:nowrap;">Cell size:</span>
+          <select id="hogCellSize" style="background:var(--panel-2); color:var(--text); border:1px solid var(--line); border-radius:7px; padding:7px 9px; font-family:'IBM Plex Mono',monospace; font-size:11.5px;">
+            <option value="4">4×4</option><option value="8" selected>8×8 [paper]</option><option value="16">16×16</option>
+          </select>
+          <span class="scope-label" style="white-space:nowrap;">Block:</span>
+          <select id="hogBlockCells" style="background:var(--panel-2); color:var(--text); border:1px solid var(--line); border-radius:7px; padding:7px 9px; font-family:'IBM Plex Mono',monospace; font-size:11.5px;">
+            <option value="2" selected>2×2 cells [paper]</option><option value="3">3×3 cells</option>
+          </select>
+          <span class="scope-label" style="white-space:nowrap;">Bins:</span>
+          <select id="hogBins" style="background:var(--panel-2); color:var(--text); border:1px solid var(--line); border-radius:7px; padding:7px 9px; font-family:'IBM Plex Mono',monospace; font-size:11.5px;">
+            <option value="6">6</option><option value="9" selected>9 [paper]</option><option value="12">12</option><option value="18">18</option>
+          </select>
+        </div>
+
+        <div class="scope-row" style="margin-top:10px;">
+          <span class="scope-label">Gradient sign:</span>
+          <div class="scope-toggle">
+            <button class="scope-btn active" id="hogUnsigned">Unsigned 0–180°</button>
+            <button class="scope-btn" id="hogSigned">Signed 0–360°</button>
+          </div>
+        </div>
+
+        <div class="scope-row" style="flex-wrap:wrap; gap:14px; margin-top:10px;">
+          <span class="scope-label" style="white-space:nowrap;">Normalisation:</span>
+          <select id="hogNorm" style="background:var(--panel-2); color:var(--text); border:1px solid var(--line); border-radius:7px; padding:7px 9px; font-family:'IBM Plex Mono',monospace; font-size:11.5px;">
+            <option value="L2" selected>L2-norm</option>
+            <option value="L1">L1-norm</option>
+            <option value="L1sqrt">L1-sqrt</option>
+            <option value="L2hys">L2-Hys (Dalal–Triggs)</option>
+          </select>
+          <span class="scope-label" style="white-space:nowrap;">Gradient op:</span>
+          <select id="hogGradMethod" style="background:var(--panel-2); color:var(--text); border:1px solid var(--line); border-radius:7px; padding:7px 9px; font-family:'IBM Plex Mono',monospace; font-size:11.5px;">
+            <option value="central" selected>Central difference</option>
+            <option value="sobel">Sobel 3×3</option>
+            <option value="scharr">Scharr 3×3</option>
+          </select>
+        </div>
+
+        <div class="check-row">
+          <input type="checkbox" id="hogGamma"> <label for="hogGamma">Gamma correction (√intensity) before gradient</label>
+        </div>
+
+        <div class="formula" id="hogParamsNote">—</div>
+        <div class="scope-row" style="margin-top:10px;">
+          <span class="scope-label">Pooling:</span>
+          <div class="scope-toggle">
+            <button class="scope-btn active" id="hogPoolGlobal">Global</button>
+            <button class="scope-btn" id="hogPoolRegional">Regional 2×2 (4 zones)</button>
+          </div>
+        </div>
+
+        <div class="viz-row" style="margin-top:14px;" id="hogVizRow">
+          <div class="viz-col small"><canvas id="cHogViz" width="200" height="200"></canvas><div class="caption">Lines in each cell show the dominant edge direction(s) — longer/brighter means a stronger gradient in that direction.</div></div>
+          <div class="viz-col"><canvas id="cHogHist" width="480" height="200"></canvas><div class="caption">Distribution of all values in the HOG descriptor (after block normalisation) before summarising into 8 statistics.</div></div>
+        </div>
+        <table class="feat">
+          <thead><tr><th>Zone</th><th>Statistic</th><th>Value</th></tr></thead>
+          <tbody id="hogTable"></tbody>
+        </table>
+        <div class="formula">
+          The raw descriptor has thousands of dimensions (cells × blocks × bins) — here it's summarised into 8 statistics: Max, Min, Variance, Skewness, Median, Kurtosis, Mean, Std to keep the feature vector compact — per zone in Regional mode (4 zones × 8 = 32).
+        </div>
+
+        <div class="section-title" style="margin-top:22px; margin-bottom:6px;">PCA on the Full HOG Vector — across this session's images</div>
+        <div class="caption">Instead of 8 summary stats, this runs real PCA on the raw HOG descriptor (224×224 resize) of <b>every image you've loaded this session</b> (samples + uploads, up to the last 15). Each time you try a new sample or upload, this recomputes. <span style="color:var(--dim)">Note: this always uses the paper-default HOG settings (8×8 cell, 2×2 block, 9 bins, unsigned, L2, central-difference, no gamma) — independent of the settings above, so the session dataset stays consistent even if you experiment above.</span></div>
+        <div class="viz-row" style="margin-top:10px;">
+          <div class="viz-col"><canvas id="cPcaChart" width="480" height="200"></canvas><div class="caption">Cumulative explained variance as more principal components are added.</div></div>
+        </div>
+        <div class="status" id="pcaStatus" style="margin-top:8px;">Collected 0 images this session.</div>
+        <div class="formula">
+          PCA needs a <b>dataset</b> (multiple images), not one image — the descriptor is a single vector, and variance only means something across many of them. To keep this tractable in-browser with few samples (n ≪ d), it's solved via the Gram-matrix trick: eigen-decompose the small n×n similarity matrix instead of the huge d×d covariance matrix — mathematically equivalent for the non-zero eigenvalues. <b>Caveat:</b> with only a handful of session images this is illustrative, not a real benchmark — a proper PCA study needs a much larger, more diverse dataset than a live demo can hold.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel" style="margin-top:18px;">
+    <div class="section-title"><span class="n">5</span> Correlation Matrix — All 32 Combined Features (session images)</div>
+    <div class="caption">Pearson correlation across the full 32-feature vector (16 GLCM + 8 LBP + 8 HOG) computed for every image loaded this session (samples + uploads, up to the last 15). Pairs with |r| ≥ 0.95 are exactly the ones a naive correlation filter would drop one of. <span style="color:var(--dim)">Note: this always uses 8-level linear GLCM and paper-default LBP (P=8, R=1, full encoding) internally, independent of the selectors in the GLCM/LBP tabs above.</span></div>
+    <div class="status" id="corrStatus" style="margin-top:8px;">Collected 0 images this session — need at least 3.</div>
+    <div style="overflow-x:auto; margin-top:12px;">
+      <canvas id="cCorrHeatmap" style="image-rendering:pixelated; border-radius:6px; border:1px solid var(--line);"></canvas>
+    </div>
+    <div class="formula" id="corrFlaggedList">—</div>
+  </div>
+
+  <footer>Everything is computed in your browser with JavaScript — no data ever leaves this page.</footer>
+</div>
+
+<div class="zoom-modal" id="zoomModal">
+  <div class="zoom-label" id="zoomLabel">—</div>
+  <div class="zoom-canvas-wrap" id="zoomCanvasWrap">
+    <canvas id="zoomCanvas"></canvas>
+  </div>
+  <div class="zoom-controls">
+    <button id="zoomOut">−</button>
+    <input type="range" id="zoomSlider" min="1" max="32" step="1" value="4">
+    <button id="zoomIn">+</button>
+    <span class="zoom-pct" id="zoomPct">400%</span>
+    <button class="zoom-fit" id="zoomFit">Fit</button>
+  </div>
+  <div class="zoom-hint">Scroll wheel to zoom · drag to pan · click outside or press Esc to close</div>
+</div>
+
+<script>
+const PIPELINE_SIZE = 224; // fixed resize target — applied to every image before ALL feature extraction (GLCM/LBP/HOG), matching the 224x224 used by the Full-Feature-Count/PCA/Correlation panels
+let gray = null, W = 0, H = 0; // grayscale float array + dims
+let quantLevels = null;        // Uint8Array W*H, values 0-7
+let mask = null;               // Uint8Array W*H, 1 = foreground, 0 = background
+let maskDirection = 'greater'; // 'greater' = foreground is gray>threshold, 'less' = foreground is gray<=threshold
+let currentScope = 'fg';       // 'full' | 'fg'
+let recomputeTimer = null;
+
+const $ = id => document.getElementById(id);
+const statusEl = $('status');
+const maskStatusEl = $('maskStatus');
+
+// ---------- image loading ----------
+function loadImageToPipeline(img){
+  W = PIPELINE_SIZE; H = PIPELINE_SIZE; // forced square resize (stretch), same convention used everywhere else in this tool
+
+  const orig = $('cOrig'); orig.width = W; orig.height = H;
+  const octx = orig.getContext('2d');
+  octx.imageSmoothingEnabled = true;
+  octx.drawImage(img, 0, 0, W, H);
+  const data = octx.getImageData(0,0,W,H).data;
+
+  gray = new Float64Array(W*H);
+  for(let i=0;i<W*H;i++){
+    const r=data[i*4], g=data[i*4+1], b=data[i*4+2];
+    gray[i] = 0.299*r + 0.587*g + 0.114*b;
+  }
+  drawGrayscale();
+  requantize();
+  statusEl.innerHTML = 'Image loaded <span class="pill">('+W+'×'+H+' px)</span> — computing features...';
+
+  initMask();
+  addToSessionHOG(img);
+  runAll();
+}
+
+function drawGrayscale(){
+  const c = $('cGray'); c.width=W; c.height=H;
+  const ctx = c.getContext('2d');
+  const imgData = ctx.createImageData(W,H);
+  for(let i=0;i<W*H;i++){
+    const v = gray[i]|0;
+    imgData.data[i*4]=v; imgData.data[i*4+1]=v; imgData.data[i*4+2]=v; imgData.data[i*4+3]=255;
+  }
+  ctx.putImageData(imgData,0,0);
+}
+
+// ---------- GLCM quantisation methods ----------
+let glcmLevels = 8; // selectable: 4/8/16/32/64
+
+function quantizeLinear(levels){
+  const out = new Uint8Array(W*H);
+  const binWidth = 256/levels;
+  for(let i=0;i<W*H;i++){
+    let lvl = Math.floor(gray[i]/binWidth); if(lvl>levels-1) lvl=levels-1; if(lvl<0) lvl=0;
+    out[i]=lvl;
+  }
+  return out;
+}
+
+function quantizeMinMax(levels){
+  let min=255, max=0;
+  for(let i=0;i<W*H;i++){ if(gray[i]<min) min=gray[i]; if(gray[i]>max) max=gray[i]; }
+  const range = Math.max(max-min, 1e-9);
+  const out = new Uint8Array(W*H);
+  for(let i=0;i<W*H;i++){
+    let lvl = Math.floor(((gray[i]-min)/range) * levels);
+    if(lvl>levels-1) lvl=levels-1; if(lvl<0) lvl=0;
+    out[i]=lvl;
+  }
+  return out;
+}
+
+function quantizeEqualFrequency(levels){
+  const hist = new Array(256).fill(0);
+  const N = W*H;
+  for(let i=0;i<N;i++) hist[Math.min(255,Math.max(0,Math.round(gray[i])))]++;
+  const cum = new Array(256).fill(0);
+  let running=0;
+  for(let v=0;v<256;v++){ running+=hist[v]; cum[v]=running; }
+  const target = N/levels;
+  const lut = new Uint8Array(256);
+  for(let v=0;v<256;v++){
+    let lvl = Math.floor((cum[v]-1) / target);
+    if(lvl>levels-1) lvl=levels-1; if(lvl<0) lvl=0;
+    lut[v]=lvl;
+  }
+  const out = new Uint8Array(W*H);
+  for(let i=0;i<W*H;i++){
+    out[i] = lut[Math.min(255,Math.max(0,Math.round(gray[i])))];
+  }
+  return out;
+}
+
+const QUANT_LABELS = {
+  linear: (L)=>`linear scaling <b>⌊gray / ${Math.round(256/L)}⌋</b> (uniform 0–255 range split into ${L} equal bins — matches MATLAB graycomatrix's actual default GrayLimits, which uses the full class range, not image min/max)`,
+  minmax: (L)=>`<b>min–max range scaling</b> — ${L} bins spread across this image's actual gray range [min, max], not the fixed 0–255 range (in MATLAB this is opt-in via 'GrayLimits', [], not the default)`,
+  equalfreq: (L)=>`<b>equal-frequency (quantile) binning</b> — bin edges chosen so each of the ${L} levels holds roughly the same number of pixels`,
+};
+
+function requantize(){
+  const method = $('quantMethod').value;
+  glcmLevels = parseInt($('glcmLevelsSelect').value, 10);
+  if(method==='minmax') quantLevels = quantizeMinMax(glcmLevels);
+  else if(method==='equalfreq') quantLevels = quantizeEqualFrequency(glcmLevels);
+  else quantLevels = quantizeLinear(glcmLevels);
+
+  const c = $('cQuant'); c.width=W; c.height=H;
+  const ctx = c.getContext('2d');
+  const imgData = ctx.createImageData(W,H);
+  for(let i=0;i<W*H;i++){
+    const v = Math.round(quantLevels[i] * (255/(glcmLevels-1)));
+    imgData.data[i*4]=v; imgData.data[i*4+1]=v; imgData.data[i*4+2]=v; imgData.data[i*4+3]=255;
+  }
+  ctx.putImageData(imgData,0,0);
+  $('quantThumbLabel').textContent = `${glcmLevels} Levels`;
+
+  const note = $('glcmQuantNote');
+  note.innerHTML = `Quantised 256 → ${glcmLevels} levels using ${QUANT_LABELS[method](glcmLevels)}. LBP and HOG don't use this step — they read the full 0–255 grayscale directly. <span style="color:var(--dim)">(The paper specifies an 8×8 matrix — other level counts here are exploratory, not a substitute.)</span>`;
+  $('glcmMatrixCaption').innerHTML = `Each cell of the <b>${glcmLevels}×${glcmLevels}</b> matrix is how often grey level <i>i</i> appears next to grey level <i>j</i>, 1 pixel apart, along that direction (brighter = more frequent).`;
+
+  if(gray){ runGLCM(); updateFullFeatureCounts(); }
+}
+$('quantMethod').addEventListener('change', requantize);
+$('glcmLevelsSelect').addEventListener('change', requantize);
+
+// ---------- segmentation mask ----------
+function otsuThreshold(){
+  const hist = new Array(256).fill(0);
+  const N = W*H;
+  for(let i=0;i<N;i++) hist[Math.min(255,Math.max(0,Math.round(gray[i])))]++;
+  let sum=0; for(let t=0;t<256;t++) sum+=t*hist[t];
+  let sumB=0, wB=0, wF=0, varMax=0, threshold=127;
+  for(let t=0;t<256;t++){
+    wB+=hist[t]; if(wB===0) continue;
+    wF=N-wB; if(wF===0) break;
+    sumB+=t*hist[t];
+    const mB=sumB/wB, mF=(sum-sumB)/wF;
+    const varBetween = wB*wF*(mB-mF)*(mB-mF);
+    if(varBetween>varMax){ varMax=varBetween; threshold=t; }
+  }
+  return threshold;
+}
+
+function borderMean(){
+  let s=0, n=0;
+  for(let x=0;x<W;x++){ s+=gray[x]; s+=gray[(H-1)*W+x]; n+=2; }
+  for(let y=0;y<H;y++){ s+=gray[y*W]; s+=gray[y*W+(W-1)]; n+=2; }
+  return n>0 ? s/n : 0;
+}
+
+function initMask(){
+  const t = otsuThreshold();
+  const bMean = borderMean();
+  maskDirection = (bMean < t) ? 'greater' : 'less'; // Otsu still decides which side is background
+  $('threshSlider').value = 0; // default cutoff forced to 0 (pure-black background assumption)
+  $('threshVal').textContent = 0;
+  $('invertMask').checked = false;
+  recomputeMask();
+}
+
+function recomputeMask(){
+  const threshold = parseInt($('threshSlider').value, 10);
+  $('threshVal').textContent = threshold;
+  const invert = $('invertMask').checked;
+  let direction = maskDirection;
+  if(invert) direction = (direction==='greater') ? 'less' : 'greater';
+
+  mask = new Uint8Array(W*H);
+  let fg=0;
+  for(let i=0;i<W*H;i++){
+    const above = gray[i] > threshold;
+    const isFg = (direction==='greater') ? above : !above;
+    mask[i] = isFg ? 1 : 0;
+    if(isFg) fg++;
+  }
+  const pct = ((fg/(W*H))*100).toFixed(1);
+  maskStatusEl.innerHTML = `Foreground: <span class="pill">${pct}%</span> of pixels (threshold ${threshold}, auto-direction: ${maskDirection}${invert?', inverted':''})`;
+
+  drawMaskThumb();
+  if(currentScope==='fg') runAll();
+}
+
+function drawMaskThumb(){
+  const c = $('cMaskThumb'); c.width=W; c.height=H;
+  const ctx = c.getContext('2d');
+  const imgData = ctx.createImageData(W,H);
+  for(let i=0;i<W*H;i++){
+    if(mask[i]){
+      imgData.data[i*4]=141; imgData.data[i*4+1]=211; imgData.data[i*4+2]=95; imgData.data[i*4+3]=255;
+    } else {
+      const v = gray[i]*0.25;
+      imgData.data[i*4]=v; imgData.data[i*4+1]=v; imgData.data[i*4+2]=v; imgData.data[i*4+3]=255;
+    }
+  }
+  ctx.putImageData(imgData,0,0);
+}
+
+function getActiveMask(){ return currentScope==='fg' ? mask : null; }
+
+// ---------- regional pooling (2x2 zones) ----------
+function buildZoneMasks(){
+  const midX = Math.floor(W/2), midY = Math.floor(H/2);
+  const bounds = [
+    {x0:0,y0:0,x1:midX,y1:midY,label:'Top-Left'},
+    {x0:midX,y0:0,x1:W,y1:midY,label:'Top-Right'},
+    {x0:0,y0:midY,x1:midX,y1:H,label:'Bottom-Left'},
+    {x0:midX,y0:midY,x1:W,y1:H,label:'Bottom-Right'},
+  ];
+  return bounds.map(b=>{
+    const m = new Uint8Array(W*H);
+    for(let y=b.y0;y<b.y1;y++) for(let x=b.x0;x<b.x1;x++) m[y*W+x]=1;
+    return {mask:m, label:b.label};
+  });
+}
+function combineMasks(a, b){
+  if(!b) return a;
+  const out = new Uint8Array(a.length);
+  for(let i=0;i<a.length;i++) out[i] = (a[i] && b[i]) ? 1 : 0;
+  return out;
+}
+
+// ---------- GLCM ----------
+const ANGLES = [
+  {label:'0°',   dx:1,  dy:0},
+  {label:'45°',  dx:1,  dy:-1},
+  {label:'90°',  dx:0,  dy:-1},
+  {label:'135°', dx:-1, dy:-1},
+];
+
+function computeGLCM(dx,dy,maskArr){
+  const L = glcmLevels;
+  const M = Array.from({length:L},()=>new Float64Array(L));
+  let total = 0;
+  for(let y=0;y<H;y++){
+    for(let x=0;x<W;x++){
+      const nx=x+dx, ny=y+dy;
+      if(nx<0||ny<0||nx>=W||ny>=H) continue;
+      const idx = y*W+x, nidx = ny*W+nx;
+      if(maskArr && (!maskArr[idx] || !maskArr[nidx])) continue;
+      const i = quantLevels[idx], j = quantLevels[nidx];
+      M[i][j]+=1; M[j][i]+=1; // symmetric
+      total+=2;
+    }
+  }
+  for(let i=0;i<L;i++) for(let j=0;j<L;j++) M[i][j]/= (total||1);
+  return M;
+}
+
+function glcmFeatures(P){
+  const L = P.length;
+  let contrast=0, energy=0, homogeneity=0;
+  const rowSum = new Float64Array(L), colSum = new Float64Array(L);
+  for(let i=0;i<L;i++) for(let j=0;j<L;j++){
+    const p = P[i][j];
+    contrast += p*(i-j)*(i-j);
+    energy += p*p;
+    homogeneity += p/(1+Math.abs(i-j));
+    rowSum[i]+=p; colSum[j]+=p;
+  }
+  let muI=0, muJ=0;
+  for(let i=0;i<L;i++){ muI+=i*rowSum[i]; muJ+=i*colSum[i]; }
+  let varI=0, varJ=0;
+  for(let i=0;i<L;i++){ varI += (i-muI)*(i-muI)*rowSum[i]; varJ += (i-muJ)*(i-muJ)*colSum[i]; }
+  const sigI=Math.sqrt(varI), sigJ=Math.sqrt(varJ);
+  let correlation=0;
+  for(let i=0;i<L;i++) for(let j=0;j<L;j++){
+    correlation += (i-muI)*(j-muJ)*P[i][j];
+  }
+  correlation = (sigI>1e-9 && sigJ>1e-9) ? correlation/(sigI*sigJ) : 0;
+  return {contrast, correlation, energy, homogeneity};
+}
+
+function drawGLCMHeatmap(canvas, P){
+  const N = P.length;
+  const cellPx = Math.max(4, Math.floor(160/N)), gap = N<=16 ? 2 : 1;
+  canvas.width = N*cellPx; canvas.height = N*cellPx;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#0A0D10'; // grid base colour, deliberately distinct from the panel background
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+  let maxV=0; for(let i=0;i<N;i++) for(let j=0;j<N;j++) maxV=Math.max(maxV,P[i][j]);
+  for(let i=0;i<N;i++){
+    for(let j=0;j<N;j++){
+      const t = maxV>0 ? P[i][j]/maxV : 0;
+      const r = Math.round(30 + t*(232-30));
+      const g = Math.round(35 + t*(163-35));
+      const b = Math.round(45 + t*(61-45));
+      ctx.fillStyle = `rgb(${r},${g},${b})`;
+      ctx.fillRect(j*cellPx+gap, i*cellPx+gap, cellPx-gap*2, cellPx-gap*2);
+    }
+  }
+}
+
+let glcmPooling = 'global'; // 'global' | 'regional'
+
+function runGLCM(){
+  const maskArr = getActiveMask();
+  const grid = $('glcmGrid'); grid.innerHTML='';
+  const tbody = $('glcmTable'); tbody.innerHTML='';
+
+  if(glcmPooling==='regional'){
+    grid.style.display='none';
+    const zones = buildZoneMasks();
+    zones.forEach(z=>{
+      const zoneMask = combineMasks(z.mask, maskArr);
+      ANGLES.forEach(a=>{
+        const P = computeGLCM(a.dx,a.dy,zoneMask);
+        const f = glcmFeatures(P);
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td><span class="tag">${z.label}</span></td><td><span class="tag">${a.label}</span></td>
+          <td>${f.contrast.toFixed(4)}</td>
+          <td>${f.correlation.toFixed(4)}</td>
+          <td>${f.energy.toFixed(4)}</td>
+          <td>${f.homogeneity.toFixed(4)}</td>`;
+        tbody.appendChild(tr);
+      });
+    });
+  } else {
+    grid.style.display='';
+    ANGLES.forEach(a=>{
+      const P = computeGLCM(a.dx,a.dy,maskArr);
+      const f = glcmFeatures(P);
+
+      const cell = document.createElement('div'); cell.className='glcm-cell';
+      const cv = document.createElement('canvas'); cell.appendChild(cv);
+      const sp = document.createElement('span'); sp.textContent = 'θ = '+a.label; cell.appendChild(sp);
+      grid.appendChild(cell);
+      drawGLCMHeatmap(cv, P);
+
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td><span class="tag">Whole image</span></td><td><span class="tag">${a.label}</span></td>
+        <td>${f.contrast.toFixed(4)}</td>
+        <td>${f.correlation.toFixed(4)}</td>
+        <td>${f.energy.toFixed(4)}</td>
+        <td>${f.homogeneity.toFixed(4)}</td>`;
+      tbody.appendChild(tr);
+    });
+  }
+}
+$('glcmPoolGlobal').addEventListener('click', ()=>{
+  glcmPooling='global';
+  $('glcmPoolGlobal').classList.add('active'); $('glcmPoolRegional').classList.remove('active');
+  $('glcmPoolNote').textContent='';
+  if(gray) runGLCM();
+});
+$('glcmPoolRegional').addEventListener('click', ()=>{
+  glcmPooling='regional';
+  $('glcmPoolRegional').classList.add('active'); $('glcmPoolGlobal').classList.remove('active');
+  $('glcmPoolNote').textContent='heatmaps hidden — table shows 4 zones × 4 angles';
+  if(gray) runGLCM();
+});
+
+// ---------- LBP ----------
+const LBP_OFFSETS = [[-1,-1],[-1,0],[-1,1],[0,1],[1,1],[1,0],[1,-1],[0,-1]]; // exact 3x3 neighbours, used only for the P=8,R=1 paper-default case
+
+let lbpParams = { P:8, R:1, encoding:'full', cmp:'gte' }; // paper: P=8, R=1. encoding/cmp not specified by paper.
+
+function bilinearSample(garr, x, y){
+  const x0=Math.floor(x), y0=Math.floor(y), x1=x0+1, y1=y0+1;
+  const fx=x-x0, fy=y-y0;
+  const cx0=Math.max(0,Math.min(W-1,x0)), cx1=Math.max(0,Math.min(W-1,x1));
+  const cy0=Math.max(0,Math.min(H-1,y0)), cy1=Math.max(0,Math.min(H-1,y1));
+  const v00=garr[cy0*W+cx0], v10=garr[cy0*W+cx1], v01=garr[cy1*W+cx0], v11=garr[cy1*W+cx1];
+  return v00*(1-fx)*(1-fy) + v10*fx*(1-fy) + v01*(1-fx)*fy + v11*fx*fy;
+}
+
+function computeLBP(maskArr, params){
+  const p = params || lbpParams;
+  const P = p.P, R = p.R, useExact = (P===8 && R===1);
+  const margin = Math.ceil(R);
+  const lbp = new Int32Array(W*H).fill(-1); // -1 = invalid / excluded
+  for(let y=margin;y<H-margin;y++){
+    for(let x=margin;x<W-margin;x++){
+      const idx = y*W+x;
+      if(maskArr && !maskArr[idx]) continue;
+      const c = gray[idx];
+      let code=0, valid=true;
+      if(useExact){
+        for(let k=0;k<8;k++){
+          const [oy,ox] = LBP_OFFSETS[k];
+          const nidx = (y+oy)*W+(x+ox);
+          if(maskArr && !maskArr[nidx]){ valid=false; break; }
+          const nv = gray[nidx];
+          const bit = p.cmp==='gt' ? (nv>c) : (nv>=c);
+          if(bit) code |= (1<<k);
+        }
+      } else {
+        // circular sampling + bilinear interpolation (Ojala et al.) — required once P/R deviate from (8,1)
+        for(let k=0;k<P;k++){
+          const angle = 2*Math.PI*k/P;
+          const sx = x + R*Math.cos(angle), sy = y - R*Math.sin(angle);
+          const nrx = Math.max(0,Math.min(W-1,Math.round(sx))), nry = Math.max(0,Math.min(H-1,Math.round(sy)));
+          if(maskArr && !maskArr[nry*W+nrx]){ valid=false; break; }
+          const nv = bilinearSample(gray, sx, sy);
+          const bit = p.cmp==='gt' ? (nv>c) : (nv>=c);
+          if(bit) code |= (1<<k);
+        }
+      }
+      if(!valid) continue;
+      lbp[idx]=code;
+    }
+  }
+  return lbp;
+}
+
+function drawLBPImage(lbp, P){
+  const c = $('cLbpImg'); c.width=W; c.height=H;
+  const ctx=c.getContext('2d');
+  const imgData = ctx.createImageData(W,H);
+  const maxCode = (1<<P)-1;
+  for(let i=0;i<W*H;i++){
+    const code = lbp[i];
+    if(code<0){
+      imgData.data[i*4]=15; imgData.data[i*4+1]=18; imgData.data[i*4+2]=21; imgData.data[i*4+3]=255;
+    } else {
+      const v = Math.round((code/maxCode)*255);
+      imgData.data[i*4]=v; imgData.data[i*4+1]=v; imgData.data[i*4+2]=v; imgData.data[i*4+3]=255;
+    }
+  }
+  ctx.putImageData(imgData,0,0);
+}
+
+function arrayMaxSafe(arr, floor){
+  let m = floor;
+  for(let i=0;i<arr.length;i++){ if(arr[i]>m) m=arr[i]; }
+  return m;
+}
+
+function drawHistogram(canvas, values, nbins, color){
+  const ctx = canvas.getContext('2d');
+  const w=canvas.width, h=canvas.height;
+  ctx.clearRect(0,0,w,h);
+  const maxV = arrayMaxSafe(values, 1e-9);
+  const bw = w/nbins;
+  ctx.fillStyle = color;
+  for(let i=0;i<nbins;i++){
+    const bh = (values[i]/maxV)*(h-10);
+    ctx.fillRect(i*bw, h-bh, Math.max(bw-1,1), bh);
+  }
+}
+
+// ---------- uniform / rotation-invariant-uniform LBP mapping (general P) ----------
+// Fixed P=8 uniform LUT — kept separately because the session-tracking panels
+// (Full Feature Count baseline / PCA / Correlation) always use paper-default P=8,R=1,full
+// regardless of what's selected in the LBP tab, so they need a stable P=8 table.
+const uniformLUT = (function build(){
+  const lut = new Uint8Array(256);
+  const idFor = new Int16Array(256).fill(-1);
+  let nextId = 0;
+  for(let code=0; code<256; code++){
+    let transitions=0;
+    for(let k=0;k<8;k++){
+      const b1=(code>>k)&1, b2=(code>>((k+1)%8))&1;
+      if(b1!==b2) transitions++;
+    }
+    if(transitions<=2){
+      if(idFor[code]===-1){ idFor[code]=nextId; nextId++; }
+      lut[code]=idFor[code];
+    } else {
+      lut[code]=58; // non-uniform catch-all
+    }
+  }
+  return lut;
+})();
+
+function buildUniformLUT(P){
+  const size = 1<<P;
+  const lut = new Int32Array(size);
+  const idFor = new Int32Array(size).fill(-1);
+  let nextId = 0;
+  for(let code=0; code<size; code++){
+    let transitions=0;
+    for(let k=0;k<P;k++){
+      const b1=(code>>k)&1, b2=(code>>((k+1)%P))&1;
+      if(b1!==b2) transitions++;
+    }
+    if(transitions<=2){
+      if(idFor[code]===-1){ idFor[code]=nextId; nextId++; }
+      lut[code]=idFor[code];
+    } else {
+      lut[code]=P*(P-1)+2; // non-uniform catch-all -> total symbols = P*(P-1)+3
+    }
+  }
+  return lut;
+}
+
+function buildRIU2LUT(P){
+  const size = 1<<P;
+  const lut = new Int32Array(size);
+  for(let code=0; code<size; code++){
+    let transitions=0;
+    for(let k=0;k<P;k++){
+      const b1=(code>>k)&1, b2=(code>>((k+1)%P))&1;
+      if(b1!==b2) transitions++;
+    }
+    if(transitions<=2){
+      let ones=0; for(let k=0;k<P;k++) ones += (code>>k)&1;
+      lut[code]=ones; // 0..P -> P+1 distinct values
+    } else {
+      lut[code]=P+1; // non-uniform catch-all -> total symbols = P+2
+    }
+  }
+  return lut;
+}
+
+function symbolCountFor(encoding, P){
+  if(encoding==='uniform') return P*(P-1)+3;
+  if(encoding==='riu2') return P+2;
+  return 1<<P; // full
+}
+
+function lbpStats(lbp, encoding, P){
+  const nSym = symbolCountFor(encoding, P);
+  const lut = encoding==='uniform' ? buildUniformLUT(P) : encoding==='riu2' ? buildRIU2LUT(P) : null;
+  const hist = new Float64Array(nSym);
+  let n=0;
+  for(let y=1;y<H-1;y++) for(let x=1;x<W-1;x++){
+    let v=lbp[y*W+x]; if(v<0) continue;
+    if(lut) v = lut[v];
+    hist[v]++; n++;
+  }
+  for(let i=0;i<nSym;i++) hist[i]/= (n||1);
+
+  let mean=0; for(let i=0;i<nSym;i++) mean += i*hist[i];
+  let variance=0; for(let i=0;i<nSym;i++) variance += (i-mean)*(i-mean)*hist[i];
+  const std = Math.sqrt(variance);
+  let entropy=0; for(let i=0;i<nSym;i++) if(hist[i]>0) entropy += -hist[i]*Math.log2(hist[i]);
+  let skewness=0, kurtosis=0;
+  if(std>1e-9){
+    for(let i=0;i<nSym;i++){
+      const z=(i-mean)/std;
+      skewness += hist[i]*z*z*z;
+      kurtosis += hist[i]*z*z*z*z;
+    }
+  }
+  let energy=0; for(let i=0;i<nSym;i++) energy += hist[i]*hist[i];
+  let contrastDist=0; for(let i=1;i<nSym;i++) contrastDist += (hist[i]-hist[i-1])*(hist[i]-hist[i-1]);
+
+  let sx=0, sy=0, sxx=0, syy=0, sxy=0, m=0;
+  for(let y=1;y<H-1;y++) for(let x=1;x<W-2;x++){
+    let a=lbp[y*W+x], b=lbp[y*W+x+1];
+    if(a<0 || b<0) continue;
+    if(lut){ a=lut[a]; b=lut[b]; }
+    sx+=a; sy+=b; sxx+=a*a; syy+=b*b; sxy+=a*b; m++;
+  }
+  let correlation=0;
+  if(m>0){
+    const mx=sx/m, my=sy/m;
+    const covxy = sxy/m - mx*my;
+    const varx = sxx/m - mx*mx, vary = syy/m - my*my;
+    const denom = Math.sqrt(varx*vary);
+    correlation = denom>1e-9 ? covxy/denom : 0;
+  }
+
+  return {mean, variance, entropy, skewness, kurtosis, energy, contrast:contrastDist, correlation, hist, nSym};
+}
+
+let lbpPooling = 'global'; // 'global' | 'regional'
+
+function statRowsFromLBPStats(s){
+  return [
+    ['Mean', s.mean.toFixed(4)],
+    ['Variance', s.variance.toFixed(4)],
+    ['Entropy', s.entropy.toFixed(4)],
+    ['Skewness', s.skewness.toFixed(4)],
+    ['Kurtosis', s.kurtosis.toFixed(4)],
+    ['Energy', s.energy.toFixed(6)],
+    ['Contrast', s.contrast.toFixed(6)],
+    ['Correlation', s.correlation.toFixed(4)],
+  ];
+}
+
+function runLBP(){
+  const maskArr = getActiveMask();
+  const tbody = $('lbpTable'); tbody.innerHTML='';
+
+  if(lbpPooling==='regional'){
+    $('lbpVizRow').style.display='none';
+    const zones = buildZoneMasks();
+    zones.forEach(z=>{
+      const zoneMask = combineMasks(z.mask, maskArr);
+      const lbp = computeLBP(zoneMask);
+      const s = lbpStats(lbp, lbpParams.encoding, lbpParams.P);
+      statRowsFromLBPStats(s).forEach(([k,v])=>{
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td><span class="tag">${z.label}</span></td><td>${k}</td><td>${v}</td>`;
+        tbody.appendChild(tr);
+      });
+    });
+  } else {
+    $('lbpVizRow').style.display='';
+    const lbp = computeLBP(maskArr);
+    drawLBPImage(lbp, lbpParams.P);
+    const s = lbpStats(lbp, lbpParams.encoding, lbpParams.P);
+    drawHistogram($('cLbpHist'), s.hist, s.nSym, '#4FD1C5');
+    const encLabel = lbpParams.encoding==='uniform' ? `${s.nSym} uniform symbols` : lbpParams.encoding==='riu2' ? `${s.nSym} rotation-invariant symbols` : `${s.nSym} raw codes`;
+    $('lbpHistCaption').textContent = `Histogram of ${encLabel} before summarising into 8 statistics.`;
+    statRowsFromLBPStats(s).forEach(([k,v])=>{
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td><span class="tag">Whole image</span></td><td>${k}</td><td>${v}</td>`;
+      tbody.appendChild(tr);
+    });
+  }
+}
+$('lbpPoolGlobal').addEventListener('click', ()=>{
+  lbpPooling='global';
+  $('lbpPoolGlobal').classList.add('active'); $('lbpPoolRegional').classList.remove('active');
+  if(gray) runLBP();
+});
+$('lbpPoolRegional').addEventListener('click', ()=>{
+  lbpPooling='regional';
+  $('lbpPoolRegional').classList.add('active'); $('lbpPoolGlobal').classList.remove('active');
+  if(gray) runLBP();
+});
+
+// ---------- HOG ----------
+let hogParams = {
+  cellSize: 8,       // paper: 8
+  blockCells: 2,     // paper: 2 (2x2 cells per block)
+  nbins: 9,          // paper: 9
+  signed: false,     // paper: not specified -> default unsigned 0-180
+  norm: 'L2',        // paper: only says "normalised", exact scheme not specified -> default L2
+  gradMethod: 'central', // paper: not specified -> default central difference
+  gamma: false,      // paper: not specified -> default off
+};
+
+function gammaCorrectGray(g){
+  const out = new Float64Array(g.length);
+  for(let i=0;i<g.length;i++) out[i] = Math.sqrt(Math.max(g[i],0)/255)*255;
+  return out;
+}
+
+// look up a pixel value, clamped to image bounds; if that neighbour is background
+// (mask-aware mode), substitute the *centre* pixel's own value instead — avoids
+// manufacturing a fake edge at the foreground/background boundary.
+function valueAt(garr, cx, cy, x, y, maskArr){
+  const xx = Math.max(0, Math.min(W-1, x)), yy = Math.max(0, Math.min(H-1, y));
+  const idx = yy*W+xx;
+  if(maskArr && !maskArr[idx]) return garr[cy*W+cx];
+  return garr[idx];
+}
+
+const SOBEL_KX = [[-1,0,1],[-2,0,2],[-1,0,1]], SOBEL_KY = [[-1,-2,-1],[0,0,0],[1,2,1]];
+const SCHARR_KX = [[-3,0,3],[-10,0,10],[-3,0,3]], SCHARR_KY = [[-3,-10,-3],[0,0,0],[3,10,3]];
+
+function computeGradients(garr, maskArr, method){
+  const gx = new Float64Array(W*H), gy = new Float64Array(W*H);
+  const K = method==='scharr' ? {x:SCHARR_KX,y:SCHARR_KY} : {x:SOBEL_KX,y:SOBEL_KY};
+  for(let y=0;y<H;y++){
+    for(let x=0;x<W;x++){
+      const idx = y*W+x;
+      if(maskArr && !maskArr[idx]){ gx[idx]=0; gy[idx]=0; continue; }
+      if(method==='central'){
+        const l=valueAt(garr,x,y,x-1,y,maskArr), r=valueAt(garr,x,y,x+1,y,maskArr);
+        const t=valueAt(garr,x,y,x,y-1,maskArr), b=valueAt(garr,x,y,x,y+1,maskArr);
+        gx[idx]=r-l; gy[idx]=b-t;
+      } else {
+        let sx=0, sy=0;
+        for(let ky=-1;ky<=1;ky++) for(let kx=-1;kx<=1;kx++){
+          const v = valueAt(garr, x, y, x+kx, y+ky, maskArr);
+          sx += v*K.x[ky+1][kx+1];
+          sy += v*K.y[ky+1][kx+1];
+        }
+        gx[idx]=sx; gy[idx]=sy;
+      }
+    }
+  }
+  return {gx, gy};
+}
+
+function normalizeBlockVec(vec, scheme){
+  const eps=1e-6;
+  if(scheme==='L1'){
+    const s = vec.reduce((a,v)=>a+Math.abs(v),0)+eps;
+    return vec.map(v=>v/s);
+  }
+  if(scheme==='L1sqrt'){
+    const s = vec.reduce((a,v)=>a+Math.abs(v),0)+eps;
+    return vec.map(v=>Math.sqrt(v/s));
+  }
+  if(scheme==='L2hys'){
+    let norm = Math.sqrt(vec.reduce((a,v)=>a+v*v,0)+eps*eps);
+    let v2 = vec.map(v=>Math.min(v/norm, 0.2));
+    let norm2 = Math.sqrt(v2.reduce((a,v)=>a+v*v,0)+eps*eps);
+    return v2.map(v=>v/norm2);
+  }
+  // default L2
+  const norm = Math.sqrt(vec.reduce((a,v)=>a+v*v,0)+eps*eps);
+  return vec.map(v=>v/norm);
+}
+
+function computeHOG(maskArr, params){
+  const p = params || hogParams;
+  const srcGray = p.gamma ? gammaCorrectGray(gray) : gray;
+  const {gx, gy} = computeGradients(srcGray, maskArr, p.gradMethod);
+
+  const cellSize = p.cellSize, nbins = p.nbins;
+  const angleRange = p.signed ? 360 : 180;
+  const binWidth = angleRange/nbins;
+  const cellsX = Math.max(1,Math.floor(W/cellSize)), cellsY = Math.max(1,Math.floor(H/cellSize));
+  const cellHist = [];
+  const cellFgFrac = [];
+  for(let cy=0;cy<cellsY;cy++){
+    const row=[], fracRow=[];
+    for(let cx=0;cx<cellsX;cx++){
+      const hist = new Float64Array(nbins);
+      let fgCount=0, total=0;
+      for(let y=cy*cellSize;y<Math.min((cy+1)*cellSize,H);y++){
+        for(let x=cx*cellSize;x<Math.min((cx+1)*cellSize,W);x++){
+          const idx=y*W+x;
+          total++;
+          if(maskArr && maskArr[idx]) fgCount++;
+          const mag = Math.sqrt(gx[idx]*gx[idx]+gy[idx]*gy[idx]);
+          let ang = Math.atan2(gy[idx],gx[idx]) * 180/Math.PI;
+          ang = p.signed ? ((ang % 360)+360)%360 : ((ang % 180)+180)%180;
+          let bin = ang/binWidth;
+          const b0 = Math.floor(bin) % nbins;
+          const b1 = (b0+1) % nbins;
+          const frac = bin - Math.floor(bin);
+          hist[b0]+= mag*(1-frac);
+          hist[b1]+= mag*frac;
+        }
+      }
+      row.push(hist);
+      fracRow.push(maskArr ? (fgCount/(total||1)) : 1);
+    }
+    cellHist.push(row);
+    cellFgFrac.push(fracRow);
+  }
+
+  const B = p.blockCells;
+  const blocksX = Math.max(0, cellsX-B+1), blocksY = Math.max(0, cellsY-B+1);
+  const descriptor = [];
+  for(let by=0; by<blocksY; by++){
+    for(let bx=0; bx<blocksX; bx++){
+      if(maskArr){
+        let cov=0;
+        for(let dy=0;dy<B;dy++) for(let dx=0;dx<B;dx++) cov += cellFgFrac[by+dy][bx+dx];
+        cov /= (B*B);
+        if(cov < 0.5) continue; // drop background-dominated blocks
+      }
+      let vec = [];
+      for(let dy=0;dy<B;dy++) for(let dx=0;dx<B;dx++){
+        vec = vec.concat(Array.from(cellHist[by+dy][bx+dx]));
+      }
+      vec = normalizeBlockVec(vec, p.norm);
+      descriptor.push(...vec);
+    }
+  }
+  return {descriptor, cellHist, cellsX, cellsY, cellSize, nbins, signed:p.signed};
+}
+
+function drawHOGViz(cellHist, cellsX, cellsY, cellSize, nbins, signed){
+  const c = $('cHogViz');
+  c.width = cellsX*cellSize; c.height = cellsY*cellSize;
+  const ctx = c.getContext('2d');
+  ctx.fillStyle = '#0a0c0d';
+  ctx.fillRect(0,0,c.width,c.height);
+  const imgData = ctx.getImageData(0,0,c.width,c.height);
+  for(let y=0;y<c.height;y++) for(let x=0;x<c.width;x++){
+    const gx_ = Math.min(x, W-1), gy_ = Math.min(y, H-1);
+    const v = gray[gy_*W+gx_]*0.35;
+    const idx=(y*c.width+x)*4;
+    imgData.data[idx]=v; imgData.data[idx+1]=v; imgData.data[idx+2]=v; imgData.data[idx+3]=255;
+  }
+  ctx.putImageData(imgData,0,0);
+
+  let maxBin=1e-9;
+  for(let cy=0;cy<cellsY;cy++) for(let cx=0;cx<cellsX;cx++){
+    const h = cellHist[cy][cx];
+    for(let b=0;b<nbins;b++) maxBin=Math.max(maxBin,h[b]);
+  }
+  const binWidth = (signed?360:180)/nbins;
+  ctx.strokeStyle = '#E0608F';
+  ctx.lineWidth = 1;
+  for(let cy=0;cy<cellsY;cy++){
+    for(let cx=0;cx<cellsX;cx++){
+      const h = cellHist[cy][cx];
+      const centerX = cx*cellSize + cellSize/2;
+      const centerY = cy*cellSize + cellSize/2;
+      for(let b=0;b<nbins;b++){
+        const strength = h[b]/maxBin;
+        if(strength<0.08) continue;
+        const angleDeg = b*binWidth + 90;
+        const rad = angleDeg*Math.PI/180;
+        const len = strength*(cellSize/2-0.5);
+        const dx = Math.cos(rad)*len, dy=Math.sin(rad)*len;
+        ctx.globalAlpha = 0.35 + strength*0.65;
+        ctx.beginPath();
+        ctx.moveTo(centerX-dx, centerY-dy);
+        ctx.lineTo(centerX+dx, centerY+dy);
+        ctx.stroke();
+      }
+    }
+  }
+  ctx.globalAlpha=1;
+}
+
+function arrStats(arr){
+  const n=arr.length;
+  if(n===0) return {max:0,min:0,variance:0,skewness:0,median:0,kurtosis:0,mean:0,std:0};
+  const sorted=[...arr].sort((a,b)=>a-b);
+  const min=sorted[0], max=sorted[n-1];
+  const median = n%2 ? sorted[(n-1)/2] : (sorted[n/2-1]+sorted[n/2])/2;
+  const mean = arr.reduce((s,v)=>s+v,0)/n;
+  const variance = arr.reduce((s,v)=>s+(v-mean)*(v-mean),0)/n;
+  const std = Math.sqrt(variance);
+  let skewness=0, kurtosis=0;
+  if(std>1e-9){
+    for(const v of arr){ const z=(v-mean)/std; skewness+=z*z*z; kurtosis+=z*z*z*z; }
+    skewness/=n; kurtosis/=n;
+  }
+  return {max,min,variance,skewness,median,kurtosis,mean,std};
+}
+
+let hogPooling = 'global'; // 'global' | 'regional'
+
+function statRowsFromArrStats(s){
+  return [
+    ['Max', s.max.toFixed(4)],
+    ['Min', s.min.toFixed(4)],
+    ['Variance', s.variance.toFixed(6)],
+    ['Skewness', s.skewness.toFixed(4)],
+    ['Median', s.median.toFixed(4)],
+    ['Kurtosis', s.kurtosis.toFixed(4)],
+    ['Mean', s.mean.toFixed(4)],
+    ['Std Dev', s.std.toFixed(4)],
+  ];
+}
+
+function runHOG(){
+  const maskArr = getActiveMask();
+  const tbody = $('hogTable'); tbody.innerHTML='';
+
+  if(hogPooling==='regional'){
+    $('hogVizRow').style.display='none';
+    const zones = buildZoneMasks();
+    zones.forEach(z=>{
+      const zoneMask = combineMasks(z.mask, maskArr);
+      const {descriptor} = computeHOG(zoneMask);
+      const s = arrStats(descriptor);
+      statRowsFromArrStats(s).forEach(([k,v])=>{
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td><span class="tag">${z.label}</span></td><td>${k}</td><td>${v}</td>`;
+        tbody.appendChild(tr);
+      });
+    });
+  } else {
+    $('hogVizRow').style.display='';
+    const {descriptor, cellHist, cellsX, cellsY, cellSize, nbins:hogBinsUsed, signed:hogSignedUsed} = computeHOG(maskArr);
+    drawHOGViz(cellHist, cellsX, cellsY, cellSize, hogBinsUsed, hogSignedUsed);
+
+    const nbins=40;
+    const maxV = arrayMaxSafe(descriptor, 1e-9);
+    const bins = new Float64Array(nbins);
+    descriptor.forEach(v=>{
+      let b = Math.floor((v/maxV)*(nbins-1)); if(b<0)b=0; if(b>=nbins)b=nbins-1;
+      bins[b]++;
+    });
+    drawHistogram($('cHogHist'), bins, nbins, '#E0608F');
+
+    const s = arrStats(descriptor);
+    statRowsFromArrStats(s).forEach(([k,v])=>{
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td><span class="tag">Whole image</span></td><td>${k}</td><td>${v}</td>`;
+      tbody.appendChild(tr);
+    });
+  }
+}
+$('hogPoolGlobal').addEventListener('click', ()=>{
+  hogPooling='global';
+  $('hogPoolGlobal').classList.add('active'); $('hogPoolRegional').classList.remove('active');
+  if(gray) runHOG();
+});
+$('hogPoolRegional').addEventListener('click', ()=>{
+  hogPooling='regional';
+  $('hogPoolRegional').classList.add('active'); $('hogPoolGlobal').classList.remove('active');
+  if(gray) runHOG();
+});
+
+// ---------- PCA on full HOG vector (across session images) ----------
+const sessionHOG = []; // [{label, vec: Float64Array(26244)}]
+const MAX_SESSION = 15;
+
+function computeFixedHOG224(img){
+  const S = 224, cellSize = 8, nbins = 9, binWidth = 180/nbins;
+  const cnv = document.createElement('canvas'); cnv.width=S; cnv.height=S;
+  const ctx = cnv.getContext('2d');
+  ctx.drawImage(img, 0, 0, S, S);
+  const data = ctx.getImageData(0,0,S,S).data;
+  const g = new Float64Array(S*S);
+  for(let i=0;i<S*S;i++){ g[i]=0.299*data[i*4]+0.587*data[i*4+1]+0.114*data[i*4+2]; }
+  const gx=new Float64Array(S*S), gy=new Float64Array(S*S);
+  for(let y=0;y<S;y++) for(let x=0;x<S;x++){
+    const idx=y*S+x;
+    gx[idx]=g[y*S+Math.min(x+1,S-1)]-g[y*S+Math.max(x-1,0)];
+    gy[idx]=g[Math.min(y+1,S-1)*S+x]-g[Math.max(y-1,0)*S+x];
+  }
+  const cellsX=S/cellSize, cellsY=S/cellSize;
+  const cellHist=[];
+  for(let cy=0;cy<cellsY;cy++){
+    const row=[];
+    for(let cx=0;cx<cellsX;cx++){
+      const h=new Float64Array(nbins);
+      for(let y=cy*cellSize;y<(cy+1)*cellSize;y++){
+        for(let x=cx*cellSize;x<(cx+1)*cellSize;x++){
+          const idx=y*S+x;
+          const mag=Math.sqrt(gx[idx]*gx[idx]+gy[idx]*gy[idx]);
+          let ang=Math.atan2(gy[idx],gx[idx])*180/Math.PI; ang=((ang%180)+180)%180;
+          const bin=ang/binWidth, b0=Math.floor(bin)%nbins, b1=(b0+1)%nbins, frac=bin-Math.floor(bin);
+          h[b0]+=mag*(1-frac); h[b1]+=mag*frac;
+        }
+      }
+      row.push(h);
+    }
+    cellHist.push(row);
+  }
+  const descriptor=[];
+  for(let by=0;by<cellsY-1;by++){
+    for(let bx=0;bx<cellsX-1;bx++){
+      let vec=[];
+      for(let dy=0;dy<2;dy++) for(let dx=0;dx<2;dx++) vec=vec.concat(Array.from(cellHist[by+dy][bx+dx]));
+      const norm=Math.sqrt(vec.reduce((s,v)=>s+v*v,0)+1e-6);
+      descriptor.push(...vec.map(v=>v/norm));
+    }
+  }
+  return Float64Array.from(descriptor);
+}
+
+function addToSessionHOG(img){
+  try{
+    const vec = computeFixedHOG224(img);
+    sessionHOG.push({label:`Image ${sessionHOG.length+1}`, vec});
+    if(sessionHOG.length>MAX_SESSION) sessionHOG.shift();
+
+    const vec32 = computeSessionFeatureVector(img, vec);
+    sessionFeatures.push({label:`Image ${sessionFeatures.length+1}`, vec:vec32});
+    if(sessionFeatures.length>MAX_SESSION) sessionFeatures.shift();
+  } catch(e){ /* non-fatal */ }
+  updatePCAPanel();
+  updateCorrPanel();
+}
+
+// ---------- 32-feature vector + correlation matrix (session images) ----------
+const FEATURE_LABELS = [
+  'GLCM_Contrast_0','GLCM_Correlation_0','GLCM_Energy_0','GLCM_Homogeneity_0',
+  'GLCM_Contrast_45','GLCM_Correlation_45','GLCM_Energy_45','GLCM_Homogeneity_45',
+  'GLCM_Contrast_90','GLCM_Correlation_90','GLCM_Energy_90','GLCM_Homogeneity_90',
+  'GLCM_Contrast_135','GLCM_Correlation_135','GLCM_Energy_135','GLCM_Homogeneity_135',
+  'LBP_Mean','LBP_Variance','LBP_Entropy','LBP_Skewness','LBP_Kurtosis','LBP_Energy','LBP_Contrast','LBP_Correlation',
+  'HOG_Max','HOG_Min','HOG_Variance','HOG_Skewness','HOG_Median','HOG_Kurtosis','HOG_Mean','HOG_Std',
+];
+const sessionFeatures = []; // [{label, vec: number[32]}]
+
+function computeFixedGray224(img){
+  const S = 224;
+  const cnv = document.createElement('canvas'); cnv.width=S; cnv.height=S;
+  const ctx = cnv.getContext('2d');
+  ctx.drawImage(img, 0, 0, S, S);
+  const data = ctx.getImageData(0,0,S,S).data;
+  const g = new Float64Array(S*S);
+  for(let i=0;i<S*S;i++){ g[i]=0.299*data[i*4]+0.587*data[i*4+1]+0.114*data[i*4+2]; }
+  return {S, g};
+}
+
+function quantizeLinearFixed(g, S){
+  const levels = new Uint8Array(S*S);
+  for(let i=0;i<S*S;i++){ let lvl=Math.floor(g[i]/32); if(lvl>7)lvl=7; if(lvl<0)lvl=0; levels[i]=lvl; }
+  return levels;
+}
+
+function computeGLCMFixed(levels, S, dx, dy){
+  const M = Array.from({length:8},()=>new Float64Array(8));
+  let total=0;
+  for(let y=0;y<S;y++) for(let x=0;x<S;x++){
+    const nx=x+dx, ny=y+dy; if(nx<0||ny<0||nx>=S||ny>=S) continue;
+    const i=levels[y*S+x], j=levels[ny*S+nx];
+    M[i][j]+=1; M[j][i]+=1; total+=2;
+  }
+  for(let i=0;i<8;i++) for(let j=0;j<8;j++) M[i][j]/=(total||1);
+  return M;
+}
+
+function computeLBPFixed(g, S){
+  const lbp = new Int16Array(S*S).fill(-1);
+  for(let y=1;y<S-1;y++) for(let x=1;x<S-1;x++){
+    const idx=y*S+x, c=g[idx]; let code=0;
+    for(let k=0;k<8;k++){ const [oy,ox]=LBP_OFFSETS[k]; const nv=g[(y+oy)*S+(x+ox)]; if(nv>=c) code|=(1<<k); }
+    lbp[idx]=code;
+  }
+  return lbp;
+}
+
+function lbpStatsFixed(lbp, S, mode){
+  const useUniform = mode==='uniform';
+  const nSym = useUniform ? 59 : 256;
+  const hist = new Float64Array(nSym); let n=0;
+  for(let y=1;y<S-1;y++) for(let x=1;x<S-1;x++){
+    let v=lbp[y*S+x]; if(v<0) continue; if(useUniform) v=uniformLUT[v];
+    hist[v]++; n++;
+  }
+  for(let i=0;i<nSym;i++) hist[i]/=(n||1);
+  let mean=0; for(let i=0;i<nSym;i++) mean+=i*hist[i];
+  let variance=0; for(let i=0;i<nSym;i++) variance+=(i-mean)*(i-mean)*hist[i];
+  const std=Math.sqrt(variance);
+  let entropy=0; for(let i=0;i<nSym;i++) if(hist[i]>0) entropy+=-hist[i]*Math.log2(hist[i]);
+  let skewness=0, kurtosis=0;
+  if(std>1e-9){ for(let i=0;i<nSym;i++){ const z=(i-mean)/std; skewness+=hist[i]*z*z*z; kurtosis+=hist[i]*z*z*z*z; } }
+  let energy=0; for(let i=0;i<nSym;i++) energy+=hist[i]*hist[i];
+  let contrastDist=0; for(let i=1;i<nSym;i++) contrastDist+=(hist[i]-hist[i-1])*(hist[i]-hist[i-1]);
+  let sx=0,sy=0,sxx=0,syy=0,sxy=0,m=0;
+  for(let y=1;y<S-1;y++) for(let x=1;x<S-2;x++){
+    let a=lbp[y*S+x], b=lbp[y*S+x+1]; if(a<0||b<0) continue;
+    if(useUniform){ a=uniformLUT[a]; b=uniformLUT[b]; }
+    sx+=a; sy+=b; sxx+=a*a; syy+=b*b; sxy+=a*b; m++;
+  }
+  let correlation=0;
+  if(m>0){
+    const mx=sx/m, my=sy/m, covxy=sxy/m-mx*my, varx=sxx/m-mx*mx, vary=syy/m-my*my;
+    const denom=Math.sqrt(varx*vary);
+    correlation = denom>1e-9 ? covxy/denom : 0;
+  }
+  return {mean, variance, entropy, skewness, kurtosis, energy, contrast:contrastDist, correlation};
+}
+
+function computeSessionFeatureVector(img, hogVec){
+  const {S, g} = computeFixedGray224(img);
+  const levels = quantizeLinearFixed(g, S);
+  const glcmVals = [];
+  const angles = [[1,0],[1,-1],[0,-1],[-1,-1]];
+  for(const [dx,dy] of angles){
+    const P = computeGLCMFixed(levels, S, dx, dy);
+    const f = glcmFeatures(P);
+    glcmVals.push(f.contrast, f.correlation, f.energy, f.homogeneity);
+  }
+  const lbp = computeLBPFixed(g, S);
+  const ls = lbpStatsFixed(lbp, S, 'full'); // pinned to paper-default encoding, independent of the LBP tab's live setting
+  const lbpVals = [ls.mean, ls.variance, ls.entropy, ls.skewness, ls.kurtosis, ls.energy, ls.contrast, ls.correlation];
+  const hs = arrStats(Array.from(hogVec));
+  const hogVals = [hs.max, hs.min, hs.variance, hs.skewness, hs.median, hs.kurtosis, hs.mean, hs.std];
+  return glcmVals.concat(lbpVals, hogVals);
+}
+
+function pearson(a, b){
+  const n=a.length;
+  let ma=0, mb=0; for(let k=0;k<n;k++){ ma+=a[k]; mb+=b[k]; } ma/=n; mb/=n;
+  let num=0, da=0, db=0;
+  for(let k=0;k<n;k++){ const xa=a[k]-ma, xb=b[k]-mb; num+=xa*xb; da+=xa*xa; db+=xb*xb; }
+  const denom = Math.sqrt(da*db);
+  return denom>1e-12 ? num/denom : 0;
+}
+
+function pearsonCorrMatrix(vectors32){
+  const d = 32;
+  const cols = Array.from({length:d}, (_,j)=> vectors32.map(v=>v[j]));
+  const corr = Array.from({length:d}, ()=>new Float64Array(d));
+  for(let i=0;i<d;i++){
+    for(let j=i;j<d;j++){
+      const r = (i===j) ? 1 : pearson(cols[i], cols[j]);
+      corr[i][j]=r; corr[j][i]=r;
+    }
+  }
+  return corr;
+}
+
+function drawCorrHeatmap(canvas, corr, d){
+  const cellPx=13, gap=1;
+  canvas.width = d*cellPx; canvas.height = d*cellPx;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#0A0D10';
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+  for(let i=0;i<d;i++){
+    for(let j=0;j<d;j++){
+      const r = corr[i][j];
+      let cr,cg,cb;
+      if(r>=0){
+        cr=Math.round(30+r*(232-30)); cg=Math.round(35+r*(163-35)); cb=Math.round(45+r*(61-45));
+      } else {
+        const t=-r;
+        cr=Math.round(30+t*(79-30)); cg=Math.round(35+t*(209-35)); cb=Math.round(45+t*(197-45));
+      }
+      ctx.fillStyle = `rgb(${cr},${cg},${cb})`;
+      ctx.fillRect(j*cellPx+gap, i*cellPx+gap, cellPx-gap*2, cellPx-gap*2);
+    }
+  }
+}
+
+function updateCorrPanel(){
+  const n = sessionFeatures.length;
+  const statusCorr = $('corrStatus');
+  if(n<3){
+    statusCorr.textContent = `Collected ${n} image${n===1?'':'s'} this session — need at least 3 to compute a meaningful correlation matrix. Try more sample buttons or uploads.`;
+    const c = $('cCorrHeatmap'); const ctx=c.getContext('2d'); ctx.clearRect(0,0,c.width,c.height);
+    $('corrFlaggedList').textContent = '—';
+    return;
+  }
+  const vectors = sessionFeatures.map(s=>s.vec);
+  const corr = pearsonCorrMatrix(vectors);
+  drawCorrHeatmap($('cCorrHeatmap'), corr, 32);
+
+  const flagged = [];
+  for(let i=0;i<32;i++) for(let j=i+1;j<32;j++){
+    if(Math.abs(corr[i][j])>=0.95) flagged.push({i,j,r:corr[i][j]});
+  }
+  flagged.sort((a,b)=>Math.abs(b.r)-Math.abs(a.r));
+
+  statusCorr.innerHTML = `Session images: <b>${n}</b> · Flagged pairs (|r| ≥ 0.95): <b class="pill">${flagged.length}</b> out of 496 possible pairs`;
+
+  if(flagged.length===0){
+    $('corrFlaggedList').textContent = "No pairs exceed |r| ≥ 0.95 in this session's data yet — try adding more/varied images.";
+  } else {
+    const lines = flagged.slice(0,15).map(f=>`<b>${FEATURE_LABELS[f.i]}</b> ↔ <b>${FEATURE_LABELS[f.j]}</b>: r = ${f.r.toFixed(3)}`);
+    $('corrFlaggedList').innerHTML = lines.join('<br>') +
+      (flagged.length>15 ? `<br>…and ${flagged.length-15} more.` : '') +
+      `<br><br><span style="color:var(--dim)">Caveat: correlation from only ${n} images is noisy and unstable — treat this as illustrative, not a real feature-selection decision. Genuine correlation-based pruning needs a properly sized dataset.</span>`;
+  }
+}
+
+// symmetric n x n eigen-decomposition via cyclic Jacobi rotations (n is small: <=15)
+function jacobiEigenvalues(Ain, n){
+  const A = Ain.map(row=>Float64Array.from(row));
+  for(let iter=0; iter<200; iter++){
+    let p=0,q=1,maxVal=0;
+    for(let i=0;i<n;i++) for(let j=i+1;j<n;j++){
+      if(Math.abs(A[i][j])>maxVal){ maxVal=Math.abs(A[i][j]); p=i; q=j; }
+    }
+    if(maxVal<1e-9) break;
+    const app=A[p][p], aqq=A[q][q], apq=A[p][q];
+    const phi = 0.5*Math.atan2(2*apq, aqq-app);
+    const c=Math.cos(phi), s=Math.sin(phi);
+    const Acol = A.map(row=>Float64Array.from(row));
+    for(let k=0;k<n;k++){
+      A[k][p] = c*Acol[k][p] - s*Acol[k][q];
+      A[k][q] = s*Acol[k][p] + c*Acol[k][q];
+    }
+    const Arow = A.map(row=>Float64Array.from(row));
+    for(let k=0;k<n;k++){
+      A[p][k] = c*Arow[p][k] - s*Arow[q][k];
+      A[q][k] = s*Arow[p][k] + c*Arow[q][k];
+    }
+  }
+  const eig=[]; for(let i=0;i<n;i++) eig.push(A[i][i]);
+  return eig;
+}
+
+function computePCAExplainedVariance(vectors){
+  const n = vectors.length;
+  const d = vectors[0].length;
+  const mean = new Float64Array(d);
+  for(const v of vectors) for(let i=0;i<d;i++) mean[i]+=v[i];
+  for(let i=0;i<d;i++) mean[i]/=n;
+  const centered = vectors.map(v=>{ const c=new Float64Array(d); for(let i=0;i<d;i++) c[i]=v[i]-mean[i]; return c; });
+  const G = Array.from({length:n},()=>new Float64Array(n));
+  for(let i=0;i<n;i++){
+    for(let j=i;j<n;j++){
+      let s=0; for(let k=0;k<d;k++) s+=centered[i][k]*centered[j][k];
+      G[i][j]=s; G[j][i]=s;
+    }
+  }
+  const eig = jacobiEigenvalues(G, n).map(e=>Math.max(e,0));
+  eig.sort((a,b)=>b-a);
+  const total = eig.reduce((s,v)=>s+v,0);
+  const explainedRatio = total>1e-12 ? eig.map(v=>v/total) : eig.map(()=>0);
+  return {explainedRatio, n, d};
+}
+
+function updatePCAPanel(){
+  const statusPca = $('pcaStatus');
+  if(sessionHOG.length < 2){
+    statusPca.textContent = `Collected ${sessionHOG.length} image${sessionHOG.length===1?'':'s'} this session — need at least 2 to compute PCA. Try another sample button or upload.`;
+    const ctxc = $('cPcaChart').getContext('2d');
+    ctxc.clearRect(0,0,$('cPcaChart').width,$('cPcaChart').height);
+    return;
+  }
+  const vectors = sessionHOG.map(s=>s.vec);
+  const res = computePCAExplainedVariance(vectors);
+  const cum = []; let running=0;
+  for(const r of res.explainedRatio){ running+=r; cum.push(running); }
+  let k95 = cum.findIndex(v=>v>=0.95) + 1;
+  if(k95<=0) k95 = cum.length;
+  drawHistogram($('cPcaChart'), cum, cum.length, '#E0608F');
+  statusPca.innerHTML = `Session images: <b>${res.n}</b> (max ${res.n-1} usable components — mean-centering removes 1 degree of freedom) · Original HOG size: <b>${res.d.toLocaleString()}</b> · Components for ≥95% variance <b>within this session: ${k95}</b> (${((k95/res.d)*100).toFixed(2)}% of original size).`;
+}
+
+// ---------- HOG parameter controls ----------
+const paperTag = '<b style="color:var(--hog);">[paper]</b>';
+const notPaperTag = '<span style="color:var(--dim);">(tool default — not specified by paper)</span>';
+
+function updateHOGParamsNote(){
+  const p = hogParams;
+  const gradLabel = p.gradMethod==='central' ? 'Central difference' : p.gradMethod==='sobel' ? 'Sobel 3×3' : 'Scharr 3×3';
+  const parts = [
+    `Cell ${p.cellSize}×${p.cellSize} ${p.cellSize===8?paperTag:notPaperTag}`,
+    `Block ${p.blockCells}×${p.blockCells} cells ${p.blockCells===2?paperTag:notPaperTag}`,
+    `${p.nbins} bins ${p.nbins===9?paperTag:notPaperTag}`,
+    `${p.signed?'Signed 0–360°':'Unsigned 0–180°'} ${notPaperTag}`,
+    `${p.norm} normalisation <span style="color:var(--dim);">[paper only says "normalised" — exact scheme unspecified]</span>`,
+    `${gradLabel} gradient ${notPaperTag}`,
+    `Gamma correction: ${p.gamma?'on':'off'} ${notPaperTag}`,
+  ];
+  $('hogParamsNote').innerHTML = parts.join(' · ');
+}
+
+function onHOGParamsChanged(){
+  hogParams.cellSize = parseInt($('hogCellSize').value, 10);
+  hogParams.blockCells = parseInt($('hogBlockCells').value, 10);
+  hogParams.nbins = parseInt($('hogBins').value, 10);
+  hogParams.norm = $('hogNorm').value;
+  hogParams.gradMethod = $('hogGradMethod').value;
+  hogParams.gamma = $('hogGamma').checked;
+  updateHOGParamsNote();
+  if(gray){ runHOG(); updateFullFeatureCounts(); }
+}
+['hogCellSize','hogBlockCells','hogBins','hogNorm','hogGradMethod'].forEach(id=>{
+  $(id).addEventListener('change', onHOGParamsChanged);
+});
+$('hogGamma').addEventListener('change', onHOGParamsChanged);
+$('hogUnsigned').addEventListener('click', ()=>{
+  hogParams.signed=false;
+  $('hogUnsigned').classList.add('active'); $('hogSigned').classList.remove('active');
+  updateHOGParamsNote();
+  if(gray){ runHOG(); updateFullFeatureCounts(); }
+});
+$('hogSigned').addEventListener('click', ()=>{
+  hogParams.signed=true;
+  $('hogSigned').classList.add('active'); $('hogUnsigned').classList.remove('active');
+  updateHOGParamsNote();
+  if(gray){ runHOG(); updateFullFeatureCounts(); }
+});
+updateHOGParamsNote();
+
+function runAll(){
+  runGLCM();
+  runLBP();
+  runHOG();
+  updateFullFeatureCounts();
+  statusEl.innerHTML = 'Features computed <span class="pill">✓</span> — switch tabs on the right to see each group, or toggle scope above the tabs.';
+}
+
+// ---------- full (non-summarised) feature counts ----------
+function updateFullFeatureCounts(){
+  const targetW = 224, targetH = 224;
+
+  // GLCM: matrix size is fixed by the selected grey-level count, not image resolution.
+  const glcmFull = 4 /*angles*/ * glcmLevels * glcmLevels;
+
+  // LBP: number of possible codes is fixed by the encoding choice, not resolution.
+  const lbpFull = symbolCountFor(lbpParams.encoding, lbpParams.P);
+
+  // HOG: depends on the resize target AND the selected cell/block/bin params.
+  const cellSize = hogParams.cellSize, nbins = hogParams.nbins, B = hogParams.blockCells;
+  const cellsX = Math.floor(targetW/cellSize), cellsY = Math.floor(targetH/cellSize);
+  const blocksX = Math.max(0, cellsX-B+1), blocksY = Math.max(0, cellsY-B+1);
+  const hogFull = blocksX*blocksY*(B*B)*nbins;
+
+  const total = glcmFull + lbpFull + hogFull;
+
+  $('fcGlcmFull').textContent = glcmFull.toLocaleString();
+  $('fcLbpFull').textContent = lbpFull.toLocaleString();
+  $('fcHogFull').textContent = hogFull.toLocaleString();
+  $('fcTotalFull').innerHTML = `<b>${total.toLocaleString()}</b>`;
+
+  const usedTotal = 32;
+  const ratio = (total/usedTotal).toFixed(0);
+  $('fcFormula').innerHTML =
+    `<b>GLCM</b>: 4 angles × ${glcmLevels}×${glcmLevels} matrix = 4×${glcmLevels*glcmLevels} = ${glcmFull.toLocaleString()} — fixed by the selected ${glcmLevels}-level quantisation, independent of resolution.<br>` +
+    `<b>LBP</b>: ${lbpParams.encoding==='full' ? `2^${lbpParams.P} possible codes = ${lbpFull.toLocaleString()}` : lbpParams.encoding==='uniform' ? `P(P−1)+3 = ${lbpFull} uniform symbols` : `P+2 = ${lbpFull} rotation-invariant symbols`} — fixed by the selected P and encoding, independent of resolution.<br>` +
+    `<b>HOG</b> at 224×224: ${cellsX}×${cellsY} cells → ${blocksX}×${blocksY} blocks × (${B}×${B} cells × ${nbins} bins) = ${blocksX}×${blocksY}×${B*B*nbins} = ${hogFull.toLocaleString()} — scales with resolution and the selected cell/block/bin settings.<br>` +
+    `Full total <b>${total.toLocaleString()}</b> vs the <b>${usedTotal}</b> summary statistics used above — roughly a <b>${ratio}×</b> reduction.`;
+}
+
+// ---------- LBP parameter controls ----------
+function updateLBPParamsNote(){
+  const p = lbpParams;
+  const sampleNote = (p.P===8 && p.R===1)
+    ? '<span style="color:var(--dim);">exact 3×3 integer neighbourhood</span>'
+    : '<span style="color:var(--dim);">circular sampling + bilinear interpolation (neighbours no longer land on integer pixels)</span>';
+  const parts = [
+    `P=${p.P} ${p.P===8?paperTag:notPaperTag}`,
+    `R=${p.R} ${p.R===1?paperTag:notPaperTag}`,
+    `Threshold ${p.cmp==='gt'?'&gt;':'≥'} center ${notPaperTag}`,
+    `Sampling: ${sampleNote}`,
+  ];
+  $('lbpParamsNote').innerHTML = parts.join(' · ');
+}
+
+function onLBPParamsChanged(){
+  lbpParams.P = parseInt($('lbpP').value, 10);
+  lbpParams.R = parseInt($('lbpR').value, 10);
+  lbpParams.cmp = $('lbpCmp').value;
+  updateLBPParamsNote();
+  if(gray){ runLBP(); updateFullFeatureCounts(); }
+}
+$('lbpP').addEventListener('change', onLBPParamsChanged);
+$('lbpR').addEventListener('change', onLBPParamsChanged);
+$('lbpCmp').addEventListener('change', onLBPParamsChanged);
+
+function setLBPEncoding(enc){
+  lbpParams.encoding = enc;
+  ['lbpModeFull','lbpModeUniform','lbpModeRiu2'].forEach(id=>$(id).classList.remove('active'));
+  const idMap = {full:'lbpModeFull', uniform:'lbpModeUniform', riu2:'lbpModeRiu2'};
+  $(idMap[enc]).classList.add('active');
+  if(gray){ runLBP(); updateFullFeatureCounts(); }
+}
+$('lbpModeFull').addEventListener('click', ()=>setLBPEncoding('full'));
+$('lbpModeUniform').addEventListener('click', ()=>setLBPEncoding('uniform'));
+$('lbpModeRiu2').addEventListener('click', ()=>setLBPEncoding('riu2'));
+updateLBPParamsNote();
+
+// ---------- scope toggle ----------
+$('scopeFull').addEventListener('click', ()=>{
+  currentScope='full';
+  $('scopeFull').classList.add('active');
+  $('scopeFg').classList.remove('active');
+  $('scopeNote').textContent = '';
+  if(gray) runAll();
+});
+$('scopeFg').addEventListener('click', ()=>{
+  currentScope='fg';
+  $('scopeFg').classList.add('active');
+  $('scopeFull').classList.remove('active');
+  $('scopeNote').textContent = 'pairs / neighbourhoods / blocks touching background are excluded';
+  if(gray) runAll();
+});
+
+// ---------- mask controls ----------
+$('threshSlider').addEventListener('input', ()=>{
+  clearTimeout(recomputeTimer);
+  $('threshVal').textContent = $('threshSlider').value;
+  recomputeTimer = setTimeout(()=>{ if(gray) recomputeMask(); }, 120);
+});
+$('invertMask').addEventListener('change', ()=>{ if(gray) recomputeMask(); });
+
+// ---------- tabs ----------
+document.querySelectorAll('.tab').forEach(tab=>{
+  tab.addEventListener('click', ()=>{
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.tabpanel').forEach(p=>p.classList.remove('active'));
+    tab.classList.add('active');
+    $('panel-'+tab.dataset.t).classList.add('active');
+  });
+});
+
+// ---------- file input ----------
+const dropzone = $('dropzone'), fileInput = $('fileInput');
+
+function loadFile(f){
+  if(!f || !f.type || !f.type.startsWith('image/')){
+    statusEl.textContent = 'That file is not an image. Try a .jpg or .png instead.';
+    return;
+  }
+  statusEl.textContent = 'Loading image...';
+  const reader = new FileReader();
+  reader.onload = ()=>{
+    const img = new Image();
+    img.onload = ()=>loadImageToPipeline(img);
+    img.onerror = ()=>{ statusEl.textContent = 'Could not load that image. Try a different file.'; };
+    img.src = reader.result; // data URL, avoids blob/CORS issues in sandboxed iframes
+  };
+  reader.onerror = ()=>{ statusEl.textContent = 'Could not read that file.'; };
+  reader.readAsDataURL(f);
+}
+
+dropzone.addEventListener('click', ()=>fileInput.click());
+dropzone.addEventListener('keydown', e=>{
+  if(e.key==='Enter' || e.key===' '){ e.preventDefault(); fileInput.click(); }
+});
+fileInput.addEventListener('change', e=>{
+  const f = e.target.files[0];
+  loadFile(f);
+  fileInput.value = '';
+});
+['dragover','dragleave','drop'].forEach(evt=>{
+  dropzone.addEventListener(evt, e=>{
+    e.preventDefault();
+    if(evt==='dragover') dropzone.classList.add('drag');
+    else dropzone.classList.remove('drag');
+  });
+});
+dropzone.addEventListener('drop', e=>{
+  const f = e.dataTransfer.files && e.dataTransfer.files[0];
+  loadFile(f);
+});
+window.addEventListener('paste', e=>{
+  const items = e.clipboardData && e.clipboardData.items;
+  if(!items) return;
+  for(const item of items){
+    if(item.type && item.type.startsWith('image/')){
+      loadFile(item.getAsFile());
+      break;
+    }
+  }
+});
+
+// ---------- synthetic sample textures ----------
+function mulberry32(seed){
+  return function(){
+    seed |= 0; seed = seed + 0x6D2B79F5 | 0;
+    let t = Math.imul(seed ^ seed>>>15, 1 | seed);
+    t = t + Math.imul(t ^ t>>>7, 61 | t) ^ t;
+    return ((t ^ t>>>14) >>> 0) / 4294967296;
+  };
+}
+
+function makeSample(kind){
+  const size=128;
+  const canvas = document.createElement('canvas'); canvas.width=size; canvas.height=size;
+  const ctx = canvas.getContext('2d');
+  const rnd = mulberry32(kind==='brick'?7:kind==='weave'?42:99);
+
+  if(kind==='brick'){
+    ctx.fillStyle='#8a5a44'; ctx.fillRect(0,0,size,size);
+    const bh=14, bw=32;
+    for(let y=0, row=0; y<size; y+=bh, row++){
+      const offset = (row%2)*bw/2;
+      for(let x=-bw; x<size+bw; x+=bw){
+        const shade = 20 + rnd()*30;
+        ctx.fillStyle = `rgb(${150+shade},${90+shade*0.6},${60+shade*0.4})`;
+        ctx.fillRect(x+offset+1, y+1, bw-2, bh-2);
+      }
+    }
+  } else if(kind==='weave'){
+    ctx.fillStyle='#d8cdb8'; ctx.fillRect(0,0,size,size);
+    const step=10;
+    for(let y=0;y<size;y+=step){
+      for(let x=0;x<size;x+=step){
+        const light = ((Math.floor(x/step)+Math.floor(y/step))%2===0);
+        const base = light? 190:150;
+        const n = rnd()*20-10;
+        ctx.fillStyle = `rgb(${base+n},${base-10+n},${base-30+n})`;
+        ctx.fillRect(x,y,step-1,step-1);
+      }
+    }
+  } else {
+    const imgData = ctx.createImageData(size,size);
+    for(let i=0;i<size*size;i++){
+      const v = Math.floor(rnd()*255);
+      imgData.data[i*4]=v; imgData.data[i*4+1]=v; imgData.data[i*4+2]=v; imgData.data[i*4+3]=255;
+    }
+    ctx.putImageData(imgData,0,0);
+  }
+  const img = new Image();
+  img.onload = ()=>loadImageToPipeline(img);
+  img.src = canvas.toDataURL();
+}
+
+$('sampleBrick').addEventListener('click', ()=>makeSample('brick'));
+$('sampleWeave').addEventListener('click', ()=>makeSample('weave'));
+$('sampleNoise').addEventListener('click', ()=>makeSample('noise'));
+
+// ---------- thumbnail zoom modal ----------
+let zoomNativeW=0, zoomNativeH=0, zoomLevel=4;
+
+function applyZoomLevel(level){
+  zoomLevel = Math.max(1, Math.min(32, level));
+  const zc = $('zoomCanvas');
+  zc.style.width = (zoomNativeW*zoomLevel)+'px';
+  zc.style.height = (zoomNativeH*zoomLevel)+'px';
+  $('zoomSlider').value = zoomLevel;
+  $('zoomPct').textContent = (zoomLevel*100)+'%';
+}
+
+function fitZoom(){
+  const wrap = $('zoomCanvasWrap');
+  const availW = Math.min(window.innerWidth*0.88, 900);
+  const availH = window.innerHeight*0.66;
+  const fitLevel = Math.max(1, Math.floor(Math.min(availW/zoomNativeW, availH/zoomNativeH)));
+  applyZoomLevel(fitLevel);
+}
+
+function openZoom(sourceCanvas, label){
+  const zc = $('zoomCanvas');
+  zoomNativeW = sourceCanvas.width; zoomNativeH = sourceCanvas.height;
+  zc.width = zoomNativeW; zc.height = zoomNativeH;
+  const ctx = zc.getContext('2d');
+  ctx.imageSmoothingEnabled = false;
+  ctx.clearRect(0,0,zc.width,zc.height);
+  ctx.drawImage(sourceCanvas, 0, 0);
+  $('zoomLabel').textContent = label;
+  $('zoomModal').classList.add('open');
+  fitZoom();
+}
+function closeZoom(){ $('zoomModal').classList.remove('open'); }
+
+[['cOrig','Original'], ['cGray','Grayscale'], ['cQuant', null], ['cMaskThumb','Mask']].forEach(([id,label])=>{
+  $(id).addEventListener('click', ()=>{
+    const dynamicLabel = id==='cQuant' ? $('quantThumbLabel').textContent : label;
+    openZoom($(id), dynamicLabel);
+  });
+});
+
+$('zoomIn').addEventListener('click', ()=>applyZoomLevel(zoomLevel+1));
+$('zoomOut').addEventListener('click', ()=>applyZoomLevel(zoomLevel-1));
+$('zoomFit').addEventListener('click', fitZoom);
+$('zoomSlider').addEventListener('input', ()=>applyZoomLevel(parseInt($('zoomSlider').value,10)));
+$('zoomCanvasWrap').addEventListener('wheel', e=>{
+  e.preventDefault();
+  applyZoomLevel(zoomLevel + (e.deltaY<0 ? 1 : -1));
+}, {passive:false});
+
+// drag-to-pan (native scroll of the overflow:auto wrapper)
+let panState = null;
+$('zoomCanvasWrap').addEventListener('mousedown', e=>{
+  panState = {x:e.clientX, y:e.clientY, sl:$('zoomCanvasWrap').scrollLeft, st:$('zoomCanvasWrap').scrollTop};
+});
+window.addEventListener('mousemove', e=>{
+  if(!panState) return;
+  $('zoomCanvasWrap').scrollLeft = panState.sl - (e.clientX-panState.x);
+  $('zoomCanvasWrap').scrollTop = panState.st - (e.clientY-panState.y);
+});
+window.addEventListener('mouseup', ()=>{ panState=null; });
+
+// click OUTSIDE the canvas/controls (on the dark backdrop) closes the modal
+$('zoomModal').addEventListener('click', e=>{
+  if(e.target.id==='zoomModal') closeZoom();
+});
+window.addEventListener('keydown', e=>{ if(e.key==='Escape') closeZoom(); });
+
+// load a default sample on first paint
+updateFullFeatureCounts();
+makeSample('brick');
+</script>
+</body>
+</html>

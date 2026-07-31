@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ระบบเก็บภาพเท้าเบาหวาน — Demo</title>
+<style>
+  :root{
+    --bg:#eef1f5; --panel:#ffffff; --ink:#1b2430; --ink-soft:#5b6774; --line:#dde3ea;
+    --accent:#1f6feb; --accent-d:#1657c0; --podo:#2563eb; --thermal:#e0552b;
+    --ok:#1a9c5b; --warn:#c9760f; --muted:#8a95a2;
+    --shadow:0 1px 3px rgba(16,32,64,.08),0 6px 20px rgba(16,32,64,.06);
+    --radius:12px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; font-family:"IBM Plex Sans Thai","Segoe UI",system-ui,sans-serif;
+    background:var(--bg); color:var(--ink); line-height:1.5; padding:22px;
+  }
+  .wrap{max-width:1000px; margin:0 auto;}
+
+  /* header */
+  .top{display:flex; align-items:center; gap:14px; margin-bottom:20px;}
+  .logo{width:44px;height:44px;border-radius:11px;background:linear-gradient(135deg,var(--accent),#3a8bff);
+    display:flex;align-items:center;justify-content:center;color:#fff;font-size:22px;flex-shrink:0;
+    box-shadow:var(--shadow);}
+  .top h1{font-size:17px; margin:0; font-weight:700;}
+  .top .sub{font-size:11.5px; color:var(--ink-soft);}
+  .demo-tag{margin-left:auto; font-size:10.5px; font-weight:700; letter-spacing:.05em;
+    color:var(--warn); background:#fff4e2; border:1px solid #f2d9ac; padding:5px 11px; border-radius:20px;}
+
+  .card{background:var(--panel); border:1px solid var(--line); border-radius:var(--radius);
+    box-shadow:var(--shadow); padding:20px; margin-bottom:18px;}
+
+  /* session */
+  .sess-idle{text-align:center; padding:26px 20px;}
+  .sess-idle p{color:var(--ink-soft); font-size:13px; margin:0 0 16px;}
+  .btn{font-family:inherit; font-size:13.5px; font-weight:600; border:none; border-radius:9px;
+    padding:11px 20px; cursor:pointer; transition:.15s; display:inline-flex; align-items:center; gap:8px;}
+  .btn-primary{background:var(--accent); color:#fff;}
+  .btn-primary:hover{background:var(--accent-d);}
+  .btn-primary:disabled{background:#b9c4d1; cursor:not-allowed;}
+  .btn-ghost{background:#f1f4f8; color:var(--ink); border:1px solid var(--line);}
+  .btn-ghost:hover{background:#e7ecf2;}
+  .btn-lg{font-size:15px; padding:14px 28px;}
+
+  .sess-active{display:flex; align-items:center; gap:20px; flex-wrap:wrap;}
+  .rid-box{display:flex; flex-direction:column; gap:2px;}
+  .rid-lbl{font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); font-weight:700;}
+  .rid-val{font-size:30px; font-weight:800; color:var(--accent); font-family:"IBM Plex Mono",monospace; letter-spacing:.02em;}
+  .rid-note{font-size:12px; color:var(--warn); background:#fff4e2; border:1px solid #f2d9ac;
+    padding:8px 13px; border-radius:9px; display:flex; align-items:center; gap:7px;}
+  .sess-meta{margin-left:auto; font-size:11.5px; color:var(--ink-soft); text-align:right;}
+
+  /* capture grid */
+  .cap-grid{display:grid; grid-template-columns:1fr 1fr; gap:18px;}
+  @media (max-width:720px){.cap-grid{grid-template-columns:1fr;}}
+  .cap{background:var(--panel); border:1px solid var(--line); border-radius:var(--radius);
+    box-shadow:var(--shadow); overflow:hidden; display:flex; flex-direction:column;}
+  .cap-head{display:flex; align-items:center; gap:9px; padding:13px 16px; border-bottom:1px solid var(--line);}
+  .cap-dot{width:11px;height:11px;border-radius:50%;}
+  .cap-head h3{margin:0; font-size:14px; font-weight:700;}
+  .cap-head .en{font-size:11px; color:var(--muted); font-weight:400;}
+  .cap-badge{margin-left:auto; font-size:10.5px; font-weight:700; padding:3px 10px; border-radius:20px;}
+  .badge-empty{background:#eef1f5; color:var(--muted);}
+  .badge-ok{background:#e4f5ec; color:var(--ok);}
+
+  .preview{aspect-ratio:4/3; background:#0b0f16; position:relative; display:flex;
+    align-items:center; justify-content:center; overflow:hidden;}
+  .preview img,.preview video,.preview canvas{width:100%;height:100%;object-fit:cover; display:block;}
+  .preview .empty-msg{color:#4a5666; font-size:12.5px; text-align:center; padding:20px;}
+  .preview .empty-msg .ico{font-size:34px; display:block; margin-bottom:8px; opacity:.5;}
+  .file-tag{position:absolute; left:8px; bottom:8px; font-family:"IBM Plex Mono",monospace;
+    font-size:10.5px; color:#dfe7f0; background:rgba(0,0,0,.55); padding:3px 8px; border-radius:5px;}
+
+  .cap-actions{display:flex; gap:8px; padding:12px 16px;}
+  .cap-actions .btn{flex:1; justify-content:center; font-size:13px; padding:10px;}
+  .cam-toggle{padding:0 16px 12px;}
+  .cam-toggle label{font-size:11px; color:var(--ink-soft); display:flex; align-items:center; gap:6px; cursor:pointer;}
+
+  /* footer bar */
+  .commit-bar{display:flex; align-items:center; gap:16px; flex-wrap:wrap;}
+  .progress{font-size:13px; color:var(--ink-soft);}
+  .progress b{color:var(--ink);}
+  .commit-bar .btn{margin-left:auto;}
+
+  /* saved list */
+  .saved h4{margin:0 0 12px; font-size:13px; color:var(--ink-soft); font-weight:700;
+    letter-spacing:.03em; text-transform:uppercase;}
+  .saved-empty{font-size:12.5px; color:var(--muted); font-style:italic;}
+  table{width:100%; border-collapse:collapse; font-size:12.5px;}
+  th,td{text-align:left; padding:8px 10px; border-bottom:1px solid var(--line);}
+  th{font-size:10.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); font-weight:700;}
+  td.mono{font-family:"IBM Plex Mono",monospace;}
+  .pill{font-size:10px; font-weight:700; padding:2px 8px; border-radius:20px; background:#e4f5ec; color:var(--ok);}
+  .link-json{color:var(--accent); cursor:pointer; font-size:11.5px; font-weight:600;}
+  .link-json:hover{text-decoration:underline;}
+
+  /* modal */
+  .modal-bg{position:fixed; inset:0; background:rgba(16,26,40,.5); display:none;
+    align-items:center; justify-content:center; padding:20px; z-index:50;}
+  .modal-bg.show{display:flex;}
+  .modal{background:#fff; border-radius:var(--radius); box-shadow:0 20px 60px rgba(0,0,0,.3);
+    max-width:520px; width:100%; overflow:hidden;}
+  .modal-head{padding:16px 20px; border-bottom:1px solid var(--line); display:flex; align-items:center; gap:10px;}
+  .modal-head h3{margin:0; font-size:15px;}
+  .modal-head .x{margin-left:auto; cursor:pointer; color:var(--muted); font-size:20px; line-height:1;}
+  .modal-body{padding:18px 20px;}
+  .save-ok{display:flex; align-items:center; gap:10px; color:var(--ok); font-weight:600; font-size:14px; margin-bottom:14px;}
+  .path-line{font-family:"IBM Plex Mono",monospace; font-size:11.5px; color:var(--ink-soft);
+    background:#f5f7fa; border:1px solid var(--line); border-radius:7px; padding:9px 11px; margin-bottom:14px;}
+  pre{margin:0; background:#0d1117; color:#c9d5e3; border-radius:8px; padding:14px 16px;
+    font-family:"IBM Plex Mono",monospace; font-size:11.5px; overflow:auto; line-height:1.6;}
+  pre .k{color:#79c0ff;} pre .s{color:#a5d6a4;} pre .n{color:#f0a868;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="top">
+    <div class="logo">🦶</div>
+    <div>
+      <h1>ระบบเก็บภาพเท้าเบาหวาน (Podoscope + Thermal)</h1>
+      <div class="sub">โรงพยาบาลพุทธชินราช พิษณุโลก · คณะ ICT มหาวิทยาลัยมหิดล</div>
+    </div>
+    <div class="demo-tag">DEMO · จำลองการถ่าย</div>
+  </div>
+
+  <!-- Session -->
+  <div class="card" id="sessCard">
+    <div class="sess-idle" id="sessIdle">
+      <p>กดเริ่มเคสใหม่ ระบบจะออก Research ID ให้อัตโนมัติ แล้วจดลงแบบฟอร์มกระดาษ</p>
+      <button class="btn btn-primary btn-lg" onclick="startSession()">＋ เริ่มเคสใหม่</button>
+    </div>
+    <div class="sess-active" id="sessActive" style="display:none">
+      <div class="rid-box">
+        <span class="rid-lbl">Research ID</span>
+        <span class="rid-val" id="ridVal">—</span>
+      </div>
+      <div class="rid-note">✎ จด Research ID นี้ลงในแบบฟอร์มกระดาษ</div>
+      <div class="sess-meta" id="sessMeta"></div>
+    </div>
+  </div>
+
+  <!-- Capture -->
+  <div class="cap-grid" id="capGrid" style="display:none">
+    <div class="cap">
+      <div class="cap-head">
+        <span class="cap-dot" style="background:var(--podo)"></span>
+        <h3>Podoscope</h3><span class="en">ภาพแรงกดฝ่าเท้า</span>
+        <span class="cap-badge badge-empty" id="badge-podo">ยังไม่ถ่าย</span>
+      </div>
+      <div class="preview" id="prev-podo">
+        <div class="empty-msg"><span class="ico">📷</span>กดปุ่มด้านล่างเพื่อถ่าย</div>
+      </div>
+      <div class="cam-toggle"><label><input type="checkbox" id="live-podo" onchange="toggleCam('podo')"> ต่อกล้อง USB จริง (ถ้ามี)</label></div>
+      <div class="cap-actions">
+        <button class="btn btn-primary" id="shot-podo" onclick="capture('podo')">ถ่ายภาพ</button>
+        <button class="btn btn-ghost" id="re-podo" onclick="retake('podo')" style="display:none">ถ่ายใหม่</button>
+      </div>
+    </div>
+
+    <div class="cap">
+      <div class="cap-head">
+        <span class="cap-dot" style="background:var(--thermal)"></span>
+        <h3>Thermal</h3><span class="en">ภาพความร้อน (radiometric)</span>
+        <span class="cap-badge badge-empty" id="badge-thermal">ยังไม่ถ่าย</span>
+      </div>
+      <div class="preview" id="prev-thermal">
+        <div class="empty-msg"><span class="ico">🌡️</span>กดปุ่มด้านล่างเพื่อถ่าย</div>
+      </div>
+      <div class="cam-toggle"><label><input type="checkbox" id="live-thermal" onchange="toggleCam('thermal')"> ต่อกล้อง USB จริง (ถ้ามี)</label></div>
+      <div class="cap-actions">
+        <button class="btn btn-primary" id="shot-thermal" onclick="capture('thermal')">ถ่ายภาพ</button>
+        <button class="btn btn-ghost" id="re-thermal" onclick="retake('thermal')" style="display:none">ถ่ายใหม่</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Commit -->
+  <div class="card commit-bar" id="commitCard" style="display:none">
+    <div class="progress">ถ่ายแล้ว <b id="progCount">0 / 2</b> ส่วน</div>
+    <button class="btn btn-primary" id="commitBtn" onclick="commit()" disabled>✓ ยืนยันและบันทึก</button>
+  </div>
+
+  <!-- Saved this session -->
+  <div class="card saved">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;flex-wrap:wrap">
+      <h4 style="margin:0">เคสที่บันทึกแล้ว</h4>
+      <span id="statusLine" style="font-size:12px;color:var(--ink-soft)"></span>
+      <button class="btn btn-ghost" style="margin-left:auto;font-size:11.5px;padding:6px 12px" onclick="resetDemo()">ล้างข้อมูล demo</button>
+    </div>
+    <div id="savedEmpty" class="saved-empty">ยังไม่มีเคสที่บันทึก</div>
+    <table id="savedTable" style="display:none">
+      <thead><tr><th>Research ID</th><th>เวลา</th><th>ไฟล์</th><th>สถานะ</th><th></th></tr></thead>
+      <tbody id="savedBody"></tbody>
+    </table>
+  </div>
+
+</div>
+
+<!-- JSON modal -->
+<div class="modal-bg" id="modalBg" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>บันทึกสำเร็จ</h3><span class="x" onclick="closeModal()">×</span>
+    </div>
+    <div class="modal-body">
+      <div class="save-ok">✓ เขียนไฟล์ลงเครื่องแล้ว</div>
+      <div class="path-line" id="modalPath"></div>
+      <pre id="modalJson"></pre>
+    </div>
+  </div>
+</div>
+
+<script>
+const streams = {podo:null, thermal:null};
+const shots = {podo:null, thermal:null};      // dataURL of captured frame
+let session = {rid:null, active:false, startedAt:null};
+
+const pad = (n,l)=>String(n).padStart(l,'0');
+const nowISO = ()=>{
+  const d=new Date(), z=n=>pad(n,2);
+  return `${d.getFullYear()}-${z(d.getMonth()+1)}-${z(d.getDate())}T${z(d.getHours())}:${z(d.getMinutes())}:${z(d.getSeconds())}+07:00`;
+};
+const timeTH = iso=>iso.slice(11,19);
+
+const RECORDS_KEY='capture_records', COUNTER_KEY='capture_counter';
+const loadRecords=()=>{ try{return JSON.parse(localStorage.getItem(RECORDS_KEY)||'[]');}catch(e){return [];} };
+const saveRecords=r=>localStorage.setItem(RECORDS_KEY, JSON.stringify(r));
+const ridNum=rid=>parseInt(String(rid).replace(/\D/g,''),10)||0;
+
+// next id is derived from the actual saved records (self-healing), guarded by a monotonic
+// counter so a minted-but-cancelled number is never reused
+function nextResearchId(){
+  const recs=loadRecords();
+  const maxRec=recs.reduce((m,r)=>Math.max(m,ridNum(r.research_id)),0);
+  const counter=parseInt(localStorage.getItem(COUNTER_KEY)||'0',10);
+  const n=Math.max(maxRec,counter)+1;
+  localStorage.setItem(COUNTER_KEY,n);
+  return 'P'+pad(n,4);
+}
+
+function startSession(){
+  session = {rid:nextResearchId(), active:true, startedAt:nowISO()};
+  shots.podo = shots.thermal = null;
+  document.getElementById('sessIdle').style.display='none';
+  document.getElementById('sessActive').style.display='flex';
+  document.getElementById('capGrid').style.display='grid';
+  document.getElementById('commitCard').style.display='flex';
+  document.getElementById('ridVal').textContent = session.rid;
+  document.getElementById('sessMeta').innerHTML = 'เริ่ม '+timeTH(session.startedAt)+'<br>1 คน = 1 podoscope + 1 thermal';
+  ['podo','thermal'].forEach(resetPanel);
+  updateProgress();
+}
+
+function resetPanel(kind){
+  shots[kind]=null;
+  const ico = kind==='podo'?'📷':'🌡️';
+  document.getElementById('prev-'+kind).innerHTML =
+    `<div class="empty-msg"><span class="ico">${ico}</span>กดปุ่มด้านล่างเพื่อถ่าย</div>`;
+  const b=document.getElementById('badge-'+kind); b.className='cap-badge badge-empty'; b.textContent='ยังไม่ถ่าย';
+  document.getElementById('re-'+kind).style.display='none';
+  document.getElementById('shot-'+kind).style.display='inline-flex';
+}
+
+// ---- simulated frame (no camera yet) ----
+function drawSim(kind){
+  const cv=document.createElement('canvas'); cv.width=640; cv.height=480;
+  const x=cv.getContext('2d');
+  if(kind==='podo'){
+    x.fillStyle='#0b0f16'; x.fillRect(0,0,640,480);
+    x.strokeStyle='rgba(80,110,150,.18)'; x.lineWidth=1;
+    for(let i=0;i<=640;i+=32){x.beginPath();x.moveTo(i,0);x.lineTo(i,480);x.stroke();}
+    for(let j=0;j<=480;j+=32){x.beginPath();x.moveTo(0,j);x.lineTo(640,j);x.stroke();}
+    // two faint foot blobs
+    x.fillStyle='rgba(90,130,180,.28)';
+    [[250,240],[390,240]].forEach(([cx,cy])=>{
+      x.beginPath(); x.ellipse(cx,cy,46,120,0,0,Math.PI*2); x.fill();
+    });
+    x.fillStyle='rgba(150,180,215,.85)'; x.font='600 22px sans-serif'; x.textAlign='center';
+    x.fillText('PODOSCOPE', 320, 60);
+  }else{
+    const g=x.createRadialGradient(320,240,20,320,240,320);
+    g.addColorStop(0,'#f7e94b'); g.addColorStop(.35,'#e8802f'); g.addColorStop(.7,'#8c2f6b'); g.addColorStop(1,'#141a4a');
+    x.fillStyle=g; x.fillRect(0,0,640,480);
+    x.fillStyle='rgba(255,255,255,.9)'; x.font='600 22px sans-serif'; x.textAlign='center';
+    x.fillText('THERMAL', 320, 60);
+    x.font='400 13px sans-serif'; x.fillText('radiometric (จำลอง)', 320, 84);
+  }
+  x.fillStyle='rgba(255,255,255,.9)'; x.font='400 15px monospace'; x.textAlign='left';
+  x.fillText(session.rid+'  '+timeTH(nowISO()), 16, 462);
+  return cv.toDataURL('image/png');
+}
+
+function capture(kind){
+  let data;
+  if(streams[kind]){
+    const v=document.getElementById('vid-'+kind);
+    const cv=document.createElement('canvas'); cv.width=640; cv.height=480;
+    cv.getContext('2d').drawImage(v,0,0,640,480);
+    data=cv.toDataURL('image/png');
+  }else{
+    data=drawSim(kind);
+  }
+  shots[kind]=data;
+  const fn=fname(kind);
+  document.getElementById('prev-'+kind).innerHTML =
+    `<img src="${data}" alt=""><span class="file-tag">${fn}</span>`;
+  const b=document.getElementById('badge-'+kind); b.className='cap-badge badge-ok'; b.textContent='✓ ถ่ายแล้ว';
+  document.getElementById('re-'+kind).style.display='inline-flex';
+  document.getElementById('shot-'+kind).style.display='none';
+  updateProgress();
+}
+function retake(kind){ resetPanel(kind); if(streams[kind]) showLive(kind); updateProgress(); }
+
+function fname(kind){ return session.rid+'_'+(kind==='podo'?'podo':'thermal')+'.png'; }
+
+function updateProgress(){
+  const n=(shots.podo?1:0)+(shots.thermal?1:0);
+  document.getElementById('progCount').textContent=n+' / 2';
+  document.getElementById('commitBtn').disabled = !(session.active && n===2);
+}
+
+// ---- optional real USB camera ----
+async function toggleCam(kind){
+  const on=document.getElementById('live-'+kind).checked;
+  if(on){
+    try{
+      streams[kind]=await navigator.mediaDevices.getUserMedia({video:true});
+      showLive(kind);
+    }catch(e){
+      document.getElementById('live-'+kind).checked=false; streams[kind]=null;
+      alert('เชื่อมกล้องไม่ได้ ('+e.name+') — จะใช้โหมดจำลองแทน');
+    }
+  }else{
+    if(streams[kind]){streams[kind].getTracks().forEach(t=>t.stop()); streams[kind]=null;}
+    if(!shots[kind]) resetPanel(kind);
+  }
+}
+function showLive(kind){
+  if(!streams[kind]) return;
+  document.getElementById('prev-'+kind).innerHTML=`<video id="vid-${kind}" autoplay playsinline muted></video>`;
+  const v=document.getElementById('vid-'+kind); v.srcObject=streams[kind];
+}
+
+// ---- commit ----
+function commit(){
+  const captured=nowISO();
+  const rec={
+    schema_version:'1.0',
+    research_id:session.rid,
+    captured_at:captured,
+    operator:'',
+    images:{ podoscope:[fname('podo')], thermal:[fname('thermal')] },
+    status:'complete',
+    app_version:'demo-0.1'
+  };
+  const recs=loadRecords(); recs.unshift(rec); saveRecords(recs);
+  addRow(rec, true);
+  renderStatus();
+  showModal(rec);
+  // release cameras + reset for next patient
+  ['podo','thermal'].forEach(k=>{
+    if(streams[k]){streams[k].getTracks().forEach(t=>t.stop()); streams[k]=null;}
+    document.getElementById('live-'+k).checked=false;
+  });
+  session.active=false;
+  document.getElementById('sessActive').style.display='none';
+  document.getElementById('sessIdle').style.display='block';
+  document.getElementById('capGrid').style.display='none';
+  document.getElementById('commitCard').style.display='none';
+}
+
+// ---- saved records (persisted to localStorage, survives refresh) ----
+function addRow(rec, prepend){
+  document.getElementById('savedEmpty').style.display='none';
+  document.getElementById('savedTable').style.display='table';
+  const tb=document.getElementById('savedBody');
+  const tr=document.createElement('tr');
+  const st = rec.status==='complete'
+    ? '<span class="pill">ครบ</span>'
+    : '<span class="pill" style="background:#fdeede;color:var(--warn)">ไม่ครบ</span>';
+  const files=rec.images.podoscope.concat(rec.images.thermal).join(', ')||'—';
+  tr.innerHTML=`<td class="mono">${rec.research_id}</td>
+    <td>${timeTH(rec.captured_at)}</td>
+    <td class="mono">${files}</td>
+    <td>${st}</td>
+    <td><span class="link-json">ดู JSON</span></td>`;
+  tr.querySelector('.link-json').onclick=()=>showModal(rec);
+  prepend ? tb.prepend(tr) : tb.appendChild(tr);
+}
+
+function renderStatus(){
+  const recs=loadRecords();
+  const counter=parseInt(localStorage.getItem(COUNTER_KEY)||'0',10);
+  const last=recs.reduce((m,r)=>Math.max(m,ridNum(r.research_id)),0);
+  const nextN=Math.max(last,counter)+1;
+  document.getElementById('statusLine').textContent =
+    `บันทึกแล้ว ${recs.length} เคส · เลขล่าสุด ${last?('P'+pad(last,4)):'—'} · เลขถัดไป P${pad(nextN,4)}`;
+}
+
+function loadSaved(){
+  loadRecords().forEach(r=>addRow(r,false));  // stored newest-first
+  renderStatus();
+}
+
+function resetDemo(){
+  if(!confirm('ล้างข้อมูล demo ทั้งหมด? (เลขจะเริ่มที่ P0001 ใหม่)')) return;
+  localStorage.removeItem(RECORDS_KEY); localStorage.removeItem(COUNTER_KEY);
+  location.reload();
+}
+window.addEventListener('DOMContentLoaded', loadSaved);
+
+// ---- modal ----
+function jsonHi(obj){
+  const j=JSON.stringify(obj,null,2);
+  return j.replace(/("[^"]+")(\s*:)/g,'<span class="k">$1</span>$2')
+          .replace(/:\s*("[^"]*")/g,': <span class="s">$1</span>')
+          .replace(/:\s*(\d+(\.\d+)?)/g,': <span class="n">$1</span>');
+}
+function showModal(rec){
+  document.getElementById('modalPath').textContent='/data/'+rec.research_id+'/  →  '+rec.images.podoscope[0]+', '+rec.images.thermal[0]+', '+rec.research_id+'.json';
+  document.getElementById('modalJson').innerHTML=jsonHi(rec);
+  document.getElementById('modalBg').classList.add('show');
+}
+function closeModal(){ document.getElementById('modalBg').classList.remove('show'); }
+</script>
+</body>
+</html>
