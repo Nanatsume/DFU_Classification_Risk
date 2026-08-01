@@ -1,79 +1,93 @@
-# Capture App — data collection scaffold
+# Capture App
 
 Local-first app for collecting paired **Podoscope + Thermal** foot images per patient at
-Buddhachinaraj Hospital. Front-end runs in the browser, back-end is a local server that mints the
-Research ID and writes files to disk. No cloud, no PHI in the image data.
+Buddhachinaraj Hospital. Runs today with a **simulated camera** (the podoscope returns a real
+sample footprint so preprocessing produces meaningful output). When the USB cameras arrive, the
+**only** code to write is one capture class (`capture_source.py`).
 
-## Architecture
+## Run
 
+```bash
+python3 -m venv .venv && source .venv/bin/activate     # first time only
+pip install -r requirements.txt                         # first time only
+uvicorn server:app --host 127.0.0.1 --port 8000
+# open http://127.0.0.1:8000/
 ```
- ┌─────────────┐  localhost   ┌──────────────────────┐   writes    ┌──────────┐
- │  Browser UI │ ───────────► │  Local server (this) │ ──────────► │  ./data/ │
- │ (front-end) │ ◄─────────── │  FastAPI + OpenCV     │             └──────────┘
- └─────────────┘  JSON/PNG    └──────────────────────┘
-```
 
-- **Podoscope** is an ordinary USB webcam. The browser can grab frames via `getUserMedia`
-  and POST the PNG, or the server can grab it with OpenCV. Either works.
-- **Thermal** is a radiometric USB device. The browser only ever sees a colourised preview,
-  so the **temperature values must be pulled server-side through the device SDK** and saved
-  alongside the PNG. This is the one capture path that cannot live purely in the browser.
+Opening it through the server = **live mode** (files land under `./data/`, preprocessing runs).
+Opening `static/index.html` as a plain file = **demo mode** (browser-only, nothing written, no
+preprocessing) — handy for the hospital pitch. The page detects which mode it is in and shows a
+badge.
 
-## Research ID = single source of truth
+## Flow
 
-The server owns a persistent counter (`counter.txt`). The browser never types the ID and never
-sees the HN. The HN ↔ Research ID link exists only on the paper form, so everything under
-`./data/` is de-identified.
+1. **เริ่มเคสใหม่** → server mints the next Research ID (counts committed cases only). Write it on
+   the paper form.
+2. Capture **podoscope** → the preprocessing pipeline runs automatically and shows the segmented
+   left/right feet for QC (catch a bad capture on the spot).
+3. Capture **thermal**.
+4. **ยืนยันและบันทึก** → writes the files and `meta/{rid}.json`, appends the manifest.
 
-A cancelled session consumes its number (gaps are fine, numbers are never reused).
-
-## On-disk layout
+## On-disk layout (modality-first)
 
 ```
 data/
-  P0001/
-    P0001_podo.png        # lossless PNG
-    P0001_thermal.png     # colourised preview
-    P0001_thermal.tiff    # radiometric temperature array (from SDK)  [TODO]
-    P0001.json            # per-patient manifest (see schema below)
-  P0002/
-    ...
-  manifest.csv            # one row appended per committed patient
+  podo/P0001/
+    raw/            P0001_podo.png              raw podoscope (source of truth)
+    preprocessing/  P0001_podo_L.png  P0001_podo_R.png   S1, auto-generated
+  thermal/P0001/
+    image/          P0001_thermal.png
+    radiometric/    P0001_thermal.tiff          once the SDK is wired
+  meta/P0001.json   patient-level record (points into both modalities)
+  manifest.csv      one row per committed patient
 ```
 
-## Per-patient JSON (schema_version 1.0)
+The **raw** image is the source of truth; the preprocessed L/R is a **regenerable cache**. When the
+pipeline settings change (see below), re-run preprocessing over the raw images — do not treat the
+cached L/R as archival. **S2** (left foot flipped) is not stored; it is generated from S1 at
+dataset-prep time (`create_s2_dataset` in the notebook).
 
-```json
-{
-  "schema_version": "1.0",
-  "research_id": "P0001",
-  "captured_at": "2026-07-27T14:32:10+07:00",
-  "operator": "",
-  "images": { "podoscope": ["P0001_podo.png"], "thermal": ["P0001_thermal.png"] },
-  "status": "complete",
-  "app_version": "demo-0.1"
-}
-```
+## Preprocessing = one shared module
 
-`status` is `complete` or `partial` (a modality was skipped, e.g. thermal device down that day).
-Saving is never blocked when one modality is missing — the flag records it instead.
+`preprocessing.py` is extracted from `Image_Preprocessing_Pipeline.ipynb` and is the single source
+of truth for the podoscope pipeline. Current settings (the tunable knobs):
 
-## API (see server.py)
+| stage | setting |
+|-------|---------|
+| segmentation (HMRF-EM) | K=3, beta=1.5, GMM max_iter=80 |
+| dilation | vertical kernel = 12% of image height (min 10px), horizontal = 5px |
+| CLAHE | clip_limit=3.5, tile 8×8 |
+| grayscale | 0.299R + 0.587G + 0.114B |
+| resize | 224×224, bilinear |
+| scaling | ÷255 → [0,1] (applied at model-load; the saved PNG is 0–255) |
 
-| Method | Path              | Purpose                                   |
-|--------|-------------------|-------------------------------------------|
-| POST   | `/session/new`    | mint next Research ID                     |
-| POST   | `/capture/{rid}`  | store one PNG blob for a modality         |
-| POST   | `/commit/{rid}`   | write JSON + append manifest, close case  |
-| GET    | `/manifest`       | list committed patients (completeness)    |
+Thermal has no preprocessing here — this pipeline is optical/pressure-specific. Thermal is stored
+raw (+ radiometric later).
+
+## The camera is the only thing left
+
+All capture goes through `CaptureSource.grab(modality, rid) -> PNG bytes` in `capture_source.py`.
+
+- `SimulatedSource` — podoscope returns `sample/P001.png`, thermal returns a placeholder. Active now.
+- `UsbCameraSource` — **TODO**. Implement `grab()` and run with `CAPTURE_SOURCE=usb`. Nothing else
+  changes. podoscope: `cv2.VideoCapture`; thermal: vendor SDK (colourised frame for the PNG **and**
+  the radiometric array saved to `thermal/{rid}/radiometric/`).
+
+## API
+
+| Method | Path                  | Purpose                                        |
+|--------|-----------------------|------------------------------------------------|
+| GET    | `/api/health`         | mode probe, current source, next id            |
+| POST   | `/api/session/new`    | mint next Research ID                           |
+| POST   | `/api/capture`        | grab one modality, write raw                    |
+| POST   | `/api/preprocess`     | segment + L/R + CLAHE the podoscope raw         |
+| GET    | `/api/file/{path}`    | serve a stored file                             |
+| POST   | `/api/commit`         | write meta JSON + append manifest               |
+| GET    | `/api/manifest`       | list committed patients                         |
 
 ## Before real collection
 
-1. Confirm both cameras enumerate as USB video devices on the collection PC.
-2. Wire the thermal SDK into `capture_thermal_radiometric()` (the only real TODO).
-3. Lock PNG resolution to whatever the podoscope outputs natively.
-4. Point `DATA_DIR` at a folder that is auto-backed-up to a second drive.
-5. Dry-run 2–3 test cases end-to-end and load them into the preprocessing pipeline.
-
-The front-end demo (`../capture_app_demo.html`) shows the intended UI and can run standalone with
-simulated capture for the hospital presentation.
+1. Implement `UsbCameraSource.grab()` (the one TODO) once the devices are on the PC.
+2. Lock PNG resolution to the podoscope's native output.
+3. Point `DATA_DIR` at a folder that auto-backs-up to a second drive.
+4. Dry-run 2–3 test cases and load them into training.

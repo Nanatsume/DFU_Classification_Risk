@@ -1,14 +1,23 @@
-"""Local capture server (scaffold).
+"""Local capture server — real disk writes, auto preprocessing, USB swap-in later.
 
-Mints Research IDs, receives PNG blobs from the browser, writes per-patient folders + JSON,
-and appends a running manifest. Camera access is local/USB only. No cloud, no HN.
+Layout on disk (modality-first, one folder per patient):
+
+    data/
+      podo/P0001/raw/P0001_podo.png
+      podo/P0001/preprocessing/P0001_podo_L.png   P0001_podo_R.png   (S1, auto)
+      thermal/P0001/image/P0001_thermal.png
+      thermal/P0001/radiometric/P0001_thermal.tiff                    (once the SDK is wired)
+      meta/P0001.json          patient-level record (points into both modalities)
+      manifest.csv             one row per committed patient
+
+Podoscope capture auto-runs the preprocessing pipeline (preprocessing.py) and saves the L/R
+result for QC and reuse. The raw image is the source of truth; the preprocessed files are a cache
+that can be regenerated from raw when the pipeline settings change.
 
 Run:
-    pip install fastapi uvicorn python-multipart
+    pip install -r requirements.txt
     uvicorn server:app --host 127.0.0.1 --port 8000
-
-The thermal *radiometric* pull is the one real TODO — the browser can only send a colourised
-preview, so temperature values must come from the device SDK here (see capture_thermal_radiometric).
+    # open http://127.0.0.1:8000/
 """
 from __future__ import annotations
 import csv
@@ -16,105 +25,183 @@ import json
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
-from fastapi import FastAPI, UploadFile, File, HTTPException
-from fastapi.responses import JSONResponse
+import numpy as np
+from PIL import Image
+from fastapi import FastAPI, HTTPException
+from fastapi.responses import FileResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
+from pydantic import BaseModel
 
-APP_VERSION = "0.1"
-SCHEMA_VERSION = "1.0"
+from capture_source import get_source
+from preprocessing import preprocess_foot_image
+
+APP_VERSION = "2.0"
+SCHEMA_VERSION = "2.0"
 TZ = timezone(timedelta(hours=7))  # Asia/Bangkok
 
 BASE = Path(__file__).resolve().parent
 DATA_DIR = BASE / "data"
-COUNTER_FILE = BASE / "counter.txt"
+STATIC_DIR = BASE / "static"
+META_DIR = DATA_DIR / "meta"
 MANIFEST = DATA_DIR / "manifest.csv"
 MODALITIES = ("podoscope", "thermal")
 
 app = FastAPI(title="Foot capture (local)")
+SOURCE = get_source()
 
 
 def now_iso() -> str:
     return datetime.now(TZ).replace(microsecond=0).isoformat()
 
 
-def next_research_id() -> str:
-    """Mint the next ID. Self-healing — the counter is reconciled against the folders already on
-    disk, so it can never collide with or fall behind existing data even if counter.txt is lost.
-    Numbers are consumed, never reused (gaps are acceptable)."""
-    counter = int(COUNTER_FILE.read_text()) if COUNTER_FILE.exists() else 0
-    existing = [int(p.name[1:]) for p in DATA_DIR.glob("P*")
-                if p.is_dir() and p.name[1:].isdigit()]
-    n = max([counter, *existing]) + 1
-    COUNTER_FILE.write_text(str(n))
-    return f"P{n:04d}"
+# ----- paths -----
+def raw_path(rid: str, modality: str) -> Path:
+    if modality == "podoscope":
+        return DATA_DIR / "podo" / rid / "raw" / f"{rid}_podo.png"
+    return DATA_DIR / "thermal" / rid / "image" / f"{rid}_thermal.png"
 
 
-def case_dir(rid: str) -> Path:
-    d = DATA_DIR / rid
-    d.mkdir(parents=True, exist_ok=True)
-    return d
+def prepro_path(rid: str, side: str) -> Path:
+    return DATA_DIR / "podo" / rid / "preprocessing" / f"{rid}_podo_{side}.png"
 
 
-@app.post("/session/new")
+def rel(p: Path) -> str:
+    return p.relative_to(DATA_DIR).as_posix()
+
+
+def url(p: Path) -> str:
+    return "/api/file/" + rel(p)
+
+
+# ----- id minting (counts committed cases only) -----
+def committed_max() -> int:
+    if not MANIFEST.exists():
+        return 0
+    with MANIFEST.open(encoding="utf-8") as f:
+        return max((int(r["research_id"][1:]) for r in csv.DictReader(f)
+                    if r["research_id"][1:].isdigit()), default=0)
+
+
+def next_id() -> str:
+    return f"P{committed_max() + 1:04d}"
+
+
+# ----- API -----
+class CaptureReq(BaseModel):
+    rid: str
+    modality: str
+
+
+class RidReq(BaseModel):
+    rid: str
+
+
+class CommitReq(BaseModel):
+    rid: str
+    operator: str = ""
+
+
+@app.get("/api/health")
+def health():
+    return {"ok": True, "source": type(SOURCE).__name__,
+            "next_id": next_id(), "count": committed_max()}
+
+
+@app.post("/api/session/new")
 def session_new():
-    rid = next_research_id()
-    return {"research_id": rid, "started_at": now_iso()}
+    return {"research_id": next_id(), "started_at": now_iso()}
 
 
-@app.post("/capture/{rid}")
-async def capture(rid: str, modality: str, file: UploadFile = File(...)):
-    if modality not in MODALITIES:
+@app.post("/api/capture")
+def capture(req: CaptureReq):
+    if req.modality not in MODALITIES:
         raise HTTPException(400, f"modality must be one of {MODALITIES}")
-    fn = f"{rid}_{'podo' if modality == 'podoscope' else 'thermal'}.png"
-    (case_dir(rid) / fn).write_bytes(await file.read())
-    if modality == "thermal":
-        capture_thermal_radiometric(rid)  # TODO: pull temperature array via device SDK
-    return {"research_id": rid, "modality": modality, "file": fn}
+    png = SOURCE.grab(req.modality, req.rid)
+    p = raw_path(req.rid, req.modality)
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_bytes(png)
+    return {"rid": req.rid, "modality": req.modality, "url": url(p)}
 
 
-def capture_thermal_radiometric(rid: str) -> None:
-    """TODO: read the radiometric temperature array from the thermal USB device SDK and save it
-    as {rid}_thermal.tiff (or .npy) next to the colourised PNG. The colourised preview alone
-    discards the temperature values needed for analysis."""
-    pass
+@app.post("/api/preprocess")
+def preprocess(req: RidReq):
+    """Auto-run after a podoscope capture. Segments, separates L/R, CLAHE — saves both sides."""
+    raw = raw_path(req.rid, "podoscope")
+    if not raw.exists():
+        raise HTTPException(404, "no podoscope capture to preprocess")
+    try:
+        result = preprocess_foot_image(str(raw))
+    except Exception as e:  # segmentation / separation can fail on a bad capture
+        return {"status": "failed", "error": f"{type(e).__name__}: {e}"}
+    if result is None:
+        return {"status": "failed", "error": "could not separate two feet — check the capture"}
+    out = {}
+    for side, key in (("L", "left_foot"), ("R", "right_foot")):
+        p = prepro_path(req.rid, side)
+        p.parent.mkdir(parents=True, exist_ok=True)
+        Image.fromarray((result[key] * 255).astype(np.uint8)).save(p)
+        out[side] = url(p)
+    return {"status": "ok", "left_url": out["L"], "right_url": out["R"]}
 
 
-@app.post("/commit/{rid}")
-def commit(rid: str, operator: str = ""):
-    d = DATA_DIR / rid
-    if not d.exists():
-        raise HTTPException(404, f"no captures for {rid}")
-    have = {m: [p.name for p in d.glob(f"{rid}_{'podo' if m == 'podoscope' else 'thermal'}.png")]
-            for m in MODALITIES}
-    status = "complete" if all(have[m] for m in MODALITIES) else "partial"
+@app.get("/api/file/{path:path}")
+def get_file(path: str):
+    p = (DATA_DIR / path).resolve()
+    if DATA_DIR.resolve() not in p.parents or not p.is_file():
+        raise HTTPException(404, "not found")
+    return FileResponse(p)
+
+
+@app.post("/api/commit")
+def commit(req: CommitReq):
+    podo_raw = raw_path(req.rid, "podoscope")
+    ther_img = raw_path(req.rid, "thermal")
+    if not podo_raw.exists() and not ther_img.exists():
+        raise HTTPException(404, f"no captures for {req.rid}")
+    prepro = {s: rel(prepro_path(req.rid, s)) for s in ("L", "R") if prepro_path(req.rid, s).exists()}
     record = {
         "schema_version": SCHEMA_VERSION,
-        "research_id": rid,
+        "research_id": req.rid,
         "captured_at": now_iso(),
-        "operator": operator,
-        "images": have,
-        "status": status,
+        "operator": req.operator,
+        "podoscope": {
+            "raw": rel(podo_raw) if podo_raw.exists() else None,
+            "preprocessing": prepro or None,
+        },
+        "thermal": {
+            "image": rel(ther_img) if ther_img.exists() else None,
+            "radiometric": None,
+        },
+        "status": "complete" if (podo_raw.exists() and ther_img.exists()) else "partial",
         "app_version": APP_VERSION,
     }
-    (d / f"{rid}.json").write_text(json.dumps(record, ensure_ascii=False, indent=2))
+    META_DIR.mkdir(parents=True, exist_ok=True)
+    (META_DIR / f"{req.rid}.json").write_text(json.dumps(record, ensure_ascii=False, indent=2))
     _append_manifest(record)
     return record
 
 
-def _append_manifest(record: dict) -> None:
+def _append_manifest(rec: dict) -> None:
     DATA_DIR.mkdir(parents=True, exist_ok=True)
     new = not MANIFEST.exists()
     with MANIFEST.open("a", newline="", encoding="utf-8") as f:
         w = csv.writer(f)
         if new:
-            w.writerow(["research_id", "captured_at", "status", "podoscope", "thermal"])
-        w.writerow([record["research_id"], record["captured_at"], record["status"],
-                    ";".join(record["images"]["podoscope"]),
-                    ";".join(record["images"]["thermal"])])
+            w.writerow(["research_id", "captured_at", "status", "podo_raw", "podo_prepro", "thermal"])
+        w.writerow([rec["research_id"], rec["captured_at"], rec["status"],
+                    rec["podoscope"]["raw"] or "",
+                    "yes" if rec["podoscope"]["preprocessing"] else "",
+                    rec["thermal"]["image"] or ""])
 
 
-@app.get("/manifest")
+@app.get("/api/manifest")
 def manifest():
     if not MANIFEST.exists():
         return JSONResponse([])
     with MANIFEST.open(encoding="utf-8") as f:
         return JSONResponse(list(csv.DictReader(f)))
+
+
+# ----- front-end (mounted last so /api/* wins) -----
+if STATIC_DIR.exists():
+    app.mount("/", StaticFiles(directory=STATIC_DIR, html=True), name="static")

@@ -1,0 +1,9 @@
+fastapi
+uvicorn[standard]
+pillow
+numpy
+scipy
+opencv-python-headless   # podoscope preprocessing (HMRF-EM, CLAHE); headless = no GUI deps
+# For real USB capture later:
+# opencv-python          # if you need the GUI build for the podoscope webcam
+# <thermal-sdk>          # thermal radiometric device SDK (vendor-specific)
