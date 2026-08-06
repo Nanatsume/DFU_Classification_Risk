@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>เข้าสู่ระบบ – ระบบเก็บข้อมูลความเสี่ยงเท้าเบาหวาน</title>
+<link rel="stylesheet" href="css/shared.css">
+<style>
+  body { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
+  .login-card { max-width: 380px; width: 100%; text-align: center; }
+  .login-card .logo { font-size: 38px; margin-bottom: 10px; }
+  .login-card h1 { font-size: 17px; margin: 0 0 4px; line-height: 1.4; }
+  .login-card .sub { font-size: 12px; color: var(--ink-2); margin-bottom: 22px; }
+  .login-card input {
+    width: 100%; padding: 11px 13px; border: 1px solid var(--rule); border-radius: var(--radius);
+    font-family: inherit; font-size: 14.5px; margin-bottom: 12px;
+  }
+  .login-card input:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+  .login-card .err { color: var(--bad); font-size: 12.5px; margin-bottom: 12px; min-height: 1.2em; }
+</style>
+</head>
+<body>
+<div class="card login-card">
+  <div class="logo">🦶</div>
+  <h1>ระบบเก็บข้อมูลความเสี่ยงเท้าเบาหวาน</h1>
+  <div class="sub">โรงพยาบาลพุทธชินราช พิษณุโลก · คณะเทคโนโลยีสารสนเทศและการสื่อสาร มหาวิทยาลัยมหิดล</div>
+  <form id="loginForm">
+    <input type="password" id="password" placeholder="รหัสผ่านทีม" autocomplete="current-password" autofocus>
+    <div class="err" id="err"></div>
+    <button type="submit" class="btn btn-primary btn-lg" style="width:100%">เข้าสู่ระบบ</button>
+  </form>
+</div>
+<script src="js/api.js"></script>
+<script>
+document.getElementById('loginForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const err = document.getElementById('err');
+  err.textContent = '';
+  const password = document.getElementById('password').value;
+  try {
+    await api('/api/login', { password });
+    const next = new URLSearchParams(location.search).get('next');
+    location.href = next || 'index.html';
+  } catch (ex) {
+    err.textContent = ex.status === 401 ? 'รหัสผ่านไม่ถูกต้อง' : 'เชื่อมต่อเซิร์ฟเวอร์ไม่ได้ — ตรวจสอบว่า capture server รันอยู่';
+  }
+});
+
+// already logged in? skip straight through instead of showing the form again
+(async () => {
+  try {
+    const s = await api('/api/session');
+    if (s.authenticated) {
+      const next = new URLSearchParams(location.search).get('next');
+      location.replace(next || 'index.html');
+    }
+  } catch (ex) { /* server unreachable — just show the form */ }
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>รายละเอียดเคส – CRF-07</title>
+<link rel="stylesheet" href="css/shared.css">
+<style>
+  :root{ --cat0:#1c7a58; --cat1:#96700a; --cat2:#bf5a1c; --cat3:#ac2038; --radius:3px; }
+  body { padding-bottom: 40px; }
+  .list-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px;
+    flex-wrap: wrap; margin: 24px 0 16px; }
+  .list-head .sec-title { font-weight: 700; font-size: 18px; }
+  .list-head .sec-sub { font-family: "IBM Plex Mono", monospace; font-size: 12px; color: var(--ink-2); }
+  .list-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  .list-actions button { border-color: var(--rule); color: var(--ink); background: var(--paper);
+    padding: 9px 15px; font-size: 13px; border-radius: var(--radius); cursor: pointer; font-family: inherit;
+    border-width: 1px; border-style: solid; }
+  .list-actions button:hover { background: var(--field); }
+  .list-actions button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .list-actions button.primary:hover { background: var(--accent-d); }
+
+  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 820px) { .pair { grid-template-columns: 1fr; } }
+  .panel { background: var(--side-soft, var(--paper)); border: 1px solid var(--rule); border-radius: var(--radius);
+    padding: 14px 16px 16px; border-left: 5px solid var(--side, var(--rule)); }
+  .panel[data-panel="L"] { --side:#0f6a80; --side-soft:#f0f7f9; --side-tint:#d9eaef; }
+  .panel[data-panel="R"] { --side:#7c3a66; --side-soft:#faf1f6; --side-tint:#eedde7; }
+  .panel-head { display: flex; justify-content: space-between; align-items: center; gap: 10px;
+    background: var(--side-tint); color: var(--side); margin: -14px -16px 14px; padding: 10px 16px;
+    font-weight: 700; font-size: 16px; border-bottom: 1px solid var(--rule); }
+  .side-tag { font-family: "IBM Plex Mono", monospace; font-size: 10.5px; letter-spacing: .16em;
+    background: var(--side); color: #fff; padding: 3px 9px; border-radius: 2px; font-weight: 500; }
+  .catbadge { font-family: "IBM Plex Mono", monospace; font-size: 12px; padding: 3px 9px; border-radius: 2px;
+    background: var(--field); color: var(--ink-3); }
+  .catbadge[data-b="pos"] { background: var(--cat3); color: #fff; }
+  .catbadge[data-b="neg"] { background: var(--cat0); color: #fff; }
+
+  .dgroup { background: var(--paper); border: 1px solid var(--rule); border-radius: var(--radius);
+    margin-bottom: 10px; overflow: hidden; }
+  .dgroup:last-child { margin-bottom: 0; }
+  .dgroup-head { background: var(--side-tint, var(--field)); color: var(--side, var(--ink-2));
+    font-size: 12px; font-weight: 600; padding: 7px 12px; border-bottom: 1px solid var(--rule); }
+  .dgroup-head.plain { background: var(--field); color: var(--ink-2); }
+  .dgroup .drow { padding: 8px 12px; }
+  .drow { display: flex; justify-content: space-between; align-items: baseline; gap: 14px;
+    padding: 7px 0; border-bottom: 1px dotted var(--rule); font-size: 13.5px; }
+  .drow:last-child { border-bottom: 0; }
+  .dkey { color: var(--ink-2); flex: none; }
+  .dval { text-align: right; font-weight: 500; }
+  .dval.muted { color: var(--ink-3); font-weight: 400; }
+  .dval.bad { color: var(--cat3); }
+  .dval.ok { color: var(--cat0); }
+  .dlist { text-align: right; font-size: 13px; line-height: 1.5; }
+  .dnote { background: var(--paper); border: 1px solid var(--rule); border-radius: var(--radius); font-size: 13.5px; overflow: hidden; }
+  .dnote-body { padding: 12px 14px; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<div id="app-nav"></div>
+<div class="wrap">
+  <div class="list-head">
+    <div>
+      <div class="sec-title" id="d-pid">–</div>
+      <div class="sec-sub" id="d-meta"></div>
+    </div>
+    <div class="list-actions">
+      <button type="button" onclick="location.href='crf-list.html'">กลับไปหน้าประวัติ</button>
+      <button type="button" id="btn-edit">แก้ไขข้อมูล</button>
+      <button type="button" id="btn-roi">ทำ ROI →</button>
+      <button type="button" id="btn-capture" class="primary">ถ่ายภาพเคสนี้ →</button>
+    </div>
+  </div>
+  <div id="detail-body"><p class="empty">กำลังโหลด…</p></div>
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/nav.js"></script>
+<script>
+const SIDES = [
+  {k:'L', th:'เท้าซ้าย', en:'LEFT'},
+  {k:'R', th:'เท้าขวา', en:'RIGHT'}
+];
+const MF_SITES = [
+  {k:'hallux', th:'หัวแม่เท้า'},
+  {k:'mth1',   th:'MTH ที่ 1'},
+  {k:'mth5',   th:'MTH ที่ 5'}
+];
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const $ = id => document.getElementById(id);
+
+function yn(v, yes, no){
+  if(v === true) return '<span class="dval bad">' + yes + '</span>';
+  if(v === false) return '<span class="dval ok">' + no + '</span>';
+  return '<span class="dval muted">ไม่ได้ระบุ</span>';
+}
+function drow(key, valHtml){
+  return '<div class="drow"><span class="dkey">' + key + '</span>' + valHtml + '</div>';
+}
+
+function renderDetail(rec){
+  const f = (rec.data && rec.data.fields) || {};
+  const der = (rec.data && rec.data.derived) || {};
+  const dt = rec.savedAt ? new Date(rec.savedAt) : null;
+
+  $('d-pid').textContent = rec.pid;
+  $('d-meta').textContent = (dt
+      ? 'บันทึกเมื่อ ' + dt.toLocaleDateString('th-TH', {day:'2-digit', month:'long', year:'numeric'}) +
+        ' เวลา ' + dt.toLocaleTimeString('th-TH', {hour:'2-digit', minute:'2-digit'}) + ' น.'
+      : '') + ' · พยาบาลผู้ตรวจ ' +
+      ([f.nurse, f.nurse2].filter(Boolean).join(' และ ') || 'ไม่ได้ระบุ');
+
+  const dgroup = (title, rows) =>
+    '<div class="dgroup"><div class="dgroup-head">' + title + '</div>' + rows + '</div>';
+
+  const panels = SIDES.map(sd => {
+    const k = sd.k, g = der[k] || {};
+    const mf = MF_SITES.map(m => {
+      const v = f['mf_'+k+'_'+m.k];
+      const txt = v === 'y' ? '<span class="dval ok">รู้สึก</span>'
+                : v === 'n' ? '<span class="dval bad">ไม่รู้สึก</span>'
+                : '<span class="dval muted">ไม่ได้ตรวจ</span>';
+      return drow(m.th, txt);
+    }).join('');
+
+    const ABIT = {normal:'ปกติ 0.90–1.30', pad:'PAD < 0.90', calcified:'หลอดเลือดแข็งตัว > 1.30'};
+    const TBIT = {normal:'ปกติ ≥ 0.70', pad:'PAD < 0.70'};
+    const abi = ABIT[f['abi_'+k]], tbi = TBIT[f['tbi_'+k]];
+    const defs = (g.deformities || []);
+
+    return '<div class="panel" data-panel="'+k+'">' +
+      '<div class="panel-head"><span>'+sd.th+'</span>' +
+        '<span class="catbadge"' + (g.label ? ' data-b="' + (g.label === 'Positive' ? 'pos' : 'neg') + '"' : '') + '>' +
+        (g.label || 'ยังไม่สรุป') + '</span>' +
+        '<span class="side-tag">'+sd.en+'</span></div>' +
+
+      dgroup('การตรวจสูญเสียความรู้สึกป้องกันตัวที่เท้าด้วยโมโนฟิลาเมนต์',
+        mf + drow('สรุป', yn(g.lops, 'มี LOPS', 'ไม่มี LOPS'))) +
+
+      dgroup('การตรวจโรคหลอดเลือดแดงส่วนปลาย',
+        drow('ABI', abi ? '<span class="dval">'+esc(abi)+'</span>' : '<span class="dval muted">ไม่ได้ตรวจ</span>') +
+        (tbi ? drow('TBI', '<span class="dval">'+esc(tbi)+'</span>') : '') +
+        drow('สรุป', yn(g.pad, 'มี PAD', 'ไม่มี PAD'))) +
+
+      dgroup('การตรวจความผิดปกติของเท้า',
+        defs.length
+          ? drow('พบ ' + defs.length + ' รายการ', '<span class="dlist">' + defs.map(esc).join('<br>') + '</span>')
+          : drow('ผลตรวจ', '<span class="dval ok">ไม่พบความผิดปกติ</span>')) +
+
+      dgroup('ประวัติแผลและการตัดรยางค์',
+        drow('แผลเบาหวานที่เท้า', yn(f['ulcer_'+k] === 'yes' ? true : f['ulcer_'+k] === 'no' ? false : null, 'มีประวัติ', 'ไม่มี')) +
+        drow('การตัดรยางค์ล่าง', yn(f['amp_'+k] === 'yes' ? true : f['amp_'+k] === 'no' ? false : null, 'มี', 'ไม่มี'))) +
+
+      dgroup('ผลสรุป',
+        drow('ประเภทความเสี่ยง', g.category === null || g.category === undefined
+            ? '<span class="dval muted">ยังไม่สรุป</span>'
+            : '<span class="dval">IWGDF ' + g.category + '</span>') +
+        drow('Binary label', g.label
+            ? '<span class="dval ' + (g.label === 'Positive' ? 'bad' : 'ok') + '">' + g.label + '</span>'
+            : '<span class="dval muted">ยังไม่สรุป</span>')) +
+    '</div>';
+  }).join('');
+
+  $('detail-body').innerHTML =
+    '<div class="pair">' + panels + '</div>' +
+    '<div class="pair" style="margin-top:14px">' +
+      '<div class="dnote"><div class="dgroup-head plain">ไตวายระยะสุดท้าย (CKD stage 5)</div>' +
+        '<div class="dnote-body">' + (f.ckd === 'yes' ? 'มี' : f.ckd === 'no' ? 'ไม่มี' : 'ไม่ได้ระบุ') + '</div></div>' +
+      '<div class="dnote"><div class="dgroup-head plain">หมายเหตุ</div>' +
+        '<div class="dnote-body">' + (f.note ? esc(f.note) : 'ไม่มีหมายเหตุ') + '</div></div>' +
+    '</div>';
+}
+
+(async () => {
+  const pid = new URLSearchParams(location.search).get('pid');
+  if(!pid){ $('detail-body').innerHTML = '<p class="empty">ไม่ได้ระบุรหัสวิจัย (?pid=)</p>'; return; }
+
+  let rec;
+  try { rec = await api('/api/crf/' + encodeURIComponent(pid)); }
+  catch(e){ $('detail-body').innerHTML = '<p class="empty">ไม่พบเคส ' + esc(pid) + '</p>'; return; }
+  renderDetail(rec);
+
+  let captured = false, roiDone = false;
+  try { captured = (await api('/api/manifest')).some(r => r.research_id === pid); } catch(e) {}
+  try { roiDone = (await api('/api/roi')).some(r => r.rid === pid); } catch(e) {}
+
+  const cap = $('btn-capture');
+  cap.textContent = captured ? 'ดูภาพของ ' + pid + ' →' : 'ถ่ายภาพ ' + pid + ' →';
+  cap.addEventListener('click', () => { location.href = 'capture.html?rid=' + encodeURIComponent(pid); });
+
+  const roi = $('btn-roi');
+  roi.textContent = (roiDone ? 'เปิด ROI ของ ' : 'ทำ ROI ของ ') + pid + ' →';
+  roi.addEventListener('click', () => {
+    if(!captured){ alert('เคส ' + pid + ' ยังไม่มีภาพ ต้องถ่ายภาพและผ่าน preprocessing ก่อนจึงจะมาร์ก ROI ได้'); return; }
+    window.open('via/index.html?rid=' + encodeURIComponent(pid), '_blank');
+  });
+
+  $('btn-edit').addEventListener('click', () => { location.href = 'crf-form.html?edit=' + encodeURIComponent(pid); });
+})();
+</script>
+</body>
+</html>

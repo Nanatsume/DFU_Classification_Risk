@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ประวัติการบันทึก – CRF-07</title>
+<link rel="stylesheet" href="css/shared.css">
+<style>
+  body { padding-bottom: 40px; }
+  .list-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px;
+    flex-wrap: wrap; margin: 24px 0 16px; }
+  .list-head .sec-title { font-weight: 700; font-size: 18px; }
+  .list-head .sec-sub { font-family: "IBM Plex Mono", monospace; font-size: 11px; letter-spacing: .1em;
+    color: var(--ink-3); text-transform: uppercase; }
+  .list-actions { display: flex; gap: 8px; }
+  .recs { width: 100%; border-collapse: collapse; background: var(--paper); border: 1px solid var(--rule); }
+  .recs th { font-family: "IBM Plex Mono", monospace; font-size: 10.5px; letter-spacing: .12em;
+    text-transform: uppercase; color: var(--ink-3); text-align: left; padding: 10px 12px;
+    background: var(--field); border-bottom: 1px solid var(--rule); white-space: nowrap; }
+  .recs td { padding: 11px 12px; border-bottom: 1px solid var(--rule); font-size: 13.5px; vertical-align: middle; }
+  .recs tbody tr:hover td { background: #f4f8fa; }
+  .recs .idcell { font-family: "IBM Plex Mono", monospace; font-weight: 500; }
+  .recs .rowact { text-align: right; white-space: nowrap; }
+  .recs .rowact button { border-color: var(--rule); color: var(--ink-2); background: var(--paper);
+    padding: 5px 11px; font-size: 12.5px; margin-left: 6px; border-radius: var(--radius); cursor: pointer;
+    font-family: inherit; border-width: 1px; border-style: solid; }
+  .recs .rowact button:hover { background: var(--field); color: var(--ink); }
+  .cpill { display: inline-block; font-size: 12.5px; font-weight: 600; white-space: nowrap;
+    padding: 3px 11px; border-radius: 999px; background: var(--field); color: var(--ink-3); }
+  .cpill[data-b="pos"] { background: var(--bad); color: #fff; }
+  .cpill[data-b="neg"] { background: var(--ok); color: #fff; }
+  button.cpill { border: 0; font-family: inherit; cursor: pointer; }
+  button.capbtn { background: #e6edf1; color: var(--ink-2); position: relative; padding-right: 24px; }
+  button.capbtn::after { content: "→"; position: absolute; right: 9px; top: 50%; transform: translateY(-50%);
+    font-size: 11px; opacity: .7; }
+  button.capbtn:hover { background: var(--accent); color: #fff; }
+  .sub { display: block; margin-top: 4px; font-family: "IBM Plex Mono", monospace; font-size: 11px; color: var(--ink-3); }
+  .lbl { font-size: 12.5px; color: var(--ink-2); }
+  .nowrap { white-space: nowrap; }
+  .toast { background: #e3f2ec; border: 1px solid var(--ok); color: #12694a; padding: 10px 14px;
+    border-radius: var(--radius); margin-bottom: 14px; font-size: 14px; }
+</style>
+</head>
+<body>
+<div id="app-nav"></div>
+<div class="wrap">
+  <div class="list-head">
+    <div>
+      <div class="sec-title">ประวัติการบันทึก</div>
+      <div class="sec-sub">Saved records · CRF-07</div>
+    </div>
+    <div class="list-actions">
+      <button type="button" class="btn btn-ghost" id="btn-csvall">ส่งออก CSV ทั้งหมด</button>
+      <a class="btn btn-primary" href="crf-form.html">บันทึกเคสใหม่</a>
+    </div>
+  </div>
+  <div class="toast" id="toast" hidden></div>
+  <table class="recs">
+    <thead><tr>
+      <th>รหัสวิจัย</th><th>วันที่บันทึก</th><th>เวลา</th><th>พยาบาลผู้ตรวจ</th>
+      <th>เท้าซ้าย</th><th>เท้าขวา</th><th>ภาพ</th><th>ROI</th><th></th>
+    </tr></thead>
+    <tbody id="recs-body"></tbody>
+  </table>
+  <p class="empty" id="recs-empty">ยังไม่มีเคสที่บันทึก กด “บันทึกเคสใหม่” เพื่อเริ่มกรอกฟอร์ม</p>
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/nav.js"></script>
+<script>
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let RECORDS = [], CAPTURED = new Set(), ROIDONE = new Set();
+
+function today(){ return new Date().toISOString().slice(0,10); }
+
+function capCell(pid){
+  const done = CAPTURED.has(pid);
+  return '<button type="button" class="cpill capbtn"' + (done ? ' data-b="neg"' : '') +
+         ' data-cap="' + esc(pid) + '" title="' + (done ? 'เปิดหน้าถ่ายภาพของ ' : 'ไปถ่ายภาพ ') + esc(pid) + '">' +
+         (done ? 'ถ่ายแล้ว' : 'ยังไม่ถ่าย') + '</button>';
+}
+function roiCell(pid){
+  const done = ROIDONE.has(pid);
+  return '<button type="button" class="cpill capbtn"' + (done ? ' data-b="neg"' : '') +
+         ' data-roi="' + esc(pid) + '" title="' + (done ? 'เปิด ROI ของ ' : 'มาร์ก ROI ของ ') + esc(pid) + '">' +
+         (done ? 'ทำแล้ว' : 'ยังไม่ทำ') + '</button>';
+}
+function cellCat(g){
+  if(!g || !g.label) return '<span class="cpill">ยังไม่สรุป</span>';
+  return '<span class="cpill" data-b="' + (g.label === 'Positive' ? 'pos' : 'neg') + '">' + g.label + '</span>' +
+         '<span class="sub">IWGDF ' + g.category + '</span>';
+}
+
+function renderList(){
+  const body = document.getElementById('recs-body');
+  const rows = RECORDS.slice().sort((a,b) => (b.pid || '').localeCompare(a.pid || ''));
+  document.getElementById('recs-empty').hidden = rows.length > 0;
+  document.querySelector('.recs').hidden = rows.length === 0;
+  body.innerHTML = rows.map(r => {
+    const d = r.data || {};
+    const g = d.derived || {};
+    const dt = r.savedAt ? new Date(r.savedAt) : null;
+    return '<tr>' +
+      '<td class="idcell">' + esc(r.pid || '') + '</td>' +
+      '<td>' + esc(dt ? dt.toLocaleDateString('th-TH', {day:'2-digit', month:'short', year:'numeric'}) : '–') + '</td>' +
+      '<td class="lbl">' + esc(dt ? dt.toLocaleTimeString('th-TH', {hour:'2-digit', minute:'2-digit'}) + ' น.' : '–') + '</td>' +
+      '<td>' + [r.nurse, r.nurse2].filter(Boolean).map(n => '<span class="nowrap">' + esc(n) + '</span>').join('<br>') + '</td>' +
+      '<td>' + cellCat(g.L) + '</td>' +
+      '<td>' + cellCat(g.R) + '</td>' +
+      '<td>' + capCell(r.pid) + '</td>' +
+      '<td>' + roiCell(r.pid) + '</td>' +
+      '<td class="rowact">' +
+        '<button type="button" data-act="view" data-pid="' + esc(r.pid) + '">ดูรายละเอียด</button>' +
+        '<button type="button" data-act="del" data-pid="' + esc(r.pid) + '">ลบ</button>' +
+      '</td></tr>';
+  }).join('');
+}
+
+function flatten(rec){
+  const row = {pid: rec.pid, savedAt: rec.savedAt, nurse: rec.nurse, nurse2: rec.nurse2};
+  const d = rec.data || {};
+  Object.keys(d.fields || {}).forEach(k => { if(k !== 'pid' && k !== 'nurse' && k !== 'nurse2') row[k] = d.fields[k]; });
+  [{k:'L'},{k:'R'}].forEach(sd => {
+    const g = (d.derived || {})[sd.k] || {};
+    row['iwgdf_'+sd.k]     = g.category;
+    row['label_'+sd.k]     = g.label;
+    row['lops_'+sd.k]      = g.lops;
+    row['pad_'+sd.k]       = g.pad;
+    row['deformity_'+sd.k] = g.deformity;
+  });
+  return row;
+}
+function download(text, name, mime){
+  const blob = new Blob(['﻿' + text], {type: mime});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = name; a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1500);
+}
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.hidden = false;
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => { t.hidden = true; }, 6000);
+}
+
+document.getElementById('btn-csvall').addEventListener('click', () => {
+  if(!RECORDS.length){ alert('ยังไม่มีข้อมูลให้ส่งออก'); return; }
+  const rows = RECORDS.map(flatten);
+  const keys = [];
+  rows.forEach(r => Object.keys(r).forEach(k => { if(!keys.includes(k)) keys.push(k); }));
+  const cell = v => '"' + String(v === null || v === undefined ? '' : v).replace(/"/g,'""') + '"';
+  const csv = keys.join(',') + '\n' + rows.map(r => keys.map(k => cell(r[k])).join(',')).join('\n');
+  download(csv, 'CRF07_records_' + today() + '.csv', 'text/csv;charset=utf-8');
+});
+
+document.getElementById('recs-body').addEventListener('click', async e => {
+  const cap = e.target.closest('button[data-cap]');
+  if(cap){ location.href = 'capture.html?rid=' + encodeURIComponent(cap.dataset.cap); return; }
+  const roi = e.target.closest('button[data-roi]');
+  if(roi){
+    if(!CAPTURED.has(roi.dataset.roi)){
+      alert('เคส ' + roi.dataset.roi + ' ยังไม่มีภาพ ต้องถ่ายภาพและผ่าน preprocessing ก่อนจึงจะมาร์ก ROI ได้');
+      return;
+    }
+    window.open('via/index.html?rid=' + encodeURIComponent(roi.dataset.roi), '_blank');
+    return;
+  }
+  const btn = e.target.closest('button[data-act]');
+  if(!btn) return;
+  const pid = btn.dataset.pid;
+  if(btn.dataset.act === 'view'){
+    location.href = 'crf-detail.html?pid=' + encodeURIComponent(pid);
+  } else {
+    if(!confirm('ลบ ' + pid + ' ออกจากประวัติ?')) return;
+    try {
+      await api('/api/crf/' + encodeURIComponent(pid), undefined, 'DELETE');
+      RECORDS = RECORDS.filter(r => r.pid !== pid);
+      renderList();
+      toast('ลบ ' + pid + ' แล้ว');
+    } catch(ex) {
+      if(ex.status === 409) alert('ลบไม่ได้ — เคส ' + pid + ' มีภาพถ่ายแล้ว ต้องลบภาพก่อนจึงจะลบฟอร์มได้');
+      else alert('ลบไม่สำเร็จ (' + (ex.status || '?') + ')');
+    }
+  }
+});
+
+(async () => {
+  try { RECORDS = await api('/api/crf'); } catch(e) { RECORDS = []; }
+  try { CAPTURED = new Set((await api('/api/manifest')).map(r => r.research_id)); } catch(e) { CAPTURED = new Set(); }
+  try { ROIDONE = new Set((await api('/api/roi')).map(r => r.rid)); } catch(e) { ROIDONE = new Set(); }
+  renderList();
+})();
+</script>
+</body>
+</html>
