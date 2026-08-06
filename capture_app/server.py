@@ -220,5 +220,10 @@ app.include_router(nurses_router, dependencies=[require_session])
 app.include_router(roi_router, dependencies=[require_session])
 
 # ----- front-end (mounted last so /api/* wins) -----
+# via/ is third-party vendored (VIA 2 + our _via_dfu.js connector) and lives outside STATIC_DIR
+# so `vite build`'s emptyOutDir doesn't wipe it on every rebuild of the React frontend.
+VIA_DIR = BASE / "via_static"
+if VIA_DIR.exists():
+    app.mount("/via", StaticFiles(directory=VIA_DIR, html=True), name="via")
 if STATIC_DIR.exists():
     app.mount("/", StaticFiles(directory=STATIC_DIR, html=True), name="static")

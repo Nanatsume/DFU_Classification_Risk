@@ -13,6 +13,13 @@ tags:
 
 โค้ดอยู่ที่ `capture_app/` ใน repo นี้ (ดู `capture_app/README.md` สำหรับวิธีรัน)
 
+**Frontend เป็น React + Vite + Tailwind + shadcn/ui** (ย้ายจาก vanilla JS เดิม) เขียนซอร์สที่
+`capture_app/frontend/` แล้ว build (Vite multi-page mode) ทับ `capture_app/static/` — URL แต่ละหน้า
+เหมือนเดิมทุกเส้นทาง (`crf-form.html`, `crf-list.html` ฯลฯ) ตัว backend ไม่ต้องแก้อะไรเลยนอกจาก
+mount `via/` (third-party, ไม่ได้ผ่าน Vite) แยกที่ `capture_app/via_static/` แทน
+รันตอน dev ด้วย `cd capture_app/frontend && npm run dev` (proxy `/api/*` ไปที่ FastAPI ที่รันคู่กันอยู่
+พอร์ต 8000) ส่วน build จริงใช้ `npm run build`
+
 ---
 
 ## ภาพรวมสถาปัตยกรรม

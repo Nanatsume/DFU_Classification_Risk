@@ -1,135 +1,20 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="th">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>หน้าแรก – ระบบเก็บข้อมูลความเสี่ยงเท้าเบาหวาน</title>
-<link rel="stylesheet" href="css/shared.css">
-<style>
-  body { padding: 0 0 40px; }
-  .masthead { background: var(--ink); color: #e8eef1; padding: 28px 0 24px; margin-bottom: 24px; }
-  .masthead h1 { font-weight: 700; font-size: clamp(20px, 3vw, 27px); margin: 6px 0 0; }
-  .masthead .eyebrow {
-    font-family: "IBM Plex Mono", monospace; font-size: 11px; letter-spacing: .2em;
-    text-transform: uppercase; color: #7fb3b8;
-  }
-  .masthead .subtitle { color: #a9bec8; font-size: 13px; max-width: 70ch; margin-top: 8px; }
-  .masthead .org {
-    color: #7c95a2; font-size: 12px; margin-top: 10px; border-top: 1px solid #2a3f4d; padding-top: 10px;
-  }
-  .home-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; max-width: 1120px; margin: 0 auto; padding: 0 16px; }
-  @media (max-width: 760px) { .home-grid { grid-template-columns: 1fr; } }
-  .homecard {
-    background: var(--paper); border: 1px solid var(--rule); border-left: 5px solid var(--accent);
-    border-radius: var(--radius); padding: 22px 24px 20px; display: flex; flex-direction: column;
-  }
-  .homecard[data-entry="crf"] { grid-column: 1 / -1; }
-  .homecard.alt { border-left-color: #7c3a66; }
-  .homecard.roi { border-left-color: #96700a; }
-  .hnum { font-family: "IBM Plex Mono", monospace; font-size: 11px; letter-spacing: .2em; color: var(--ink-3); }
-  .htitle { font-weight: 700; font-size: 19px; line-height: 1.35; margin: 8px 0 8px; color: var(--accent); }
-  .homecard.alt .htitle { color: #7c3a66; }
-  .homecard.roi .htitle { color: #8a6609; }
-  .htext { font-size: 13.5px; color: var(--ink-2); line-height: 1.6; margin: 0 0 16px; flex: 1; }
-  .hactions { display: flex; gap: 8px; flex-wrap: wrap; }
-  .roi-picker { margin-top: 14px; }
-  .case-list { display: flex; flex-direction: column; gap: 8px; }
-  .case-row {
-    display: flex; align-items: center; gap: 12px; padding: 9px 12px;
-    border: 1px solid var(--rule); border-radius: 6px; background: var(--field);
-  }
-  .case-row .cid { font-family: "IBM Plex Mono", monospace; font-weight: 700; color: var(--accent); flex-shrink: 0; }
-  .case-row .cmeta { font-size: 11.5px; color: var(--ink-2); flex: 1; }
-  .case-empty { font-size: 12.5px; color: var(--ink-3); font-style: italic; padding: 8px 0; }
-</style>
-</head>
-<body>
-<div id="app-nav"></div>
-
-<header class="masthead">
-  <div class="wrap">
-    <div class="eyebrow">Data collection system</div>
-    <h1>ระบบเก็บข้อมูลความเสี่ยงเท้าเบาหวาน</h1>
-    <p class="subtitle">โครงการพัฒนาแบบจำลองทำนายความเสี่ยงแผลเบาหวานที่เท้า โดยใช้ข้อมูลโพโดสโคปร่วมกับการอธิบายผลด้วยปัญญาประดิษฐ์แบบอธิบายได้ (XAI)</p>
-    <p class="org">โรงพยาบาลพุทธชินราช พิษณุโลก · คณะเทคโนโลยีสารสนเทศและการสื่อสาร มหาวิทยาลัยมหิดล</p>
-  </div>
-</header>
-
-<div class="home-grid">
-  <div class="homecard" data-entry="crf">
-    <div class="hnum">01</div>
-    <div class="htitle">แบบบันทึกข้อมูลการประเมินความเสี่ยงเท้าเบาหวาน</div>
-    <p class="htext">กรอกผลตรวจเท้าเบาหวานทีละเคส ระบบสรุปประเภทความเสี่ยง IWGDF และ Binary label ให้จากผลที่กรอก</p>
-    <div class="hactions">
-      <a class="btn btn-primary" href="crf-form.html">บันทึกเคสใหม่</a>
-      <a class="btn btn-ghost" href="crf-list.html">ประวัติการบันทึก <span id="home-count"></span></a>
-    </div>
-  </div>
-  <div class="homecard alt" data-entry="photo">
-    <div class="hnum">02</div>
-    <div class="htitle">ถ่ายภาพเก็บข้อมูล</div>
-    <p class="htext">ถ่ายภาพฝ่าเท้าด้วยโพโดสโคป แล้วผูกภาพเข้ากับรหัสวิจัยของเคสที่บันทึกไว้ ต้องกรอกแบบฟอร์มของเคสนั้นก่อนจึงจะถ่ายภาพได้</p>
-    <div class="hactions">
-      <a class="btn btn-primary" href="capture.html">เลือกเคสที่จะถ่ายภาพ</a>
-    </div>
-  </div>
-  <div class="homecard roi" data-entry="roi">
-    <div class="hnum">03</div>
-    <div class="htitle">ทำ ROI ในภาพ</div>
-    <p class="htext">มาร์กบริเวณแรงกดที่เสี่ยงบนภาพฝ่าเท้าด้วย VIA 2 ทำหลังถ่ายภาพและผ่าน preprocessing แล้ว</p>
-    <div class="hactions">
-      <button type="button" class="btn btn-primary" id="btn-roi-picker">เลือกเคสที่จะทำ ROI</button>
-    </div>
-    <div class="roi-picker" id="roiPicker" hidden></div>
-  </div>
-</div>
-
-<script src="js/api.js"></script>
-<script src="js/auth.js"></script>
-<script src="js/nav.js"></script>
-<script>
-const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-
-async function loadCrfCount() {
-  try {
-    const rows = await api('/api/crf');
-    document.getElementById('home-count').textContent = rows.length ? '(' + rows.length + ' เคส)' : '';
-  } catch (e) { /* not logged in yet / server unreachable — leave blank */ }
-}
-
-let CASES = null, ROI_DONE = null;
-async function toggleRoiPicker() {
-  const wrap = document.getElementById('roiPicker');
-  if (!wrap.hidden) { wrap.hidden = true; return; }
-  wrap.hidden = false;
-  wrap.innerHTML = '<div class="case-empty">กำลังโหลด…</div>';
-  try {
-    const [cases, roi] = await Promise.all([api('/api/cases'), api('/api/roi')]);
-    CASES = cases;
-    ROI_DONE = new Set(roi.map(r => r.rid));
-    renderRoiPicker();
-  } catch (e) {
-    wrap.innerHTML = '<div class="case-empty">โหลดรายการไม่ได้ — ตรวจสอบว่าต่อกับเซิร์ฟเวอร์อยู่</div>';
-  }
-}
-function renderRoiPicker() {
-  const wrap = document.getElementById('roiPicker');
-  const ready = (CASES || []).filter(c => c.has_podo && c.has_thermal);
-  if (!ready.length) {
-    wrap.innerHTML = '<div class="case-empty">ยังไม่มีเคสที่ถ่ายภาพครบทั้งสองส่วน</div>';
-    return;
-  }
-  wrap.innerHTML = '<div class="case-list">' + ready.map(c => {
-    const done = ROI_DONE.has(c.research_id);
-    return '<div class="case-row"><span class="cid">' + esc(c.research_id) + '</span>' +
-      '<span class="cmeta">' + esc(c.nurse || '—') + '</span>' +
-      '<a class="btn btn-ghost" target="_blank" href="via/index.html?rid=' + encodeURIComponent(c.research_id) + '">' +
-      (done ? 'เปิด ROI →' : 'ทำ ROI →') + '</a></div>';
-  }).join('') + '</div>';
-}
-document.getElementById('btn-roi-picker').addEventListener('click', toggleRoiPicker);
-
-loadCrfCount();
-</script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🦶</text></svg>" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <title>หน้าแรก – ระบบเก็บข้อมูลความเสี่ยงเท้าเบาหวาน</title>
+    <script type="module" crossorigin src="/assets/index-2nPUjY0U.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/src-ZVLIj1jo.js">
+    <link rel="modulepreload" crossorigin href="/assets/auth-CdP67ZiQ.js">
+    <link rel="modulepreload" crossorigin href="/assets/card-C1iDdstC.js">
+    <link rel="stylesheet" crossorigin href="/assets/src-onTVAl8L.css">
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
 </html>
