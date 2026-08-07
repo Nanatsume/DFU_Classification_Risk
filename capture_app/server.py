@@ -79,6 +79,21 @@ def prepro_path(rid: str, side: str) -> Path:
     return DATA_DIR / "podo" / rid / "preprocessing" / f"{rid}_podo_{side}.png"
 
 
+def prepro_full_path(rid: str, side: str) -> Path:
+    """Full-resolution, CLAHE-enhanced but un-resized copy — for ROI annotation display only.
+    The 224x224 file from prepro_path() is what training actually uses; this one exists purely
+    because a human needs to see fine detail that survives shrinking to the model's input size."""
+    return DATA_DIR / "podo" / rid / "preprocessing" / f"{rid}_podo_{side}_full.png"
+
+
+def prepro_original_path(rid: str, side: str) -> Path:
+    """Color, post-segmentation, pre-grayscale/CLAHE copy — the "original" reference frame for
+    XAI overlay later (Grad-CAM etc. rescale back onto this, not the raw camera photo, since the
+    model only ever sees one segmented foot at a time). Same (H, W) as prepro_full_path() by
+    construction, so ROI boxes marked on that file line up on this one with no rescaling."""
+    return DATA_DIR / "podo" / rid / "preprocessing" / f"{rid}_podo_{side}_original.png"
+
+
 def rel(p: Path) -> str:
     return p.relative_to(DATA_DIR).as_posix()
 
@@ -157,11 +172,24 @@ def preprocess(req: RidReq):
         return {"status": "failed", "error": "could not separate two feet — check the capture"}
     out = {}
     for side, key in (("L", "left_foot"), ("R", "right_foot")):
+        side_word = "left" if side == "L" else "right"
+
         p = prepro_path(req.rid, side)
         p.parent.mkdir(parents=True, exist_ok=True)
         Image.fromarray((result[key] * 255).astype(np.uint8)).save(p)
         db.save_preprocessing(req.rid, side, rel(p))
         out[side] = url(p)
+
+        # full-resolution sibling for ROI annotation (VIA loads this, not the 224x224 training
+        # file) — same preprocessing.py call already computed it, just save it too
+        pf = prepro_full_path(req.rid, side)
+        Image.fromarray(result[f"{side_word}_foot_full"]).save(pf)
+
+        # color, pre-grayscale/CLAHE sibling — the "original" reference frame for XAI overlay
+        # later; same (H, W) as the _full.png above so ROI boxes line up with no rescaling
+        po = prepro_original_path(req.rid, side)
+        Image.fromarray(result[f"{side_word}_foot_original"]).save(po)
+
     return {"status": "ok", "left_url": out["L"], "right_url": out["R"]}
 
 

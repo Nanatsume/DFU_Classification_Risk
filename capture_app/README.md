@@ -33,8 +33,10 @@ badge.
 ```
 data/
   podo/P0001/
-    raw/            P0001_podo.png              raw podoscope (source of truth)
-    preprocessing/  P0001_podo_L.png  P0001_podo_R.png   S1, auto-generated
+    raw/            P0001_podo.png                        raw podoscope (source of truth)
+    preprocessing/  P0001_podo_L.png       P0001_podo_R.png        S1, 224×224, training input
+                    P0001_podo_L_full.png  P0001_podo_R_full.png   same CLAHE pass, full res — ROI marking (VIA)
+                    P0001_podo_L_original.png  ..._R_original.png  color, pre-grayscale/CLAHE — XAI overlay "original"
   thermal/P0001/
     image/          P0001_thermal.png
     radiometric/    P0001_thermal.tiff          once the SDK is wired
@@ -42,10 +44,17 @@ data/
   manifest.csv      one row per committed patient
 ```
 
-The **raw** image is the source of truth; the preprocessed L/R is a **regenerable cache**. When the
-pipeline settings change (see below), re-run preprocessing over the raw images — do not treat the
-cached L/R as archival. **S2** (left foot flipped) is not stored; it is generated from S1 at
-dataset-prep time (`create_s2_dataset` in the notebook).
+The **raw** image is the source of truth; everything under `preprocessing/` is a **regenerable
+cache**. When the pipeline settings change (see below), re-run preprocessing over the raw images —
+do not treat any of the L/R variants as archival. **S2** (left foot flipped) is not stored; it is
+generated from S1 at dataset-prep time (`create_s2_dataset` in the notebook).
+
+`_full.png` and `_original.png` share the exact same (H, W) per case — grayscale/CLAHE/3-channel
+conversion are pixel-wise ops that never touch image dimensions, only the 224×224 resize does (and
+that only happens for the training file). ROI boxes are marked on `_full.png` in VIA, so their
+coordinates line up 1:1 on `_original.png` with no rescaling — that's the reference frame Grad-CAM
+etc. should be rescaled back onto for overlay/pointing-game evaluation later, not the raw camera
+photo (which has both feet + background and doesn't correspond to a single per-foot prediction).
 
 ## Preprocessing = one shared module
 

@@ -11,6 +11,9 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { DeleteConfirmDialog } from '@/components/DeleteConfirmDialog'
+import { MF_SITES, SIDES } from '@/lib/crfScoring'
+import { roiSideStatus, ROI_STATUS_TEXT } from '@/lib/roiStatus'
 
 function today() {
   return new Date().toISOString().slice(0, 10)
@@ -26,26 +29,101 @@ function download(text: string, name: string, mime: string) {
   setTimeout(() => URL.revokeObjectURL(url), 1500)
 }
 
-function flatten(rec: CrfRecord): Record<string, unknown> {
-  const row: Record<string, unknown> = {
-    pid: rec.pid,
-    savedAt: rec.savedAt,
-    nurse: rec.nurse,
-    nurse2: rec.nurse2,
-  }
+/* Patient-level IWGDF = the worse (higher-numbered) of the two feet's categories — the standard
+   IWGDF convention, since a patient's overall ulcer risk is driven by whichever foot is riskier,
+   not an average of the two. Null if a side's category isn't decided yet; falls back to whichever
+   single side is available if only one is. */
+function patientLevelIwgdf(rec: CrfRecord): { category: number | ''; label: string } {
+  const cats = SIDES.map((s) => rec.data?.derived?.[s.k]?.category).filter(
+    (c): c is number => c !== null && c !== undefined,
+  )
+  if (!cats.length) return { category: '', label: '' }
+  const category = Math.max(...cats)
+  return { category, label: category >= 1 ? 'Positive' : 'Negative' }
+}
+
+/* ---------- CSV #1: raw form, column order follows the CRF-07 sections (ก LOPS → ข PAD →
+   ค Deformity → ง History/CKD → จ Notes/nurses) exactly as printed on the paper form — for the
+   teammate who needs to read/verify this against the original questionnaire. Deformity collapses
+   to one yes/no column per side instead of all 13 checkbox items (too wide) — the specific types
+   are not lost, they're still in the saved record (GET /api/crf/{pid} or data/app.db), just not
+   spelled out column-by-column here. Ends with the computed IWGDF result per side, plus one
+   patient-level (worse-foot) verdict, so the calculation can be checked against the raw answers
+   in the same row, not just the training CSV. */
+const RAW_FORM_COLUMNS: string[] = [
+  'pid', 'savedAt',
+  ...SIDES.flatMap((s) => MF_SITES.map((m) => `mf_${s.k}_${m.k}`)),                 // ก LOPS
+  ...SIDES.flatMap((s) => [`abi_${s.k}`, `tbi_${s.k}`]),                            // ข PAD
+  ...SIDES.map((s) => `deformity_${s.k}`),                                          // ค Deformity (yes/no, collapsed)
+  ...SIDES.flatMap((s) => [`ulcer_${s.k}`, `amp_${s.k}`]), 'ckd',                   // ง History/CKD
+  'note', 'nurse', 'nurse2',                                                        // จ Notes/nurses
+  ...SIDES.flatMap((s) => [                                                         // สรุปผล IWGDF ต่อข้าง (คำนวณ)
+    `lops_${s.k}`, `pad_${s.k}`, `history_${s.k}`, `iwgdf_category_${s.k}`, `iwgdf_label_${s.k}`,
+  ]),
+  'iwgdf_category_patient', 'iwgdf_label_patient',                                  // สรุปผลระดับผู้ป่วย (ข้างที่แย่กว่า)
+]
+
+function flattenRawForm(rec: CrfRecord): Record<string, unknown> {
   const fields = rec.data?.fields || {}
-  Object.keys(fields).forEach((k) => {
-    if (k !== 'pid' && k !== 'nurse' && k !== 'nurse2') row[k] = fields[k]
+  const derivedOnly = new Set(SIDES.map((s) => `deformity_${s.k}`))
+  const row: Record<string, unknown> = { pid: rec.pid, savedAt: rec.savedAt }
+  RAW_FORM_COLUMNS.forEach((col) => {
+    if (col === 'pid' || col === 'savedAt' || derivedOnly.has(col)) return
+    if (col === 'nurse') { row.nurse = rec.nurse; return }
+    if (col === 'nurse2') { row.nurse2 = rec.nurse2; return }
+    row[col] = fields[col] ?? ''
   })
-  ;(['L', 'R'] as const).forEach((side) => {
-    const g = rec.data?.derived?.[side] || ({} as DerivedSide)
-    row['iwgdf_' + side] = g.category
-    row['label_' + side] = g.label
-    row['lops_' + side] = g.lops
-    row['pad_' + side] = g.pad
-    row['deformity_' + side] = g.deformity
+  SIDES.forEach((s) => {
+    const g = rec.data?.derived?.[s.k] || ({} as DerivedSide)
+    row[`deformity_${s.k}`] = g.deformity ?? ''
+    row[`lops_${s.k}`] = g.lops ?? ''
+    row[`pad_${s.k}`] = g.pad ?? ''
+    row[`history_${s.k}`] = g.history ?? ''
+    row[`iwgdf_category_${s.k}`] = g.category ?? ''
+    row[`iwgdf_label_${s.k}`] = g.label ?? ''
   })
+  const patient = patientLevelIwgdf(rec)
+  row.iwgdf_category_patient = patient.category
+  row.iwgdf_label_patient = patient.label
   return row
+}
+
+/* ---------- CSV #2: training data, IWGDF-derived fields only, one row per foot (long format —
+   L and R are separate rows, matching the per-side preprocessed images used for training). */
+function flattenTrainingRows(rec: CrfRecord): Record<string, unknown>[] {
+  return SIDES.map((s) => {
+    const g = rec.data?.derived?.[s.k] || ({} as DerivedSide)
+    return {
+      pid: rec.pid,
+      side: s.k,
+      category: g.category ?? '',
+      label: g.label ?? '',
+      lops: g.lops ?? '',
+      pad: g.pad ?? '',
+      deformity: g.deformity ?? '',
+      deformities: (g.deformities || []).join('; '),
+      history: g.history ?? '',
+    }
+  })
+}
+
+function StatusPill({ done, doneText, pendingText, onClick, href }: {
+  done: boolean
+  doneText: string
+  pendingText: string
+  onClick?: () => void
+  href?: string
+}) {
+  const cls =
+    'inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-[13px] font-medium transition-colors ' +
+    (done
+      ? 'bg-cat-0/15 border-cat-0/30 text-cat-0 hover:bg-cat-0/25'
+      : 'bg-cat-1/10 border-cat-1/30 text-cat-1 hover:bg-cat-1/20')
+  const dot = <span className={'h-1.5 w-1.5 rounded-full ' + (done ? 'bg-cat-0' : 'bg-cat-1')} />
+  if (href) {
+    return <a href={href} className={cls}>{dot}{done ? doneText : pendingText}</a>
+  }
+  return <button type="button" onClick={onClick} className={cls}>{dot}{done ? doneText : pendingText}</button>
 }
 
 function CellCat({ g }: { g?: DerivedSide }) {
@@ -63,8 +141,9 @@ function CellCat({ g }: { g?: DerivedSide }) {
 export default function CrfList() {
   const [records, setRecords] = useState<CrfRecord[]>([])
   const [captured, setCaptured] = useState<Set<string>>(new Set())
-  const [roiDone, setRoiDone] = useState<Set<string>>(new Set())
+  const [roiCounts, setRoiCounts] = useState<Record<string, { L: number; R: number }>>({})
   const [toast, setToast] = useState('')
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null)
 
   async function loadAll() {
     try {
@@ -80,9 +159,14 @@ export default function CrfList() {
     }
     try {
       const rows = await api<RoiSummaryRow[]>('/api/roi')
-      setRoiDone(new Set(rows.map((r) => r.rid)))
+      const counts: Record<string, { L: number; R: number }> = {}
+      rows.forEach((r) => {
+        const s = r.summary as { L?: { region_count?: number }; R?: { region_count?: number } }
+        counts[r.rid] = { L: s?.L?.region_count || 0, R: s?.R?.region_count || 0 }
+      })
+      setRoiCounts(counts)
     } catch {
-      setRoiDone(new Set())
+      setRoiCounts({})
     }
   }
 
@@ -98,21 +182,26 @@ export default function CrfList() {
 
   const rows = [...records].sort((a, b) => (b.pid || '').localeCompare(a.pid || ''))
 
-  function exportCsv() {
-    if (!records.length) {
-      alert('ยังไม่มีข้อมูลให้ส่งออก')
-      return
-    }
-    const flat = records.map(flatten)
-    const keys: string[] = []
-    flat.forEach((r) => Object.keys(r).forEach((k) => { if (!keys.includes(k)) keys.push(k) }))
+  function rowsToCsv(keys: string[], rows: Record<string, unknown>[]): string {
     const cell = (v: unknown) => '"' + String(v === null || v === undefined ? '' : v).replace(/"/g, '""') + '"'
-    const csv = keys.join(',') + '\n' + flat.map((r) => keys.map((k) => cell(r[k])).join(',')).join('\n')
-    download(csv, 'CRF07_records_' + today() + '.csv', 'text/csv;charset=utf-8')
+    return keys.join(',') + '\n' + rows.map((r) => keys.map((k) => cell(r[k])).join(',')).join('\n')
   }
 
-  async function onDelete(pid: string) {
-    if (!confirm('ลบ ' + pid + ' ออกจากประวัติ?')) return
+  function exportRawFormCsv() {
+    if (!records.length) { alert('ยังไม่มีข้อมูลให้ส่งออก'); return }
+    const csv = rowsToCsv(RAW_FORM_COLUMNS, records.map(flattenRawForm))
+    download(csv, 'CRF07_raw_form_' + today() + '.csv', 'text/csv;charset=utf-8')
+  }
+
+  function exportTrainingCsv() {
+    if (!records.length) { alert('ยังไม่มีข้อมูลให้ส่งออก'); return }
+    const keys = ['pid', 'side', 'category', 'label', 'lops', 'pad', 'deformity', 'deformities', 'history']
+    const rows = records.flatMap(flattenTrainingRows)
+    const csv = rowsToCsv(keys, rows)
+    download(csv, 'IWGDF_training_per_side_' + today() + '.csv', 'text/csv;charset=utf-8')
+  }
+
+  async function doDelete(pid: string) {
     try {
       await api('/api/crf/' + encodeURIComponent(pid), undefined, 'DELETE')
       setRecords((rs) => rs.filter((r) => r.pid !== pid))
@@ -123,6 +212,7 @@ export default function CrfList() {
       } else {
         alert('ลบไม่สำเร็จ' + (ex instanceof ApiError ? ` (${ex.status})` : ''))
       }
+      throw ex // keep the confirm dialog open so the user can cancel or retry
     }
   }
 
@@ -135,14 +225,15 @@ export default function CrfList() {
   }
 
   return (
-    <div className="mx-auto max-w-5xl px-4 pb-10">
+    <div className="mx-auto max-w-[1600px] px-4 pb-10">
       <div className="mb-4 mt-6 flex flex-wrap items-end justify-between gap-4">
         <div>
           <div className="text-lg font-bold">ประวัติการบันทึก</div>
           <div className="text-muted-foreground font-mono text-[11px]">Saved records · CRF-07</div>
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={exportCsv}>ส่งออก CSV ทั้งหมด</Button>
+        <div className="flex flex-wrap gap-2">
+          <Button variant="outline" onClick={exportRawFormCsv}>CSV ทั้งหมด</Button>
+          <Button variant="outline" onClick={exportTrainingCsv}>CSV สำหรับเทรนโมเดล</Button>
           <Button asChild>
             <a href="crf-form.html">บันทึกเคสใหม่</a>
           </Button>
@@ -179,7 +270,11 @@ export default function CrfList() {
               {rows.map((r) => {
                 const dt = r.savedAt ? new Date(r.savedAt) : null
                 const isCaptured = captured.has(r.pid)
-                const isRoi = roiDone.has(r.pid)
+                const counts = roiCounts[r.pid] || { L: 0, R: 0 }
+                const statusL = roiSideStatus(r.data?.derived?.L?.label, counts.L)
+                const statusR = roiSideStatus(r.data?.derived?.R?.label, counts.R)
+                const roiAnyNeeded = statusL !== 'not_needed' || statusR !== 'not_needed'
+                const roiAnyDone = statusL === 'done' || statusR === 'done'
                 return (
                   <TableRow key={r.pid}>
                     <TableCell className="font-mono font-medium">{r.pid}</TableCell>
@@ -197,22 +292,38 @@ export default function CrfList() {
                     <TableCell><CellCat g={r.data?.derived?.L} /></TableCell>
                     <TableCell><CellCat g={r.data?.derived?.R} /></TableCell>
                     <TableCell>
-                      <Button size="sm" variant={isCaptured ? 'secondary' : 'outline'} asChild>
-                        <a href={`capture.html?rid=${encodeURIComponent(r.pid)}`}>
-                          {isCaptured ? 'ถ่ายแล้ว' : 'ยังไม่ถ่าย'}
-                        </a>
-                      </Button>
+                      <StatusPill
+                        done={isCaptured}
+                        doneText="ถ่ายแล้ว"
+                        pendingText="ยังไม่ถ่าย"
+                        href={`capture.html?rid=${encodeURIComponent(r.pid)}`}
+                      />
                     </TableCell>
                     <TableCell>
-                      <Button size="sm" variant={isRoi ? 'secondary' : 'outline'} onClick={() => onRoi(r.pid)}>
-                        {isRoi ? 'ทำแล้ว' : 'ยังไม่ทำ'}
-                      </Button>
+                      <div className="text-[11px] whitespace-nowrap">
+                        <div className={statusL === 'done' ? 'text-cat-0' : statusL === 'pending' ? 'text-cat-1' : 'text-muted-foreground'}>
+                          ซ้าย: {ROI_STATUS_TEXT[statusL]}
+                        </div>
+                        <div className={statusR === 'done' ? 'text-cat-0' : statusR === 'pending' ? 'text-cat-1' : 'text-muted-foreground'}>
+                          ขวา: {ROI_STATUS_TEXT[statusR]}
+                        </div>
+                      </div>
+                      {roiAnyNeeded && (
+                        <Button
+                          size="sm"
+                          variant={roiAnyDone ? 'outline' : 'default'}
+                          className="mt-1 h-6 px-2 text-[11px]"
+                          onClick={() => onRoi(r.pid)}
+                        >
+                          {roiAnyDone ? 'เปิด ROI' : 'ทำ ROI'} →
+                        </Button>
+                      )}
                     </TableCell>
                     <TableCell className="text-right whitespace-nowrap">
                       <Button size="sm" variant="ghost" asChild>
                         <a href={`crf-detail.html?pid=${encodeURIComponent(r.pid)}`}>ดูรายละเอียด</a>
                       </Button>
-                      <Button size="sm" variant="ghost" onClick={() => onDelete(r.pid)}>ลบ</Button>
+                      <Button size="sm" variant="ghost" className="text-destructive hover:text-destructive" onClick={() => setDeleteTarget(r.pid)}>ลบ</Button>
                     </TableCell>
                   </TableRow>
                 )
@@ -220,6 +331,17 @@ export default function CrfList() {
             </TableBody>
           </Table>
         </div>
+      )}
+
+      {deleteTarget && (
+        <DeleteConfirmDialog
+          open={!!deleteTarget}
+          onOpenChange={(o) => !o && setDeleteTarget(null)}
+          code={deleteTarget}
+          title={`ลบ ${deleteTarget} ออกจากประวัติ`}
+          description="การลบนี้ถาวรและกู้คืนไม่ได้ — ลบได้เฉพาะเคสที่ยังไม่มีภาพถ่ายผูกอยู่"
+          onConfirm={() => doDelete(deleteTarget)}
+        />
       )}
     </div>
   )

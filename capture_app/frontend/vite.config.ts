@@ -29,6 +29,8 @@ export default defineConfig({
         'crf-list': path.resolve(import.meta.dirname, 'crf-list.html'),
         'crf-detail': path.resolve(import.meta.dirname, 'crf-detail.html'),
         capture: path.resolve(import.meta.dirname, 'capture.html'),
+        roi: path.resolve(import.meta.dirname, 'roi.html'),
+        gallery: path.resolve(import.meta.dirname, 'gallery.html'),
       },
     },
   },

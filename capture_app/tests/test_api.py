@@ -3,6 +3,9 @@ data folder per test (see conftest.client / conftest.auth_client). This is the s
 was hand-verified with curl during development — codified so it can't silently regress.
 """
 
+import numpy as np
+from PIL import Image
+
 CRF_PAYLOAD_TEMPLATE = {
     "nurse": "กรรณิการ์ ทองพูล",
     "nurse2": "ธนกฤต อินทรสุวรรณ",
@@ -183,6 +186,28 @@ def test_full_capture_flow(auth_client):
     # the delete guard: a case with photos must not have its CRF form deletable
     r = auth_client.delete("/api/crf/P0001")
     assert r.status_code == 409
+
+
+def test_preprocess_full_and_original_images_share_dimensions(auth_client, tmp_path):
+    """ROI is marked in VIA on the *_full.png (grayscale+CLAHE). Grad-CAM overlay later needs
+    *_original.png (color, pre-grayscale) to be pixel-grid-identical to it, so ROI coordinates
+    transfer with zero rescaling. Grayscale/CLAHE/3-channel conversion are pixel-wise ops that
+    must never touch (H, W) — this test is the guardrail against a future edit breaking that."""
+    auth_client.post("/api/crf", json=crf_payload("P0001"))
+    auth_client.post("/api/capture", json={"rid": "P0001", "modality": "podoscope"})
+    r = auth_client.post("/api/preprocess", json={"rid": "P0001"})
+    assert r.status_code == 200 and r.json()["status"] == "ok"
+
+    prepro_dir = tmp_path / "podo" / "P0001" / "preprocessing"
+    for side in ("L", "R"):
+        train = np.array(Image.open(prepro_dir / f"P0001_podo_{side}.png"))
+        full = np.array(Image.open(prepro_dir / f"P0001_podo_{side}_full.png"))
+        original = np.array(Image.open(prepro_dir / f"P0001_podo_{side}_original.png"))
+
+        assert train.shape[:2] == (224, 224)  # training file — fixed CNN input size
+        assert full.shape[:2] == original.shape[:2]  # the actual guarantee under test
+        assert np.array_equal(full[..., 0], full[..., 1])  # _full is grayscale (R==G==B)
+        assert not np.array_equal(original[..., 0], original[..., 1])  # _original has real color
 
 
 def test_commit_without_any_capture_is_404(auth_client):

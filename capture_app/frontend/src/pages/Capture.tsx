@@ -98,6 +98,7 @@ export default function Capture() {
   const [qc, setQc] = useState<{ status: 'idle' | 'running' | 'ok' | 'failed'; left?: string; right?: string; error?: string }>({ status: 'idle' })
   const [saved, setSaved] = useState<DisplayRow[]>([])
   const [modalRec, setModalRec] = useState<unknown>(null)
+  const [justCommittedRid, setJustCommittedRid] = useState<string | null>(null)
 
   function iwgdfText(c: CaseRow) {
     return `IWGDF ซ้าย ${c.iwgdf?.L ?? '—'} · ขวา ${c.iwgdf?.R ?? '—'}`
@@ -195,20 +196,21 @@ export default function Capture() {
 
   async function commit() {
     if (!session) return
+    const rid = session.rid
     let rec: CommitRecord
     if (mode === 'live') {
-      rec = await api<CommitRecord>('/api/commit', { rid: session.rid, operator })
+      rec = await api<CommitRecord>('/api/commit', { rid, operator })
     } else {
-      const prepro = shots.podoscope ? { L: `${session.rid}_podo_L.png`, R: `${session.rid}_podo_R.png` } : null
+      const prepro = shots.podoscope ? { L: `${rid}_podo_L.png`, R: `${rid}_podo_R.png` } : null
       rec = {
-        schema_version: 'demo', research_id: session.rid, captured_at: nowISO(), operator,
-        podoscope: { raw: `${session.rid}_podo.png`, preprocessing: prepro },
-        thermal: { image: `${session.rid}_thermal.png`, radiometric: null },
+        schema_version: 'demo', research_id: rid, captured_at: nowISO(), operator,
+        podoscope: { raw: `${rid}_podo.png`, preprocessing: prepro },
+        thermal: { image: `${rid}_thermal.png`, radiometric: null },
         status: 'complete', app_version: 'demo',
       }
       const recs = loadRecords(); recs.unshift(rec); saveRecords(recs)
     }
-    setModalRec(rec)
+    setJustCommittedRid(rid)
     setSession(null)
     setOperator('')
     await refreshSaved(mode === 'live')
@@ -227,7 +229,7 @@ export default function Capture() {
   const nShots = (shots.podoscope ? 1 : 0) + (shots.thermal ? 1 : 0)
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-6">
+    <div className="mx-auto max-w-[1600px] px-4 py-6">
       <div className="mb-5 flex items-center gap-3.5">
         <div className="bg-primary flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-2xl text-white">🦶</div>
         <div>
@@ -404,14 +406,36 @@ export default function Capture() {
       <Dialog open={modalRec !== null} onOpenChange={(open) => !open && setModalRec(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>บันทึกสำเร็จ</DialogTitle>
+            <DialogTitle>รายละเอียด (JSON)</DialogTitle>
           </DialogHeader>
-          <div className="text-cat-0 mb-3.5 flex items-center gap-2.5 text-sm font-semibold">
-            {mode === 'live' ? '✓ เขียนไฟล์ลงเครื่องแล้ว' : '✓ บันทึก (โหมด demo — ไม่ได้เขียนไฟล์จริง)'}
-          </div>
           <pre className="bg-foreground max-h-96 overflow-auto rounded-lg p-4 font-mono text-[11.5px] text-white/90">
             {JSON.stringify(modalRec, null, 2)}
           </pre>
+        </DialogContent>
+      </Dialog>
+
+      {/* หลังยืนยันและบันทึกเสร็จ ถามว่าจะกลับหน้าหลัก หรือไปทำ ROI ของเคสนี้ต่อเลย — preprocessing
+          รันไปแล้วตอนถ่าย podoscope เสร็จ ภาพ ROI พร้อมใช้อยู่แล้วตอนนี้ */}
+      <Dialog open={justCommittedRid !== null} onOpenChange={(open) => !open && setJustCommittedRid(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>บันทึกเคส {justCommittedRid} สำเร็จ</DialogTitle>
+          </DialogHeader>
+          <p className="text-muted-foreground -mt-2 mb-1 text-[13px]">จะกลับหน้าหลัก หรือทำ ROI ของเคสนี้ต่อเลย?</p>
+          <div className="flex justify-end gap-2">
+            <Button variant="outline" onClick={() => { location.href = 'index.html' }}>
+              กลับหน้าหลัก
+            </Button>
+            <Button
+              onClick={() => {
+                const rid = justCommittedRid!
+                setJustCommittedRid(null)
+                window.open('via/index.html?rid=' + encodeURIComponent(rid), '_blank')
+              }}
+            >
+              ทำ ROI ต่อ →
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
     </div>

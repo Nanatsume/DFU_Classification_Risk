@@ -4,7 +4,15 @@ Single source of truth for the podoscope preprocessing used by the capture app a
 Pure Python (numpy / scipy / opencv / PIL), no model weights, no GPU.
 
 Entry point:
-    preprocess_foot_image(image_path) -> {'left_foot': (224,224,3) float32 [0,1], 'right_foot': ...}
+    preprocess_foot_image(image_path) -> {
+        'left_foot': (224,224,3) float32 [0,1], 'right_foot': ...,            # for training
+        'left_foot_full': (H,W,3) uint8 [0,255], 'right_foot_full': ...,      # for ROI display (grayscale+CLAHE)
+        'left_foot_original': (H,W,3) uint8 [0,255], 'right_foot_original': ...,  # color, pre-grayscale/CLAHE —
+                                                                                    # "original" reference frame for XAI overlay
+    }
+    left_foot_full and left_foot_original share the same (H, W) — grayscale/CLAHE/3-channel are
+    pixel-wise ops that never touch image dimensions, so ROI coordinates recorded against
+    left_foot_full line up on left_foot_original with no rescaling.
 """
 
 
@@ -571,6 +579,15 @@ def preprocess_foot_image(image_path: str, output_dir: str = None, target_size: 
         print("Error: Failed to separate feet")
         return None
 
+    # Keep the color, post-segmentation, pre-grayscale/CLAHE crop too — this is the "original"
+    # reference frame for later XAI overlay (Grad-CAM etc. get rescaled back onto this, not the
+    # raw camera photo, since the model only ever sees one segmented foot at a time). Same (H, W)
+    # as left_foot_full below since grayscale/CLAHE/3-channel are pixel-wise ops that never touch
+    # image dimensions — so ROI coordinates recorded on left_foot_full line up on this 1:1, no
+    # rescale needed between ROI space and "original" space.
+    left_original = foot_left.copy()
+    right_original = foot_right.copy()
+
     # Step 4: Grayscale + CLAHE
     print("\n[Step 4] Grayscale & CLAHE Enhancement...")
     left_gray = convert_to_grayscale(foot_left)
@@ -582,6 +599,13 @@ def preprocess_foot_image(image_path: str, output_dir: str = None, target_size: 
     print("\n[Step 5] 3-Channel RGB Conversion...")
     left_rgb = convert_to_3channel_rgb(left_clahe)
     right_rgb = convert_to_3channel_rgb(right_clahe)
+
+    # Keep the full-resolution, CLAHE-enhanced version before it gets shrunk to the CNN's
+    # 224x224 input size — a human marking ROI needs to see fine detail (skin texture, subtle
+    # discoloration) that the training-sized image is too small to show. Same visual "look" the
+    # model trains on (same CLAHE pass), just not downsized.
+    left_full = left_rgb.copy()
+    right_full = right_rgb.copy()
 
     # Step 6: Resizing
     print(f"\n[Step 6] Resizing to {target_size}...")
@@ -596,6 +620,14 @@ def preprocess_foot_image(image_path: str, output_dir: str = None, target_size: 
     result = {
         'left_foot': left_scaled,
         'right_foot': right_scaled,
+        # full-resolution CLAHE-enhanced copies, uint8 [0,255], for ROI annotation display only —
+        # not used for training, never scaled/resized
+        'left_foot_full': left_full,
+        'right_foot_full': right_full,
+        # color, post-segmentation, pre-grayscale/CLAHE copies, uint8 [0,255] — the "original"
+        # reference frame for XAI overlay later. Same (H, W) as *_foot_full above, by construction.
+        'left_foot_original': left_original,
+        'right_foot_original': right_original,
     }
 
     # Save final outputs if requested

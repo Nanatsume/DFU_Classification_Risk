@@ -13,6 +13,8 @@ const LINKS = [
   { href: 'crf-form.html', label: 'กรอกฟอร์มใหม่' },
   { href: 'crf-list.html', label: 'ประวัติการบันทึก' },
   { href: 'capture.html', label: 'ถ่ายภาพ' },
+  { href: 'roi.html', label: 'ทำ ROI' },
+  { href: 'gallery.html', label: 'คลังภาพ' },
 ]
 
 // the detail page highlights the list tab, same as before
@@ -39,7 +41,7 @@ export function Navbar() {
 
   return (
     <nav className="bg-sidebar text-sidebar-foreground border-b-[3px] border-primary">
-      <div className="mx-auto flex max-w-5xl flex-wrap items-center gap-1.5 px-4 py-2.5">
+      <div className="flex w-full flex-wrap items-center gap-1.5 px-6 py-2.5">
         <span className="mr-3.5 text-sm font-bold text-white whitespace-nowrap">
           🦶 DFU Data Collection
         </span>
