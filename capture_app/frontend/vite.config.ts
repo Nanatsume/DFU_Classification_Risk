@@ -8,7 +8,7 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "./src"),
+      "@": path.resolve(import.meta.dirname, "./src"),
     },
   },
   server: {
@@ -23,12 +23,12 @@ export default defineConfig({
     rollupOptions: {
       // multi-page app: one real .html file per route, matching the existing URL scheme
       input: {
-        index: path.resolve(__dirname, 'index.html'),
-        login: path.resolve(__dirname, 'login.html'),
-        'crf-form': path.resolve(__dirname, 'crf-form.html'),
-        'crf-list': path.resolve(__dirname, 'crf-list.html'),
-        'crf-detail': path.resolve(__dirname, 'crf-detail.html'),
-        capture: path.resolve(__dirname, 'capture.html'),
+        index: path.resolve(import.meta.dirname, 'index.html'),
+        login: path.resolve(import.meta.dirname, 'login.html'),
+        'crf-form': path.resolve(import.meta.dirname, 'crf-form.html'),
+        'crf-list': path.resolve(import.meta.dirname, 'crf-list.html'),
+        'crf-detail': path.resolve(import.meta.dirname, 'crf-detail.html'),
+        capture: path.resolve(import.meta.dirname, 'capture.html'),
       },
     },
   },

@@ -85,6 +85,22 @@ All capture goes through `CaptureSource.grab(modality, rid) -> PNG bytes` in `ca
 | POST   | `/api/commit`         | write meta JSON + append manifest               |
 | GET    | `/api/manifest`       | list committed patients                         |
 
+## Tests
+
+Backend (pytest, isolated SQLite DB per test — never touches the real `data/`):
+
+```bash
+pip install -r requirements.txt -r requirements-dev.txt   # first time only
+pytest tests/ -v
+```
+
+Frontend (vitest — currently covers `lib/crfScoring.ts`, the IWGDF scoring engine):
+
+```bash
+cd frontend
+npm test
+```
+
 ## Before real collection
 
 1. Implement `UsbCameraSource.grab()` (the one TODO) once the devices are on the PC.

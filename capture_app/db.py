@@ -262,6 +262,14 @@ def has_capture(research_id: str, modality: str) -> bool:
 
 def save_capture(research_id: str, modality: str, raw_path: str, captured_at: str) -> None:
     with tx() as conn:
+        # defensive upsert, same pattern as save_crf()/save_roi() — captures.research_id is a
+        # foreign key into cases, so this must exist first. In practice server.py always creates
+        # the case via save_crf() before a capture can happen (the 409 gate on has_crf()), but
+        # this function should not silently depend on caller ordering to avoid a FK IntegrityError.
+        conn.execute(
+            "INSERT INTO cases(research_id, created_at) VALUES (?, ?) ON CONFLICT(research_id) DO NOTHING",
+            (research_id, captured_at),
+        )
         conn.execute(
             """
             INSERT INTO captures(research_id, modality, raw_path, captured_at) VALUES (?, ?, ?, ?)
@@ -283,6 +291,10 @@ def get_capture(research_id: str, modality: str) -> Optional[dict]:
 def save_preprocessing(research_id: str, side: str, path: str) -> None:
     with tx() as conn:
         conn.execute(
+            "INSERT INTO cases(research_id, created_at) VALUES (?, ?) ON CONFLICT(research_id) DO NOTHING",
+            (research_id, now_iso()),
+        )
+        conn.execute(
             """
             INSERT INTO preprocessing(research_id, side, path) VALUES (?, ?, ?)
             ON CONFLICT(research_id, side) DO UPDATE SET path=excluded.path
@@ -301,6 +313,10 @@ def get_preprocessing(research_id: str) -> dict:
 
 def save_commit(research_id: str, status: str, committed_at: str, operator: str) -> None:
     with tx() as conn:
+        conn.execute(
+            "INSERT INTO cases(research_id, created_at) VALUES (?, ?) ON CONFLICT(research_id) DO NOTHING",
+            (research_id, committed_at),
+        )
         conn.execute(
             """
             INSERT INTO commits(research_id, status, committed_at, operator) VALUES (?, ?, ?, ?)
