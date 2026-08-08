@@ -4,7 +4,6 @@ import { DEFORM, MF_SITES, SIDES, evalSide, overallMissing, toDerived, type Fiel
 import type { CrfRecord } from '@/lib/crfTypes'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
@@ -81,9 +80,6 @@ export default function CrfForm() {
   const [nurse2, setNurse2] = useState('')
   const [note, setNote] = useState('')
   const [saving, setSaving] = useState(false)
-  const [addingNurse, setAddingNurse] = useState(false)
-  const [newNurseName, setNewNurseName] = useState('')
-  const [savingNurse, setSavingNurse] = useState(false)
 
   const setF = (key: string, v: string | boolean) => setFields((f) => ({ ...f, [key]: v }))
 
@@ -145,22 +141,6 @@ export default function CrfForm() {
     if (!confirm('ล้างข้อมูลที่กรอกในฟอร์มนี้?')) return
     setFields({})
     setNote('')
-  }
-
-  async function onAddNurse() {
-    const name = newNurseName.trim()
-    if (!name) return
-    setSavingNurse(true)
-    try {
-      const updated = await api<string[]>('/api/nurses', { name }, 'POST')
-      setNurses(updated)
-      setNewNurseName('')
-      setAddingNurse(false)
-    } catch {
-      alert('เพิ่มชื่อพยาบาลไม่สำเร็จ — ตรวจสอบการเชื่อมต่อ')
-    } finally {
-      setSavingNurse(false)
-    }
   }
 
   return (
@@ -383,35 +363,6 @@ export default function CrfForm() {
               <div className="bg-cat-1/10 border-cat-1 text-cat-1 mt-2.5 rounded-md border px-2.5 py-2 text-xs">
                 เลือกชื่อซ้ำกันทั้งสองช่อง กรุณาเลือกคนละคน
               </div>
-            )}
-            {addingNurse ? (
-              <div className="mt-2.5 flex items-center gap-2">
-                <Input
-                  autoFocus
-                  value={newNurseName}
-                  onChange={(e) => setNewNurseName(e.target.value)}
-                  placeholder="ชื่อพยาบาลคนใหม่"
-                  className="h-8 max-w-xs"
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') onAddNurse()
-                    if (e.key === 'Escape') { setAddingNurse(false); setNewNurseName('') }
-                  }}
-                />
-                <Button type="button" size="sm" disabled={!newNurseName.trim() || savingNurse} onClick={onAddNurse}>
-                  {savingNurse ? 'กำลังเพิ่ม…' : 'เพิ่ม'}
-                </Button>
-                <Button type="button" size="sm" variant="outline" onClick={() => { setAddingNurse(false); setNewNurseName('') }}>
-                  ยกเลิก
-                </Button>
-              </div>
-            ) : (
-              <button
-                type="button"
-                className="text-primary mt-2.5 text-[12px] font-semibold hover:underline"
-                onClick={() => setAddingNurse(true)}
-              >
-                + เพิ่มชื่อพยาบาลใหม่
-              </button>
             )}
           </Card>
         </section>

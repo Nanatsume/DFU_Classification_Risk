@@ -117,6 +117,26 @@ class CommitReq(BaseModel):
     operator: str = ""
 
 
+class OperatorReq(BaseModel):
+    name: str
+
+
+@app.get("/api/operators", dependencies=[require_session])
+def operators():
+    """Photographer dropdown source for capture.html — nurses + research team, seeded directly
+    (see db.SEED_OPERATORS); deliberately no "add via web form" UI for this, same as /api/nurses."""
+    return db.list_operators()
+
+
+@app.post("/api/operators", dependencies=[require_session])
+def add_operator(req: OperatorReq):
+    name = req.name.strip()
+    if not name:
+        raise HTTPException(400, "name required")
+    db.add_operator(name)
+    return db.list_operators()
+
+
 @app.get("/api/health")
 def health():
     """Unauthenticated — every page's LIVE/DEMO probe and the login page itself call this

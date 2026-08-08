@@ -16,8 +16,8 @@ metadata:
 - `require_session` — FastAPI `Depends(auth.require_session)` ใช้เป็น dependency guard ของทุก endpoint ที่ต้อง login
 - `now_iso()` — timestamp ปัจจุบันแบบ ISO ในโซนเวลา Bangkok
 - `raw_path(rid, modality)`, `prepro_path(rid, side)`, `prepro_full_path(rid, side)`, `prepro_original_path(rid, side)`, `rel(p)`, `url(p)` — ฟังก์ชันคำนวณ path ของไฟล์ภาพแต่ละแบบใต้ `data/`
-- `CaptureReq`, `RidReq`, `CommitReq` — pydantic request models
-- Routes: `GET /api/health`, `GET /api/cases`, `POST /api/session/new`, `POST /api/capture`, `POST /api/preprocess`, `GET /api/file/{path}`, `POST /api/commit`, `GET /api/manifest` — รายละเอียดแต่ละ endpoint ดูใน `docs/notes/api/`
+- `CaptureReq`, `RidReq`, `CommitReq`, `OperatorReq` — pydantic request models
+- Routes: `GET /api/health`, `GET/POST /api/operators`, `GET /api/cases`, `POST /api/session/new`, `POST /api/capture`, `POST /api/preprocess`, `GET /api/file/{path}`, `POST /api/commit`, `GET /api/manifest` — รายละเอียดแต่ละ endpoint ดูใน `docs/notes/api/`
 
 **Called by**: เรียกใช้งานผ่าน `uvicorn server:app` (entry point ของทั้งระบบ), ทดสอบผ่าน [[test_api]] และ [[conftest]] (fixture `client`)
 

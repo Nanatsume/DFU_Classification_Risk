@@ -5,7 +5,7 @@ metadata:
   type: reference
 ---
 
-อัปเดตล่าสุด: 2026-08-07 17:22
+อัปเดตล่าสุด: 2026-08-08 18:00
 
 # capture_app — เอกสารสรุปโปรเจกต์
 
@@ -106,7 +106,7 @@ flowchart TD
 
 ## 2. API Endpoints
 
-Method/ผู้เรียก/payload/response/ไฟล์ backend ที่ handle ของทุก endpoint — 21 โน้ต
+Method/ผู้เรียก/payload/response/ไฟล์ backend ที่ handle ของทุก endpoint — 23 โน้ต
 
 **Session/health (ไม่ต้อง auth หรือเป็นตัว auth เอง)**
 [[api-get-health]] · [[api-post-login]] · [[api-post-logout]] · [[api-get-session]]
@@ -115,7 +115,7 @@ Method/ผู้เรียก/payload/response/ไฟล์ backend ที่ 
 [[api-get-cases]] · [[api-post-session-new]] · [[api-get-crf-list]] · [[api-get-crf-pid]] · [[api-post-crf]] · [[api-delete-crf-pid]] · [[api-get-nurses]] · [[api-post-nurses]]
 
 **Capture / preprocessing / commit / files**
-[[api-post-capture]] · [[api-post-preprocess]] · [[api-post-commit]] · [[api-get-manifest]] · [[api-get-file]]
+[[api-post-capture]] · [[api-post-preprocess]] · [[api-post-commit]] · [[api-get-manifest]] · [[api-get-file]] · [[api-get-operators]] · [[api-post-operators]]
 
 **ROI**
 [[api-get-roi-list]] · [[api-get-roi-rid]] · [[api-post-roi-rid]] · [[api-delete-roi-rid]]
@@ -124,13 +124,13 @@ Method/ผู้เรียก/payload/response/ไฟล์ backend ที่ 
 
 ## 3. Shared State
 
-ตัวแปร/ข้อมูลที่ถูกใช้ร่วมกันข้ามไฟล์ — ตาราง SQLite, cookie, localStorage, query param, และ global state ของ VIA — 12 โน้ต
+ตัวแปร/ข้อมูลที่ถูกใช้ร่วมกันข้ามไฟล์ — ตาราง SQLite, cookie, localStorage, query param, และ global state ของ VIA — 13 โน้ต
 
 **Auth/session**
 [[session-cookie]]
 
 **ตาราง SQLite (`data/app.db`, เจ้าของร่วมคือ [[db]])**
-[[db-cases-table]] · [[db-crf_forms-table]] · [[db-captures-preprocessing-tables]] · [[db-commits-table]] · [[db-roi_annotations-table]] · [[db-nurses-table]] · [[db-settings-audit-tables]]
+[[db-cases-table]] · [[db-crf_forms-table]] · [[db-captures-preprocessing-tables]] · [[db-commits-table]] · [[db-roi_annotations-table]] · [[db-nurses-table]] · [[db-operators-table]] · [[db-settings-audit-tables]]
 
 **Client-side state**
 [[localstorage-capture_records]] · [[url-query-params]]
