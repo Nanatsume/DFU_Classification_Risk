@@ -1,0 +1,225 @@
+[2026-08-06 07:11:31] === Log file: ./results/rq1_ResNet50_G-FL_S1_log_20260806_071131.txt ===
+[2026-08-06 07:11:31] 
+################################################################################
+# COMBO: ResNet50_G-FL_S1
+################################################################################
+
+[2026-08-06 07:11:32] Loaded INAOE: 334 images, shape=(334, 224, 224, 3), CT=90, DM=244
+[2026-08-06 07:11:32] 
+================================================================================
+StrategyTuner: ResNet50_G-FL_S1/G-FL (10 trials × fold1)
+================================================================================
+[2026-08-06 07:11:33] 
+================================================================================
+G-FL — ResNet50_G-FL_S1_trial1_fold1
+================================================================================
+[2026-08-06 07:11:33]   Block 1/5: unfreezing 4 layers, budget 10 epochs
+[2026-08-06 07:11:55]   Block 2/5: unfreezing 32 layers, budget 10 epochs
+[2026-08-06 07:12:15]   Block 3/5: unfreezing 42 layers, budget 10 epochs
+[2026-08-06 07:12:45]   Block 4/5: unfreezing 62 layers, budget 10 epochs
+[2026-08-06 07:13:21]   Block 5/5: unfreezing 32 layers, budget 10 epochs
+[2026-08-06 07:14:00]   G-FL done. Total epochs used: 50
+[2026-08-06 07:14:06]   Trial 1: fold1 AUC=0.8717  params={'dropout_rate': 0.15503043695984914, 'l2_reg': 0.00791507439765621, 'dense_units_1': 512, 'dense_units_2': 32, 'batch_size': 64, 'optimizer': 'adam', 'lr': 0.0002440060709081752}
+[2026-08-06 07:14:07] 
+================================================================================
+G-FL — ResNet50_G-FL_S1_trial2_fold1
+================================================================================
+[2026-08-06 07:14:07]   Block 1/5: unfreezing 4 layers, budget 10 epochs
+[2026-08-06 07:14:22]   Block 2/5: unfreezing 32 layers, budget 10 epochs
+[2026-08-06 07:14:45]   Block 3/5: unfreezing 42 layers, budget 10 epochs
+[2026-08-06 07:15:11]   Block 4/5: unfreezing 62 layers, budget 10 epochs
+[2026-08-06 07:15:48]   Block 5/5: unfreezing 32 layers, budget 10 epochs
+[2026-08-06 07:16:27]   G-FL done. Total epochs used: 50
+[2026-08-06 07:16:30]   Trial 2: fold1 AUC=0.8980  params={'dropout_rate': 0.3228119563599944, 'l2_reg': 0.05112443931364687, 'dense_units_1': 512, 'dense_units_2': 128, 'batch_size': 64, 'optimizer': 'adam', 'lr': 7.864749246304417e-05}
+[2026-08-06 07:16:31] 
+================================================================================
+G-FL — ResNet50_G-FL_S1_trial3_fold1
+================================================================================
+[2026-08-06 07:16:31]   Block 1/5: unfreezing 4 layers, budget 10 epochs
+[2026-08-06 07:16:46]   Block 2/5: unfreezing 32 layers, budget 10 epochs
+[2026-08-06 07:17:10]   Block 3/5: unfreezing 42 layers, budget 10 epochs
+[2026-08-06 07:17:39]   Block 4/5: unfreezing 62 layers, budget 10 epochs
+[2026-08-06 07:18:15]   Block 5/5: unfreezing 32 layers, budget 10 epochs
+[2026-08-06 07:18:54]   G-FL done. Total epochs used: 50
+[2026-08-06 07:18:58]   Trial 3: fold1 AUC=0.8783  params={'dropout_rate': 0.3242561910239515, 'l2_reg': 4.483218858527927e-06, 'dense_units_1': 512, 'dense_units_2': 32, 'batch_size': 64, 'optimizer': 'adam', 'lr': 2.3406492014301736e-05}
+[2026-08-06 07:18:59] 
+================================================================================
+G-FL — ResNet50_G-FL_S1_trial4_fold1
+================================================================================
+[2026-08-06 07:18:59]   Block 1/5: unfreezing 4 layers, budget 10 epochs
+[2026-08-06 07:19:18]   Block 2/5: unfreezing 32 layers, budget 10 epochs
+[2026-08-06 07:19:39]   Block 3/5: unfreezing 42 layers, budget 10 epochs
+[2026-08-06 07:20:02]   Block 4/5: unfreezing 62 layers, budget 10 epochs
+[2026-08-06 07:20:31]   Block 5/5: unfreezing 32 layers, budget 10 epochs
+[2026-08-06 07:21:11]   G-FL done. Total epochs used: 42
+[2026-08-06 07:21:15]   Trial 4: fold1 AUC=0.5000  params={'dropout_rate': 0.2397310586493783, 'l2_reg': 0.021340836756469028, 'dense_units_1': 256, 'dense_units_2': 32, 'batch_size': 64, 'optimizer': 'adam', 'lr': 0.003949855008202597}
+[2026-08-06 07:21:16] 
+================================================================================
+G-FL — ResNet50_G-FL_S1_trial5_fold1
+================================================================================
+[2026-08-06 07:21:17]   Block 1/5: unfreezing 4 layers, budget 10 epochs
+[2026-08-06 07:21:35]   Block 2/5: unfreezing 32 layers, budget 10 epochs
+[2026-08-06 07:21:57]   Block 3/5: unfreezing 42 layers, budget 10 epochs
+[2026-08-06 07:22:28]   Block 4/5: unfreezing 62 layers, budget 10 epochs
+[2026-08-06 07:23:02]   Block 5/5: unfreezing 32 layers, budget 10 epochs
+[2026-08-06 07:23:34]   G-FL done. Total epochs used: 45
+[2026-08-06 07:23:39]   Trial 5: fold1 AUC=0.9030  params={'dropout_rate': 0.37746167663002306, 'l2_reg': 0.01398492521297115, 'dense_units_1': 256, 'dense_units_2': 32, 'batch_size': 64, 'optimizer': 'adam', 'lr': 0.00016344479669163476}
+[2026-08-06 07:23:42] 
+================================================================================
+G-FL — ResNet50_G-FL_S1_trial6_fold1
+================================================================================
+[2026-08-06 07:23:42]   Block 1/5: unfreezing 4 layers, budget 10 epochs
+[2026-08-06 07:24:01]   Block 2/5: unfreezing 32 layers, budget 10 epochs
+[2026-08-06 07:24:23]   Block 3/5: unfreezing 42 layers, budget 10 epochs
+[2026-08-06 07:24:54]   Block 4/5: unfreezing 62 layers, budget 10 epochs
+[2026-08-06 07:25:32]   Block 5/5: unfreezing 32 layers, budget 10 epochs
+[2026-08-06 07:26:15]   G-FL done. Total epochs used: 50
+[2026-08-06 07:26:21]   Trial 6: fold1 AUC=0.8076  params={'dropout_rate': 0.13821966712656658, 'l2_reg': 0.031074311246768696, 'dense_units_1': 512, 'dense_units_2': 128, 'batch_size': 64, 'optimizer': 'adam', 'lr': 0.00011103728742568567}
+[2026-08-06 07:26:23] 
+================================================================================
+G-FL — ResNet50_G-FL_S1_trial7_fold1
+================================================================================
+[2026-08-06 07:26:23]   Block 1/5: unfreezing 4 layers, budget 10 epochs
+[2026-08-06 07:26:40]   Block 2/5: unfreezing 32 layers, budget 10 epochs
+[2026-08-06 07:27:05]   Block 3/5: unfreezing 42 layers, budget 10 epochs
+[2026-08-06 07:27:36]   Block 4/5: unfreezing 62 layers, budget 10 epochs
+[2026-08-06 07:28:13]   Block 5/5: unfreezing 32 layers, budget 10 epochs
+[2026-08-06 07:28:53]   G-FL done. Total epochs used: 50
+[2026-08-06 07:29:00]   Trial 7: fold1 AUC=0.8750  params={'dropout_rate': 0.4, 'l2_reg': 0.1, 'dense_units_1': 512, 'dense_units_2': 128, 'batch_size': 64, 'optimizer': 'adam', 'lr': 4.0296092505453664e-05}
+[2026-08-06 07:29:05] 
+================================================================================
+G-FL — ResNet50_G-FL_S1_trial8_fold1
+================================================================================
+[2026-08-06 07:29:05]   Block 1/5: unfreezing 4 layers, budget 10 epochs
+[2026-08-06 07:29:22]   Block 2/5: unfreezing 32 layers, budget 10 epochs
+[2026-08-06 07:29:49]   Block 3/5: unfreezing 42 layers, budget 10 epochs
+[2026-08-06 07:30:20]   Block 4/5: unfreezing 62 layers, budget 10 epochs
+[2026-08-06 07:30:58]   Block 5/5: unfreezing 32 layers, budget 10 epochs
+[2026-08-06 07:31:32]   G-FL done. Total epochs used: 46
+[2026-08-06 07:31:39]   Trial 8: fold1 AUC=0.9490  params={'dropout_rate': 0.34828155932001237, 'l2_reg': 0.010074222724829857, 'dense_units_1': 256, 'dense_units_2': 32, 'batch_size': 64, 'optimizer': 'adam', 'lr': 6.777528022729422e-05}
+[2026-08-06 07:31:42] 
+================================================================================
+G-FL — ResNet50_G-FL_S1_trial9_fold1
+================================================================================
+[2026-08-06 07:31:42]   Block 1/5: unfreezing 4 layers, budget 10 epochs
+[2026-08-06 07:32:02]   Block 2/5: unfreezing 32 layers, budget 10 epochs
+[2026-08-06 07:32:26]   Block 3/5: unfreezing 42 layers, budget 10 epochs
+[2026-08-06 07:32:57]   Block 4/5: unfreezing 62 layers, budget 10 epochs
+[2026-08-06 07:33:35]   Block 5/5: unfreezing 32 layers, budget 10 epochs
+[2026-08-06 07:34:19]   G-FL done. Total epochs used: 50
+[2026-08-06 07:34:28]   Trial 9: fold1 AUC=0.9062  params={'dropout_rate': 0.4, 'l2_reg': 0.020967994112012583, 'dense_units_1': 256, 'dense_units_2': 32, 'batch_size': 64, 'optimizer': 'adam', 'lr': 2.7376135228160867e-05}
+[2026-08-06 07:34:30] 
+================================================================================
+G-FL — ResNet50_G-FL_S1_trial10_fold1
+================================================================================
+[2026-08-06 07:34:30]   Block 1/5: unfreezing 4 layers, budget 10 epochs
+[2026-08-06 07:34:48]   Block 2/5: unfreezing 32 layers, budget 10 epochs
+[2026-08-06 07:35:14]   Block 3/5: unfreezing 42 layers, budget 10 epochs
+[2026-08-06 07:35:46]   Block 4/5: unfreezing 62 layers, budget 10 epochs
+[2026-08-06 07:36:25]   Block 5/5: unfreezing 32 layers, budget 10 epochs
+[2026-08-06 07:37:10]   G-FL done. Total epochs used: 50
+[2026-08-06 07:37:19]   Trial 10: fold1 AUC=0.8701  params={'dropout_rate': 0.4, 'l2_reg': 0.002017294022201491, 'dense_units_1': 256, 'dense_units_2': 32, 'batch_size': 64, 'optimizer': 'adam', 'lr': 4.1014043231023996e-05}
+[2026-08-06 07:37:20] 
+✓ Best fold1 AUC: 0.949013
+[2026-08-06 07:37:20] Best params: {'dropout_rate': 0.34828155932001237, 'l2_reg': 0.010074222724829857, 'dense_units_1': 256, 'dense_units_2': 32, 'batch_size': 64, 'optimizer': 'adam', 'lr': 6.777528022729422e-05}
+[2026-08-06 07:37:27] ✓ best_params → ./results/rq1/ResNet50_G-FL_S1/best_params.json
+[2026-08-06 07:37:27] 
+================================================================================
+FOLD 1/5: ResNet50_G-FL_S1
+================================================================================
+[2026-08-06 07:37:27] Train: 212  Val: 54
+[2026-08-06 07:37:28] 
+================================================================================
+G-FL — ResNet50_G-FL_S1_Fold1
+================================================================================
+[2026-08-06 07:37:28]   Block 1/5: unfreezing 4 layers, budget 10 epochs
+[2026-08-06 07:37:49]   Block 2/5: unfreezing 32 layers, budget 10 epochs
+[2026-08-06 07:38:13]   Block 3/5: unfreezing 42 layers, budget 10 epochs
+[2026-08-06 07:38:45]   Block 4/5: unfreezing 62 layers, budget 10 epochs
+[2026-08-06 07:39:22]   Block 5/5: unfreezing 32 layers, budget 10 epochs
+[2026-08-06 07:39:56]   G-FL done. Total epochs used: 46
+[2026-08-06 07:39:58] Model saved to ./results/rq1/ResNet50_G-FL_S1/fold1_final.keras
+[2026-08-06 07:39:58] ✓ Fold 1 complete  epochs={'phase1': 46, 'phase2': None}
+[2026-08-06 07:40:09] 
+================================================================================
+FOLD 2/5: ResNet50_G-FL_S1
+================================================================================
+[2026-08-06 07:40:09] Train: 212  Val: 54
+[2026-08-06 07:40:10] 
+================================================================================
+G-FL — ResNet50_G-FL_S1_Fold2
+================================================================================
+[2026-08-06 07:40:11]   Block 1/5: unfreezing 4 layers, budget 10 epochs
+[2026-08-06 07:40:29]   Block 2/5: unfreezing 32 layers, budget 10 epochs
+[2026-08-06 07:40:56]   Block 3/5: unfreezing 42 layers, budget 10 epochs
+[2026-08-06 07:41:28]   Block 4/5: unfreezing 62 layers, budget 10 epochs
+[2026-08-06 07:42:07]   Block 5/5: unfreezing 32 layers, budget 10 epochs
+[2026-08-06 07:42:49]   G-FL done. Total epochs used: 50
+[2026-08-06 07:42:51] Model saved to ./results/rq1/ResNet50_G-FL_S1/fold2_final.keras
+[2026-08-06 07:42:51] ✓ Fold 2 complete  epochs={'phase1': 50, 'phase2': None}
+[2026-08-06 07:43:04] 
+================================================================================
+FOLD 3/5: ResNet50_G-FL_S1
+================================================================================
+[2026-08-06 07:43:04] Train: 212  Val: 54
+[2026-08-06 07:43:04] 
+================================================================================
+G-FL — ResNet50_G-FL_S1_Fold3
+================================================================================
+[2026-08-06 07:43:05]   Block 1/5: unfreezing 4 layers, budget 10 epochs
+[2026-08-06 07:43:24]   Block 2/5: unfreezing 32 layers, budget 10 epochs
+[2026-08-06 07:43:52]   Block 3/5: unfreezing 42 layers, budget 10 epochs
+[2026-08-06 07:44:25]   Block 4/5: unfreezing 62 layers, budget 10 epochs
+[2026-08-06 07:45:04]   Block 5/5: unfreezing 32 layers, budget 10 epochs
+[2026-08-06 07:45:38]   G-FL done. Total epochs used: 46
+[2026-08-06 07:45:40] Model saved to ./results/rq1/ResNet50_G-FL_S1/fold3_final.keras
+[2026-08-06 07:45:40] ✓ Fold 3 complete  epochs={'phase1': 46, 'phase2': None}
+[2026-08-06 07:45:53] 
+================================================================================
+FOLD 4/5: ResNet50_G-FL_S1
+================================================================================
+[2026-08-06 07:45:53] Train: 214  Val: 52
+[2026-08-06 07:45:54] 
+================================================================================
+G-FL — ResNet50_G-FL_S1_Fold4
+================================================================================
+[2026-08-06 07:45:54]   Block 1/5: unfreezing 4 layers, budget 10 epochs
+[2026-08-06 07:46:15]   Block 2/5: unfreezing 32 layers, budget 10 epochs
+[2026-08-06 07:46:43]   Block 3/5: unfreezing 42 layers, budget 10 epochs
+[2026-08-06 07:47:17]   Block 4/5: unfreezing 62 layers, budget 10 epochs
+[2026-08-06 07:47:55]   Block 5/5: unfreezing 32 layers, budget 10 epochs
+[2026-08-06 07:48:31]   G-FL done. Total epochs used: 46
+[2026-08-06 07:48:33] Model saved to ./results/rq1/ResNet50_G-FL_S1/fold4_final.keras
+[2026-08-06 07:48:33] ✓ Fold 4 complete  epochs={'phase1': 46, 'phase2': None}
+[2026-08-06 07:48:46] 
+================================================================================
+FOLD 5/5: ResNet50_G-FL_S1
+================================================================================
+[2026-08-06 07:48:46] Train: 214  Val: 52
+[2026-08-06 07:48:47] 
+================================================================================
+G-FL — ResNet50_G-FL_S1_Fold5
+================================================================================
+[2026-08-06 07:48:48]   Block 1/5: unfreezing 4 layers, budget 10 epochs
+[2026-08-06 07:49:07]   Block 2/5: unfreezing 32 layers, budget 10 epochs
+[2026-08-06 07:49:38]   Block 3/5: unfreezing 42 layers, budget 10 epochs
+[2026-08-06 07:50:11]   Block 4/5: unfreezing 62 layers, budget 10 epochs
+[2026-08-06 07:50:51]   Block 5/5: unfreezing 32 layers, budget 10 epochs
+[2026-08-06 07:51:26]   G-FL done. Total epochs used: 46
+[2026-08-06 07:51:28] Model saved to ./results/rq1/ResNet50_G-FL_S1/fold5_final.keras
+[2026-08-06 07:51:28] ✓ Fold 5 complete  epochs={'phase1': 46, 'phase2': None}
+[2026-08-06 07:51:43]   Fold 1:  AUC=0.8931  Sens=0.9737  Spec=0.4375  F1=0.8810
+[2026-08-06 07:51:43]   Fold 2:  AUC=0.9946  Sens=1.0000  Spec=0.8571  F1=0.9756
+[2026-08-06 07:51:43]   Fold 3:  AUC=0.9161  Sens=0.9750  Spec=0.5000  F1=0.9070
+[2026-08-06 07:51:43]   Fold 4:  AUC=0.8064  Sens=1.0000  Spec=0.1429  F1=0.8636
+[2026-08-06 07:51:43]   Fold 5:  AUC=0.7820  Sens=0.9474  Spec=0.5000  F1=0.8889
+[2026-08-06 07:51:43] 
+  Mean:  AUC=0.8784±0.0770  Sens=0.9792±0.0196  Spec=0.4875±0.2273
+[2026-08-06 07:51:43]   Avg epochs: phase1=47, phase2=None
+[2026-08-06 07:51:43] 
+✓ Metrics → ./results/rq1/ResNet50_G-FL_S1/metrics.json
+[2026-08-06 07:51:43] 
+################################################################################
+# ResNet50_G-FL_S1 COMPLETE
+################################################################################
+

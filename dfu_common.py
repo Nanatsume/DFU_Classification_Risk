@@ -113,6 +113,25 @@ def load_preprocessed_inaoe(data_dir: str, log=print):
     return images, labels
 
 
+def get_inaoe_patient_ids(data_dir: str):
+    """
+    Extract patient IDs for INAOE images, in the same order as
+    load_preprocessed_inaoe() (CT group then DM group, filenames sorted),
+    so the returned list aligns index-for-index with its images/labels.
+
+    Filenames follow the pattern '{patient}_{sex}_{L|R}.npy', e.g.
+    'DM003_F_L.npy' -> patient 'DM003'. Left/right images of the same
+    patient therefore share the same ID, for use with
+    create_patient_fold_splits().
+    """
+    patient_ids = []
+    for group in ['CT', 'DM']:
+        group_dir = os.path.join(data_dir, group)
+        for npy_file in sorted(f for f in os.listdir(group_dir) if f.endswith('.npy')):
+            patient_ids.append(npy_file.split('_')[0])
+    return patient_ids
+
+
 def create_fold_splits(images, labels, n_splits=5, test_split=0.2, random_state=SEED):
     skf = StratifiedKFold(
         n_splits=max(2, int(round(1.0 / test_split))),

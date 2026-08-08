@@ -21,6 +21,9 @@ results/rq1/**/*.keras
 results/rq1/**/*.h5
 results/rq1/**/*.npz
 
+# One-off backup snapshot of the pre-patient-level-split run (~35GB)
+results/rq1_imagelevel_backup*/
+
 # Feature caches and numpy outputs
 *.npz
 *.npy
