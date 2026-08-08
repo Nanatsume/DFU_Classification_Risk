@@ -78,6 +78,15 @@ CREATE TABLE IF NOT EXISTS nurses (
     name TEXT PRIMARY KEY
 );
 
+-- Separate from `nurses` (which is scoped to CRF exam nurse dropdown only) — the photographer
+-- field in capture.html can be any of the 4 nurses OR a research team member, so it needs its
+-- own roster rather than reusing/extending nurses. Deliberately no "add via web form" UI for
+-- either table (see docs/notes) — names are added directly against this table when the roster
+-- changes, since it's a small fixed list, not user-facing data entry.
+CREATE TABLE IF NOT EXISTS operators (
+    name TEXT PRIMARY KEY
+);
+
 CREATE TABLE IF NOT EXISTS sessions (
     token      TEXT PRIMARY KEY,
     created_at TEXT,
@@ -103,6 +112,13 @@ SEED_NURSES = [
     "พิมพ์ลภัส ศรีสมบูรณ์",
     "ธนกฤต อินทรสุวรรณ",
     "สุภาวดี แก้วประเสริฐ",
+]
+
+# ผู้ถ่ายภาพ = พยาบาลทั้ง 4 คนข้างบน + ทีมวิจัยอีก 3 คน (ณัฐพงศ์ = หัวหน้าโครงการ)
+SEED_OPERATORS = SEED_NURSES + [
+    "ณัฐพงศ์ ภักดีบุญ",
+    "ณบุญ วงศ์วิทย์",
+    "กนธีร์ คลังทอง",
 ]
 
 
@@ -142,6 +158,10 @@ def init_db() -> None:
         for n in SEED_NURSES:
             if n not in existing:
                 conn.execute("INSERT OR IGNORE INTO nurses(name) VALUES (?)", (n,))
+        existing_ops = {r["name"] for r in conn.execute("SELECT name FROM operators")}
+        for n in SEED_OPERATORS:
+            if n not in existing_ops:
+                conn.execute("INSERT OR IGNORE INTO operators(name) VALUES (?)", (n,))
 
 
 # ---------- cases / id minting ----------
@@ -432,6 +452,17 @@ def list_nurses() -> list[str]:
 def add_nurse(name: str) -> None:
     with tx() as conn:
         conn.execute("INSERT OR IGNORE INTO nurses(name) VALUES (?)", (name,))
+
+
+# ---------- operators (photographer dropdown on capture.html — nurses + research team) ----------
+def list_operators() -> list[str]:
+    with tx() as conn:
+        return [r["name"] for r in conn.execute("SELECT name FROM operators ORDER BY name")]
+
+
+def add_operator(name: str) -> None:
+    with tx() as conn:
+        conn.execute("INSERT OR IGNORE INTO operators(name) VALUES (?)", (name,))
 
 
 # ---------- settings ----------

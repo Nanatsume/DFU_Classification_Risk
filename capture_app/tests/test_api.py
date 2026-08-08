@@ -141,6 +141,16 @@ def test_nurses_seeded_and_addable(auth_client):
     assert "พยาบาลทดสอบ" in auth_client.get("/api/nurses").json()
 
 
+def test_operators_seeded_with_nurses_and_team_and_addable(auth_client):
+    """Photographer dropdown = the same 4 nurses + the 3 research-team members, seeded directly
+    in db.py (no add-via-web-form UI for this one, by design)."""
+    names = auth_client.get("/api/operators").json()
+    assert "กรรณิการ์ ทองพูล" in names  # a nurse
+    assert "ณัฐพงศ์ ภักดีบุญ" in names  # a research-team member
+    auth_client.post("/api/operators", json={"name": "ผู้ถ่ายทดสอบ"})
+    assert "ผู้ถ่ายทดสอบ" in auth_client.get("/api/operators").json()
+
+
 # ---------- the capture gate: no CRF form -> 409 ----------
 
 def test_capture_without_crf_form_is_409(auth_client):

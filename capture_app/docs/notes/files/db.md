@@ -10,13 +10,14 @@ metadata:
 **หน้าที่**: เลเยอร์ข้อมูล SQLite เพียงชั้นเดียวของทั้งระบบ แทนที่ไฟล์ flat-file เดิม 5 รูปแบบ (`data/crf/*.json`, `data/roi/*.json`, `data/meta/*.json`, `data/manifest.csv`, `data/crf_manifest.csv`) เก็บทุกตารางไว้ในไฟล์เดียว `data/app.db` — เปิด connection ใหม่ทุกครั้งที่เรียก (WAL mode + busy_timeout) เพื่อรองรับ multi-thread ของ FastAPI ทุกโมดูล backend อื่น ([[server]], [[auth]], [[crf_store]], [[roi_store]]) เรียกใช้ฟังก์ชันในไฟล์นี้แทนการต่อ SQLite เอง
 
 **Functions/Variables (global scope)**:
-- `TZ`, `BASE`, `DATA_DIR`, `DB_PATH`, `SCHEMA` (DDL string), `SEED_NURSES` — ค่าคงที่/สคีมา
-- `now_iso()`, `get_conn()`, `tx()` (context manager: 1 connection = 1 transaction), `init_db()` (รัน schema + seed พยาบาล)
+- `TZ`, `BASE`, `DATA_DIR`, `DB_PATH`, `SCHEMA` (DDL string), `SEED_NURSES`, `SEED_OPERATORS` — ค่าคงที่/สคีมา (`SEED_OPERATORS` = `SEED_NURSES` + ทีมวิจัยอีก 3 คน)
+- `now_iso()`, `get_conn()`, `tx()` (context manager: 1 connection = 1 transaction), `init_db()` (รัน schema + seed พยาบาล + seed ผู้ถ่ายภาพ)
 - **cases / id minting**: `upsert_case()`, `next_research_id()` (นับเลขถัดไปแบบ `PNNNN`), `list_cases_with_status()`
 - **CRF**: `has_crf()`, `get_crf()`, `list_crf()`, `_crf_row_to_dict()`, `save_crf()`, `delete_crf()`
 - **captures/preprocessing/commits**: `has_capture()`, `save_capture()`, `get_capture()`, `save_preprocessing()`, `get_preprocessing()`, `save_commit()`, `list_commits()`, `committed_max()`, `crf_max()`
 - **ROI**: `get_roi()`, `list_roi()`, `save_roi()`, `delete_roi()`
 - **nurses**: `list_nurses()`, `add_nurse()`
+- **operators**: `list_operators()`, `add_operator()` — ตารางแยกจาก `nurses`, ใช้เป็นแหล่งข้อมูล dropdown "ผู้ถ่ายภาพ" ใน [[pages-Capture]] (พยาบาลทั้ง 4 คน + ทีมวิจัยอีก 3 คน)
 - **settings**: `get_setting()`, `set_setting()`
 - **sessions**: `create_session()`, `get_session()`, `delete_session()`, `purge_expired_sessions()`
 - **audit**: `log_audit()`

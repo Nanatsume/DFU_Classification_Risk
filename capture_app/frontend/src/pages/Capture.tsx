@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react'
 import { api, ApiError } from '@/lib/api'
 import type { CaseRow, CommitRecord, ManifestRow, Modality } from '@/lib/captureTypes'
+import { categoryToLabel } from '@/lib/roiStatus'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import {
   Dialog,
   DialogContent,
@@ -95,10 +96,12 @@ export default function Capture() {
   const [shots, setShots] = useState<Record<Modality, boolean>>({ podoscope: false, thermal: false })
   const [previews, setPreviews] = useState<Record<Modality, string | null>>({ podoscope: null, thermal: null })
   const [operator, setOperator] = useState('')
+  const [operators, setOperators] = useState<string[]>([])
   const [qc, setQc] = useState<{ status: 'idle' | 'running' | 'ok' | 'failed'; left?: string; right?: string; error?: string }>({ status: 'idle' })
   const [saved, setSaved] = useState<DisplayRow[]>([])
   const [modalRec, setModalRec] = useState<unknown>(null)
   const [justCommittedRid, setJustCommittedRid] = useState<string | null>(null)
+  const [justCommittedNeedsRoi, setJustCommittedNeedsRoi] = useState(true)
 
   function iwgdfText(c: CaseRow) {
     return `IWGDF ซ้าย ${c.iwgdf?.L ?? '—'} · ขวา ${c.iwgdf?.R ?? '—'}`
@@ -123,6 +126,7 @@ export default function Capture() {
   }
 
   useEffect(() => {
+    api<string[]>('/api/operators').then(setOperators).catch(() => setOperators([]))
     ;(async () => {
       let liveMode = false
       try {
@@ -197,6 +201,12 @@ export default function Capture() {
   async function commit() {
     if (!session) return
     const rid = session.rid
+    // ข้าง label เป็นอะไรก็ตามที่ไม่ใช่ Negative (รวมถึงยังไม่มีผล/null) ถือว่าต้องทำ ROI ตามนโยบายเดิม
+    // — ใช้ตัดสินว่า dialog หลัง commit จะโชว์ปุ่ม "ทำ ROI ต่อ" ให้ด้วยหรือไม่ ต้องอ่านจาก
+    // session.caseInfo ตอนนี้ก่อน setSession(null) ด้านล่างจะเคลียร์มันทิ้ง
+    const lLabel = categoryToLabel(session.caseInfo?.iwgdf?.L)
+    const rLabel = categoryToLabel(session.caseInfo?.iwgdf?.R)
+    const needsRoi = !session.caseInfo || lLabel !== 'Negative' || rLabel !== 'Negative'
     let rec: CommitRecord
     if (mode === 'live') {
       rec = await api<CommitRecord>('/api/commit', { rid, operator })
@@ -211,6 +221,7 @@ export default function Capture() {
       const recs = loadRecords(); recs.unshift(rec); saveRecords(recs)
     }
     setJustCommittedRid(rid)
+    setJustCommittedNeedsRoi(needsRoi)
     setSession(null)
     setOperator('')
     await refreshSaved(mode === 'live')
@@ -279,7 +290,10 @@ export default function Capture() {
               </div>
               <label className="text-muted-foreground flex items-center gap-2 text-[12.5px]">
                 ผู้ถ่ายภาพ
-                <Input value={operator} onChange={(e) => setOperator(e.target.value)} placeholder="ชื่อผู้ถ่าย" className="h-8 w-40" />
+                <Select value={operator} onValueChange={setOperator}>
+                  <SelectTrigger className="h-8 w-44"><SelectValue placeholder="— เลือกชื่อ —" /></SelectTrigger>
+                  <SelectContent>{operators.map((n) => <SelectItem key={n} value={n}>{n}</SelectItem>)}</SelectContent>
+                </Select>
               </label>
               <div className="text-muted-foreground ml-auto text-right text-[11.5px]">
                 เริ่ม {timeTH(session.startedAt)}<br />1 คน = 1 podoscope + 1 thermal
@@ -421,20 +435,26 @@ export default function Capture() {
           <DialogHeader>
             <DialogTitle>บันทึกเคส {justCommittedRid} สำเร็จ</DialogTitle>
           </DialogHeader>
-          <p className="text-muted-foreground -mt-2 mb-1 text-[13px]">จะกลับหน้าหลัก หรือทำ ROI ของเคสนี้ต่อเลย?</p>
+          <p className="text-muted-foreground -mt-2 mb-1 text-[13px]">
+            {justCommittedNeedsRoi
+              ? 'จะกลับหน้าหลัก หรือทำ ROI ของเคสนี้ต่อเลย?'
+              : 'เคสนี้ไม่ต้องทำ ROI — ทั้งสองข้างไม่มีความเสี่ยง'}
+          </p>
           <div className="flex justify-end gap-2">
             <Button variant="outline" onClick={() => { location.href = 'index.html' }}>
               กลับหน้าหลัก
             </Button>
-            <Button
-              onClick={() => {
-                const rid = justCommittedRid!
-                setJustCommittedRid(null)
-                window.open('via/index.html?rid=' + encodeURIComponent(rid), '_blank')
-              }}
-            >
-              ทำ ROI ต่อ →
-            </Button>
+            {justCommittedNeedsRoi && (
+              <Button
+                onClick={() => {
+                  const rid = justCommittedRid!
+                  setJustCommittedRid(null)
+                  window.open('via/index.html?rid=' + encodeURIComponent(rid), '_blank')
+                }}
+              >
+                ทำ ROI ต่อ →
+              </Button>
+            )}
           </div>
         </DialogContent>
       </Dialog>
