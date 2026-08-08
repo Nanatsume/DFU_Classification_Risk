@@ -7,16 +7,26 @@ project blob.
 """
 from __future__ import annotations
 
+import re
 from datetime import datetime, timezone, timedelta
 
 from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 
 import db
 
 TZ = timezone(timedelta(hours=7))  # Asia/Bangkok
 
 router = APIRouter(prefix="/api/roi", tags=["roi"])
+
+# _via_dfu.js only ever writes filenames of this exact shape (see dfu_add_case_images()) — a
+# saved project is later reopened verbatim in VIA (_via_load_submodules -> project_open_parse_
+# json_file), and VIA renders `filename` unescaped into innerHTML in several places (image list,
+# 404 placeholder, etc.). Locking the accepted shape down here means a POST that goes around the
+# VIA UI can never smuggle an HTML/script payload into `filename` for a later viewer to render.
+_SAFE_ROI_FILENAME_RE = re.compile(
+    r"^/api/file/podo/P\d{4}/preprocessing/P\d{4}_podo_[LR]_full\.png$"
+)
 
 
 def now_iso() -> str:
@@ -27,6 +37,18 @@ class RoiPayload(BaseModel):
     rid: str
     project: dict            # full VIA project (reopenable in VIA)
     summary: dict = {}       # {"L": {"region_count": 2, "has_risk_area": "yes"}, "R": {...}}
+
+    @field_validator("project")
+    @classmethod
+    def _reject_unsafe_filenames(cls, v: dict) -> dict:
+        meta = v.get("_via_img_metadata")
+        if not isinstance(meta, dict):
+            return v
+        for entry in meta.values():
+            filename = entry.get("filename") if isinstance(entry, dict) else None
+            if not isinstance(filename, str) or not _SAFE_ROI_FILENAME_RE.match(filename):
+                raise ValueError(f"unexpected filename in ROI project: {filename!r}")
+        return v
 
 
 @router.get("")

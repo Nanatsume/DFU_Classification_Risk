@@ -247,3 +247,42 @@ def test_roi_save_rejects_mismatched_rid(auth_client):
     body = {"rid": "P0002", "project": {}, "summary": {}}
     r = auth_client.post("/api/roi/P0001", json=body)
     assert r.status_code == 400
+
+
+def test_roi_save_accepts_real_via_filename_shape(auth_client):
+    """The exact filename shape _via_dfu.js's dfu_add_case_images() actually writes must keep
+    working — this is the regression guard for the security-review fix below."""
+    body = {
+        "rid": "P0001",
+        "project": {
+            "_via_img_metadata": {
+                "img1": {
+                    "filename": "/api/file/podo/P0001/preprocessing/P0001_podo_L_full.png",
+                    "regions": [],
+                }
+            }
+        },
+        "summary": {},
+    }
+    r = auth_client.post("/api/roi/P0001", json=body)
+    assert r.status_code == 200
+
+
+def test_roi_save_rejects_html_in_filename(auth_client):
+    """Security regression: a filename outside the exact shape _via_dfu.js ever writes (e.g. one
+    smuggling an HTML/script payload) must be rejected — closes the stored-XSS path where a saved
+    project is later replayed unescaped into VIA's own innerHTML rendering of the image list."""
+    body = {
+        "rid": "P0001",
+        "project": {
+            "_via_img_metadata": {
+                "img1": {
+                    "filename": '"><img src=x onerror=alert(1)>',
+                    "regions": [],
+                }
+            }
+        },
+        "summary": {},
+    }
+    r = auth_client.post("/api/roi/P0001", json=body)
+    assert r.status_code == 422

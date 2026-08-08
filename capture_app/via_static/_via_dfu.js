@@ -13,6 +13,13 @@
 
 const DFU_RID = new URLSearchParams(location.search).get('rid');
 
+/* รหัสวิจัยต้องเป็นรูปแบบ P0001 เท่านั้น (ตรงกับ db.next_research_id() ฝั่ง backend) — เช็คไว้ตั้งแต่
+   ต้นไฟล์ ก่อนค่านี้จะถูกใช้ต่อสตริงเข้า .innerHTML ที่ไหนก็ตาม (dfu_add_toolbar, dfu_show_save_
+   complete_dialog, show_message ของ via.js) หรือต่อเข้า URL ของ fetch/รูปภาพ — ถ้ามีคนแก้ ?rid= ใน
+   URL เป็นค่าที่มี HTML/script ปนอยู่ ค่านั้นจะไม่ผ่านแพทเทิร์นนี้เลย จึงไม่มีทางไปถึงจุดใดที่จะทำให้
+   โค้ดแปลกปลอมรันได้ (ปิดช่องโหว่ DOM XSS จาก querystring) */
+const DFU_RID_VALID = !!DFU_RID && /^P\d{4}$/.test(DFU_RID);
+
 /* บริเวณที่ต้องมาร์ก — ปรับรายการนี้ให้ตรงกับที่ทีมวิจัยตกลงกัน */
 const DFU_ATTRIBUTES = {
   region: {
@@ -91,8 +98,8 @@ function dfu_existing_sides_in_project() {
 }
 
 async function _via_load_submodules() {
-  if (!DFU_RID) {
-    show_message('ไม่ได้ระบุรหัสวิจัย — เปิดหน้านี้จากแบบบันทึกข้อมูล หรือใส่ ?rid=P0001 ท้าย URL', 8000);
+  if (!DFU_RID_VALID) {
+    show_message('ไม่ได้ระบุรหัสวิจัย หรือรูปแบบรหัสไม่ถูกต้อง — เปิดหน้านี้จากแบบบันทึกข้อมูล หรือใส่ ?rid=P0001 ท้าย URL', 8000);
     return;
   }
 
@@ -212,13 +219,16 @@ function dfu_add_toolbar() {
     'background:#132430;color:#e8eef1;padding:8px 14px;font-size:13px;' +
     'font-family:sans-serif;border-bottom-left-radius:4px';
   bar.innerHTML =
-    '<b style="font-family:monospace;letter-spacing:.05em">' + DFU_RID + '</b>' +
+    '<b id="dfu_bar_rid" style="font-family:monospace;letter-spacing:.05em"></b>' +
     '<span id="dfu_status" style="color:#a9bec8"></span>' +
     '<button id="dfu_save" style="padding:6px 14px;border:0;border-radius:3px;' +
     'background:#0d6a72;color:#fff;font-weight:600;cursor:pointer">บันทึก ROI</button>' +
     '<button id="dfu_back" style="padding:6px 12px;border:1px solid #47606f;border-radius:3px;' +
     'background:transparent;color:#dce7ec;cursor:pointer">กลับไปที่เคสนี้</button>';
   document.body.appendChild(bar);
+  // ใส่รหัสวิจัยด้วย textContent ไม่ใช่ต่อสตริงเข้า innerHTML — กันไว้อีกชั้นแม้ DFU_RID_VALID จะ
+  // เช็ครูปแบบไปแล้วก็ตาม (defense in depth)
+  document.getElementById('dfu_bar_rid').textContent = DFU_RID;
 
   document.getElementById('dfu_save').addEventListener('click', dfu_save_roi);
   document.getElementById('dfu_back').addEventListener('click', function () {
@@ -269,8 +279,7 @@ function dfu_show_save_complete_dialog() {
     '<div style="background:#fff;border-radius:6px;padding:26px 30px;max-width:340px;' +
     'text-align:center;box-shadow:0 10px 40px rgba(0,0,0,.3)">' +
       '<div style="font-size:30px;margin-bottom:6px;color:#1c7a58">✓</div>' +
-      '<div style="font-weight:700;font-size:15px;margin-bottom:6px;color:#132430">' +
-        'บันทึก ROI ของ ' + DFU_RID + ' แล้ว</div>' +
+      '<div id="dfu_save_dialog_title" style="font-weight:700;font-size:15px;margin-bottom:6px;color:#132430"></div>' +
       '<div style="font-size:12.5px;color:#4a6070;margin-bottom:18px">จะทำต่อ หรือกลับไปเลือกเคสอื่น?</div>' +
       '<div style="display:flex;gap:8px;justify-content:center">' +
         '<button id="dfu_continue_btn" style="padding:9px 16px;border-radius:4px;border:1px solid #cdd8de;' +
@@ -280,6 +289,8 @@ function dfu_show_save_complete_dialog() {
       '</div>' +
     '</div>';
   document.body.appendChild(overlay);
+  // เช่นเดียวกับ dfu_add_toolbar() — ใส่รหัสวิจัยด้วย textContent ไม่ใช่ต่อสตริงเข้า innerHTML
+  document.getElementById('dfu_save_dialog_title').textContent = 'บันทึก ROI ของ ' + DFU_RID + ' แล้ว';
   document.getElementById('dfu_continue_btn').addEventListener('click', function () { overlay.remove(); });
   document.getElementById('dfu_gohome_btn').addEventListener('click', function () {
     window.location.href = '/index.html';

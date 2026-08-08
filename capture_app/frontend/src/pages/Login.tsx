@@ -4,6 +4,17 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 
+/* ?next= มาจาก query string ล้วนๆ — ใครก็แก้ URL ใส่ค่าอะไรก็ได้ ถ้าเอาไปยัด location.href/
+   location.replace() ตรงๆ โดยไม่กรอง ค่าอย่าง "javascript:...” จะรันโค้ดในหน้าเว็บนี้ทันที (คนละ
+   กรณีกับพิมพ์ javascript: เองใน address bar ซึ่งเบราว์เซอร์บล็อก — นี่คือ navigation ที่ยิงจาก
+   JS ของหน้าเอง เบราว์เซอร์ไม่บล็อกให้) จำกัดให้ผ่านได้เฉพาะชื่อไฟล์หน้าในแอปเรา ต่อท้ายด้วย query
+   string ได้ ไม่มี scheme (":") หรือ "//" ปนอยู่เด็ดขาด — ตรงกับรูปแบบที่ AuthGuard เป็นคนสร้างค่านี้
+   ขึ้นมาเองอยู่แล้ว (lib/auth.tsx: location.pathname.split('/').pop() + location.search) */
+function safeNext(raw: string | null): string {
+  if (raw && /^[a-zA-Z0-9_-]+\.html(\?[^\s]*)?$/.test(raw)) return raw
+  return 'index.html'
+}
+
 export default function Login() {
   const [password, setPassword] = useState('')
   const [err, setErr] = useState('')
@@ -15,8 +26,7 @@ export default function Login() {
       try {
         const s = await api<{ authenticated: boolean }>('/api/session')
         if (s.authenticated) {
-          const next = new URLSearchParams(location.search).get('next')
-          location.replace(next || 'index.html')
+          location.replace(safeNext(new URLSearchParams(location.search).get('next')))
         }
       } catch {
         /* server unreachable — just show the form */
@@ -30,8 +40,7 @@ export default function Login() {
     setSubmitting(true)
     try {
       await api('/api/login', { password })
-      const next = new URLSearchParams(location.search).get('next')
-      location.href = next || 'index.html'
+      location.href = safeNext(new URLSearchParams(location.search).get('next'))
     } catch (ex) {
       setErr(
         ex instanceof ApiError && ex.status === 401
