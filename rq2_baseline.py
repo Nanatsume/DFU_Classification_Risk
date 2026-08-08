@@ -46,7 +46,8 @@ from imblearn.over_sampling import SMOTE
 import xgboost as xgb
 
 from dfu_common import (
-    CONFIG, SEED, make_logger, load_preprocessed_inaoe, create_fold_splits,
+    CONFIG, SEED, make_logger, load_preprocessed_inaoe, get_inaoe_patient_ids,
+    create_patient_fold_splits,
 )
 
 RAW_DIR    = '/home/ntphoto/Project/ThermoDataBase'
@@ -452,8 +453,9 @@ def main():
     log = make_logger('rq2_baseline')
 
     images, labels = load_preprocessed_inaoe(DATA_SOURCE['S1'], log=log)
-    fold_indices, test_indices = create_fold_splits(
-        images, labels,
+    patient_ids = get_inaoe_patient_ids(DATA_SOURCE['S1'])
+    fold_indices, test_indices = create_patient_fold_splits(
+        images, labels, patient_ids,
         n_splits=CONFIG['n_folds'],
         test_split=CONFIG['test_split'],
         random_state=SEED,

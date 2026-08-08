@@ -23,7 +23,8 @@ from scipy.stats import binom
 from sklearn.metrics import roc_auc_score, f1_score
 
 from dfu_common import (
-    CONFIG, SEED, make_logger, load_preprocessed_inaoe, create_fold_splits,
+    CONFIG, SEED, make_logger, load_preprocessed_inaoe, get_inaoe_patient_ids,
+    create_patient_fold_splits,
 )
 
 DATA_SOURCE = {
@@ -121,11 +122,19 @@ def main():
         return
     with open(rq1_path) as f:
         rq1_data = json.load(f)
-    s2_best   = rq1_data.get('S2_best', {})
-    combo_id  = s2_best.get('combo_id', 'S2_best')
-    backbone  = s2_best.get('backbone', '')
-    strategy  = s2_best.get('strategy', '')
-    input_strat = s2_best.get('input_strategy', 'S2')
+    # Overall RQ1 winner = whichever of S1_best / S2_best has the higher mean
+    # AUC-ROC, not S2 by default — S1 can legitimately win (see RQ1 answer).
+    candidates = [e for e in (rq1_data.get('S1_best'), rq1_data.get('S2_best')) if e]
+    if not candidates:
+        log("❌ Neither S1_best nor S2_best found in rq1_results.json.")
+        return
+    winner    = max(candidates, key=lambda e: e['cv_metrics']['mean']['auc'])
+    combo_id  = winner['combo_id']
+    backbone  = winner['backbone']
+    strategy  = winner['strategy']
+    input_strat = winner['input_strategy']
+    log(f"✓ Overall RQ1 winner: {combo_id} "
+        f"(AUC={winner['cv_metrics']['mean']['auc']:.4f})")
 
     baseline_path = os.path.join(CONFIG['results_dir'], 'rq2_baseline_results.json')
     if not os.path.exists(baseline_path):
@@ -152,8 +161,9 @@ def main():
 
     data_path = DATA_SOURCE[input_strat]
     images, labels = load_preprocessed_inaoe(data_path, log=log)
-    _, test_indices = create_fold_splits(
-        images, labels,
+    patient_ids = get_inaoe_patient_ids(data_path)
+    _, test_indices = create_patient_fold_splits(
+        images, labels, patient_ids,
         n_splits=CONFIG['n_folds'],
         test_split=CONFIG['test_split'],
         random_state=SEED,

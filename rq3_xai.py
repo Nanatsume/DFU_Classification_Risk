@@ -19,7 +19,8 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 from dfu_common import (
-    CONFIG, SEED, make_logger, load_preprocessed_inaoe, create_fold_splits,
+    CONFIG, SEED, make_logger, load_preprocessed_inaoe, get_inaoe_patient_ids,
+    create_patient_fold_splits,
 )
 
 N_SAMPLES_PER_CLASS = 4
@@ -278,20 +279,26 @@ def main():
     with open(rq1_path) as f:
         rq2_data = json.load(f)
 
-    s2 = rq2_data.get('S2_best')
-    if s2 is None:
-        log("❌ S2_best not found in rq1_results.json.")
+    # Overall RQ1 winner = whichever of S1_best / S2_best has the higher mean
+    # AUC-ROC, not S2 by default — S1 can legitimately win (see RQ1 answer).
+    candidates = [e for e in (rq2_data.get('S1_best'), rq2_data.get('S2_best')) if e is not None]
+    if not candidates:
+        log("❌ Neither S1_best nor S2_best found in rq1_results.json.")
         return
+    best = max(candidates, key=lambda e: e['cv_metrics']['mean']['auc'])
+    log(f"✓ Overall RQ1 winner: {best['combo_id']} "
+        f"(AUC={best['cv_metrics']['mean']['auc']:.4f})")
 
-    combo_id       = s2['combo_id']
-    backbone       = s2['backbone']
-    input_strategy = 'S2'
+    combo_id       = best['combo_id']
+    backbone       = best['backbone']
+    input_strategy = best['input_strategy']
     data_path      = DATA_SOURCE[input_strategy]
     annotations_path = os.path.join(data_path, 'annotations.json')
 
     images, labels = load_preprocessed_inaoe(data_path, log=log)
-    _, test_indices = create_fold_splits(
-        images, labels,
+    patient_ids = get_inaoe_patient_ids(data_path)
+    _, test_indices = create_patient_fold_splits(
+        images, labels, patient_ids,
         n_splits=CONFIG['n_folds'],
         test_split=CONFIG['test_split'],
         random_state=SEED,
@@ -335,7 +342,7 @@ def main():
     os.makedirs(out_dir, exist_ok=True)
 
     log(f"\n{'='*80}")
-    log(f"RQ4: XAI VISUALISATIONS (S2_best) — {combo_id}")
+    log(f"RQ4: XAI VISUALISATIONS (RQ1 winner) — {combo_id}")
     log(f"{'='*80}")
     log("NOTE: Pointing-game evaluation deferred (no ground-truth bboxes yet)\n")
 
@@ -371,7 +378,7 @@ def main():
 
     # ── Pointing game (runs only when annotations.json is present) ────────────
     rq4_result = {'combo_id': combo_id, 'backbone': backbone,
-                  'input_strategy': input_strategy, 'model': 'S2_best_final_retrain'}
+                  'input_strategy': input_strategy, 'model': 'rq1_winner_final_retrain'}
 
     if os.path.exists(annotations_path):
         log(f"\nLoading annotations: {annotations_path}")

@@ -24,7 +24,8 @@ from sklearn.metrics import f1_score, confusion_matrix, roc_auc_score, classific
 from scipy.stats import binom
 
 from dfu_common import (
-    CONFIG, SEED, make_logger, load_preprocessed_inaoe, create_fold_splits,
+    CONFIG, SEED, make_logger, load_preprocessed_inaoe, get_inaoe_patient_ids,
+    create_patient_fold_splits,
     DFUModelTrainer, base_model_creators,
 )
 
@@ -127,9 +128,10 @@ def retrain_and_eval(key, entry, log):
     # ── Load data ─────────────────────────────────────────────────────────────
     data_path = DATA_SOURCE[input_strategy]
     images, labels = load_preprocessed_inaoe(data_path, log=log)
+    patient_ids = get_inaoe_patient_ids(data_path)
 
-    fold_indices, test_indices = create_fold_splits(
-        images, labels,
+    fold_indices, test_indices = create_patient_fold_splits(
+        images, labels, patient_ids,
         n_splits=CONFIG['n_folds'],
         test_split=CONFIG['test_split'],
         random_state=SEED,
@@ -318,8 +320,9 @@ def main():
 
         data_path = DATA_SOURCE[output['S1_best']['input_strategy']]
         images, labels = load_preprocessed_inaoe(data_path, log=lambda x: None)
-        _, test_indices = create_fold_splits(
-            images, labels,
+        patient_ids = get_inaoe_patient_ids(data_path)
+        _, test_indices = create_patient_fold_splits(
+            images, labels, patient_ids,
             n_splits=CONFIG['n_folds'],
             test_split=CONFIG['test_split'],
             random_state=SEED,

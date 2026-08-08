@@ -12,11 +12,11 @@
     "NTR_Class3",
     "NTR_Class4",
     "NTR_Class5",
+    "LPA_Median",
     "LPA_SD",
     "LPA_ETD",
     "LPA_HSE",
     "MPA_SD",
-    "MPA_ET",
     "MPA_ETD",
     "MPA_HSE",
     "LCA_Mean",
@@ -50,5504 +50,5493 @@
   ],
   "total_combinations": 780,
   "best": {
-    "ranking": "XGBoost",
-    "classifier": "MLP",
-    "n_features": 22,
+    "ranking": "ExtraTree",
+    "classifier": "ExtraTree",
+    "n_features": 11,
     "feature_names": [
       "Age",
-      "HighestTemp",
-      "NTR_Class4",
-      "MPA_ET",
-      "NTR_Class2",
-      "MCA_SD",
-      "TCI",
-      "MPA_SD",
-      "NTR_Class1",
-      "MCA_ETD",
-      "NTR_Class3",
-      "LPA_ETD",
-      "LPA_SD",
-      "MPA_ETD",
-      "LCA_Mean",
-      "FullFoot_ETD",
-      "LPA_HSE",
-      "LCA_HSE",
       "Gender",
-      "MPA_HSE",
-      "FullFoot_SD",
-      "LCA_SD"
+      "TCI",
+      "LPA_Median",
+      "LPA_SD",
+      "NTR_Class2",
+      "NTR_Class1",
+      "NTR_Class4",
+      "MCA_SD",
+      "MPA_SD",
+      "FullFoot_ETD"
     ],
-    "mean_cv_auc": 0.995,
-    "std_cv_auc": 0.0058
+    "mean_cv_auc": 0.9977,
+    "std_cv_auc": 0.0033
   },
   "test_metrics": {
-    "sensitivity": 0.9795918367346939,
+    "sensitivity": 0.96,
     "specificity": 1.0,
     "ppv": 1.0,
-    "npv": 0.9473684210526315,
-    "f1": 0.9896907216494846,
-    "auc_roc": 0.9965986394557823
+    "npv": 0.9,
+    "f1": 0.9795918367346939,
+    "auc_roc": 1.0
   },
   "all_results": [
     {
       "ranking": "RF",
       "classifier": "AdaBoost",
       "n_features": 1,
-      "mean_cv_auc": 0.9781,
-      "std_cv_auc": 0.0153
+      "mean_cv_auc": 0.9738,
+      "std_cv_auc": 0.0143
     },
     {
       "ranking": "RF",
       "classifier": "AdaBoost",
       "n_features": 2,
-      "mean_cv_auc": 0.9871,
-      "std_cv_auc": 0.0099
+      "mean_cv_auc": 0.9931,
+      "std_cv_auc": 0.0061
     },
     {
       "ranking": "RF",
       "classifier": "AdaBoost",
       "n_features": 3,
-      "mean_cv_auc": 0.9847,
-      "std_cv_auc": 0.0112
+      "mean_cv_auc": 0.9894,
+      "std_cv_auc": 0.0066
     },
     {
       "ranking": "RF",
       "classifier": "AdaBoost",
       "n_features": 4,
-      "mean_cv_auc": 0.981,
-      "std_cv_auc": 0.0179
+      "mean_cv_auc": 0.9835,
+      "std_cv_auc": 0.0188
     },
     {
       "ranking": "RF",
       "classifier": "AdaBoost",
       "n_features": 5,
-      "mean_cv_auc": 0.9859,
-      "std_cv_auc": 0.0125
+      "mean_cv_auc": 0.9836,
+      "std_cv_auc": 0.0157
     },
     {
       "ranking": "RF",
       "classifier": "AdaBoost",
       "n_features": 6,
-      "mean_cv_auc": 0.9878,
-      "std_cv_auc": 0.0147
+      "mean_cv_auc": 0.9815,
+      "std_cv_auc": 0.0134
     },
     {
       "ranking": "RF",
       "classifier": "AdaBoost",
       "n_features": 7,
-      "mean_cv_auc": 0.9884,
-      "std_cv_auc": 0.014
+      "mean_cv_auc": 0.9907,
+      "std_cv_auc": 0.0168
     },
     {
       "ranking": "RF",
       "classifier": "AdaBoost",
       "n_features": 8,
-      "mean_cv_auc": 0.9909,
-      "std_cv_auc": 0.0123
+      "mean_cv_auc": 0.9887,
+      "std_cv_auc": 0.0151
     },
     {
       "ranking": "RF",
       "classifier": "AdaBoost",
       "n_features": 9,
-      "mean_cv_auc": 0.9898,
-      "std_cv_auc": 0.0114
-    },
-    {
-      "ranking": "RF",
-      "classifier": "AdaBoost",
-      "n_features": 10,
-      "mean_cv_auc": 0.9894,
-      "std_cv_auc": 0.0125
-    },
-    {
-      "ranking": "RF",
-      "classifier": "AdaBoost",
-      "n_features": 11,
-      "mean_cv_auc": 0.9907,
-      "std_cv_auc": 0.0106
-    },
-    {
-      "ranking": "RF",
-      "classifier": "AdaBoost",
-      "n_features": 12,
-      "mean_cv_auc": 0.9906,
-      "std_cv_auc": 0.0112
-    },
-    {
-      "ranking": "RF",
-      "classifier": "AdaBoost",
-      "n_features": 13,
-      "mean_cv_auc": 0.9909,
-      "std_cv_auc": 0.0115
-    },
-    {
-      "ranking": "RF",
-      "classifier": "AdaBoost",
-      "n_features": 14,
-      "mean_cv_auc": 0.9917,
+      "mean_cv_auc": 0.9866,
       "std_cv_auc": 0.0126
     },
     {
       "ranking": "RF",
       "classifier": "AdaBoost",
+      "n_features": 10,
+      "mean_cv_auc": 0.9859,
+      "std_cv_auc": 0.0135
+    },
+    {
+      "ranking": "RF",
+      "classifier": "AdaBoost",
+      "n_features": 11,
+      "mean_cv_auc": 0.9862,
+      "std_cv_auc": 0.0141
+    },
+    {
+      "ranking": "RF",
+      "classifier": "AdaBoost",
+      "n_features": 12,
+      "mean_cv_auc": 0.9859,
+      "std_cv_auc": 0.0151
+    },
+    {
+      "ranking": "RF",
+      "classifier": "AdaBoost",
+      "n_features": 13,
+      "mean_cv_auc": 0.9812,
+      "std_cv_auc": 0.0162
+    },
+    {
+      "ranking": "RF",
+      "classifier": "AdaBoost",
+      "n_features": 14,
+      "mean_cv_auc": 0.9878,
+      "std_cv_auc": 0.0127
+    },
+    {
+      "ranking": "RF",
+      "classifier": "AdaBoost",
       "n_features": 15,
-      "mean_cv_auc": 0.9923,
-      "std_cv_auc": 0.0078
+      "mean_cv_auc": 0.9885,
+      "std_cv_auc": 0.0103
     },
     {
       "ranking": "RF",
       "classifier": "AdaBoost",
       "n_features": 16,
-      "mean_cv_auc": 0.9935,
-      "std_cv_auc": 0.0097
+      "mean_cv_auc": 0.9862,
+      "std_cv_auc": 0.0118
     },
     {
       "ranking": "RF",
       "classifier": "AdaBoost",
       "n_features": 17,
-      "mean_cv_auc": 0.9939,
-      "std_cv_auc": 0.0064
+      "mean_cv_auc": 0.9775,
+      "std_cv_auc": 0.0253
     },
     {
       "ranking": "RF",
       "classifier": "AdaBoost",
       "n_features": 18,
-      "mean_cv_auc": 0.9917,
-      "std_cv_auc": 0.0073
+      "mean_cv_auc": 0.9818,
+      "std_cv_auc": 0.0219
     },
     {
       "ranking": "RF",
       "classifier": "AdaBoost",
       "n_features": 19,
-      "mean_cv_auc": 0.9913,
-      "std_cv_auc": 0.0114
+      "mean_cv_auc": 0.9834,
+      "std_cv_auc": 0.0236
     },
     {
       "ranking": "RF",
       "classifier": "AdaBoost",
       "n_features": 20,
-      "mean_cv_auc": 0.9889,
-      "std_cv_auc": 0.0098
+      "mean_cv_auc": 0.9789,
+      "std_cv_auc": 0.0232
     },
     {
       "ranking": "RF",
       "classifier": "AdaBoost",
       "n_features": 21,
-      "mean_cv_auc": 0.9889,
-      "std_cv_auc": 0.0098
+      "mean_cv_auc": 0.9838,
+      "std_cv_auc": 0.0244
     },
     {
       "ranking": "RF",
       "classifier": "AdaBoost",
       "n_features": 22,
-      "mean_cv_auc": 0.9928,
-      "std_cv_auc": 0.0085
+      "mean_cv_auc": 0.9846,
+      "std_cv_auc": 0.0254
     },
     {
       "ranking": "RF",
       "classifier": "AdaBoost",
       "n_features": 23,
-      "mean_cv_auc": 0.9896,
-      "std_cv_auc": 0.0102
+      "mean_cv_auc": 0.9846,
+      "std_cv_auc": 0.0254
     },
     {
       "ranking": "RF",
       "classifier": "AdaBoost",
       "n_features": 24,
-      "mean_cv_auc": 0.9928,
-      "std_cv_auc": 0.0071
+      "mean_cv_auc": 0.983,
+      "std_cv_auc": 0.0294
     },
     {
       "ranking": "RF",
       "classifier": "AdaBoost",
       "n_features": 25,
-      "mean_cv_auc": 0.9942,
-      "std_cv_auc": 0.0091
+      "mean_cv_auc": 0.9828,
+      "std_cv_auc": 0.0262
     },
     {
       "ranking": "RF",
       "classifier": "AdaBoost",
       "n_features": 26,
-      "mean_cv_auc": 0.9935,
-      "std_cv_auc": 0.0087
+      "mean_cv_auc": 0.9835,
+      "std_cv_auc": 0.0247
     },
     {
       "ranking": "RF",
       "classifier": "RandomForest",
       "n_features": 1,
-      "mean_cv_auc": 0.9698,
-      "std_cv_auc": 0.0257
+      "mean_cv_auc": 0.9137,
+      "std_cv_auc": 0.0422
     },
     {
       "ranking": "RF",
       "classifier": "RandomForest",
       "n_features": 2,
-      "mean_cv_auc": 0.9908,
-      "std_cv_auc": 0.0074
+      "mean_cv_auc": 0.9643,
+      "std_cv_auc": 0.0192
     },
     {
       "ranking": "RF",
       "classifier": "RandomForest",
       "n_features": 3,
-      "mean_cv_auc": 0.9846,
-      "std_cv_auc": 0.0097
+      "mean_cv_auc": 0.977,
+      "std_cv_auc": 0.0189
     },
     {
       "ranking": "RF",
       "classifier": "RandomForest",
       "n_features": 4,
-      "mean_cv_auc": 0.9856,
-      "std_cv_auc": 0.0117
+      "mean_cv_auc": 0.9772,
+      "std_cv_auc": 0.0153
     },
     {
       "ranking": "RF",
       "classifier": "RandomForest",
       "n_features": 5,
-      "mean_cv_auc": 0.9864,
-      "std_cv_auc": 0.0138
+      "mean_cv_auc": 0.9737,
+      "std_cv_auc": 0.024
     },
     {
       "ranking": "RF",
       "classifier": "RandomForest",
       "n_features": 6,
-      "mean_cv_auc": 0.988,
-      "std_cv_auc": 0.0123
+      "mean_cv_auc": 0.9735,
+      "std_cv_auc": 0.0234
     },
     {
       "ranking": "RF",
       "classifier": "RandomForest",
       "n_features": 7,
-      "mean_cv_auc": 0.9878,
-      "std_cv_auc": 0.0148
+      "mean_cv_auc": 0.9783,
+      "std_cv_auc": 0.0167
     },
     {
       "ranking": "RF",
       "classifier": "RandomForest",
       "n_features": 8,
       "mean_cv_auc": 0.9902,
-      "std_cv_auc": 0.0136
+      "std_cv_auc": 0.0088
     },
     {
       "ranking": "RF",
       "classifier": "RandomForest",
       "n_features": 9,
-      "mean_cv_auc": 0.9889,
-      "std_cv_auc": 0.012
-    },
-    {
-      "ranking": "RF",
-      "classifier": "RandomForest",
-      "n_features": 10,
-      "mean_cv_auc": 0.9906,
-      "std_cv_auc": 0.0101
-    },
-    {
-      "ranking": "RF",
-      "classifier": "RandomForest",
-      "n_features": 11,
-      "mean_cv_auc": 0.9913,
-      "std_cv_auc": 0.0098
-    },
-    {
-      "ranking": "RF",
-      "classifier": "RandomForest",
-      "n_features": 12,
-      "mean_cv_auc": 0.9917,
+      "mean_cv_auc": 0.9911,
       "std_cv_auc": 0.0094
     },
     {
       "ranking": "RF",
       "classifier": "RandomForest",
+      "n_features": 10,
+      "mean_cv_auc": 0.9903,
+      "std_cv_auc": 0.012
+    },
+    {
+      "ranking": "RF",
+      "classifier": "RandomForest",
+      "n_features": 11,
+      "mean_cv_auc": 0.9888,
+      "std_cv_auc": 0.0156
+    },
+    {
+      "ranking": "RF",
+      "classifier": "RandomForest",
+      "n_features": 12,
+      "mean_cv_auc": 0.9858,
+      "std_cv_auc": 0.0117
+    },
+    {
+      "ranking": "RF",
+      "classifier": "RandomForest",
       "n_features": 13,
-      "mean_cv_auc": 0.9921,
-      "std_cv_auc": 0.01
+      "mean_cv_auc": 0.9875,
+      "std_cv_auc": 0.0116
     },
     {
       "ranking": "RF",
       "classifier": "RandomForest",
       "n_features": 14,
-      "mean_cv_auc": 0.9917,
-      "std_cv_auc": 0.0098
+      "mean_cv_auc": 0.9856,
+      "std_cv_auc": 0.0096
     },
     {
       "ranking": "RF",
       "classifier": "RandomForest",
       "n_features": 15,
-      "mean_cv_auc": 0.9899,
-      "std_cv_auc": 0.0109
+      "mean_cv_auc": 0.9834,
+      "std_cv_auc": 0.0132
     },
     {
       "ranking": "RF",
       "classifier": "RandomForest",
       "n_features": 16,
-      "mean_cv_auc": 0.9924,
-      "std_cv_auc": 0.0106
+      "mean_cv_auc": 0.9762,
+      "std_cv_auc": 0.0198
     },
     {
       "ranking": "RF",
       "classifier": "RandomForest",
       "n_features": 17,
-      "mean_cv_auc": 0.9948,
-      "std_cv_auc": 0.005
+      "mean_cv_auc": 0.9796,
+      "std_cv_auc": 0.0096
     },
     {
       "ranking": "RF",
       "classifier": "RandomForest",
       "n_features": 18,
-      "mean_cv_auc": 0.9915,
-      "std_cv_auc": 0.0081
+      "mean_cv_auc": 0.9812,
+      "std_cv_auc": 0.0135
     },
     {
       "ranking": "RF",
       "classifier": "RandomForest",
       "n_features": 19,
-      "mean_cv_auc": 0.9914,
-      "std_cv_auc": 0.0078
+      "mean_cv_auc": 0.9808,
+      "std_cv_auc": 0.0172
     },
     {
       "ranking": "RF",
       "classifier": "RandomForest",
       "n_features": 20,
-      "mean_cv_auc": 0.993,
-      "std_cv_auc": 0.0068
+      "mean_cv_auc": 0.9758,
+      "std_cv_auc": 0.0202
     },
     {
       "ranking": "RF",
       "classifier": "RandomForest",
       "n_features": 21,
-      "mean_cv_auc": 0.9923,
-      "std_cv_auc": 0.0078
+      "mean_cv_auc": 0.9846,
+      "std_cv_auc": 0.0116
     },
     {
       "ranking": "RF",
       "classifier": "RandomForest",
       "n_features": 22,
-      "mean_cv_auc": 0.992,
-      "std_cv_auc": 0.0104
+      "mean_cv_auc": 0.9823,
+      "std_cv_auc": 0.0198
     },
     {
       "ranking": "RF",
       "classifier": "RandomForest",
       "n_features": 23,
-      "mean_cv_auc": 0.9904,
-      "std_cv_auc": 0.0093
+      "mean_cv_auc": 0.9799,
+      "std_cv_auc": 0.0178
     },
     {
       "ranking": "RF",
       "classifier": "RandomForest",
       "n_features": 24,
-      "mean_cv_auc": 0.9931,
-      "std_cv_auc": 0.0082
+      "mean_cv_auc": 0.9811,
+      "std_cv_auc": 0.0152
     },
     {
       "ranking": "RF",
       "classifier": "RandomForest",
       "n_features": 25,
-      "mean_cv_auc": 0.9928,
-      "std_cv_auc": 0.0081
+      "mean_cv_auc": 0.9838,
+      "std_cv_auc": 0.0121
     },
     {
       "ranking": "RF",
       "classifier": "RandomForest",
       "n_features": 26,
-      "mean_cv_auc": 0.9943,
-      "std_cv_auc": 0.007
+      "mean_cv_auc": 0.9818,
+      "std_cv_auc": 0.0145
     },
     {
       "ranking": "RF",
       "classifier": "ExtraTree",
       "n_features": 1,
-      "mean_cv_auc": 0.9574,
-      "std_cv_auc": 0.0458
+      "mean_cv_auc": 0.8868,
+      "std_cv_auc": 0.0834
     },
     {
       "ranking": "RF",
       "classifier": "ExtraTree",
       "n_features": 2,
-      "mean_cv_auc": 0.9938,
-      "std_cv_auc": 0.0057
+      "mean_cv_auc": 0.9819,
+      "std_cv_auc": 0.0124
     },
     {
       "ranking": "RF",
       "classifier": "ExtraTree",
       "n_features": 3,
-      "mean_cv_auc": 0.9866,
-      "std_cv_auc": 0.0092
+      "mean_cv_auc": 0.9841,
+      "std_cv_auc": 0.0136
     },
     {
       "ranking": "RF",
       "classifier": "ExtraTree",
       "n_features": 4,
-      "mean_cv_auc": 0.9854,
-      "std_cv_auc": 0.0118
+      "mean_cv_auc": 0.9876,
+      "std_cv_auc": 0.0134
     },
     {
       "ranking": "RF",
       "classifier": "ExtraTree",
       "n_features": 5,
-      "mean_cv_auc": 0.9889,
-      "std_cv_auc": 0.0082
+      "mean_cv_auc": 0.9837,
+      "std_cv_auc": 0.0171
     },
     {
       "ranking": "RF",
       "classifier": "ExtraTree",
       "n_features": 6,
-      "mean_cv_auc": 0.9852,
-      "std_cv_auc": 0.0102
+      "mean_cv_auc": 0.9809,
+      "std_cv_auc": 0.0203
     },
     {
       "ranking": "RF",
       "classifier": "ExtraTree",
       "n_features": 7,
-      "mean_cv_auc": 0.9859,
-      "std_cv_auc": 0.0127
+      "mean_cv_auc": 0.995,
+      "std_cv_auc": 0.006
     },
     {
       "ranking": "RF",
       "classifier": "ExtraTree",
       "n_features": 8,
-      "mean_cv_auc": 0.9899,
-      "std_cv_auc": 0.0127
+      "mean_cv_auc": 0.9829,
+      "std_cv_auc": 0.0191
     },
     {
       "ranking": "RF",
       "classifier": "ExtraTree",
       "n_features": 9,
-      "mean_cv_auc": 0.9906,
-      "std_cv_auc": 0.0105
+      "mean_cv_auc": 0.9836,
+      "std_cv_auc": 0.0216
     },
     {
       "ranking": "RF",
       "classifier": "ExtraTree",
       "n_features": 10,
-      "mean_cv_auc": 0.9884,
-      "std_cv_auc": 0.0089
+      "mean_cv_auc": 0.9889,
+      "std_cv_auc": 0.0171
     },
     {
       "ranking": "RF",
       "classifier": "ExtraTree",
       "n_features": 11,
-      "mean_cv_auc": 0.99,
-      "std_cv_auc": 0.011
+      "mean_cv_auc": 0.9846,
+      "std_cv_auc": 0.0217
     },
     {
       "ranking": "RF",
       "classifier": "ExtraTree",
       "n_features": 12,
-      "mean_cv_auc": 0.9888,
-      "std_cv_auc": 0.0095
+      "mean_cv_auc": 0.9846,
+      "std_cv_auc": 0.0181
     },
     {
       "ranking": "RF",
       "classifier": "ExtraTree",
       "n_features": 13,
-      "mean_cv_auc": 0.9879,
-      "std_cv_auc": 0.0109
+      "mean_cv_auc": 0.9854,
+      "std_cv_auc": 0.0136
     },
     {
       "ranking": "RF",
       "classifier": "ExtraTree",
       "n_features": 14,
-      "mean_cv_auc": 0.9888,
-      "std_cv_auc": 0.0099
+      "mean_cv_auc": 0.9698,
+      "std_cv_auc": 0.0313
     },
     {
       "ranking": "RF",
       "classifier": "ExtraTree",
       "n_features": 15,
-      "mean_cv_auc": 0.9888,
-      "std_cv_auc": 0.0109
+      "mean_cv_auc": 0.9791,
+      "std_cv_auc": 0.0208
     },
     {
       "ranking": "RF",
       "classifier": "ExtraTree",
       "n_features": 16,
-      "mean_cv_auc": 0.9899,
-      "std_cv_auc": 0.0089
+      "mean_cv_auc": 0.9826,
+      "std_cv_auc": 0.0227
     },
     {
       "ranking": "RF",
       "classifier": "ExtraTree",
       "n_features": 17,
-      "mean_cv_auc": 0.9924,
-      "std_cv_auc": 0.0085
+      "mean_cv_auc": 0.9876,
+      "std_cv_auc": 0.0129
     },
     {
       "ranking": "RF",
       "classifier": "ExtraTree",
       "n_features": 18,
-      "mean_cv_auc": 0.9919,
-      "std_cv_auc": 0.0086
+      "mean_cv_auc": 0.9896,
+      "std_cv_auc": 0.0096
     },
     {
       "ranking": "RF",
       "classifier": "ExtraTree",
       "n_features": 19,
-      "mean_cv_auc": 0.9915,
-      "std_cv_auc": 0.0104
+      "mean_cv_auc": 0.9851,
+      "std_cv_auc": 0.0171
     },
     {
       "ranking": "RF",
       "classifier": "ExtraTree",
       "n_features": 20,
-      "mean_cv_auc": 0.9904,
-      "std_cv_auc": 0.0087
+      "mean_cv_auc": 0.9828,
+      "std_cv_auc": 0.0211
     },
     {
       "ranking": "RF",
       "classifier": "ExtraTree",
       "n_features": 21,
-      "mean_cv_auc": 0.9901,
-      "std_cv_auc": 0.0101
+      "mean_cv_auc": 0.9854,
+      "std_cv_auc": 0.0143
     },
     {
       "ranking": "RF",
       "classifier": "ExtraTree",
       "n_features": 22,
-      "mean_cv_auc": 0.9893,
+      "mean_cv_auc": 0.9933,
       "std_cv_auc": 0.0103
     },
     {
       "ranking": "RF",
       "classifier": "ExtraTree",
       "n_features": 23,
-      "mean_cv_auc": 0.9898,
-      "std_cv_auc": 0.0104
+      "mean_cv_auc": 0.9954,
+      "std_cv_auc": 0.0062
     },
     {
       "ranking": "RF",
       "classifier": "ExtraTree",
       "n_features": 24,
-      "mean_cv_auc": 0.9928,
-      "std_cv_auc": 0.0104
+      "mean_cv_auc": 0.9892,
+      "std_cv_auc": 0.0114
     },
     {
       "ranking": "RF",
       "classifier": "ExtraTree",
       "n_features": 25,
-      "mean_cv_auc": 0.9937,
-      "std_cv_auc": 0.0073
+      "mean_cv_auc": 0.9947,
+      "std_cv_auc": 0.0105
     },
     {
       "ranking": "RF",
       "classifier": "ExtraTree",
       "n_features": 26,
-      "mean_cv_auc": 0.9946,
-      "std_cv_auc": 0.007
+      "mean_cv_auc": 0.9937,
+      "std_cv_auc": 0.0109
     },
     {
       "ranking": "RF",
       "classifier": "GradientBoosting",
       "n_features": 1,
-      "mean_cv_auc": 0.9823,
-      "std_cv_auc": 0.0161
+      "mean_cv_auc": 0.9452,
+      "std_cv_auc": 0.0587
     },
     {
       "ranking": "RF",
       "classifier": "GradientBoosting",
       "n_features": 2,
-      "mean_cv_auc": 0.9856,
-      "std_cv_auc": 0.0122
+      "mean_cv_auc": 0.9822,
+      "std_cv_auc": 0.0132
     },
     {
       "ranking": "RF",
       "classifier": "GradientBoosting",
       "n_features": 3,
-      "mean_cv_auc": 0.9883,
-      "std_cv_auc": 0.0128
+      "mean_cv_auc": 0.9871,
+      "std_cv_auc": 0.0121
     },
     {
       "ranking": "RF",
       "classifier": "GradientBoosting",
       "n_features": 4,
-      "mean_cv_auc": 0.9836,
-      "std_cv_auc": 0.0129
+      "mean_cv_auc": 0.9809,
+      "std_cv_auc": 0.014
     },
     {
       "ranking": "RF",
       "classifier": "GradientBoosting",
       "n_features": 5,
-      "mean_cv_auc": 0.9888,
-      "std_cv_auc": 0.0125
-    },
-    {
-      "ranking": "RF",
-      "classifier": "GradientBoosting",
-      "n_features": 6,
-      "mean_cv_auc": 0.987,
+      "mean_cv_auc": 0.9784,
       "std_cv_auc": 0.0128
     },
     {
       "ranking": "RF",
       "classifier": "GradientBoosting",
+      "n_features": 6,
+      "mean_cv_auc": 0.9783,
+      "std_cv_auc": 0.0168
+    },
+    {
+      "ranking": "RF",
+      "classifier": "GradientBoosting",
       "n_features": 7,
-      "mean_cv_auc": 0.9848,
+      "mean_cv_auc": 0.9851,
       "std_cv_auc": 0.015
     },
     {
       "ranking": "RF",
       "classifier": "GradientBoosting",
       "n_features": 8,
-      "mean_cv_auc": 0.9906,
-      "std_cv_auc": 0.0098
+      "mean_cv_auc": 0.9836,
+      "std_cv_auc": 0.0136
     },
     {
       "ranking": "RF",
       "classifier": "GradientBoosting",
       "n_features": 9,
-      "mean_cv_auc": 0.9884,
-      "std_cv_auc": 0.0124
+      "mean_cv_auc": 0.9822,
+      "std_cv_auc": 0.0192
     },
     {
       "ranking": "RF",
       "classifier": "GradientBoosting",
       "n_features": 10,
-      "mean_cv_auc": 0.987,
-      "std_cv_auc": 0.0134
+      "mean_cv_auc": 0.9837,
+      "std_cv_auc": 0.0211
     },
     {
       "ranking": "RF",
       "classifier": "GradientBoosting",
       "n_features": 11,
-      "mean_cv_auc": 0.9874,
-      "std_cv_auc": 0.0124
+      "mean_cv_auc": 0.9866,
+      "std_cv_auc": 0.0161
     },
     {
       "ranking": "RF",
       "classifier": "GradientBoosting",
       "n_features": 12,
-      "mean_cv_auc": 0.9899,
-      "std_cv_auc": 0.0121
+      "mean_cv_auc": 0.9825,
+      "std_cv_auc": 0.0147
     },
     {
       "ranking": "RF",
       "classifier": "GradientBoosting",
       "n_features": 13,
-      "mean_cv_auc": 0.9885,
-      "std_cv_auc": 0.0121
+      "mean_cv_auc": 0.9816,
+      "std_cv_auc": 0.0169
     },
     {
       "ranking": "RF",
       "classifier": "GradientBoosting",
       "n_features": 14,
-      "mean_cv_auc": 0.9874,
-      "std_cv_auc": 0.0122
+      "mean_cv_auc": 0.9794,
+      "std_cv_auc": 0.0154
     },
     {
       "ranking": "RF",
       "classifier": "GradientBoosting",
       "n_features": 15,
-      "mean_cv_auc": 0.9787,
-      "std_cv_auc": 0.0189
-    },
-    {
-      "ranking": "RF",
-      "classifier": "GradientBoosting",
-      "n_features": 16,
-      "mean_cv_auc": 0.9841,
+      "mean_cv_auc": 0.9798,
       "std_cv_auc": 0.0146
     },
     {
       "ranking": "RF",
       "classifier": "GradientBoosting",
-      "n_features": 17,
-      "mean_cv_auc": 0.983,
-      "std_cv_auc": 0.0163
-    },
-    {
-      "ranking": "RF",
-      "classifier": "GradientBoosting",
-      "n_features": 18,
-      "mean_cv_auc": 0.9866,
+      "n_features": 16,
+      "mean_cv_auc": 0.9797,
       "std_cv_auc": 0.0131
     },
     {
       "ranking": "RF",
       "classifier": "GradientBoosting",
+      "n_features": 17,
+      "mean_cv_auc": 0.9698,
+      "std_cv_auc": 0.0309
+    },
+    {
+      "ranking": "RF",
+      "classifier": "GradientBoosting",
+      "n_features": 18,
+      "mean_cv_auc": 0.9775,
+      "std_cv_auc": 0.0238
+    },
+    {
+      "ranking": "RF",
+      "classifier": "GradientBoosting",
       "n_features": 19,
-      "mean_cv_auc": 0.9848,
-      "std_cv_auc": 0.0147
+      "mean_cv_auc": 0.9355,
+      "std_cv_auc": 0.06
     },
     {
       "ranking": "RF",
       "classifier": "GradientBoosting",
       "n_features": 20,
-      "mean_cv_auc": 0.9863,
-      "std_cv_auc": 0.0123
+      "mean_cv_auc": 0.9357,
+      "std_cv_auc": 0.0614
     },
     {
       "ranking": "RF",
       "classifier": "GradientBoosting",
       "n_features": 21,
-      "mean_cv_auc": 0.9862,
-      "std_cv_auc": 0.0132
+      "mean_cv_auc": 0.9372,
+      "std_cv_auc": 0.0587
     },
     {
       "ranking": "RF",
       "classifier": "GradientBoosting",
       "n_features": 22,
-      "mean_cv_auc": 0.9844,
-      "std_cv_auc": 0.0162
+      "mean_cv_auc": 0.94,
+      "std_cv_auc": 0.0583
     },
     {
       "ranking": "RF",
       "classifier": "GradientBoosting",
       "n_features": 23,
-      "mean_cv_auc": 0.9874,
-      "std_cv_auc": 0.0114
+      "mean_cv_auc": 0.94,
+      "std_cv_auc": 0.0583
     },
     {
       "ranking": "RF",
       "classifier": "GradientBoosting",
       "n_features": 24,
-      "mean_cv_auc": 0.9856,
-      "std_cv_auc": 0.013
+      "mean_cv_auc": 0.9372,
+      "std_cv_auc": 0.0615
     },
     {
       "ranking": "RF",
       "classifier": "GradientBoosting",
       "n_features": 25,
-      "mean_cv_auc": 0.9845,
-      "std_cv_auc": 0.0147
+      "mean_cv_auc": 0.939,
+      "std_cv_auc": 0.0574
     },
     {
       "ranking": "RF",
       "classifier": "GradientBoosting",
       "n_features": 26,
-      "mean_cv_auc": 0.9863,
-      "std_cv_auc": 0.0128
+      "mean_cv_auc": 0.9387,
+      "std_cv_auc": 0.0581
     },
     {
       "ranking": "RF",
       "classifier": "SVM",
       "n_features": 1,
-      "mean_cv_auc": 0.9316,
-      "std_cv_auc": 0.0347
+      "mean_cv_auc": 0.9384,
+      "std_cv_auc": 0.0586
     },
     {
       "ranking": "RF",
       "classifier": "SVM",
       "n_features": 2,
-      "mean_cv_auc": 0.9729,
-      "std_cv_auc": 0.0188
+      "mean_cv_auc": 0.9798,
+      "std_cv_auc": 0.0228
     },
     {
       "ranking": "RF",
       "classifier": "SVM",
       "n_features": 3,
-      "mean_cv_auc": 0.9784,
-      "std_cv_auc": 0.0128
+      "mean_cv_auc": 0.9884,
+      "std_cv_auc": 0.0147
     },
     {
       "ranking": "RF",
       "classifier": "SVM",
       "n_features": 4,
-      "mean_cv_auc": 0.9801,
-      "std_cv_auc": 0.0166
+      "mean_cv_auc": 0.9848,
+      "std_cv_auc": 0.0225
     },
     {
       "ranking": "RF",
       "classifier": "SVM",
       "n_features": 5,
-      "mean_cv_auc": 0.9835,
-      "std_cv_auc": 0.0118
+      "mean_cv_auc": 0.9879,
+      "std_cv_auc": 0.0171
     },
     {
       "ranking": "RF",
       "classifier": "SVM",
       "n_features": 6,
-      "mean_cv_auc": 0.9849,
-      "std_cv_auc": 0.0107
+      "mean_cv_auc": 0.9862,
+      "std_cv_auc": 0.0196
     },
     {
       "ranking": "RF",
       "classifier": "SVM",
       "n_features": 7,
-      "mean_cv_auc": 0.9853,
-      "std_cv_auc": 0.011
+      "mean_cv_auc": 0.9912,
+      "std_cv_auc": 0.0122
     },
     {
       "ranking": "RF",
       "classifier": "SVM",
       "n_features": 8,
-      "mean_cv_auc": 0.9875,
-      "std_cv_auc": 0.0105
+      "mean_cv_auc": 0.9937,
+      "std_cv_auc": 0.0037
     },
     {
       "ranking": "RF",
       "classifier": "SVM",
       "n_features": 9,
-      "mean_cv_auc": 0.9858,
-      "std_cv_auc": 0.0093
+      "mean_cv_auc": 0.9915,
+      "std_cv_auc": 0.0058
     },
     {
       "ranking": "RF",
       "classifier": "SVM",
       "n_features": 10,
-      "mean_cv_auc": 0.9869,
-      "std_cv_auc": 0.0092
+      "mean_cv_auc": 0.9929,
+      "std_cv_auc": 0.0047
     },
     {
       "ranking": "RF",
       "classifier": "SVM",
       "n_features": 11,
-      "mean_cv_auc": 0.9873,
-      "std_cv_auc": 0.0086
+      "mean_cv_auc": 0.9909,
+      "std_cv_auc": 0.0089
     },
     {
       "ranking": "RF",
       "classifier": "SVM",
       "n_features": 12,
-      "mean_cv_auc": 0.9868,
-      "std_cv_auc": 0.009
+      "mean_cv_auc": 0.9895,
+      "std_cv_auc": 0.0071
     },
     {
       "ranking": "RF",
       "classifier": "SVM",
       "n_features": 13,
-      "mean_cv_auc": 0.9868,
-      "std_cv_auc": 0.0097
+      "mean_cv_auc": 0.9902,
+      "std_cv_auc": 0.0056
     },
     {
       "ranking": "RF",
       "classifier": "SVM",
       "n_features": 14,
-      "mean_cv_auc": 0.9871,
-      "std_cv_auc": 0.0098
+      "mean_cv_auc": 0.9903,
+      "std_cv_auc": 0.0057
     },
     {
       "ranking": "RF",
       "classifier": "SVM",
       "n_features": 15,
-      "mean_cv_auc": 0.9872,
-      "std_cv_auc": 0.0102
+      "mean_cv_auc": 0.9914,
+      "std_cv_auc": 0.0055
     },
     {
       "ranking": "RF",
       "classifier": "SVM",
       "n_features": 16,
-      "mean_cv_auc": 0.9875,
-      "std_cv_auc": 0.01
+      "mean_cv_auc": 0.9921,
+      "std_cv_auc": 0.0055
     },
     {
       "ranking": "RF",
       "classifier": "SVM",
       "n_features": 17,
-      "mean_cv_auc": 0.9903,
-      "std_cv_auc": 0.0089
+      "mean_cv_auc": 0.9924,
+      "std_cv_auc": 0.0078
     },
     {
       "ranking": "RF",
       "classifier": "SVM",
       "n_features": 18,
-      "mean_cv_auc": 0.9904,
-      "std_cv_auc": 0.0096
+      "mean_cv_auc": 0.9925,
+      "std_cv_auc": 0.0087
     },
     {
       "ranking": "RF",
       "classifier": "SVM",
       "n_features": 19,
-      "mean_cv_auc": 0.99,
-      "std_cv_auc": 0.0107
+      "mean_cv_auc": 0.9906,
+      "std_cv_auc": 0.0078
     },
     {
       "ranking": "RF",
       "classifier": "SVM",
       "n_features": 20,
-      "mean_cv_auc": 0.9886,
-      "std_cv_auc": 0.0117
+      "mean_cv_auc": 0.9914,
+      "std_cv_auc": 0.0082
     },
     {
       "ranking": "RF",
       "classifier": "SVM",
       "n_features": 21,
-      "mean_cv_auc": 0.9889,
-      "std_cv_auc": 0.0114
+      "mean_cv_auc": 0.9932,
+      "std_cv_auc": 0.0082
     },
     {
       "ranking": "RF",
       "classifier": "SVM",
       "n_features": 22,
-      "mean_cv_auc": 0.9897,
-      "std_cv_auc": 0.0101
+      "mean_cv_auc": 0.9947,
+      "std_cv_auc": 0.0097
     },
     {
       "ranking": "RF",
       "classifier": "SVM",
       "n_features": 23,
-      "mean_cv_auc": 0.9907,
-      "std_cv_auc": 0.0089
+      "mean_cv_auc": 0.9947,
+      "std_cv_auc": 0.0097
     },
     {
       "ranking": "RF",
       "classifier": "SVM",
       "n_features": 24,
-      "mean_cv_auc": 0.9918,
-      "std_cv_auc": 0.008
+      "mean_cv_auc": 0.9954,
+      "std_cv_auc": 0.0092
     },
     {
       "ranking": "RF",
       "classifier": "SVM",
       "n_features": 25,
-      "mean_cv_auc": 0.9918,
-      "std_cv_auc": 0.008
+      "mean_cv_auc": 0.9944,
+      "std_cv_auc": 0.0112
     },
     {
       "ranking": "RF",
       "classifier": "SVM",
       "n_features": 26,
-      "mean_cv_auc": 0.9918,
-      "std_cv_auc": 0.008
+      "mean_cv_auc": 0.9947,
+      "std_cv_auc": 0.0105
     },
     {
       "ranking": "RF",
       "classifier": "KNN",
       "n_features": 1,
-      "mean_cv_auc": 0.9566,
-      "std_cv_auc": 0.025
+      "mean_cv_auc": 0.932,
+      "std_cv_auc": 0.0275
     },
     {
       "ranking": "RF",
       "classifier": "KNN",
       "n_features": 2,
-      "mean_cv_auc": 0.9743,
-      "std_cv_auc": 0.0098
+      "mean_cv_auc": 0.9557,
+      "std_cv_auc": 0.0336
     },
     {
       "ranking": "RF",
       "classifier": "KNN",
       "n_features": 3,
-      "mean_cv_auc": 0.9478,
-      "std_cv_auc": 0.0256
+      "mean_cv_auc": 0.9374,
+      "std_cv_auc": 0.0479
     },
     {
       "ranking": "RF",
       "classifier": "KNN",
       "n_features": 4,
-      "mean_cv_auc": 0.952,
-      "std_cv_auc": 0.0382
+      "mean_cv_auc": 0.9347,
+      "std_cv_auc": 0.0541
     },
     {
       "ranking": "RF",
       "classifier": "KNN",
       "n_features": 5,
-      "mean_cv_auc": 0.9682,
-      "std_cv_auc": 0.0217
+      "mean_cv_auc": 0.9268,
+      "std_cv_auc": 0.0652
     },
     {
       "ranking": "RF",
       "classifier": "KNN",
       "n_features": 6,
-      "mean_cv_auc": 0.9763,
+      "mean_cv_auc": 0.9251,
+      "std_cv_auc": 0.0683
+    },
+    {
+      "ranking": "RF",
+      "classifier": "KNN",
+      "n_features": 7,
+      "mean_cv_auc": 0.9373,
+      "std_cv_auc": 0.0488
+    },
+    {
+      "ranking": "RF",
+      "classifier": "KNN",
+      "n_features": 8,
+      "mean_cv_auc": 0.9395,
+      "std_cv_auc": 0.0305
+    },
+    {
+      "ranking": "RF",
+      "classifier": "KNN",
+      "n_features": 9,
+      "mean_cv_auc": 0.9591,
+      "std_cv_auc": 0.0347
+    },
+    {
+      "ranking": "RF",
+      "classifier": "KNN",
+      "n_features": 10,
+      "mean_cv_auc": 0.9675,
+      "std_cv_auc": 0.0276
+    },
+    {
+      "ranking": "RF",
+      "classifier": "KNN",
+      "n_features": 11,
+      "mean_cv_auc": 0.9593,
+      "std_cv_auc": 0.0198
+    },
+    {
+      "ranking": "RF",
+      "classifier": "KNN",
+      "n_features": 12,
+      "mean_cv_auc": 0.9712,
+      "std_cv_auc": 0.0181
+    },
+    {
+      "ranking": "RF",
+      "classifier": "KNN",
+      "n_features": 13,
+      "mean_cv_auc": 0.9727,
       "std_cv_auc": 0.019
     },
     {
       "ranking": "RF",
       "classifier": "KNN",
-      "n_features": 7,
-      "mean_cv_auc": 0.9774,
-      "std_cv_auc": 0.0182
-    },
-    {
-      "ranking": "RF",
-      "classifier": "KNN",
-      "n_features": 8,
-      "mean_cv_auc": 0.9838,
-      "std_cv_auc": 0.007
-    },
-    {
-      "ranking": "RF",
-      "classifier": "KNN",
-      "n_features": 9,
-      "mean_cv_auc": 0.9755,
-      "std_cv_auc": 0.0181
-    },
-    {
-      "ranking": "RF",
-      "classifier": "KNN",
-      "n_features": 10,
-      "mean_cv_auc": 0.9764,
-      "std_cv_auc": 0.0181
-    },
-    {
-      "ranking": "RF",
-      "classifier": "KNN",
-      "n_features": 11,
-      "mean_cv_auc": 0.9828,
-      "std_cv_auc": 0.0099
-    },
-    {
-      "ranking": "RF",
-      "classifier": "KNN",
-      "n_features": 12,
-      "mean_cv_auc": 0.9848,
-      "std_cv_auc": 0.0104
-    },
-    {
-      "ranking": "RF",
-      "classifier": "KNN",
-      "n_features": 13,
-      "mean_cv_auc": 0.9835,
-      "std_cv_auc": 0.0097
-    },
-    {
-      "ranking": "RF",
-      "classifier": "KNN",
       "n_features": 14,
-      "mean_cv_auc": 0.9835,
-      "std_cv_auc": 0.0102
+      "mean_cv_auc": 0.9666,
+      "std_cv_auc": 0.02
     },
     {
       "ranking": "RF",
       "classifier": "KNN",
       "n_features": 15,
-      "mean_cv_auc": 0.9822,
-      "std_cv_auc": 0.0095
+      "mean_cv_auc": 0.9715,
+      "std_cv_auc": 0.0208
     },
     {
       "ranking": "RF",
       "classifier": "KNN",
       "n_features": 16,
-      "mean_cv_auc": 0.9809,
-      "std_cv_auc": 0.0085
+      "mean_cv_auc": 0.9743,
+      "std_cv_auc": 0.0225
     },
     {
       "ranking": "RF",
       "classifier": "KNN",
       "n_features": 17,
-      "mean_cv_auc": 0.973,
-      "std_cv_auc": 0.0207
+      "mean_cv_auc": 0.9788,
+      "std_cv_auc": 0.0106
     },
     {
       "ranking": "RF",
       "classifier": "KNN",
       "n_features": 18,
-      "mean_cv_auc": 0.9759,
-      "std_cv_auc": 0.0141
+      "mean_cv_auc": 0.9726,
+      "std_cv_auc": 0.0084
     },
     {
       "ranking": "RF",
       "classifier": "KNN",
       "n_features": 19,
-      "mean_cv_auc": 0.9773,
-      "std_cv_auc": 0.0127
+      "mean_cv_auc": 0.9692,
+      "std_cv_auc": 0.0125
     },
     {
       "ranking": "RF",
       "classifier": "KNN",
       "n_features": 20,
-      "mean_cv_auc": 0.9726,
-      "std_cv_auc": 0.0162
+      "mean_cv_auc": 0.9687,
+      "std_cv_auc": 0.0135
     },
     {
       "ranking": "RF",
       "classifier": "KNN",
       "n_features": 21,
-      "mean_cv_auc": 0.9726,
-      "std_cv_auc": 0.0162
+      "mean_cv_auc": 0.9656,
+      "std_cv_auc": 0.0122
     },
     {
       "ranking": "RF",
       "classifier": "KNN",
       "n_features": 22,
-      "mean_cv_auc": 0.9625,
-      "std_cv_auc": 0.0246
+      "mean_cv_auc": 0.9761,
+      "std_cv_auc": 0.0122
     },
     {
       "ranking": "RF",
       "classifier": "KNN",
       "n_features": 23,
-      "mean_cv_auc": 0.9604,
-      "std_cv_auc": 0.0373
+      "mean_cv_auc": 0.9761,
+      "std_cv_auc": 0.0122
     },
     {
       "ranking": "RF",
       "classifier": "KNN",
       "n_features": 24,
-      "mean_cv_auc": 0.9733,
-      "std_cv_auc": 0.0182
+      "mean_cv_auc": 0.9722,
+      "std_cv_auc": 0.0167
     },
     {
       "ranking": "RF",
       "classifier": "KNN",
       "n_features": 25,
-      "mean_cv_auc": 0.9757,
-      "std_cv_auc": 0.0156
+      "mean_cv_auc": 0.9668,
+      "std_cv_auc": 0.0154
     },
     {
       "ranking": "RF",
       "classifier": "KNN",
       "n_features": 26,
-      "mean_cv_auc": 0.9757,
-      "std_cv_auc": 0.0156
+      "mean_cv_auc": 0.9738,
+      "std_cv_auc": 0.0127
     },
     {
       "ranking": "RF",
       "classifier": "XGBoost",
       "n_features": 1,
-      "mean_cv_auc": 0.9766,
-      "std_cv_auc": 0.0181
+      "mean_cv_auc": 0.9391,
+      "std_cv_auc": 0.0453
     },
     {
       "ranking": "RF",
       "classifier": "XGBoost",
       "n_features": 2,
-      "mean_cv_auc": 0.9868,
-      "std_cv_auc": 0.0093
+      "mean_cv_auc": 0.9732,
+      "std_cv_auc": 0.0074
     },
     {
       "ranking": "RF",
       "classifier": "XGBoost",
       "n_features": 3,
-      "mean_cv_auc": 0.9843,
-      "std_cv_auc": 0.0112
+      "mean_cv_auc": 0.9811,
+      "std_cv_auc": 0.012
     },
     {
       "ranking": "RF",
       "classifier": "XGBoost",
       "n_features": 4,
-      "mean_cv_auc": 0.9766,
+      "mean_cv_auc": 0.9701,
+      "std_cv_auc": 0.0231
+    },
+    {
+      "ranking": "RF",
+      "classifier": "XGBoost",
+      "n_features": 5,
+      "mean_cv_auc": 0.9741,
       "std_cv_auc": 0.0194
     },
     {
       "ranking": "RF",
       "classifier": "XGBoost",
-      "n_features": 5,
-      "mean_cv_auc": 0.983,
-      "std_cv_auc": 0.0161
-    },
-    {
-      "ranking": "RF",
-      "classifier": "XGBoost",
       "n_features": 6,
-      "mean_cv_auc": 0.9812,
-      "std_cv_auc": 0.0176
+      "mean_cv_auc": 0.9669,
+      "std_cv_auc": 0.0294
     },
     {
       "ranking": "RF",
       "classifier": "XGBoost",
       "n_features": 7,
-      "mean_cv_auc": 0.9812,
-      "std_cv_auc": 0.0192
+      "mean_cv_auc": 0.9837,
+      "std_cv_auc": 0.0142
     },
     {
       "ranking": "RF",
       "classifier": "XGBoost",
       "n_features": 8,
-      "mean_cv_auc": 0.987,
-      "std_cv_auc": 0.0131
+      "mean_cv_auc": 0.9892,
+      "std_cv_auc": 0.0063
     },
     {
       "ranking": "RF",
       "classifier": "XGBoost",
       "n_features": 9,
-      "mean_cv_auc": 0.9863,
-      "std_cv_auc": 0.0128
+      "mean_cv_auc": 0.9848,
+      "std_cv_auc": 0.013
     },
     {
       "ranking": "RF",
       "classifier": "XGBoost",
       "n_features": 10,
-      "mean_cv_auc": 0.9842,
-      "std_cv_auc": 0.0124
+      "mean_cv_auc": 0.9868,
+      "std_cv_auc": 0.0141
     },
     {
       "ranking": "RF",
       "classifier": "XGBoost",
       "n_features": 11,
-      "mean_cv_auc": 0.9864,
-      "std_cv_auc": 0.0123
+      "mean_cv_auc": 0.9827,
+      "std_cv_auc": 0.0178
     },
     {
       "ranking": "RF",
       "classifier": "XGBoost",
       "n_features": 12,
-      "mean_cv_auc": 0.9877,
-      "std_cv_auc": 0.0115
+      "mean_cv_auc": 0.9839,
+      "std_cv_auc": 0.0145
     },
     {
       "ranking": "RF",
       "classifier": "XGBoost",
       "n_features": 13,
-      "mean_cv_auc": 0.987,
-      "std_cv_auc": 0.0129
+      "mean_cv_auc": 0.9828,
+      "std_cv_auc": 0.014
     },
     {
       "ranking": "RF",
       "classifier": "XGBoost",
       "n_features": 14,
-      "mean_cv_auc": 0.9874,
-      "std_cv_auc": 0.0136
+      "mean_cv_auc": 0.9835,
+      "std_cv_auc": 0.0139
     },
     {
       "ranking": "RF",
       "classifier": "XGBoost",
       "n_features": 15,
-      "mean_cv_auc": 0.9857,
-      "std_cv_auc": 0.0114
+      "mean_cv_auc": 0.9786,
+      "std_cv_auc": 0.0142
     },
     {
       "ranking": "RF",
       "classifier": "XGBoost",
       "n_features": 16,
-      "mean_cv_auc": 0.9856,
-      "std_cv_auc": 0.0119
+      "mean_cv_auc": 0.9815,
+      "std_cv_auc": 0.0142
     },
     {
       "ranking": "RF",
       "classifier": "XGBoost",
       "n_features": 17,
-      "mean_cv_auc": 0.9846,
-      "std_cv_auc": 0.0128
+      "mean_cv_auc": 0.9814,
+      "std_cv_auc": 0.0217
     },
     {
       "ranking": "RF",
       "classifier": "XGBoost",
       "n_features": 18,
-      "mean_cv_auc": 0.9842,
-      "std_cv_auc": 0.0149
+      "mean_cv_auc": 0.9798,
+      "std_cv_auc": 0.0254
     },
     {
       "ranking": "RF",
       "classifier": "XGBoost",
       "n_features": 19,
-      "mean_cv_auc": 0.9867,
-      "std_cv_auc": 0.0129
+      "mean_cv_auc": 0.971,
+      "std_cv_auc": 0.0378
     },
     {
       "ranking": "RF",
       "classifier": "XGBoost",
       "n_features": 20,
-      "mean_cv_auc": 0.984,
-      "std_cv_auc": 0.0135
+      "mean_cv_auc": 0.974,
+      "std_cv_auc": 0.0338
     },
     {
       "ranking": "RF",
       "classifier": "XGBoost",
       "n_features": 21,
-      "mean_cv_auc": 0.984,
-      "std_cv_auc": 0.0135
+      "mean_cv_auc": 0.9774,
+      "std_cv_auc": 0.0283
     },
     {
       "ranking": "RF",
       "classifier": "XGBoost",
       "n_features": 22,
-      "mean_cv_auc": 0.9832,
-      "std_cv_auc": 0.0159
+      "mean_cv_auc": 0.9763,
+      "std_cv_auc": 0.034
     },
     {
       "ranking": "RF",
       "classifier": "XGBoost",
       "n_features": 23,
-      "mean_cv_auc": 0.9853,
-      "std_cv_auc": 0.0123
+      "mean_cv_auc": 0.9763,
+      "std_cv_auc": 0.034
     },
     {
       "ranking": "RF",
       "classifier": "XGBoost",
       "n_features": 24,
-      "mean_cv_auc": 0.9833,
-      "std_cv_auc": 0.0151
+      "mean_cv_auc": 0.9795,
+      "std_cv_auc": 0.0319
     },
     {
       "ranking": "RF",
       "classifier": "XGBoost",
       "n_features": 25,
-      "mean_cv_auc": 0.9846,
-      "std_cv_auc": 0.0132
+      "mean_cv_auc": 0.9757,
+      "std_cv_auc": 0.035
     },
     {
       "ranking": "RF",
       "classifier": "XGBoost",
       "n_features": 26,
-      "mean_cv_auc": 0.984,
-      "std_cv_auc": 0.0142
+      "mean_cv_auc": 0.9751,
+      "std_cv_auc": 0.0321
     },
     {
       "ranking": "RF",
       "classifier": "LogisticRegression",
       "n_features": 1,
-      "mean_cv_auc": 0.9664,
-      "std_cv_auc": 0.016
+      "mean_cv_auc": 0.9756,
+      "std_cv_auc": 0.0248
     },
     {
       "ranking": "RF",
       "classifier": "LogisticRegression",
       "n_features": 2,
-      "mean_cv_auc": 0.9856,
-      "std_cv_auc": 0.0105
+      "mean_cv_auc": 0.9879,
+      "std_cv_auc": 0.017
     },
     {
       "ranking": "RF",
       "classifier": "LogisticRegression",
       "n_features": 3,
-      "mean_cv_auc": 0.9835,
-      "std_cv_auc": 0.0113
+      "mean_cv_auc": 0.9878,
+      "std_cv_auc": 0.0165
     },
     {
       "ranking": "RF",
       "classifier": "LogisticRegression",
       "n_features": 4,
-      "mean_cv_auc": 0.9833,
-      "std_cv_auc": 0.0161
+      "mean_cv_auc": 0.986,
+      "std_cv_auc": 0.0176
     },
     {
       "ranking": "RF",
       "classifier": "LogisticRegression",
       "n_features": 5,
-      "mean_cv_auc": 0.9827,
-      "std_cv_auc": 0.015
+      "mean_cv_auc": 0.9861,
+      "std_cv_auc": 0.0192
     },
     {
       "ranking": "RF",
       "classifier": "LogisticRegression",
       "n_features": 6,
-      "mean_cv_auc": 0.9827,
-      "std_cv_auc": 0.0163
+      "mean_cv_auc": 0.9872,
+      "std_cv_auc": 0.0204
     },
     {
       "ranking": "RF",
       "classifier": "LogisticRegression",
       "n_features": 7,
-      "mean_cv_auc": 0.9845,
-      "std_cv_auc": 0.0126
+      "mean_cv_auc": 0.9952,
+      "std_cv_auc": 0.0061
     },
     {
       "ranking": "RF",
       "classifier": "LogisticRegression",
       "n_features": 8,
-      "mean_cv_auc": 0.9863,
-      "std_cv_auc": 0.0117
+      "mean_cv_auc": 0.9949,
+      "std_cv_auc": 0.0067
     },
     {
       "ranking": "RF",
       "classifier": "LogisticRegression",
       "n_features": 9,
-      "mean_cv_auc": 0.986,
-      "std_cv_auc": 0.0117
-    },
-    {
-      "ranking": "RF",
-      "classifier": "LogisticRegression",
-      "n_features": 10,
-      "mean_cv_auc": 0.9856,
-      "std_cv_auc": 0.0118
-    },
-    {
-      "ranking": "RF",
-      "classifier": "LogisticRegression",
-      "n_features": 11,
-      "mean_cv_auc": 0.986,
-      "std_cv_auc": 0.0112
-    },
-    {
-      "ranking": "RF",
-      "classifier": "LogisticRegression",
-      "n_features": 12,
-      "mean_cv_auc": 0.9863,
-      "std_cv_auc": 0.0111
-    },
-    {
-      "ranking": "RF",
-      "classifier": "LogisticRegression",
-      "n_features": 13,
-      "mean_cv_auc": 0.9863,
-      "std_cv_auc": 0.0111
-    },
-    {
-      "ranking": "RF",
-      "classifier": "LogisticRegression",
-      "n_features": 14,
-      "mean_cv_auc": 0.9864,
-      "std_cv_auc": 0.0103
-    },
-    {
-      "ranking": "RF",
-      "classifier": "LogisticRegression",
-      "n_features": 15,
-      "mean_cv_auc": 0.9857,
-      "std_cv_auc": 0.0109
-    },
-    {
-      "ranking": "RF",
-      "classifier": "LogisticRegression",
-      "n_features": 16,
-      "mean_cv_auc": 0.9853,
-      "std_cv_auc": 0.011
-    },
-    {
-      "ranking": "RF",
-      "classifier": "LogisticRegression",
-      "n_features": 17,
-      "mean_cv_auc": 0.986,
-      "std_cv_auc": 0.009
-    },
-    {
-      "ranking": "RF",
-      "classifier": "LogisticRegression",
-      "n_features": 18,
-      "mean_cv_auc": 0.9856,
-      "std_cv_auc": 0.0101
-    },
-    {
-      "ranking": "RF",
-      "classifier": "LogisticRegression",
-      "n_features": 19,
-      "mean_cv_auc": 0.9856,
-      "std_cv_auc": 0.0097
-    },
-    {
-      "ranking": "RF",
-      "classifier": "LogisticRegression",
-      "n_features": 20,
-      "mean_cv_auc": 0.9846,
-      "std_cv_auc": 0.0106
-    },
-    {
-      "ranking": "RF",
-      "classifier": "LogisticRegression",
-      "n_features": 21,
-      "mean_cv_auc": 0.9842,
-      "std_cv_auc": 0.011
-    },
-    {
-      "ranking": "RF",
-      "classifier": "LogisticRegression",
-      "n_features": 22,
-      "mean_cv_auc": 0.9846,
-      "std_cv_auc": 0.0108
-    },
-    {
-      "ranking": "RF",
-      "classifier": "LogisticRegression",
-      "n_features": 23,
-      "mean_cv_auc": 0.9863,
-      "std_cv_auc": 0.0118
-    },
-    {
-      "ranking": "RF",
-      "classifier": "LogisticRegression",
-      "n_features": 24,
-      "mean_cv_auc": 0.9906,
+      "mean_cv_auc": 0.9911,
       "std_cv_auc": 0.0095
     },
     {
       "ranking": "RF",
       "classifier": "LogisticRegression",
+      "n_features": 10,
+      "mean_cv_auc": 0.9911,
+      "std_cv_auc": 0.0095
+    },
+    {
+      "ranking": "RF",
+      "classifier": "LogisticRegression",
+      "n_features": 11,
+      "mean_cv_auc": 0.9902,
+      "std_cv_auc": 0.0107
+    },
+    {
+      "ranking": "RF",
+      "classifier": "LogisticRegression",
+      "n_features": 12,
+      "mean_cv_auc": 0.987,
+      "std_cv_auc": 0.0112
+    },
+    {
+      "ranking": "RF",
+      "classifier": "LogisticRegression",
+      "n_features": 13,
+      "mean_cv_auc": 0.9874,
+      "std_cv_auc": 0.0124
+    },
+    {
+      "ranking": "RF",
+      "classifier": "LogisticRegression",
+      "n_features": 14,
+      "mean_cv_auc": 0.9877,
+      "std_cv_auc": 0.0117
+    },
+    {
+      "ranking": "RF",
+      "classifier": "LogisticRegression",
+      "n_features": 15,
+      "mean_cv_auc": 0.9936,
+      "std_cv_auc": 0.0055
+    },
+    {
+      "ranking": "RF",
+      "classifier": "LogisticRegression",
+      "n_features": 16,
+      "mean_cv_auc": 0.9929,
+      "std_cv_auc": 0.006
+    },
+    {
+      "ranking": "RF",
+      "classifier": "LogisticRegression",
+      "n_features": 17,
+      "mean_cv_auc": 0.9856,
+      "std_cv_auc": 0.0182
+    },
+    {
+      "ranking": "RF",
+      "classifier": "LogisticRegression",
+      "n_features": 18,
+      "mean_cv_auc": 0.9856,
+      "std_cv_auc": 0.0182
+    },
+    {
+      "ranking": "RF",
+      "classifier": "LogisticRegression",
+      "n_features": 19,
+      "mean_cv_auc": 0.9839,
+      "std_cv_auc": 0.02
+    },
+    {
+      "ranking": "RF",
+      "classifier": "LogisticRegression",
+      "n_features": 20,
+      "mean_cv_auc": 0.9846,
+      "std_cv_auc": 0.0201
+    },
+    {
+      "ranking": "RF",
+      "classifier": "LogisticRegression",
+      "n_features": 21,
+      "mean_cv_auc": 0.9886,
+      "std_cv_auc": 0.0183
+    },
+    {
+      "ranking": "RF",
+      "classifier": "LogisticRegression",
+      "n_features": 22,
+      "mean_cv_auc": 0.9897,
+      "std_cv_auc": 0.0188
+    },
+    {
+      "ranking": "RF",
+      "classifier": "LogisticRegression",
+      "n_features": 23,
+      "mean_cv_auc": 0.9897,
+      "std_cv_auc": 0.0188
+    },
+    {
+      "ranking": "RF",
+      "classifier": "LogisticRegression",
+      "n_features": 24,
+      "mean_cv_auc": 0.9897,
+      "std_cv_auc": 0.0188
+    },
+    {
+      "ranking": "RF",
+      "classifier": "LogisticRegression",
       "n_features": 25,
-      "mean_cv_auc": 0.9917,
-      "std_cv_auc": 0.0086
+      "mean_cv_auc": 0.9897,
+      "std_cv_auc": 0.0188
     },
     {
       "ranking": "RF",
       "classifier": "LogisticRegression",
       "n_features": 26,
-      "mean_cv_auc": 0.992,
-      "std_cv_auc": 0.0089
+      "mean_cv_auc": 0.9897,
+      "std_cv_auc": 0.0188
     },
     {
       "ranking": "RF",
       "classifier": "LDA",
       "n_features": 1,
-      "mean_cv_auc": 0.9664,
-      "std_cv_auc": 0.016
+      "mean_cv_auc": 0.9756,
+      "std_cv_auc": 0.0248
     },
     {
       "ranking": "RF",
       "classifier": "LDA",
       "n_features": 2,
-      "mean_cv_auc": 0.984,
-      "std_cv_auc": 0.009
+      "mean_cv_auc": 0.9893,
+      "std_cv_auc": 0.0172
     },
     {
       "ranking": "RF",
       "classifier": "LDA",
       "n_features": 3,
-      "mean_cv_auc": 0.9843,
-      "std_cv_auc": 0.0091
+      "mean_cv_auc": 0.9907,
+      "std_cv_auc": 0.0168
     },
     {
       "ranking": "RF",
       "classifier": "LDA",
       "n_features": 4,
-      "mean_cv_auc": 0.9852,
-      "std_cv_auc": 0.0132
+      "mean_cv_auc": 0.9894,
+      "std_cv_auc": 0.0194
     },
     {
       "ranking": "RF",
       "classifier": "LDA",
       "n_features": 5,
-      "mean_cv_auc": 0.9831,
-      "std_cv_auc": 0.0133
+      "mean_cv_auc": 0.9881,
+      "std_cv_auc": 0.0212
     },
     {
       "ranking": "RF",
       "classifier": "LDA",
       "n_features": 6,
-      "mean_cv_auc": 0.9852,
-      "std_cv_auc": 0.0121
+      "mean_cv_auc": 0.9863,
+      "std_cv_auc": 0.0206
     },
     {
       "ranking": "RF",
       "classifier": "LDA",
       "n_features": 7,
-      "mean_cv_auc": 0.9835,
-      "std_cv_auc": 0.0127
+      "mean_cv_auc": 0.9895,
+      "std_cv_auc": 0.0211
     },
     {
       "ranking": "RF",
       "classifier": "LDA",
       "n_features": 8,
-      "mean_cv_auc": 0.9856,
-      "std_cv_auc": 0.0118
+      "mean_cv_auc": 0.9867,
+      "std_cv_auc": 0.0247
     },
     {
       "ranking": "RF",
       "classifier": "LDA",
       "n_features": 9,
-      "mean_cv_auc": 0.9867,
-      "std_cv_auc": 0.0112
+      "mean_cv_auc": 0.9868,
+      "std_cv_auc": 0.0192
     },
     {
       "ranking": "RF",
       "classifier": "LDA",
       "n_features": 10,
-      "mean_cv_auc": 0.9856,
-      "std_cv_auc": 0.0118
+      "mean_cv_auc": 0.984,
+      "std_cv_auc": 0.0196
     },
     {
       "ranking": "RF",
       "classifier": "LDA",
       "n_features": 11,
-      "mean_cv_auc": 0.9863,
-      "std_cv_auc": 0.0118
+      "mean_cv_auc": 0.9858,
+      "std_cv_auc": 0.0194
     },
     {
       "ranking": "RF",
       "classifier": "LDA",
       "n_features": 12,
-      "mean_cv_auc": 0.9852,
-      "std_cv_auc": 0.0132
+      "mean_cv_auc": 0.9808,
+      "std_cv_auc": 0.0199
     },
     {
       "ranking": "RF",
       "classifier": "LDA",
       "n_features": 13,
-      "mean_cv_auc": 0.9852,
-      "std_cv_auc": 0.0132
+      "mean_cv_auc": 0.979,
+      "std_cv_auc": 0.0212
     },
     {
       "ranking": "RF",
       "classifier": "LDA",
       "n_features": 14,
-      "mean_cv_auc": 0.9852,
-      "std_cv_auc": 0.0127
+      "mean_cv_auc": 0.9774,
+      "std_cv_auc": 0.0191
     },
     {
       "ranking": "RF",
       "classifier": "LDA",
       "n_features": 15,
-      "mean_cv_auc": 0.9856,
-      "std_cv_auc": 0.0126
+      "mean_cv_auc": 0.9803,
+      "std_cv_auc": 0.0185
     },
     {
       "ranking": "RF",
       "classifier": "LDA",
       "n_features": 16,
-      "mean_cv_auc": 0.986,
-      "std_cv_auc": 0.0125
+      "mean_cv_auc": 0.9788,
+      "std_cv_auc": 0.0235
     },
     {
       "ranking": "RF",
       "classifier": "LDA",
       "n_features": 17,
-      "mean_cv_auc": 0.9874,
-      "std_cv_auc": 0.0104
+      "mean_cv_auc": 0.9701,
+      "std_cv_auc": 0.0325
     },
     {
       "ranking": "RF",
       "classifier": "LDA",
       "n_features": 18,
-      "mean_cv_auc": 0.9871,
-      "std_cv_auc": 0.0104
+      "mean_cv_auc": 0.9688,
+      "std_cv_auc": 0.0342
     },
     {
       "ranking": "RF",
       "classifier": "LDA",
       "n_features": 19,
-      "mean_cv_auc": 0.9863,
-      "std_cv_auc": 0.0123
+      "mean_cv_auc": 0.9685,
+      "std_cv_auc": 0.0361
     },
     {
       "ranking": "RF",
       "classifier": "LDA",
       "n_features": 20,
-      "mean_cv_auc": 0.9857,
-      "std_cv_auc": 0.0093
+      "mean_cv_auc": 0.9646,
+      "std_cv_auc": 0.0369
     },
     {
       "ranking": "RF",
       "classifier": "LDA",
       "n_features": 21,
-      "mean_cv_auc": 0.9847,
-      "std_cv_auc": 0.0094
+      "mean_cv_auc": 0.9696,
+      "std_cv_auc": 0.0352
     },
     {
       "ranking": "RF",
       "classifier": "LDA",
       "n_features": 22,
-      "mean_cv_auc": 0.9847,
-      "std_cv_auc": 0.0101
+      "mean_cv_auc": 0.9756,
+      "std_cv_auc": 0.0273
     },
     {
       "ranking": "RF",
       "classifier": "LDA",
       "n_features": 23,
-      "mean_cv_auc": 0.986,
-      "std_cv_auc": 0.0102
+      "mean_cv_auc": 0.9777,
+      "std_cv_auc": 0.0256
     },
     {
       "ranking": "RF",
       "classifier": "LDA",
       "n_features": 24,
-      "mean_cv_auc": 0.9896,
-      "std_cv_auc": 0.0079
+      "mean_cv_auc": 0.9808,
+      "std_cv_auc": 0.022
     },
     {
       "ranking": "RF",
       "classifier": "LDA",
       "n_features": 25,
-      "mean_cv_auc": 0.9899,
-      "std_cv_auc": 0.0083
+      "mean_cv_auc": 0.9831,
+      "std_cv_auc": 0.0164
     },
     {
       "ranking": "RF",
       "classifier": "LDA",
       "n_features": 26,
-      "mean_cv_auc": 0.9899,
-      "std_cv_auc": 0.0083
+      "mean_cv_auc": 0.9831,
+      "std_cv_auc": 0.0164
     },
     {
       "ranking": "RF",
       "classifier": "MLP",
       "n_features": 1,
-      "mean_cv_auc": 0.9664,
-      "std_cv_auc": 0.016
+      "mean_cv_auc": 0.9756,
+      "std_cv_auc": 0.0248
     },
     {
       "ranking": "RF",
       "classifier": "MLP",
       "n_features": 2,
-      "mean_cv_auc": 0.9829,
-      "std_cv_auc": 0.0104
+      "mean_cv_auc": 0.9922,
+      "std_cv_auc": 0.0093
     },
     {
       "ranking": "RF",
       "classifier": "MLP",
       "n_features": 3,
-      "mean_cv_auc": 0.9843,
-      "std_cv_auc": 0.0098
+      "mean_cv_auc": 0.9911,
+      "std_cv_auc": 0.0109
     },
     {
       "ranking": "RF",
       "classifier": "MLP",
       "n_features": 4,
-      "mean_cv_auc": 0.9834,
-      "std_cv_auc": 0.0125
+      "mean_cv_auc": 0.9868,
+      "std_cv_auc": 0.0204
     },
     {
       "ranking": "RF",
       "classifier": "MLP",
       "n_features": 5,
-      "mean_cv_auc": 0.9856,
-      "std_cv_auc": 0.0127
+      "mean_cv_auc": 0.9858,
+      "std_cv_auc": 0.0206
     },
     {
       "ranking": "RF",
       "classifier": "MLP",
       "n_features": 6,
-      "mean_cv_auc": 0.987,
-      "std_cv_auc": 0.012
+      "mean_cv_auc": 0.9859,
+      "std_cv_auc": 0.023
     },
     {
       "ranking": "RF",
       "classifier": "MLP",
       "n_features": 7,
-      "mean_cv_auc": 0.9881,
-      "std_cv_auc": 0.0115
+      "mean_cv_auc": 0.9934,
+      "std_cv_auc": 0.0072
     },
     {
       "ranking": "RF",
       "classifier": "MLP",
       "n_features": 8,
-      "mean_cv_auc": 0.9878,
-      "std_cv_auc": 0.0097
-    },
-    {
-      "ranking": "RF",
-      "classifier": "MLP",
-      "n_features": 9,
-      "mean_cv_auc": 0.9856,
-      "std_cv_auc": 0.0087
-    },
-    {
-      "ranking": "RF",
-      "classifier": "MLP",
-      "n_features": 10,
-      "mean_cv_auc": 0.9869,
-      "std_cv_auc": 0.0073
-    },
-    {
-      "ranking": "RF",
-      "classifier": "MLP",
-      "n_features": 11,
-      "mean_cv_auc": 0.9859,
-      "std_cv_auc": 0.0083
-    },
-    {
-      "ranking": "RF",
-      "classifier": "MLP",
-      "n_features": 12,
-      "mean_cv_auc": 0.9841,
-      "std_cv_auc": 0.0099
-    },
-    {
-      "ranking": "RF",
-      "classifier": "MLP",
-      "n_features": 13,
-      "mean_cv_auc": 0.9859,
-      "std_cv_auc": 0.0083
-    },
-    {
-      "ranking": "RF",
-      "classifier": "MLP",
-      "n_features": 14,
-      "mean_cv_auc": 0.9855,
-      "std_cv_auc": 0.0088
-    },
-    {
-      "ranking": "RF",
-      "classifier": "MLP",
-      "n_features": 15,
-      "mean_cv_auc": 0.9854,
-      "std_cv_auc": 0.01
-    },
-    {
-      "ranking": "RF",
-      "classifier": "MLP",
-      "n_features": 16,
-      "mean_cv_auc": 0.9878,
-      "std_cv_auc": 0.011
-    },
-    {
-      "ranking": "RF",
-      "classifier": "MLP",
-      "n_features": 17,
-      "mean_cv_auc": 0.9921,
+      "mean_cv_auc": 0.9919,
       "std_cv_auc": 0.0074
     },
     {
       "ranking": "RF",
       "classifier": "MLP",
-      "n_features": 18,
-      "mean_cv_auc": 0.9917,
-      "std_cv_auc": 0.0089
+      "n_features": 9,
+      "mean_cv_auc": 0.9901,
+      "std_cv_auc": 0.0101
     },
     {
       "ranking": "RF",
       "classifier": "MLP",
-      "n_features": 19,
-      "mean_cv_auc": 0.9914,
+      "n_features": 10,
+      "mean_cv_auc": 0.989,
+      "std_cv_auc": 0.0109
+    },
+    {
+      "ranking": "RF",
+      "classifier": "MLP",
+      "n_features": 11,
+      "mean_cv_auc": 0.9886,
+      "std_cv_auc": 0.0107
+    },
+    {
+      "ranking": "RF",
+      "classifier": "MLP",
+      "n_features": 12,
+      "mean_cv_auc": 0.9885,
       "std_cv_auc": 0.0096
     },
     {
       "ranking": "RF",
       "classifier": "MLP",
+      "n_features": 13,
+      "mean_cv_auc": 0.9867,
+      "std_cv_auc": 0.0112
+    },
+    {
+      "ranking": "RF",
+      "classifier": "MLP",
+      "n_features": 14,
+      "mean_cv_auc": 0.9862,
+      "std_cv_auc": 0.0115
+    },
+    {
+      "ranking": "RF",
+      "classifier": "MLP",
+      "n_features": 15,
+      "mean_cv_auc": 0.9867,
+      "std_cv_auc": 0.0141
+    },
+    {
+      "ranking": "RF",
+      "classifier": "MLP",
+      "n_features": 16,
+      "mean_cv_auc": 0.987,
+      "std_cv_auc": 0.0121
+    },
+    {
+      "ranking": "RF",
+      "classifier": "MLP",
+      "n_features": 17,
+      "mean_cv_auc": 0.9884,
+      "std_cv_auc": 0.016
+    },
+    {
+      "ranking": "RF",
+      "classifier": "MLP",
+      "n_features": 18,
+      "mean_cv_auc": 0.9896,
+      "std_cv_auc": 0.0171
+    },
+    {
+      "ranking": "RF",
+      "classifier": "MLP",
+      "n_features": 19,
+      "mean_cv_auc": 0.9867,
+      "std_cv_auc": 0.0185
+    },
+    {
+      "ranking": "RF",
+      "classifier": "MLP",
       "n_features": 20,
-      "mean_cv_auc": 0.9907,
-      "std_cv_auc": 0.0089
+      "mean_cv_auc": 0.9895,
+      "std_cv_auc": 0.0156
     },
     {
       "ranking": "RF",
       "classifier": "MLP",
       "n_features": 21,
-      "mean_cv_auc": 0.9886,
-      "std_cv_auc": 0.0088
+      "mean_cv_auc": 0.9876,
+      "std_cv_auc": 0.0194
     },
     {
       "ranking": "RF",
       "classifier": "MLP",
       "n_features": 22,
-      "mean_cv_auc": 0.9886,
-      "std_cv_auc": 0.0077
+      "mean_cv_auc": 0.988,
+      "std_cv_auc": 0.0204
     },
     {
       "ranking": "RF",
       "classifier": "MLP",
       "n_features": 23,
-      "mean_cv_auc": 0.9913,
-      "std_cv_auc": 0.008
+      "mean_cv_auc": 0.988,
+      "std_cv_auc": 0.0204
     },
     {
       "ranking": "RF",
       "classifier": "MLP",
       "n_features": 24,
-      "mean_cv_auc": 0.9932,
-      "std_cv_auc": 0.0074
+      "mean_cv_auc": 0.9897,
+      "std_cv_auc": 0.0179
     },
     {
       "ranking": "RF",
       "classifier": "MLP",
       "n_features": 25,
-      "mean_cv_auc": 0.9932,
-      "std_cv_auc": 0.0069
+      "mean_cv_auc": 0.9893,
+      "std_cv_auc": 0.0177
     },
     {
       "ranking": "RF",
       "classifier": "MLP",
       "n_features": 26,
-      "mean_cv_auc": 0.9935,
-      "std_cv_auc": 0.0075
+      "mean_cv_auc": 0.989,
+      "std_cv_auc": 0.0192
     },
     {
       "ranking": "XGBoost",
       "classifier": "AdaBoost",
       "n_features": 1,
-      "mean_cv_auc": 0.9781,
-      "std_cv_auc": 0.0153
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "AdaBoost",
-      "n_features": 2,
-      "mean_cv_auc": 0.9859,
-      "std_cv_auc": 0.0046
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "AdaBoost",
-      "n_features": 3,
-      "mean_cv_auc": 0.9847,
-      "std_cv_auc": 0.0135
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "AdaBoost",
-      "n_features": 4,
-      "mean_cv_auc": 0.984,
-      "std_cv_auc": 0.0163
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "AdaBoost",
-      "n_features": 5,
-      "mean_cv_auc": 0.9829,
+      "mean_cv_auc": 0.9738,
       "std_cv_auc": 0.0143
     },
     {
       "ranking": "XGBoost",
       "classifier": "AdaBoost",
+      "n_features": 2,
+      "mean_cv_auc": 0.9737,
+      "std_cv_auc": 0.0275
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "AdaBoost",
+      "n_features": 3,
+      "mean_cv_auc": 0.9867,
+      "std_cv_auc": 0.0099
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "AdaBoost",
+      "n_features": 4,
+      "mean_cv_auc": 0.9934,
+      "std_cv_auc": 0.0132
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "AdaBoost",
+      "n_features": 5,
+      "mean_cv_auc": 0.997,
+      "std_cv_auc": 0.0059
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "AdaBoost",
       "n_features": 6,
-      "mean_cv_auc": 0.993,
-      "std_cv_auc": 0.0061
+      "mean_cv_auc": 0.9884,
+      "std_cv_auc": 0.0112
     },
     {
       "ranking": "XGBoost",
       "classifier": "AdaBoost",
       "n_features": 7,
-      "mean_cv_auc": 0.9914,
-      "std_cv_auc": 0.0067
+      "mean_cv_auc": 0.9898,
+      "std_cv_auc": 0.0092
     },
     {
       "ranking": "XGBoost",
       "classifier": "AdaBoost",
       "n_features": 8,
-      "mean_cv_auc": 0.9925,
-      "std_cv_auc": 0.0107
+      "mean_cv_auc": 0.9882,
+      "std_cv_auc": 0.0134
     },
     {
       "ranking": "XGBoost",
       "classifier": "AdaBoost",
       "n_features": 9,
-      "mean_cv_auc": 0.9907,
-      "std_cv_auc": 0.0118
+      "mean_cv_auc": 0.9859,
+      "std_cv_auc": 0.0186
     },
     {
       "ranking": "XGBoost",
       "classifier": "AdaBoost",
       "n_features": 10,
-      "mean_cv_auc": 0.9909,
+      "mean_cv_auc": 0.9886,
+      "std_cv_auc": 0.0112
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "AdaBoost",
+      "n_features": 11,
+      "mean_cv_auc": 0.9879,
+      "std_cv_auc": 0.0103
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "AdaBoost",
+      "n_features": 12,
+      "mean_cv_auc": 0.9887,
       "std_cv_auc": 0.0111
     },
     {
       "ranking": "XGBoost",
       "classifier": "AdaBoost",
-      "n_features": 11,
-      "mean_cv_auc": 0.992,
-      "std_cv_auc": 0.0092
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "AdaBoost",
-      "n_features": 12,
-      "mean_cv_auc": 0.9928,
-      "std_cv_auc": 0.0065
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "AdaBoost",
       "n_features": 13,
-      "mean_cv_auc": 0.9891,
-      "std_cv_auc": 0.0104
+      "mean_cv_auc": 0.9868,
+      "std_cv_auc": 0.0118
     },
     {
       "ranking": "XGBoost",
       "classifier": "AdaBoost",
       "n_features": 14,
-      "mean_cv_auc": 0.9927,
-      "std_cv_auc": 0.0081
+      "mean_cv_auc": 0.9831,
+      "std_cv_auc": 0.0195
     },
     {
       "ranking": "XGBoost",
       "classifier": "AdaBoost",
       "n_features": 15,
-      "mean_cv_auc": 0.9938,
-      "std_cv_auc": 0.0075
+      "mean_cv_auc": 0.9827,
+      "std_cv_auc": 0.0166
     },
     {
       "ranking": "XGBoost",
       "classifier": "AdaBoost",
       "n_features": 16,
-      "mean_cv_auc": 0.9917,
-      "std_cv_auc": 0.0083
+      "mean_cv_auc": 0.9804,
+      "std_cv_auc": 0.0193
     },
     {
       "ranking": "XGBoost",
       "classifier": "AdaBoost",
       "n_features": 17,
-      "mean_cv_auc": 0.9911,
-      "std_cv_auc": 0.0073
+      "mean_cv_auc": 0.9789,
+      "std_cv_auc": 0.0229
     },
     {
       "ranking": "XGBoost",
       "classifier": "AdaBoost",
       "n_features": 18,
-      "mean_cv_auc": 0.9914,
-      "std_cv_auc": 0.0083
+      "mean_cv_auc": 0.9834,
+      "std_cv_auc": 0.0235
     },
     {
       "ranking": "XGBoost",
       "classifier": "AdaBoost",
       "n_features": 19,
-      "mean_cv_auc": 0.9925,
-      "std_cv_auc": 0.0093
+      "mean_cv_auc": 0.9863,
+      "std_cv_auc": 0.0229
     },
     {
       "ranking": "XGBoost",
       "classifier": "AdaBoost",
       "n_features": 20,
-      "mean_cv_auc": 0.9903,
-      "std_cv_auc": 0.0102
+      "mean_cv_auc": 0.9861,
+      "std_cv_auc": 0.026
     },
     {
       "ranking": "XGBoost",
       "classifier": "AdaBoost",
       "n_features": 21,
-      "mean_cv_auc": 0.9927,
-      "std_cv_auc": 0.0095
+      "mean_cv_auc": 0.9804,
+      "std_cv_auc": 0.0295
     },
     {
       "ranking": "XGBoost",
       "classifier": "AdaBoost",
       "n_features": 22,
-      "mean_cv_auc": 0.9914,
-      "std_cv_auc": 0.0097
+      "mean_cv_auc": 0.9887,
+      "std_cv_auc": 0.0207
     },
     {
       "ranking": "XGBoost",
       "classifier": "AdaBoost",
       "n_features": 23,
-      "mean_cv_auc": 0.9921,
-      "std_cv_auc": 0.0092
+      "mean_cv_auc": 0.9887,
+      "std_cv_auc": 0.0207
     },
     {
       "ranking": "XGBoost",
       "classifier": "AdaBoost",
       "n_features": 24,
-      "mean_cv_auc": 0.9922,
-      "std_cv_auc": 0.0051
+      "mean_cv_auc": 0.9858,
+      "std_cv_auc": 0.0266
     },
     {
       "ranking": "XGBoost",
       "classifier": "AdaBoost",
       "n_features": 25,
-      "mean_cv_auc": 0.9917,
-      "std_cv_auc": 0.0092
+      "mean_cv_auc": 0.9896,
+      "std_cv_auc": 0.0163
     },
     {
       "ranking": "XGBoost",
       "classifier": "AdaBoost",
       "n_features": 26,
-      "mean_cv_auc": 0.9935,
-      "std_cv_auc": 0.0087
+      "mean_cv_auc": 0.9835,
+      "std_cv_auc": 0.0247
     },
     {
       "ranking": "XGBoost",
       "classifier": "RandomForest",
       "n_features": 1,
-      "mean_cv_auc": 0.9698,
-      "std_cv_auc": 0.0257
+      "mean_cv_auc": 0.9137,
+      "std_cv_auc": 0.0422
     },
     {
       "ranking": "XGBoost",
       "classifier": "RandomForest",
       "n_features": 2,
-      "mean_cv_auc": 0.9783,
-      "std_cv_auc": 0.0175
+      "mean_cv_auc": 0.9626,
+      "std_cv_auc": 0.0297
     },
     {
       "ranking": "XGBoost",
       "classifier": "RandomForest",
       "n_features": 3,
-      "mean_cv_auc": 0.9804,
-      "std_cv_auc": 0.012
+      "mean_cv_auc": 0.9589,
+      "std_cv_auc": 0.0252
     },
     {
       "ranking": "XGBoost",
       "classifier": "RandomForest",
       "n_features": 4,
-      "mean_cv_auc": 0.9856,
-      "std_cv_auc": 0.0133
+      "mean_cv_auc": 0.9784,
+      "std_cv_auc": 0.0176
     },
     {
       "ranking": "XGBoost",
       "classifier": "RandomForest",
       "n_features": 5,
-      "mean_cv_auc": 0.9889,
-      "std_cv_auc": 0.0079
+      "mean_cv_auc": 0.9818,
+      "std_cv_auc": 0.0164
     },
     {
       "ranking": "XGBoost",
       "classifier": "RandomForest",
       "n_features": 6,
-      "mean_cv_auc": 0.9912,
-      "std_cv_auc": 0.0062
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "RandomForest",
-      "n_features": 7,
-      "mean_cv_auc": 0.9909,
-      "std_cv_auc": 0.0056
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "RandomForest",
-      "n_features": 8,
-      "mean_cv_auc": 0.9922,
-      "std_cv_auc": 0.0074
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "RandomForest",
-      "n_features": 9,
-      "mean_cv_auc": 0.9924,
-      "std_cv_auc": 0.0067
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "RandomForest",
-      "n_features": 10,
-      "mean_cv_auc": 0.9904,
-      "std_cv_auc": 0.0086
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "RandomForest",
-      "n_features": 11,
-      "mean_cv_auc": 0.9914,
+      "mean_cv_auc": 0.9913,
       "std_cv_auc": 0.0098
     },
     {
       "ranking": "XGBoost",
       "classifier": "RandomForest",
+      "n_features": 7,
+      "mean_cv_auc": 0.9946,
+      "std_cv_auc": 0.0061
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "RandomForest",
+      "n_features": 8,
+      "mean_cv_auc": 0.989,
+      "std_cv_auc": 0.0099
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "RandomForest",
+      "n_features": 9,
+      "mean_cv_auc": 0.9926,
+      "std_cv_auc": 0.0116
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "RandomForest",
+      "n_features": 10,
+      "mean_cv_auc": 0.9967,
+      "std_cv_auc": 0.0066
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "RandomForest",
+      "n_features": 11,
+      "mean_cv_auc": 0.9931,
+      "std_cv_auc": 0.0084
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "RandomForest",
       "n_features": 12,
-      "mean_cv_auc": 0.9927,
-      "std_cv_auc": 0.0051
+      "mean_cv_auc": 0.982,
+      "std_cv_auc": 0.0124
     },
     {
       "ranking": "XGBoost",
       "classifier": "RandomForest",
       "n_features": 13,
-      "mean_cv_auc": 0.9874,
-      "std_cv_auc": 0.0136
+      "mean_cv_auc": 0.991,
+      "std_cv_auc": 0.0077
     },
     {
       "ranking": "XGBoost",
       "classifier": "RandomForest",
       "n_features": 14,
-      "mean_cv_auc": 0.9878,
-      "std_cv_auc": 0.0093
+      "mean_cv_auc": 0.9802,
+      "std_cv_auc": 0.0209
     },
     {
       "ranking": "XGBoost",
       "classifier": "RandomForest",
       "n_features": 15,
-      "mean_cv_auc": 0.9874,
+      "mean_cv_auc": 0.9858,
+      "std_cv_auc": 0.0142
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "RandomForest",
+      "n_features": 16,
+      "mean_cv_auc": 0.9845,
+      "std_cv_auc": 0.0127
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "RandomForest",
+      "n_features": 17,
+      "mean_cv_auc": 0.9846,
+      "std_cv_auc": 0.0133
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "RandomForest",
+      "n_features": 18,
+      "mean_cv_auc": 0.9827,
+      "std_cv_auc": 0.015
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "RandomForest",
+      "n_features": 19,
+      "mean_cv_auc": 0.9846,
+      "std_cv_auc": 0.0125
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "RandomForest",
+      "n_features": 20,
+      "mean_cv_auc": 0.9829,
       "std_cv_auc": 0.0145
     },
     {
       "ranking": "XGBoost",
       "classifier": "RandomForest",
-      "n_features": 16,
-      "mean_cv_auc": 0.9901,
-      "std_cv_auc": 0.0092
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "RandomForest",
-      "n_features": 17,
-      "mean_cv_auc": 0.9892,
-      "std_cv_auc": 0.0097
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "RandomForest",
-      "n_features": 18,
-      "mean_cv_auc": 0.9948,
-      "std_cv_auc": 0.0048
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "RandomForest",
-      "n_features": 19,
-      "mean_cv_auc": 0.9949,
-      "std_cv_auc": 0.0061
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "RandomForest",
-      "n_features": 20,
-      "mean_cv_auc": 0.9941,
-      "std_cv_auc": 0.0056
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "RandomForest",
       "n_features": 21,
-      "mean_cv_auc": 0.9927,
-      "std_cv_auc": 0.0094
+      "mean_cv_auc": 0.9871,
+      "std_cv_auc": 0.0129
     },
     {
       "ranking": "XGBoost",
       "classifier": "RandomForest",
       "n_features": 22,
-      "mean_cv_auc": 0.9927,
-      "std_cv_auc": 0.0099
+      "mean_cv_auc": 0.9844,
+      "std_cv_auc": 0.0147
     },
     {
       "ranking": "XGBoost",
       "classifier": "RandomForest",
       "n_features": 23,
-      "mean_cv_auc": 0.9931,
-      "std_cv_auc": 0.0105
+      "mean_cv_auc": 0.9844,
+      "std_cv_auc": 0.017
     },
     {
       "ranking": "XGBoost",
       "classifier": "RandomForest",
       "n_features": 24,
-      "mean_cv_auc": 0.9923,
-      "std_cv_auc": 0.0067
+      "mean_cv_auc": 0.982,
+      "std_cv_auc": 0.0172
     },
     {
       "ranking": "XGBoost",
       "classifier": "RandomForest",
       "n_features": 25,
-      "mean_cv_auc": 0.9939,
-      "std_cv_auc": 0.0068
+      "mean_cv_auc": 0.9838,
+      "std_cv_auc": 0.0136
     },
     {
       "ranking": "XGBoost",
       "classifier": "RandomForest",
       "n_features": 26,
-      "mean_cv_auc": 0.9926,
+      "mean_cv_auc": 0.9795,
+      "std_cv_auc": 0.0156
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "ExtraTree",
+      "n_features": 1,
+      "mean_cv_auc": 0.8868,
+      "std_cv_auc": 0.0834
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "ExtraTree",
+      "n_features": 2,
+      "mean_cv_auc": 0.9731,
+      "std_cv_auc": 0.0236
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "ExtraTree",
+      "n_features": 3,
+      "mean_cv_auc": 0.9797,
+      "std_cv_auc": 0.0169
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "ExtraTree",
+      "n_features": 4,
+      "mean_cv_auc": 0.9709,
+      "std_cv_auc": 0.0359
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "ExtraTree",
+      "n_features": 5,
+      "mean_cv_auc": 0.9973,
+      "std_cv_auc": 0.0037
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "ExtraTree",
+      "n_features": 6,
+      "mean_cv_auc": 0.9928,
+      "std_cv_auc": 0.0129
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "ExtraTree",
+      "n_features": 7,
+      "mean_cv_auc": 0.9936,
       "std_cv_auc": 0.0084
     },
     {
       "ranking": "XGBoost",
       "classifier": "ExtraTree",
-      "n_features": 1,
-      "mean_cv_auc": 0.9574,
-      "std_cv_auc": 0.0458
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "ExtraTree",
-      "n_features": 2,
-      "mean_cv_auc": 0.9724,
-      "std_cv_auc": 0.0194
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "ExtraTree",
-      "n_features": 3,
-      "mean_cv_auc": 0.9799,
-      "std_cv_auc": 0.0083
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "ExtraTree",
-      "n_features": 4,
-      "mean_cv_auc": 0.9905,
-      "std_cv_auc": 0.0076
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "ExtraTree",
-      "n_features": 5,
-      "mean_cv_auc": 0.9883,
-      "std_cv_auc": 0.006
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "ExtraTree",
-      "n_features": 6,
-      "mean_cv_auc": 0.99,
-      "std_cv_auc": 0.0058
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "ExtraTree",
-      "n_features": 7,
-      "mean_cv_auc": 0.9916,
-      "std_cv_auc": 0.0056
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "ExtraTree",
       "n_features": 8,
-      "mean_cv_auc": 0.9867,
-      "std_cv_auc": 0.013
+      "mean_cv_auc": 0.988,
+      "std_cv_auc": 0.0161
     },
     {
       "ranking": "XGBoost",
       "classifier": "ExtraTree",
       "n_features": 9,
-      "mean_cv_auc": 0.9886,
-      "std_cv_auc": 0.0114
+      "mean_cv_auc": 0.9907,
+      "std_cv_auc": 0.0123
     },
     {
       "ranking": "XGBoost",
       "classifier": "ExtraTree",
       "n_features": 10,
-      "mean_cv_auc": 0.9889,
-      "std_cv_auc": 0.0092
+      "mean_cv_auc": 0.9864,
+      "std_cv_auc": 0.0162
     },
     {
       "ranking": "XGBoost",
       "classifier": "ExtraTree",
       "n_features": 11,
-      "mean_cv_auc": 0.9876,
-      "std_cv_auc": 0.0117
+      "mean_cv_auc": 0.9927,
+      "std_cv_auc": 0.0065
     },
     {
       "ranking": "XGBoost",
       "classifier": "ExtraTree",
       "n_features": 12,
-      "mean_cv_auc": 0.9885,
-      "std_cv_auc": 0.0078
+      "mean_cv_auc": 0.9867,
+      "std_cv_auc": 0.0122
     },
     {
       "ranking": "XGBoost",
       "classifier": "ExtraTree",
       "n_features": 13,
-      "mean_cv_auc": 0.986,
-      "std_cv_auc": 0.0109
+      "mean_cv_auc": 0.9894,
+      "std_cv_auc": 0.0089
     },
     {
       "ranking": "XGBoost",
       "classifier": "ExtraTree",
       "n_features": 14,
-      "mean_cv_auc": 0.9877,
-      "std_cv_auc": 0.0105
+      "mean_cv_auc": 0.9852,
+      "std_cv_auc": 0.0133
     },
     {
       "ranking": "XGBoost",
       "classifier": "ExtraTree",
       "n_features": 15,
-      "mean_cv_auc": 0.9859,
-      "std_cv_auc": 0.0101
+      "mean_cv_auc": 0.9854,
+      "std_cv_auc": 0.0145
     },
     {
       "ranking": "XGBoost",
       "classifier": "ExtraTree",
       "n_features": 16,
-      "mean_cv_auc": 0.9888,
-      "std_cv_auc": 0.0097
+      "mean_cv_auc": 0.9873,
+      "std_cv_auc": 0.013
     },
     {
       "ranking": "XGBoost",
       "classifier": "ExtraTree",
       "n_features": 17,
-      "mean_cv_auc": 0.9904,
-      "std_cv_auc": 0.0099
+      "mean_cv_auc": 0.9842,
+      "std_cv_auc": 0.0135
     },
     {
       "ranking": "XGBoost",
       "classifier": "ExtraTree",
       "n_features": 18,
-      "mean_cv_auc": 0.9902,
-      "std_cv_auc": 0.0077
+      "mean_cv_auc": 0.9899,
+      "std_cv_auc": 0.0087
     },
     {
       "ranking": "XGBoost",
       "classifier": "ExtraTree",
       "n_features": 19,
-      "mean_cv_auc": 0.994,
-      "std_cv_auc": 0.0067
+      "mean_cv_auc": 0.9938,
+      "std_cv_auc": 0.0094
     },
     {
       "ranking": "XGBoost",
       "classifier": "ExtraTree",
       "n_features": 20,
-      "mean_cv_auc": 0.9941,
-      "std_cv_auc": 0.0073
+      "mean_cv_auc": 0.9945,
+      "std_cv_auc": 0.0066
     },
     {
       "ranking": "XGBoost",
       "classifier": "ExtraTree",
       "n_features": 21,
-      "mean_cv_auc": 0.9939,
-      "std_cv_auc": 0.0064
+      "mean_cv_auc": 0.9944,
+      "std_cv_auc": 0.0078
     },
     {
       "ranking": "XGBoost",
       "classifier": "ExtraTree",
       "n_features": 22,
-      "mean_cv_auc": 0.9916,
-      "std_cv_auc": 0.0101
+      "mean_cv_auc": 0.991,
+      "std_cv_auc": 0.0102
     },
     {
       "ranking": "XGBoost",
       "classifier": "ExtraTree",
       "n_features": 23,
-      "mean_cv_auc": 0.9935,
-      "std_cv_auc": 0.0067
+      "mean_cv_auc": 0.9909,
+      "std_cv_auc": 0.0095
     },
     {
       "ranking": "XGBoost",
       "classifier": "ExtraTree",
       "n_features": 24,
-      "mean_cv_auc": 0.9941,
-      "std_cv_auc": 0.008
+      "mean_cv_auc": 0.9936,
+      "std_cv_auc": 0.0067
     },
     {
       "ranking": "XGBoost",
       "classifier": "ExtraTree",
       "n_features": 25,
-      "mean_cv_auc": 0.9948,
-      "std_cv_auc": 0.0056
+      "mean_cv_auc": 0.9935,
+      "std_cv_auc": 0.009
     },
     {
       "ranking": "XGBoost",
       "classifier": "ExtraTree",
       "n_features": 26,
-      "mean_cv_auc": 0.9947,
-      "std_cv_auc": 0.0058
+      "mean_cv_auc": 0.9929,
+      "std_cv_auc": 0.0081
     },
     {
       "ranking": "XGBoost",
       "classifier": "GradientBoosting",
       "n_features": 1,
-      "mean_cv_auc": 0.9823,
-      "std_cv_auc": 0.0161
+      "mean_cv_auc": 0.9452,
+      "std_cv_auc": 0.0587
     },
     {
       "ranking": "XGBoost",
       "classifier": "GradientBoosting",
       "n_features": 2,
-      "mean_cv_auc": 0.9822,
-      "std_cv_auc": 0.013
+      "mean_cv_auc": 0.973,
+      "std_cv_auc": 0.0235
     },
     {
       "ranking": "XGBoost",
       "classifier": "GradientBoosting",
       "n_features": 3,
-      "mean_cv_auc": 0.9793,
-      "std_cv_auc": 0.008
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "GradientBoosting",
-      "n_features": 4,
-      "mean_cv_auc": 0.9889,
-      "std_cv_auc": 0.009
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "GradientBoosting",
-      "n_features": 5,
-      "mean_cv_auc": 0.991,
-      "std_cv_auc": 0.0097
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "GradientBoosting",
-      "n_features": 6,
-      "mean_cv_auc": 0.991,
-      "std_cv_auc": 0.0078
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "GradientBoosting",
-      "n_features": 7,
-      "mean_cv_auc": 0.9903,
-      "std_cv_auc": 0.0085
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "GradientBoosting",
-      "n_features": 8,
-      "mean_cv_auc": 0.9868,
-      "std_cv_auc": 0.0172
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "GradientBoosting",
-      "n_features": 9,
-      "mean_cv_auc": 0.9884,
-      "std_cv_auc": 0.0133
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "GradientBoosting",
-      "n_features": 10,
-      "mean_cv_auc": 0.9894,
-      "std_cv_auc": 0.0118
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "GradientBoosting",
-      "n_features": 11,
-      "mean_cv_auc": 0.9884,
-      "std_cv_auc": 0.0123
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "GradientBoosting",
-      "n_features": 12,
-      "mean_cv_auc": 0.9887,
-      "std_cv_auc": 0.0128
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "GradientBoosting",
-      "n_features": 13,
-      "mean_cv_auc": 0.9865,
-      "std_cv_auc": 0.0149
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "GradientBoosting",
-      "n_features": 14,
-      "mean_cv_auc": 0.9862,
-      "std_cv_auc": 0.0137
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "GradientBoosting",
-      "n_features": 15,
-      "mean_cv_auc": 0.9869,
-      "std_cv_auc": 0.0142
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "GradientBoosting",
-      "n_features": 16,
-      "mean_cv_auc": 0.9848,
+      "mean_cv_auc": 0.981,
       "std_cv_auc": 0.0144
     },
     {
       "ranking": "XGBoost",
       "classifier": "GradientBoosting",
+      "n_features": 4,
+      "mean_cv_auc": 0.9826,
+      "std_cv_auc": 0.0146
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "GradientBoosting",
+      "n_features": 5,
+      "mean_cv_auc": 0.9869,
+      "std_cv_auc": 0.02
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "GradientBoosting",
+      "n_features": 6,
+      "mean_cv_auc": 0.9815,
+      "std_cv_auc": 0.0158
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "GradientBoosting",
+      "n_features": 7,
+      "mean_cv_auc": 0.9796,
+      "std_cv_auc": 0.0189
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "GradientBoosting",
+      "n_features": 8,
+      "mean_cv_auc": 0.9799,
+      "std_cv_auc": 0.0199
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "GradientBoosting",
+      "n_features": 9,
+      "mean_cv_auc": 0.9834,
+      "std_cv_auc": 0.0154
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "GradientBoosting",
+      "n_features": 10,
+      "mean_cv_auc": 0.9842,
+      "std_cv_auc": 0.0148
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "GradientBoosting",
+      "n_features": 11,
+      "mean_cv_auc": 0.9778,
+      "std_cv_auc": 0.0238
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "GradientBoosting",
+      "n_features": 12,
+      "mean_cv_auc": 0.9738,
+      "std_cv_auc": 0.026
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "GradientBoosting",
+      "n_features": 13,
+      "mean_cv_auc": 0.9665,
+      "std_cv_auc": 0.0301
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "GradientBoosting",
+      "n_features": 14,
+      "mean_cv_auc": 0.9675,
+      "std_cv_auc": 0.0294
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "GradientBoosting",
+      "n_features": 15,
+      "mean_cv_auc": 0.9559,
+      "std_cv_auc": 0.044
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "GradientBoosting",
+      "n_features": 16,
+      "mean_cv_auc": 0.9687,
+      "std_cv_auc": 0.0382
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "GradientBoosting",
       "n_features": 17,
-      "mean_cv_auc": 0.9867,
-      "std_cv_auc": 0.0119
+      "mean_cv_auc": 0.9592,
+      "std_cv_auc": 0.0451
     },
     {
       "ranking": "XGBoost",
       "classifier": "GradientBoosting",
       "n_features": 18,
-      "mean_cv_auc": 0.987,
-      "std_cv_auc": 0.012
+      "mean_cv_auc": 0.9351,
+      "std_cv_auc": 0.0616
     },
     {
       "ranking": "XGBoost",
       "classifier": "GradientBoosting",
       "n_features": 19,
-      "mean_cv_auc": 0.9869,
-      "std_cv_auc": 0.0135
+      "mean_cv_auc": 0.9375,
+      "std_cv_auc": 0.0547
     },
     {
       "ranking": "XGBoost",
       "classifier": "GradientBoosting",
       "n_features": 20,
-      "mean_cv_auc": 0.983,
-      "std_cv_auc": 0.0175
+      "mean_cv_auc": 0.9426,
+      "std_cv_auc": 0.0541
     },
     {
       "ranking": "XGBoost",
       "classifier": "GradientBoosting",
       "n_features": 21,
-      "mean_cv_auc": 0.9855,
-      "std_cv_auc": 0.0133
+      "mean_cv_auc": 0.9368,
+      "std_cv_auc": 0.0562
     },
     {
       "ranking": "XGBoost",
       "classifier": "GradientBoosting",
       "n_features": 22,
-      "mean_cv_auc": 0.9866,
-      "std_cv_auc": 0.012
+      "mean_cv_auc": 0.9379,
+      "std_cv_auc": 0.0546
     },
     {
       "ranking": "XGBoost",
       "classifier": "GradientBoosting",
       "n_features": 23,
-      "mean_cv_auc": 0.9866,
-      "std_cv_auc": 0.012
+      "mean_cv_auc": 0.9356,
+      "std_cv_auc": 0.0567
     },
     {
       "ranking": "XGBoost",
       "classifier": "GradientBoosting",
       "n_features": 24,
-      "mean_cv_auc": 0.9831,
-      "std_cv_auc": 0.015
+      "mean_cv_auc": 0.9385,
+      "std_cv_auc": 0.0549
     },
     {
       "ranking": "XGBoost",
       "classifier": "GradientBoosting",
       "n_features": 25,
-      "mean_cv_auc": 0.9855,
-      "std_cv_auc": 0.0142
+      "mean_cv_auc": 0.9427,
+      "std_cv_auc": 0.0548
     },
     {
       "ranking": "XGBoost",
       "classifier": "GradientBoosting",
       "n_features": 26,
-      "mean_cv_auc": 0.9856,
-      "std_cv_auc": 0.0133
+      "mean_cv_auc": 0.941,
+      "std_cv_auc": 0.0553
     },
     {
       "ranking": "XGBoost",
       "classifier": "SVM",
       "n_features": 1,
-      "mean_cv_auc": 0.9316,
-      "std_cv_auc": 0.0347
+      "mean_cv_auc": 0.9384,
+      "std_cv_auc": 0.0586
     },
     {
       "ranking": "XGBoost",
       "classifier": "SVM",
       "n_features": 2,
-      "mean_cv_auc": 0.9721,
-      "std_cv_auc": 0.0093
+      "mean_cv_auc": 0.971,
+      "std_cv_auc": 0.0338
     },
     {
       "ranking": "XGBoost",
       "classifier": "SVM",
       "n_features": 3,
-      "mean_cv_auc": 0.9768,
-      "std_cv_auc": 0.0099
+      "mean_cv_auc": 0.9732,
+      "std_cv_auc": 0.0382
     },
     {
       "ranking": "XGBoost",
       "classifier": "SVM",
       "n_features": 4,
-      "mean_cv_auc": 0.9781,
-      "std_cv_auc": 0.0156
+      "mean_cv_auc": 0.9821,
+      "std_cv_auc": 0.0323
     },
     {
       "ranking": "XGBoost",
       "classifier": "SVM",
       "n_features": 5,
-      "mean_cv_auc": 0.9869,
-      "std_cv_auc": 0.0074
+      "mean_cv_auc": 0.9943,
+      "std_cv_auc": 0.0078
     },
     {
       "ranking": "XGBoost",
       "classifier": "SVM",
       "n_features": 6,
-      "mean_cv_auc": 0.9916,
-      "std_cv_auc": 0.0057
+      "mean_cv_auc": 0.9904,
+      "std_cv_auc": 0.01
     },
     {
       "ranking": "XGBoost",
       "classifier": "SVM",
       "n_features": 7,
-      "mean_cv_auc": 0.9916,
-      "std_cv_auc": 0.0057
+      "mean_cv_auc": 0.9934,
+      "std_cv_auc": 0.0061
     },
     {
       "ranking": "XGBoost",
       "classifier": "SVM",
       "n_features": 8,
-      "mean_cv_auc": 0.9906,
-      "std_cv_auc": 0.0082
+      "mean_cv_auc": 0.991,
+      "std_cv_auc": 0.0078
     },
     {
       "ranking": "XGBoost",
       "classifier": "SVM",
       "n_features": 9,
-      "mean_cv_auc": 0.9907,
-      "std_cv_auc": 0.0082
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "SVM",
-      "n_features": 10,
-      "mean_cv_auc": 0.9889,
-      "std_cv_auc": 0.0084
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "SVM",
-      "n_features": 11,
-      "mean_cv_auc": 0.9892,
-      "std_cv_auc": 0.0095
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "SVM",
-      "n_features": 12,
-      "mean_cv_auc": 0.99,
-      "std_cv_auc": 0.0083
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "SVM",
-      "n_features": 13,
-      "mean_cv_auc": 0.9865,
-      "std_cv_auc": 0.009
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "SVM",
-      "n_features": 14,
-      "mean_cv_auc": 0.9873,
-      "std_cv_auc": 0.0095
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "SVM",
-      "n_features": 15,
-      "mean_cv_auc": 0.9869,
-      "std_cv_auc": 0.0096
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "SVM",
-      "n_features": 16,
-      "mean_cv_auc": 0.9876,
-      "std_cv_auc": 0.0095
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "SVM",
-      "n_features": 17,
-      "mean_cv_auc": 0.9876,
-      "std_cv_auc": 0.0093
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "SVM",
-      "n_features": 18,
-      "mean_cv_auc": 0.9911,
-      "std_cv_auc": 0.0079
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "SVM",
-      "n_features": 19,
-      "mean_cv_auc": 0.9936,
-      "std_cv_auc": 0.0065
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "SVM",
-      "n_features": 20,
-      "mean_cv_auc": 0.9936,
-      "std_cv_auc": 0.0065
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "SVM",
-      "n_features": 21,
-      "mean_cv_auc": 0.9922,
-      "std_cv_auc": 0.0082
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "SVM",
-      "n_features": 22,
-      "mean_cv_auc": 0.994,
-      "std_cv_auc": 0.0062
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "SVM",
-      "n_features": 23,
-      "mean_cv_auc": 0.994,
-      "std_cv_auc": 0.0062
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "SVM",
-      "n_features": 24,
-      "mean_cv_auc": 0.9922,
-      "std_cv_auc": 0.0076
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "SVM",
-      "n_features": 25,
-      "mean_cv_auc": 0.9933,
+      "mean_cv_auc": 0.9915,
       "std_cv_auc": 0.0064
     },
     {
       "ranking": "XGBoost",
       "classifier": "SVM",
+      "n_features": 10,
+      "mean_cv_auc": 0.994,
+      "std_cv_auc": 0.0039
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "SVM",
+      "n_features": 11,
+      "mean_cv_auc": 0.9973,
+      "std_cv_auc": 0.0045
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "SVM",
+      "n_features": 12,
+      "mean_cv_auc": 0.9963,
+      "std_cv_auc": 0.0049
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "SVM",
+      "n_features": 13,
+      "mean_cv_auc": 0.9954,
+      "std_cv_auc": 0.004
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "SVM",
+      "n_features": 14,
+      "mean_cv_auc": 0.9928,
+      "std_cv_auc": 0.0083
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "SVM",
+      "n_features": 15,
+      "mean_cv_auc": 0.993,
+      "std_cv_auc": 0.0061
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "SVM",
+      "n_features": 16,
+      "mean_cv_auc": 0.9945,
+      "std_cv_auc": 0.0061
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "SVM",
+      "n_features": 17,
+      "mean_cv_auc": 0.9906,
+      "std_cv_auc": 0.0088
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "SVM",
+      "n_features": 18,
+      "mean_cv_auc": 0.9943,
+      "std_cv_auc": 0.005
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "SVM",
+      "n_features": 19,
+      "mean_cv_auc": 0.9957,
+      "std_cv_auc": 0.0077
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "SVM",
+      "n_features": 20,
+      "mean_cv_auc": 0.9953,
+      "std_cv_auc": 0.0076
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "SVM",
+      "n_features": 21,
+      "mean_cv_auc": 0.9953,
+      "std_cv_auc": 0.0084
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "SVM",
+      "n_features": 22,
+      "mean_cv_auc": 0.9957,
+      "std_cv_auc": 0.0086
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "SVM",
+      "n_features": 23,
+      "mean_cv_auc": 0.9957,
+      "std_cv_auc": 0.0086
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "SVM",
+      "n_features": 24,
+      "mean_cv_auc": 0.9957,
+      "std_cv_auc": 0.0086
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "SVM",
+      "n_features": 25,
+      "mean_cv_auc": 0.9957,
+      "std_cv_auc": 0.0086
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "SVM",
       "n_features": 26,
-      "mean_cv_auc": 0.9918,
-      "std_cv_auc": 0.008
+      "mean_cv_auc": 0.9947,
+      "std_cv_auc": 0.0105
     },
     {
       "ranking": "XGBoost",
       "classifier": "KNN",
       "n_features": 1,
-      "mean_cv_auc": 0.9566,
-      "std_cv_auc": 0.025
+      "mean_cv_auc": 0.932,
+      "std_cv_auc": 0.0275
     },
     {
       "ranking": "XGBoost",
       "classifier": "KNN",
       "n_features": 2,
-      "mean_cv_auc": 0.9564,
-      "std_cv_auc": 0.0242
+      "mean_cv_auc": 0.9277,
+      "std_cv_auc": 0.0586
     },
     {
       "ranking": "XGBoost",
       "classifier": "KNN",
       "n_features": 3,
-      "mean_cv_auc": 0.9591,
-      "std_cv_auc": 0.024
+      "mean_cv_auc": 0.921,
+      "std_cv_auc": 0.0578
     },
     {
       "ranking": "XGBoost",
       "classifier": "KNN",
       "n_features": 4,
-      "mean_cv_auc": 0.9595,
-      "std_cv_auc": 0.027
+      "mean_cv_auc": 0.913,
+      "std_cv_auc": 0.0514
     },
     {
       "ranking": "XGBoost",
       "classifier": "KNN",
       "n_features": 5,
-      "mean_cv_auc": 0.9565,
-      "std_cv_auc": 0.0276
+      "mean_cv_auc": 0.9378,
+      "std_cv_auc": 0.039
     },
     {
       "ranking": "XGBoost",
       "classifier": "KNN",
       "n_features": 6,
-      "mean_cv_auc": 0.9675,
-      "std_cv_auc": 0.0172
+      "mean_cv_auc": 0.9755,
+      "std_cv_auc": 0.0104
     },
     {
       "ranking": "XGBoost",
       "classifier": "KNN",
       "n_features": 7,
-      "mean_cv_auc": 0.9645,
-      "std_cv_auc": 0.0167
+      "mean_cv_auc": 0.9639,
+      "std_cv_auc": 0.0241
     },
     {
       "ranking": "XGBoost",
       "classifier": "KNN",
       "n_features": 8,
-      "mean_cv_auc": 0.9714,
-      "std_cv_auc": 0.0176
+      "mean_cv_auc": 0.9659,
+      "std_cv_auc": 0.0245
     },
     {
       "ranking": "XGBoost",
       "classifier": "KNN",
       "n_features": 9,
-      "mean_cv_auc": 0.9706,
-      "std_cv_auc": 0.0179
+      "mean_cv_auc": 0.9839,
+      "std_cv_auc": 0.0121
     },
     {
       "ranking": "XGBoost",
       "classifier": "KNN",
       "n_features": 10,
-      "mean_cv_auc": 0.9691,
-      "std_cv_auc": 0.0143
+      "mean_cv_auc": 0.9814,
+      "std_cv_auc": 0.011
     },
     {
       "ranking": "XGBoost",
       "classifier": "KNN",
       "n_features": 11,
-      "mean_cv_auc": 0.9699,
-      "std_cv_auc": 0.0177
+      "mean_cv_auc": 0.9819,
+      "std_cv_auc": 0.016
     },
     {
       "ranking": "XGBoost",
       "classifier": "KNN",
       "n_features": 12,
-      "mean_cv_auc": 0.9753,
-      "std_cv_auc": 0.0091
+      "mean_cv_auc": 0.9811,
+      "std_cv_auc": 0.0164
     },
     {
       "ranking": "XGBoost",
       "classifier": "KNN",
       "n_features": 13,
-      "mean_cv_auc": 0.9699,
-      "std_cv_auc": 0.0164
+      "mean_cv_auc": 0.9791,
+      "std_cv_auc": 0.014
     },
     {
       "ranking": "XGBoost",
       "classifier": "KNN",
       "n_features": 14,
-      "mean_cv_auc": 0.9779,
-      "std_cv_auc": 0.0103
+      "mean_cv_auc": 0.9799,
+      "std_cv_auc": 0.0099
     },
     {
       "ranking": "XGBoost",
       "classifier": "KNN",
       "n_features": 15,
-      "mean_cv_auc": 0.9808,
-      "std_cv_auc": 0.0112
+      "mean_cv_auc": 0.9751,
+      "std_cv_auc": 0.0152
     },
     {
       "ranking": "XGBoost",
       "classifier": "KNN",
       "n_features": 16,
-      "mean_cv_auc": 0.9808,
-      "std_cv_auc": 0.0093
+      "mean_cv_auc": 0.9759,
+      "std_cv_auc": 0.0143
     },
     {
       "ranking": "XGBoost",
       "classifier": "KNN",
       "n_features": 17,
-      "mean_cv_auc": 0.9795,
-      "std_cv_auc": 0.013
+      "mean_cv_auc": 0.9833,
+      "std_cv_auc": 0.0055
     },
     {
       "ranking": "XGBoost",
       "classifier": "KNN",
       "n_features": 18,
-      "mean_cv_auc": 0.9788,
-      "std_cv_auc": 0.0164
+      "mean_cv_auc": 0.9759,
+      "std_cv_auc": 0.0068
     },
     {
       "ranking": "XGBoost",
       "classifier": "KNN",
       "n_features": 19,
-      "mean_cv_auc": 0.9797,
-      "std_cv_auc": 0.02
+      "mean_cv_auc": 0.9744,
+      "std_cv_auc": 0.0197
     },
     {
       "ranking": "XGBoost",
       "classifier": "KNN",
       "n_features": 20,
-      "mean_cv_auc": 0.9774,
-      "std_cv_auc": 0.0196
+      "mean_cv_auc": 0.9645,
+      "std_cv_auc": 0.017
     },
     {
       "ranking": "XGBoost",
       "classifier": "KNN",
       "n_features": 21,
-      "mean_cv_auc": 0.9724,
-      "std_cv_auc": 0.0237
+      "mean_cv_auc": 0.9719,
+      "std_cv_auc": 0.0147
     },
     {
       "ranking": "XGBoost",
       "classifier": "KNN",
       "n_features": 22,
-      "mean_cv_auc": 0.9766,
-      "std_cv_auc": 0.0205
+      "mean_cv_auc": 0.9713,
+      "std_cv_auc": 0.0149
     },
     {
       "ranking": "XGBoost",
       "classifier": "KNN",
       "n_features": 23,
-      "mean_cv_auc": 0.9766,
-      "std_cv_auc": 0.0205
+      "mean_cv_auc": 0.9713,
+      "std_cv_auc": 0.0149
     },
     {
       "ranking": "XGBoost",
       "classifier": "KNN",
       "n_features": 24,
-      "mean_cv_auc": 0.9759,
-      "std_cv_auc": 0.0159
+      "mean_cv_auc": 0.9712,
+      "std_cv_auc": 0.0149
     },
     {
       "ranking": "XGBoost",
       "classifier": "KNN",
       "n_features": 25,
-      "mean_cv_auc": 0.9765,
-      "std_cv_auc": 0.0158
+      "mean_cv_auc": 0.9743,
+      "std_cv_auc": 0.014
     },
     {
       "ranking": "XGBoost",
       "classifier": "KNN",
       "n_features": 26,
-      "mean_cv_auc": 0.9757,
-      "std_cv_auc": 0.0156
+      "mean_cv_auc": 0.9738,
+      "std_cv_auc": 0.0127
     },
     {
       "ranking": "XGBoost",
       "classifier": "XGBoost",
       "n_features": 1,
-      "mean_cv_auc": 0.9766,
-      "std_cv_auc": 0.0181
+      "mean_cv_auc": 0.9391,
+      "std_cv_auc": 0.0453
     },
     {
       "ranking": "XGBoost",
       "classifier": "XGBoost",
       "n_features": 2,
-      "mean_cv_auc": 0.9671,
-      "std_cv_auc": 0.0172
+      "mean_cv_auc": 0.9723,
+      "std_cv_auc": 0.0181
     },
     {
       "ranking": "XGBoost",
       "classifier": "XGBoost",
       "n_features": 3,
-      "mean_cv_auc": 0.9687,
-      "std_cv_auc": 0.0216
+      "mean_cv_auc": 0.9759,
+      "std_cv_auc": 0.0137
     },
     {
       "ranking": "XGBoost",
       "classifier": "XGBoost",
       "n_features": 4,
-      "mean_cv_auc": 0.9859,
-      "std_cv_auc": 0.0133
+      "mean_cv_auc": 0.9796,
+      "std_cv_auc": 0.0194
     },
     {
       "ranking": "XGBoost",
       "classifier": "XGBoost",
       "n_features": 5,
-      "mean_cv_auc": 0.9838,
-      "std_cv_auc": 0.0158
+      "mean_cv_auc": 0.9835,
+      "std_cv_auc": 0.0238
     },
     {
       "ranking": "XGBoost",
       "classifier": "XGBoost",
       "n_features": 6,
-      "mean_cv_auc": 0.9876,
-      "std_cv_auc": 0.0131
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "XGBoost",
-      "n_features": 7,
-      "mean_cv_auc": 0.9895,
-      "std_cv_auc": 0.0103
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "XGBoost",
-      "n_features": 8,
-      "mean_cv_auc": 0.9887,
-      "std_cv_auc": 0.0126
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "XGBoost",
-      "n_features": 9,
-      "mean_cv_auc": 0.988,
-      "std_cv_auc": 0.0123
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "XGBoost",
-      "n_features": 10,
-      "mean_cv_auc": 0.9855,
-      "std_cv_auc": 0.0147
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "XGBoost",
-      "n_features": 11,
-      "mean_cv_auc": 0.9842,
-      "std_cv_auc": 0.0126
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "XGBoost",
-      "n_features": 12,
-      "mean_cv_auc": 0.9848,
-      "std_cv_auc": 0.0135
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "XGBoost",
-      "n_features": 13,
-      "mean_cv_auc": 0.9841,
+      "mean_cv_auc": 0.9829,
       "std_cv_auc": 0.0152
     },
     {
       "ranking": "XGBoost",
       "classifier": "XGBoost",
-      "n_features": 14,
-      "mean_cv_auc": 0.9856,
-      "std_cv_auc": 0.012
+      "n_features": 7,
+      "mean_cv_auc": 0.9863,
+      "std_cv_auc": 0.0125
     },
     {
       "ranking": "XGBoost",
       "classifier": "XGBoost",
-      "n_features": 15,
-      "mean_cv_auc": 0.9838,
-      "std_cv_auc": 0.0137
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "XGBoost",
-      "n_features": 16,
-      "mean_cv_auc": 0.9852,
+      "n_features": 8,
+      "mean_cv_auc": 0.9883,
       "std_cv_auc": 0.0136
     },
     {
       "ranking": "XGBoost",
       "classifier": "XGBoost",
+      "n_features": 9,
+      "mean_cv_auc": 0.981,
+      "std_cv_auc": 0.0173
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "XGBoost",
+      "n_features": 10,
+      "mean_cv_auc": 0.9779,
+      "std_cv_auc": 0.0243
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "XGBoost",
+      "n_features": 11,
+      "mean_cv_auc": 0.9789,
+      "std_cv_auc": 0.0296
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "XGBoost",
+      "n_features": 12,
+      "mean_cv_auc": 0.979,
+      "std_cv_auc": 0.0316
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "XGBoost",
+      "n_features": 13,
+      "mean_cv_auc": 0.9728,
+      "std_cv_auc": 0.023
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "XGBoost",
+      "n_features": 14,
+      "mean_cv_auc": 0.9767,
+      "std_cv_auc": 0.0292
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "XGBoost",
+      "n_features": 15,
+      "mean_cv_auc": 0.974,
+      "std_cv_auc": 0.0334
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "XGBoost",
+      "n_features": 16,
+      "mean_cv_auc": 0.9744,
+      "std_cv_auc": 0.0336
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "XGBoost",
       "n_features": 17,
-      "mean_cv_auc": 0.9826,
-      "std_cv_auc": 0.0148
+      "mean_cv_auc": 0.9742,
+      "std_cv_auc": 0.0316
     },
     {
       "ranking": "XGBoost",
       "classifier": "XGBoost",
       "n_features": 18,
-      "mean_cv_auc": 0.9847,
-      "std_cv_auc": 0.0143
+      "mean_cv_auc": 0.9762,
+      "std_cv_auc": 0.0282
     },
     {
       "ranking": "XGBoost",
       "classifier": "XGBoost",
       "n_features": 19,
-      "mean_cv_auc": 0.9857,
-      "std_cv_auc": 0.0126
+      "mean_cv_auc": 0.9752,
+      "std_cv_auc": 0.0343
     },
     {
       "ranking": "XGBoost",
       "classifier": "XGBoost",
       "n_features": 20,
-      "mean_cv_auc": 0.9834,
-      "std_cv_auc": 0.0162
+      "mean_cv_auc": 0.9805,
+      "std_cv_auc": 0.0291
     },
     {
       "ranking": "XGBoost",
       "classifier": "XGBoost",
       "n_features": 21,
-      "mean_cv_auc": 0.9836,
-      "std_cv_auc": 0.0149
+      "mean_cv_auc": 0.9721,
+      "std_cv_auc": 0.0374
     },
     {
       "ranking": "XGBoost",
       "classifier": "XGBoost",
       "n_features": 22,
-      "mean_cv_auc": 0.9845,
-      "std_cv_auc": 0.0144
+      "mean_cv_auc": 0.9784,
+      "std_cv_auc": 0.0325
     },
     {
       "ranking": "XGBoost",
       "classifier": "XGBoost",
       "n_features": 23,
-      "mean_cv_auc": 0.9845,
-      "std_cv_auc": 0.0144
+      "mean_cv_auc": 0.9784,
+      "std_cv_auc": 0.0325
     },
     {
       "ranking": "XGBoost",
       "classifier": "XGBoost",
       "n_features": 24,
-      "mean_cv_auc": 0.9847,
-      "std_cv_auc": 0.0129
+      "mean_cv_auc": 0.976,
+      "std_cv_auc": 0.0346
     },
     {
       "ranking": "XGBoost",
       "classifier": "XGBoost",
       "n_features": 25,
-      "mean_cv_auc": 0.9864,
-      "std_cv_auc": 0.0112
+      "mean_cv_auc": 0.9747,
+      "std_cv_auc": 0.0387
     },
     {
       "ranking": "XGBoost",
       "classifier": "XGBoost",
       "n_features": 26,
-      "mean_cv_auc": 0.984,
-      "std_cv_auc": 0.0134
+      "mean_cv_auc": 0.9808,
+      "std_cv_auc": 0.0285
     },
     {
       "ranking": "XGBoost",
       "classifier": "LogisticRegression",
       "n_features": 1,
-      "mean_cv_auc": 0.9664,
-      "std_cv_auc": 0.016
+      "mean_cv_auc": 0.9756,
+      "std_cv_auc": 0.0248
     },
     {
       "ranking": "XGBoost",
       "classifier": "LogisticRegression",
       "n_features": 2,
-      "mean_cv_auc": 0.9733,
-      "std_cv_auc": 0.0154
+      "mean_cv_auc": 0.9917,
+      "std_cv_auc": 0.0148
     },
     {
       "ranking": "XGBoost",
       "classifier": "LogisticRegression",
       "n_features": 3,
-      "mean_cv_auc": 0.9794,
-      "std_cv_auc": 0.0109
+      "mean_cv_auc": 0.9878,
+      "std_cv_auc": 0.0158
     },
     {
       "ranking": "XGBoost",
       "classifier": "LogisticRegression",
       "n_features": 4,
-      "mean_cv_auc": 0.9853,
-      "std_cv_auc": 0.0101
+      "mean_cv_auc": 0.9912,
+      "std_cv_auc": 0.0111
     },
     {
       "ranking": "XGBoost",
       "classifier": "LogisticRegression",
       "n_features": 5,
-      "mean_cv_auc": 0.9863,
-      "std_cv_auc": 0.0118
+      "mean_cv_auc": 0.986,
+      "std_cv_auc": 0.0114
     },
     {
       "ranking": "XGBoost",
       "classifier": "LogisticRegression",
       "n_features": 6,
-      "mean_cv_auc": 0.9875,
-      "std_cv_auc": 0.0088
+      "mean_cv_auc": 0.9873,
+      "std_cv_auc": 0.012
     },
     {
       "ranking": "XGBoost",
       "classifier": "LogisticRegression",
       "n_features": 7,
-      "mean_cv_auc": 0.9893,
-      "std_cv_auc": 0.0062
+      "mean_cv_auc": 0.987,
+      "std_cv_auc": 0.0133
     },
     {
       "ranking": "XGBoost",
       "classifier": "LogisticRegression",
       "n_features": 8,
-      "mean_cv_auc": 0.9856,
-      "std_cv_auc": 0.0122
+      "mean_cv_auc": 0.9819,
+      "std_cv_auc": 0.0187
     },
     {
       "ranking": "XGBoost",
       "classifier": "LogisticRegression",
       "n_features": 9,
-      "mean_cv_auc": 0.9856,
-      "std_cv_auc": 0.0127
+      "mean_cv_auc": 0.9829,
+      "std_cv_auc": 0.0178
     },
     {
       "ranking": "XGBoost",
       "classifier": "LogisticRegression",
       "n_features": 10,
-      "mean_cv_auc": 0.9849,
-      "std_cv_auc": 0.013
+      "mean_cv_auc": 0.9888,
+      "std_cv_auc": 0.0124
     },
     {
       "ranking": "XGBoost",
       "classifier": "LogisticRegression",
       "n_features": 11,
-      "mean_cv_auc": 0.9859,
-      "std_cv_auc": 0.013
+      "mean_cv_auc": 0.9854,
+      "std_cv_auc": 0.0163
     },
     {
       "ranking": "XGBoost",
       "classifier": "LogisticRegression",
       "n_features": 12,
-      "mean_cv_auc": 0.9864,
-      "std_cv_auc": 0.0115
+      "mean_cv_auc": 0.9851,
+      "std_cv_auc": 0.0169
     },
     {
       "ranking": "XGBoost",
       "classifier": "LogisticRegression",
       "n_features": 13,
-      "mean_cv_auc": 0.986,
-      "std_cv_auc": 0.0117
+      "mean_cv_auc": 0.9888,
+      "std_cv_auc": 0.0118
     },
     {
       "ranking": "XGBoost",
       "classifier": "LogisticRegression",
       "n_features": 14,
-      "mean_cv_auc": 0.985,
-      "std_cv_auc": 0.0106
+      "mean_cv_auc": 0.9872,
+      "std_cv_auc": 0.0146
     },
     {
       "ranking": "XGBoost",
       "classifier": "LogisticRegression",
       "n_features": 15,
-      "mean_cv_auc": 0.9846,
-      "std_cv_auc": 0.0106
+      "mean_cv_auc": 0.9861,
+      "std_cv_auc": 0.0159
     },
     {
       "ranking": "XGBoost",
       "classifier": "LogisticRegression",
       "n_features": 16,
-      "mean_cv_auc": 0.9843,
-      "std_cv_auc": 0.0106
+      "mean_cv_auc": 0.9858,
+      "std_cv_auc": 0.0165
     },
     {
       "ranking": "XGBoost",
       "classifier": "LogisticRegression",
       "n_features": 17,
-      "mean_cv_auc": 0.9843,
-      "std_cv_auc": 0.0106
+      "mean_cv_auc": 0.9851,
+      "std_cv_auc": 0.0169
     },
     {
       "ranking": "XGBoost",
       "classifier": "LogisticRegression",
       "n_features": 18,
-      "mean_cv_auc": 0.9882,
-      "std_cv_auc": 0.0078
+      "mean_cv_auc": 0.9837,
+      "std_cv_auc": 0.0178
     },
     {
       "ranking": "XGBoost",
       "classifier": "LogisticRegression",
       "n_features": 19,
-      "mean_cv_auc": 0.9907,
-      "std_cv_auc": 0.0071
+      "mean_cv_auc": 0.9867,
+      "std_cv_auc": 0.0185
     },
     {
       "ranking": "XGBoost",
       "classifier": "LogisticRegression",
       "n_features": 20,
-      "mean_cv_auc": 0.991,
-      "std_cv_auc": 0.0072
+      "mean_cv_auc": 0.9871,
+      "std_cv_auc": 0.0185
     },
     {
       "ranking": "XGBoost",
       "classifier": "LogisticRegression",
       "n_features": 21,
-      "mean_cv_auc": 0.9907,
-      "std_cv_auc": 0.0072
+      "mean_cv_auc": 0.99,
+      "std_cv_auc": 0.0181
     },
     {
       "ranking": "XGBoost",
       "classifier": "LogisticRegression",
       "n_features": 22,
-      "mean_cv_auc": 0.9924,
-      "std_cv_auc": 0.0082
+      "mean_cv_auc": 0.9897,
+      "std_cv_auc": 0.0188
     },
     {
       "ranking": "XGBoost",
       "classifier": "LogisticRegression",
       "n_features": 23,
-      "mean_cv_auc": 0.9927,
-      "std_cv_auc": 0.0084
+      "mean_cv_auc": 0.9897,
+      "std_cv_auc": 0.0188
     },
     {
       "ranking": "XGBoost",
       "classifier": "LogisticRegression",
       "n_features": 24,
-      "mean_cv_auc": 0.9927,
-      "std_cv_auc": 0.0076
+      "mean_cv_auc": 0.9901,
+      "std_cv_auc": 0.0189
     },
     {
       "ranking": "XGBoost",
       "classifier": "LogisticRegression",
       "n_features": 25,
-      "mean_cv_auc": 0.9931,
-      "std_cv_auc": 0.0077
+      "mean_cv_auc": 0.9901,
+      "std_cv_auc": 0.0189
     },
     {
       "ranking": "XGBoost",
       "classifier": "LogisticRegression",
       "n_features": 26,
+      "mean_cv_auc": 0.9897,
+      "std_cv_auc": 0.0188
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "LDA",
+      "n_features": 1,
+      "mean_cv_auc": 0.9756,
+      "std_cv_auc": 0.0248
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "LDA",
+      "n_features": 2,
+      "mean_cv_auc": 0.991,
+      "std_cv_auc": 0.0154
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "LDA",
+      "n_features": 3,
+      "mean_cv_auc": 0.9877,
+      "std_cv_auc": 0.0205
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "LDA",
+      "n_features": 4,
+      "mean_cv_auc": 0.9858,
+      "std_cv_auc": 0.0259
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "LDA",
+      "n_features": 5,
+      "mean_cv_auc": 0.9841,
+      "std_cv_auc": 0.0284
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "LDA",
+      "n_features": 6,
+      "mean_cv_auc": 0.9842,
+      "std_cv_auc": 0.0248
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "LDA",
+      "n_features": 7,
+      "mean_cv_auc": 0.9814,
+      "std_cv_auc": 0.0256
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "LDA",
+      "n_features": 8,
+      "mean_cv_auc": 0.9789,
+      "std_cv_auc": 0.0256
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "LDA",
+      "n_features": 9,
+      "mean_cv_auc": 0.9791,
+      "std_cv_auc": 0.0236
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "LDA",
+      "n_features": 10,
+      "mean_cv_auc": 0.9816,
+      "std_cv_auc": 0.0227
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "LDA",
+      "n_features": 11,
+      "mean_cv_auc": 0.9769,
+      "std_cv_auc": 0.025
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "LDA",
+      "n_features": 12,
+      "mean_cv_auc": 0.9744,
+      "std_cv_auc": 0.0253
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "LDA",
+      "n_features": 13,
+      "mean_cv_auc": 0.9768,
+      "std_cv_auc": 0.0216
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "LDA",
+      "n_features": 14,
+      "mean_cv_auc": 0.9725,
+      "std_cv_auc": 0.0298
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "LDA",
+      "n_features": 15,
+      "mean_cv_auc": 0.9718,
+      "std_cv_auc": 0.0296
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "LDA",
+      "n_features": 16,
+      "mean_cv_auc": 0.9708,
+      "std_cv_auc": 0.0294
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "LDA",
+      "n_features": 17,
+      "mean_cv_auc": 0.9669,
+      "std_cv_auc": 0.0308
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "LDA",
+      "n_features": 18,
+      "mean_cv_auc": 0.9655,
+      "std_cv_auc": 0.0321
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "LDA",
+      "n_features": 19,
+      "mean_cv_auc": 0.9735,
+      "std_cv_auc": 0.0183
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "LDA",
+      "n_features": 20,
+      "mean_cv_auc": 0.978,
+      "std_cv_auc": 0.0183
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "LDA",
+      "n_features": 21,
+      "mean_cv_auc": 0.9788,
+      "std_cv_auc": 0.0171
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "LDA",
+      "n_features": 22,
+      "mean_cv_auc": 0.9768,
+      "std_cv_auc": 0.0212
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "LDA",
+      "n_features": 23,
+      "mean_cv_auc": 0.9755,
+      "std_cv_auc": 0.0233
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "LDA",
+      "n_features": 24,
+      "mean_cv_auc": 0.9798,
+      "std_cv_auc": 0.0227
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "LDA",
+      "n_features": 25,
+      "mean_cv_auc": 0.9798,
+      "std_cv_auc": 0.0224
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "LDA",
+      "n_features": 26,
+      "mean_cv_auc": 0.9831,
+      "std_cv_auc": 0.0164
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "MLP",
+      "n_features": 1,
+      "mean_cv_auc": 0.9756,
+      "std_cv_auc": 0.0248
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "MLP",
+      "n_features": 2,
+      "mean_cv_auc": 0.9868,
+      "std_cv_auc": 0.0177
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "MLP",
+      "n_features": 3,
+      "mean_cv_auc": 0.9847,
+      "std_cv_auc": 0.0194
+    },
+    {
+      "ranking": "XGBoost",
+      "classifier": "MLP",
+      "n_features": 4,
       "mean_cv_auc": 0.992,
       "std_cv_auc": 0.0089
     },
     {
       "ranking": "XGBoost",
-      "classifier": "LDA",
-      "n_features": 1,
-      "mean_cv_auc": 0.9664,
-      "std_cv_auc": 0.016
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "LDA",
-      "n_features": 2,
-      "mean_cv_auc": 0.9777,
-      "std_cv_auc": 0.0118
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "LDA",
-      "n_features": 3,
-      "mean_cv_auc": 0.9791,
-      "std_cv_auc": 0.0109
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "LDA",
-      "n_features": 4,
-      "mean_cv_auc": 0.9861,
-      "std_cv_auc": 0.0087
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "LDA",
+      "classifier": "MLP",
       "n_features": 5,
-      "mean_cv_auc": 0.9892,
-      "std_cv_auc": 0.0084
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "LDA",
-      "n_features": 6,
-      "mean_cv_auc": 0.9882,
-      "std_cv_auc": 0.0081
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "LDA",
-      "n_features": 7,
-      "mean_cv_auc": 0.9885,
-      "std_cv_auc": 0.0079
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "LDA",
-      "n_features": 8,
-      "mean_cv_auc": 0.986,
-      "std_cv_auc": 0.0111
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "LDA",
-      "n_features": 9,
-      "mean_cv_auc": 0.9867,
-      "std_cv_auc": 0.0115
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "LDA",
-      "n_features": 10,
-      "mean_cv_auc": 0.9856,
-      "std_cv_auc": 0.0135
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "LDA",
-      "n_features": 11,
-      "mean_cv_auc": 0.9856,
-      "std_cv_auc": 0.0133
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "LDA",
-      "n_features": 12,
-      "mean_cv_auc": 0.986,
-      "std_cv_auc": 0.0125
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "LDA",
-      "n_features": 13,
-      "mean_cv_auc": 0.9856,
-      "std_cv_auc": 0.0127
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "LDA",
-      "n_features": 14,
-      "mean_cv_auc": 0.9849,
-      "std_cv_auc": 0.0122
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "LDA",
-      "n_features": 15,
-      "mean_cv_auc": 0.9845,
-      "std_cv_auc": 0.0137
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "LDA",
-      "n_features": 16,
-      "mean_cv_auc": 0.9835,
-      "std_cv_auc": 0.0141
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "LDA",
-      "n_features": 17,
-      "mean_cv_auc": 0.9835,
-      "std_cv_auc": 0.0141
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "LDA",
-      "n_features": 18,
-      "mean_cv_auc": 0.9839,
-      "std_cv_auc": 0.0122
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "LDA",
-      "n_features": 19,
-      "mean_cv_auc": 0.9885,
-      "std_cv_auc": 0.012
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "LDA",
-      "n_features": 20,
-      "mean_cv_auc": 0.9885,
-      "std_cv_auc": 0.012
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "LDA",
-      "n_features": 21,
-      "mean_cv_auc": 0.9896,
-      "std_cv_auc": 0.0099
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "LDA",
-      "n_features": 22,
-      "mean_cv_auc": 0.9899,
-      "std_cv_auc": 0.0099
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "LDA",
-      "n_features": 23,
-      "mean_cv_auc": 0.9899,
-      "std_cv_auc": 0.0099
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "LDA",
-      "n_features": 24,
-      "mean_cv_auc": 0.9892,
-      "std_cv_auc": 0.0088
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "LDA",
-      "n_features": 25,
-      "mean_cv_auc": 0.9892,
-      "std_cv_auc": 0.0096
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "LDA",
-      "n_features": 26,
-      "mean_cv_auc": 0.9899,
+      "mean_cv_auc": 0.989,
       "std_cv_auc": 0.0083
     },
     {
       "ranking": "XGBoost",
       "classifier": "MLP",
-      "n_features": 1,
-      "mean_cv_auc": 0.9664,
-      "std_cv_auc": 0.016
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "MLP",
-      "n_features": 2,
-      "mean_cv_auc": 0.9784,
-      "std_cv_auc": 0.0103
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "MLP",
-      "n_features": 3,
-      "mean_cv_auc": 0.9785,
+      "n_features": 6,
+      "mean_cv_auc": 0.9886,
       "std_cv_auc": 0.0115
     },
     {
       "ranking": "XGBoost",
       "classifier": "MLP",
-      "n_features": 4,
-      "mean_cv_auc": 0.9858,
-      "std_cv_auc": 0.0079
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "MLP",
-      "n_features": 5,
-      "mean_cv_auc": 0.9862,
-      "std_cv_auc": 0.0074
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "MLP",
-      "n_features": 6,
-      "mean_cv_auc": 0.9905,
-      "std_cv_auc": 0.0062
-    },
-    {
-      "ranking": "XGBoost",
-      "classifier": "MLP",
       "n_features": 7,
-      "mean_cv_auc": 0.9912,
-      "std_cv_auc": 0.0062
+      "mean_cv_auc": 0.988,
+      "std_cv_auc": 0.012
     },
     {
       "ranking": "XGBoost",
       "classifier": "MLP",
       "n_features": 8,
-      "mean_cv_auc": 0.9914,
-      "std_cv_auc": 0.0076
+      "mean_cv_auc": 0.9841,
+      "std_cv_auc": 0.0179
     },
     {
       "ranking": "XGBoost",
       "classifier": "MLP",
       "n_features": 9,
-      "mean_cv_auc": 0.9906,
-      "std_cv_auc": 0.0082
+      "mean_cv_auc": 0.9878,
+      "std_cv_auc": 0.014
     },
     {
       "ranking": "XGBoost",
       "classifier": "MLP",
       "n_features": 10,
-      "mean_cv_auc": 0.9913,
-      "std_cv_auc": 0.0075
+      "mean_cv_auc": 0.9875,
+      "std_cv_auc": 0.0143
     },
     {
       "ranking": "XGBoost",
       "classifier": "MLP",
       "n_features": 11,
       "mean_cv_auc": 0.9906,
-      "std_cv_auc": 0.0091
+      "std_cv_auc": 0.0094
     },
     {
       "ranking": "XGBoost",
       "classifier": "MLP",
       "n_features": 12,
-      "mean_cv_auc": 0.99,
-      "std_cv_auc": 0.0073
+      "mean_cv_auc": 0.987,
+      "std_cv_auc": 0.0126
     },
     {
       "ranking": "XGBoost",
       "classifier": "MLP",
       "n_features": 13,
-      "mean_cv_auc": 0.9897,
-      "std_cv_auc": 0.0061
+      "mean_cv_auc": 0.9884,
+      "std_cv_auc": 0.0118
     },
     {
       "ranking": "XGBoost",
       "classifier": "MLP",
       "n_features": 14,
-      "mean_cv_auc": 0.9894,
-      "std_cv_auc": 0.0061
+      "mean_cv_auc": 0.9883,
+      "std_cv_auc": 0.0139
     },
     {
       "ranking": "XGBoost",
       "classifier": "MLP",
       "n_features": 15,
-      "mean_cv_auc": 0.9894,
-      "std_cv_auc": 0.0066
+      "mean_cv_auc": 0.9875,
+      "std_cv_auc": 0.0139
     },
     {
       "ranking": "XGBoost",
       "classifier": "MLP",
       "n_features": 16,
-      "mean_cv_auc": 0.9863,
-      "std_cv_auc": 0.0084
+      "mean_cv_auc": 0.9891,
+      "std_cv_auc": 0.0108
     },
     {
       "ranking": "XGBoost",
       "classifier": "MLP",
       "n_features": 17,
-      "mean_cv_auc": 0.9866,
-      "std_cv_auc": 0.0079
+      "mean_cv_auc": 0.9883,
+      "std_cv_auc": 0.0142
     },
     {
       "ranking": "XGBoost",
       "classifier": "MLP",
       "n_features": 18,
-      "mean_cv_auc": 0.9911,
-      "std_cv_auc": 0.0065
+      "mean_cv_auc": 0.9906,
+      "std_cv_auc": 0.0101
     },
     {
       "ranking": "XGBoost",
       "classifier": "MLP",
       "n_features": 19,
-      "mean_cv_auc": 0.9946,
-      "std_cv_auc": 0.0056
+      "mean_cv_auc": 0.9891,
+      "std_cv_auc": 0.0141
     },
     {
       "ranking": "XGBoost",
       "classifier": "MLP",
       "n_features": 20,
-      "mean_cv_auc": 0.9939,
-      "std_cv_auc": 0.0075
+      "mean_cv_auc": 0.9913,
+      "std_cv_auc": 0.0147
     },
     {
       "ranking": "XGBoost",
       "classifier": "MLP",
       "n_features": 21,
-      "mean_cv_auc": 0.9943,
-      "std_cv_auc": 0.0079
+      "mean_cv_auc": 0.9905,
+      "std_cv_auc": 0.0138
     },
     {
       "ranking": "XGBoost",
       "classifier": "MLP",
       "n_features": 22,
-      "mean_cv_auc": 0.995,
-      "std_cv_auc": 0.0058
+      "mean_cv_auc": 0.989,
+      "std_cv_auc": 0.0184
     },
     {
       "ranking": "XGBoost",
       "classifier": "MLP",
       "n_features": 23,
-      "mean_cv_auc": 0.995,
-      "std_cv_auc": 0.0058
+      "mean_cv_auc": 0.9876,
+      "std_cv_auc": 0.0194
     },
     {
       "ranking": "XGBoost",
       "classifier": "MLP",
       "n_features": 24,
-      "mean_cv_auc": 0.9946,
-      "std_cv_auc": 0.0064
+      "mean_cv_auc": 0.9894,
+      "std_cv_auc": 0.0194
     },
     {
       "ranking": "XGBoost",
       "classifier": "MLP",
       "n_features": 25,
-      "mean_cv_auc": 0.9946,
-      "std_cv_auc": 0.0061
+      "mean_cv_auc": 0.989,
+      "std_cv_auc": 0.0184
     },
     {
       "ranking": "XGBoost",
       "classifier": "MLP",
       "n_features": 26,
-      "mean_cv_auc": 0.9935,
-      "std_cv_auc": 0.0075
+      "mean_cv_auc": 0.9894,
+      "std_cv_auc": 0.0194
     },
     {
       "ranking": "ExtraTree",
       "classifier": "AdaBoost",
       "n_features": 1,
-      "mean_cv_auc": 0.9781,
-      "std_cv_auc": 0.0153
+      "mean_cv_auc": 0.9738,
+      "std_cv_auc": 0.0143
     },
     {
       "ranking": "ExtraTree",
       "classifier": "AdaBoost",
       "n_features": 2,
-      "mean_cv_auc": 0.9871,
-      "std_cv_auc": 0.0099
+      "mean_cv_auc": 0.9822,
+      "std_cv_auc": 0.0187
     },
     {
       "ranking": "ExtraTree",
       "classifier": "AdaBoost",
       "n_features": 3,
-      "mean_cv_auc": 0.9893,
-      "std_cv_auc": 0.0066
+      "mean_cv_auc": 0.9899,
+      "std_cv_auc": 0.0089
     },
     {
       "ranking": "ExtraTree",
       "classifier": "AdaBoost",
       "n_features": 4,
-      "mean_cv_auc": 0.9881,
-      "std_cv_auc": 0.0076
+      "mean_cv_auc": 0.9885,
+      "std_cv_auc": 0.0146
     },
     {
       "ranking": "ExtraTree",
       "classifier": "AdaBoost",
       "n_features": 5,
-      "mean_cv_auc": 0.9903,
-      "std_cv_auc": 0.0075
+      "mean_cv_auc": 0.981,
+      "std_cv_auc": 0.0142
     },
     {
       "ranking": "ExtraTree",
       "classifier": "AdaBoost",
       "n_features": 6,
-      "mean_cv_auc": 0.9839,
-      "std_cv_auc": 0.0154
+      "mean_cv_auc": 0.9849,
+      "std_cv_auc": 0.0101
     },
     {
       "ranking": "ExtraTree",
       "classifier": "AdaBoost",
       "n_features": 7,
-      "mean_cv_auc": 0.9855,
-      "std_cv_auc": 0.0144
+      "mean_cv_auc": 0.9826,
+      "std_cv_auc": 0.0122
     },
     {
       "ranking": "ExtraTree",
       "classifier": "AdaBoost",
       "n_features": 8,
-      "mean_cv_auc": 0.9894,
-      "std_cv_auc": 0.0151
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "AdaBoost",
-      "n_features": 9,
-      "mean_cv_auc": 0.9894,
+      "mean_cv_auc": 0.9807,
       "std_cv_auc": 0.015
     },
     {
       "ranking": "ExtraTree",
       "classifier": "AdaBoost",
+      "n_features": 9,
+      "mean_cv_auc": 0.9891,
+      "std_cv_auc": 0.0135
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "AdaBoost",
       "n_features": 10,
-      "mean_cv_auc": 0.9887,
-      "std_cv_auc": 0.0183
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "AdaBoost",
-      "n_features": 11,
-      "mean_cv_auc": 0.9886,
-      "std_cv_auc": 0.0164
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "AdaBoost",
-      "n_features": 12,
-      "mean_cv_auc": 0.9869,
-      "std_cv_auc": 0.0176
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "AdaBoost",
-      "n_features": 13,
-      "mean_cv_auc": 0.9923,
-      "std_cv_auc": 0.0154
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "AdaBoost",
-      "n_features": 14,
-      "mean_cv_auc": 0.9917,
-      "std_cv_auc": 0.0101
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "AdaBoost",
-      "n_features": 15,
-      "mean_cv_auc": 0.9914,
-      "std_cv_auc": 0.0098
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "AdaBoost",
-      "n_features": 16,
-      "mean_cv_auc": 0.9925,
-      "std_cv_auc": 0.0085
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "AdaBoost",
-      "n_features": 17,
-      "mean_cv_auc": 0.9928,
-      "std_cv_auc": 0.0053
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "AdaBoost",
-      "n_features": 18,
-      "mean_cv_auc": 0.992,
-      "std_cv_auc": 0.0117
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "AdaBoost",
-      "n_features": 19,
-      "mean_cv_auc": 0.9933,
-      "std_cv_auc": 0.0078
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "AdaBoost",
-      "n_features": 20,
-      "mean_cv_auc": 0.9935,
-      "std_cv_auc": 0.0089
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "AdaBoost",
-      "n_features": 21,
-      "mean_cv_auc": 0.9935,
-      "std_cv_auc": 0.0089
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "AdaBoost",
-      "n_features": 22,
-      "mean_cv_auc": 0.9918,
-      "std_cv_auc": 0.0071
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "AdaBoost",
-      "n_features": 23,
-      "mean_cv_auc": 0.9911,
-      "std_cv_auc": 0.0084
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "AdaBoost",
-      "n_features": 24,
-      "mean_cv_auc": 0.9903,
-      "std_cv_auc": 0.0103
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "AdaBoost",
-      "n_features": 25,
-      "mean_cv_auc": 0.992,
-      "std_cv_auc": 0.0103
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "AdaBoost",
-      "n_features": 26,
-      "mean_cv_auc": 0.9935,
-      "std_cv_auc": 0.0087
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "RandomForest",
-      "n_features": 1,
-      "mean_cv_auc": 0.9698,
-      "std_cv_auc": 0.0257
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "RandomForest",
-      "n_features": 2,
       "mean_cv_auc": 0.9908,
-      "std_cv_auc": 0.0074
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "RandomForest",
-      "n_features": 3,
-      "mean_cv_auc": 0.9886,
-      "std_cv_auc": 0.0106
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "RandomForest",
-      "n_features": 4,
-      "mean_cv_auc": 0.9919,
-      "std_cv_auc": 0.0064
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "RandomForest",
-      "n_features": 5,
-      "mean_cv_auc": 0.9879,
-      "std_cv_auc": 0.0106
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "RandomForest",
-      "n_features": 6,
-      "mean_cv_auc": 0.9875,
-      "std_cv_auc": 0.0121
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "RandomForest",
-      "n_features": 7,
-      "mean_cv_auc": 0.989,
-      "std_cv_auc": 0.0099
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "RandomForest",
-      "n_features": 8,
-      "mean_cv_auc": 0.9913,
-      "std_cv_auc": 0.0104
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "RandomForest",
-      "n_features": 9,
-      "mean_cv_auc": 0.9881,
-      "std_cv_auc": 0.0112
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "RandomForest",
-      "n_features": 10,
-      "mean_cv_auc": 0.9883,
-      "std_cv_auc": 0.0103
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "RandomForest",
-      "n_features": 11,
-      "mean_cv_auc": 0.9884,
-      "std_cv_auc": 0.0106
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "RandomForest",
-      "n_features": 12,
-      "mean_cv_auc": 0.9864,
-      "std_cv_auc": 0.0137
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "RandomForest",
-      "n_features": 13,
-      "mean_cv_auc": 0.9935,
-      "std_cv_auc": 0.0083
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "RandomForest",
-      "n_features": 14,
-      "mean_cv_auc": 0.9905,
-      "std_cv_auc": 0.0092
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "RandomForest",
-      "n_features": 15,
-      "mean_cv_auc": 0.9917,
-      "std_cv_auc": 0.0099
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "RandomForest",
-      "n_features": 16,
-      "mean_cv_auc": 0.9909,
-      "std_cv_auc": 0.0098
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "RandomForest",
-      "n_features": 17,
-      "mean_cv_auc": 0.9947,
-      "std_cv_auc": 0.0072
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "RandomForest",
-      "n_features": 18,
-      "mean_cv_auc": 0.9935,
-      "std_cv_auc": 0.007
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "RandomForest",
-      "n_features": 19,
-      "mean_cv_auc": 0.9934,
-      "std_cv_auc": 0.0081
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "RandomForest",
-      "n_features": 20,
-      "mean_cv_auc": 0.9931,
-      "std_cv_auc": 0.0049
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "RandomForest",
-      "n_features": 21,
-      "mean_cv_auc": 0.9941,
-      "std_cv_auc": 0.0058
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "RandomForest",
-      "n_features": 22,
-      "mean_cv_auc": 0.991,
-      "std_cv_auc": 0.0102
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "RandomForest",
-      "n_features": 23,
-      "mean_cv_auc": 0.9921,
-      "std_cv_auc": 0.0105
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "RandomForest",
-      "n_features": 24,
-      "mean_cv_auc": 0.991,
-      "std_cv_auc": 0.0097
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "RandomForest",
-      "n_features": 25,
-      "mean_cv_auc": 0.9948,
-      "std_cv_auc": 0.0059
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "RandomForest",
-      "n_features": 26,
-      "mean_cv_auc": 0.993,
-      "std_cv_auc": 0.008
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "ExtraTree",
-      "n_features": 1,
-      "mean_cv_auc": 0.9574,
-      "std_cv_auc": 0.0458
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "ExtraTree",
-      "n_features": 2,
-      "mean_cv_auc": 0.9938,
-      "std_cv_auc": 0.0057
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "ExtraTree",
-      "n_features": 3,
-      "mean_cv_auc": 0.9885,
-      "std_cv_auc": 0.0102
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "ExtraTree",
-      "n_features": 4,
-      "mean_cv_auc": 0.9877,
-      "std_cv_auc": 0.0132
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "ExtraTree",
-      "n_features": 5,
-      "mean_cv_auc": 0.9885,
-      "std_cv_auc": 0.0143
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "ExtraTree",
-      "n_features": 6,
-      "mean_cv_auc": 0.9905,
-      "std_cv_auc": 0.0088
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "ExtraTree",
-      "n_features": 7,
-      "mean_cv_auc": 0.9905,
-      "std_cv_auc": 0.0088
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "ExtraTree",
-      "n_features": 8,
-      "mean_cv_auc": 0.9925,
-      "std_cv_auc": 0.0071
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "ExtraTree",
-      "n_features": 9,
-      "mean_cv_auc": 0.9907,
-      "std_cv_auc": 0.0099
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "ExtraTree",
-      "n_features": 10,
-      "mean_cv_auc": 0.9907,
-      "std_cv_auc": 0.0065
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "ExtraTree",
-      "n_features": 11,
-      "mean_cv_auc": 0.987,
       "std_cv_auc": 0.0111
     },
     {
       "ranking": "ExtraTree",
-      "classifier": "ExtraTree",
+      "classifier": "AdaBoost",
+      "n_features": 11,
+      "mean_cv_auc": 0.9903,
+      "std_cv_auc": 0.0123
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "AdaBoost",
       "n_features": 12,
-      "mean_cv_auc": 0.9873,
-      "std_cv_auc": 0.0138
+      "mean_cv_auc": 0.9902,
+      "std_cv_auc": 0.0114
     },
     {
       "ranking": "ExtraTree",
-      "classifier": "ExtraTree",
+      "classifier": "AdaBoost",
       "n_features": 13,
-      "mean_cv_auc": 0.9928,
-      "std_cv_auc": 0.0091
+      "mean_cv_auc": 0.9909,
+      "std_cv_auc": 0.0105
     },
     {
       "ranking": "ExtraTree",
-      "classifier": "ExtraTree",
+      "classifier": "AdaBoost",
       "n_features": 14,
-      "mean_cv_auc": 0.9916,
-      "std_cv_auc": 0.0101
+      "mean_cv_auc": 0.9905,
+      "std_cv_auc": 0.011
     },
     {
       "ranking": "ExtraTree",
-      "classifier": "ExtraTree",
+      "classifier": "AdaBoost",
       "n_features": 15,
-      "mean_cv_auc": 0.9922,
-      "std_cv_auc": 0.0082
+      "mean_cv_auc": 0.9903,
+      "std_cv_auc": 0.0114
     },
     {
       "ranking": "ExtraTree",
-      "classifier": "ExtraTree",
+      "classifier": "AdaBoost",
       "n_features": 16,
+      "mean_cv_auc": 0.9877,
+      "std_cv_auc": 0.0106
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "AdaBoost",
+      "n_features": 17,
+      "mean_cv_auc": 0.9849,
+      "std_cv_auc": 0.0139
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "AdaBoost",
+      "n_features": 18,
+      "mean_cv_auc": 0.9861,
+      "std_cv_auc": 0.0159
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "AdaBoost",
+      "n_features": 19,
+      "mean_cv_auc": 0.9938,
+      "std_cv_auc": 0.0079
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "AdaBoost",
+      "n_features": 20,
+      "mean_cv_auc": 0.9828,
+      "std_cv_auc": 0.0271
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "AdaBoost",
+      "n_features": 21,
+      "mean_cv_auc": 0.9791,
+      "std_cv_auc": 0.0321
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "AdaBoost",
+      "n_features": 22,
+      "mean_cv_auc": 0.9861,
+      "std_cv_auc": 0.0268
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "AdaBoost",
+      "n_features": 23,
+      "mean_cv_auc": 0.9861,
+      "std_cv_auc": 0.0268
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "AdaBoost",
+      "n_features": 24,
+      "mean_cv_auc": 0.9869,
+      "std_cv_auc": 0.0215
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "AdaBoost",
+      "n_features": 25,
+      "mean_cv_auc": 0.9828,
+      "std_cv_auc": 0.0262
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "AdaBoost",
+      "n_features": 26,
+      "mean_cv_auc": 0.9835,
+      "std_cv_auc": 0.0247
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "RandomForest",
+      "n_features": 1,
+      "mean_cv_auc": 0.9137,
+      "std_cv_auc": 0.0422
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "RandomForest",
+      "n_features": 2,
+      "mean_cv_auc": 0.9431,
+      "std_cv_auc": 0.0324
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "RandomForest",
+      "n_features": 3,
+      "mean_cv_auc": 0.9768,
+      "std_cv_auc": 0.0147
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "RandomForest",
+      "n_features": 4,
+      "mean_cv_auc": 0.982,
+      "std_cv_auc": 0.0133
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "RandomForest",
+      "n_features": 5,
+      "mean_cv_auc": 0.9843,
+      "std_cv_auc": 0.0156
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "RandomForest",
+      "n_features": 6,
+      "mean_cv_auc": 0.9851,
+      "std_cv_auc": 0.0182
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "RandomForest",
+      "n_features": 7,
+      "mean_cv_auc": 0.9847,
+      "std_cv_auc": 0.0153
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "RandomForest",
+      "n_features": 8,
+      "mean_cv_auc": 0.9854,
+      "std_cv_auc": 0.0131
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "RandomForest",
+      "n_features": 9,
+      "mean_cv_auc": 0.9839,
+      "std_cv_auc": 0.0154
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "RandomForest",
+      "n_features": 10,
+      "mean_cv_auc": 0.9884,
+      "std_cv_auc": 0.0123
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "RandomForest",
+      "n_features": 11,
       "mean_cv_auc": 0.9936,
       "std_cv_auc": 0.0076
     },
     {
       "ranking": "ExtraTree",
-      "classifier": "ExtraTree",
-      "n_features": 17,
-      "mean_cv_auc": 0.9922,
-      "std_cv_auc": 0.0089
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "ExtraTree",
-      "n_features": 18,
-      "mean_cv_auc": 0.993,
-      "std_cv_auc": 0.0086
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "ExtraTree",
-      "n_features": 19,
-      "mean_cv_auc": 0.9925,
-      "std_cv_auc": 0.0089
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "ExtraTree",
-      "n_features": 20,
-      "mean_cv_auc": 0.9932,
-      "std_cv_auc": 0.008
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "ExtraTree",
-      "n_features": 21,
-      "mean_cv_auc": 0.9948,
-      "std_cv_auc": 0.0057
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "ExtraTree",
-      "n_features": 22,
-      "mean_cv_auc": 0.9939,
-      "std_cv_auc": 0.0075
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "ExtraTree",
-      "n_features": 23,
-      "mean_cv_auc": 0.9941,
-      "std_cv_auc": 0.0076
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "ExtraTree",
-      "n_features": 24,
-      "mean_cv_auc": 0.9921,
-      "std_cv_auc": 0.0085
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "ExtraTree",
-      "n_features": 25,
-      "mean_cv_auc": 0.995,
-      "std_cv_auc": 0.0058
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "ExtraTree",
-      "n_features": 26,
-      "mean_cv_auc": 0.9938,
-      "std_cv_auc": 0.0059
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "GradientBoosting",
-      "n_features": 1,
-      "mean_cv_auc": 0.9823,
-      "std_cv_auc": 0.0161
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "GradientBoosting",
-      "n_features": 2,
-      "mean_cv_auc": 0.9856,
-      "std_cv_auc": 0.0122
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "GradientBoosting",
-      "n_features": 3,
-      "mean_cv_auc": 0.9924,
-      "std_cv_auc": 0.0052
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "GradientBoosting",
-      "n_features": 4,
-      "mean_cv_auc": 0.9884,
-      "std_cv_auc": 0.0124
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "GradientBoosting",
-      "n_features": 5,
-      "mean_cv_auc": 0.9865,
-      "std_cv_auc": 0.0142
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "GradientBoosting",
-      "n_features": 6,
-      "mean_cv_auc": 0.9841,
-      "std_cv_auc": 0.0141
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "GradientBoosting",
-      "n_features": 7,
-      "mean_cv_auc": 0.9874,
-      "std_cv_auc": 0.0097
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "GradientBoosting",
-      "n_features": 8,
-      "mean_cv_auc": 0.9862,
-      "std_cv_auc": 0.0133
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "GradientBoosting",
-      "n_features": 9,
-      "mean_cv_auc": 0.9852,
-      "std_cv_auc": 0.0124
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "GradientBoosting",
-      "n_features": 10,
-      "mean_cv_auc": 0.9852,
-      "std_cv_auc": 0.0131
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "GradientBoosting",
-      "n_features": 11,
-      "mean_cv_auc": 0.9869,
-      "std_cv_auc": 0.0128
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "GradientBoosting",
+      "classifier": "RandomForest",
       "n_features": 12,
-      "mean_cv_auc": 0.9827,
-      "std_cv_auc": 0.0151
+      "mean_cv_auc": 0.9866,
+      "std_cv_auc": 0.0211
     },
     {
       "ranking": "ExtraTree",
-      "classifier": "GradientBoosting",
+      "classifier": "RandomForest",
       "n_features": 13,
-      "mean_cv_auc": 0.9885,
-      "std_cv_auc": 0.0107
+      "mean_cv_auc": 0.988,
+      "std_cv_auc": 0.0139
     },
     {
       "ranking": "ExtraTree",
-      "classifier": "GradientBoosting",
+      "classifier": "RandomForest",
       "n_features": 14,
-      "mean_cv_auc": 0.9856,
-      "std_cv_auc": 0.0122
+      "mean_cv_auc": 0.9908,
+      "std_cv_auc": 0.0132
     },
     {
       "ranking": "ExtraTree",
-      "classifier": "GradientBoosting",
+      "classifier": "RandomForest",
       "n_features": 15,
-      "mean_cv_auc": 0.986,
-      "std_cv_auc": 0.0108
+      "mean_cv_auc": 0.9838,
+      "std_cv_auc": 0.0175
     },
     {
       "ranking": "ExtraTree",
-      "classifier": "GradientBoosting",
+      "classifier": "RandomForest",
       "n_features": 16,
-      "mean_cv_auc": 0.9885,
-      "std_cv_auc": 0.0096
+      "mean_cv_auc": 0.9888,
+      "std_cv_auc": 0.01
     },
     {
       "ranking": "ExtraTree",
-      "classifier": "GradientBoosting",
+      "classifier": "RandomForest",
       "n_features": 17,
-      "mean_cv_auc": 0.9866,
-      "std_cv_auc": 0.0125
+      "mean_cv_auc": 0.9807,
+      "std_cv_auc": 0.0176
     },
     {
       "ranking": "ExtraTree",
-      "classifier": "GradientBoosting",
+      "classifier": "RandomForest",
       "n_features": 18,
-      "mean_cv_auc": 0.9856,
-      "std_cv_auc": 0.0137
+      "mean_cv_auc": 0.9811,
+      "std_cv_auc": 0.017
     },
     {
       "ranking": "ExtraTree",
-      "classifier": "GradientBoosting",
+      "classifier": "RandomForest",
       "n_features": 19,
-      "mean_cv_auc": 0.987,
-      "std_cv_auc": 0.0125
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "GradientBoosting",
-      "n_features": 20,
-      "mean_cv_auc": 0.9878,
-      "std_cv_auc": 0.0104
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "GradientBoosting",
-      "n_features": 21,
-      "mean_cv_auc": 0.987,
-      "std_cv_auc": 0.012
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "GradientBoosting",
-      "n_features": 22,
-      "mean_cv_auc": 0.987,
-      "std_cv_auc": 0.0126
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "GradientBoosting",
-      "n_features": 23,
-      "mean_cv_auc": 0.9866,
-      "std_cv_auc": 0.0131
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "GradientBoosting",
-      "n_features": 24,
-      "mean_cv_auc": 0.9859,
-      "std_cv_auc": 0.0132
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "GradientBoosting",
-      "n_features": 25,
-      "mean_cv_auc": 0.9849,
-      "std_cv_auc": 0.0132
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "GradientBoosting",
-      "n_features": 26,
-      "mean_cv_auc": 0.9856,
-      "std_cv_auc": 0.0128
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "SVM",
-      "n_features": 1,
-      "mean_cv_auc": 0.9316,
-      "std_cv_auc": 0.0347
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "SVM",
-      "n_features": 2,
-      "mean_cv_auc": 0.9729,
-      "std_cv_auc": 0.0188
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "SVM",
-      "n_features": 3,
-      "mean_cv_auc": 0.9858,
-      "std_cv_auc": 0.0135
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "SVM",
-      "n_features": 4,
-      "mean_cv_auc": 0.985,
-      "std_cv_auc": 0.0129
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "SVM",
-      "n_features": 5,
-      "mean_cv_auc": 0.9872,
-      "std_cv_auc": 0.0106
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "SVM",
-      "n_features": 6,
-      "mean_cv_auc": 0.9878,
-      "std_cv_auc": 0.013
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "SVM",
-      "n_features": 7,
-      "mean_cv_auc": 0.9886,
-      "std_cv_auc": 0.008
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "SVM",
-      "n_features": 8,
-      "mean_cv_auc": 0.9907,
+      "mean_cv_auc": 0.9851,
       "std_cv_auc": 0.0095
     },
     {
       "ranking": "ExtraTree",
+      "classifier": "RandomForest",
+      "n_features": 20,
+      "mean_cv_auc": 0.9848,
+      "std_cv_auc": 0.0168
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "RandomForest",
+      "n_features": 21,
+      "mean_cv_auc": 0.9771,
+      "std_cv_auc": 0.0235
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "RandomForest",
+      "n_features": 22,
+      "mean_cv_auc": 0.9764,
+      "std_cv_auc": 0.0193
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "RandomForest",
+      "n_features": 23,
+      "mean_cv_auc": 0.987,
+      "std_cv_auc": 0.0129
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "RandomForest",
+      "n_features": 24,
+      "mean_cv_auc": 0.9833,
+      "std_cv_auc": 0.0151
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "RandomForest",
+      "n_features": 25,
+      "mean_cv_auc": 0.9824,
+      "std_cv_auc": 0.0132
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "RandomForest",
+      "n_features": 26,
+      "mean_cv_auc": 0.9848,
+      "std_cv_auc": 0.0119
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "ExtraTree",
+      "n_features": 1,
+      "mean_cv_auc": 0.8868,
+      "std_cv_auc": 0.0834
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "ExtraTree",
+      "n_features": 2,
+      "mean_cv_auc": 0.9217,
+      "std_cv_auc": 0.0446
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "ExtraTree",
+      "n_features": 3,
+      "mean_cv_auc": 0.9728,
+      "std_cv_auc": 0.0228
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "ExtraTree",
+      "n_features": 4,
+      "mean_cv_auc": 0.983,
+      "std_cv_auc": 0.0164
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "ExtraTree",
+      "n_features": 5,
+      "mean_cv_auc": 0.9963,
+      "std_cv_auc": 0.0054
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "ExtraTree",
+      "n_features": 6,
+      "mean_cv_auc": 0.9925,
+      "std_cv_auc": 0.0132
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "ExtraTree",
+      "n_features": 7,
+      "mean_cv_auc": 0.9936,
+      "std_cv_auc": 0.0128
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "ExtraTree",
+      "n_features": 8,
+      "mean_cv_auc": 0.9926,
+      "std_cv_auc": 0.0115
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "ExtraTree",
+      "n_features": 9,
+      "mean_cv_auc": 0.9921,
+      "std_cv_auc": 0.0158
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "ExtraTree",
+      "n_features": 10,
+      "mean_cv_auc": 0.9973,
+      "std_cv_auc": 0.0033
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "ExtraTree",
+      "n_features": 11,
+      "mean_cv_auc": 0.9977,
+      "std_cv_auc": 0.0033
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "ExtraTree",
+      "n_features": 12,
+      "mean_cv_auc": 0.9971,
+      "std_cv_auc": 0.0034
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "ExtraTree",
+      "n_features": 13,
+      "mean_cv_auc": 0.9972,
+      "std_cv_auc": 0.0031
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "ExtraTree",
+      "n_features": 14,
+      "mean_cv_auc": 0.9969,
+      "std_cv_auc": 0.0039
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "ExtraTree",
+      "n_features": 15,
+      "mean_cv_auc": 0.9947,
+      "std_cv_auc": 0.007
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "ExtraTree",
+      "n_features": 16,
+      "mean_cv_auc": 0.9937,
+      "std_cv_auc": 0.0079
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "ExtraTree",
+      "n_features": 17,
+      "mean_cv_auc": 0.9977,
+      "std_cv_auc": 0.0033
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "ExtraTree",
+      "n_features": 18,
+      "mean_cv_auc": 0.9958,
+      "std_cv_auc": 0.0062
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "ExtraTree",
+      "n_features": 19,
+      "mean_cv_auc": 0.9955,
+      "std_cv_auc": 0.005
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "ExtraTree",
+      "n_features": 20,
+      "mean_cv_auc": 0.9942,
+      "std_cv_auc": 0.0056
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "ExtraTree",
+      "n_features": 21,
+      "mean_cv_auc": 0.9956,
+      "std_cv_auc": 0.0089
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "ExtraTree",
+      "n_features": 22,
+      "mean_cv_auc": 0.9925,
+      "std_cv_auc": 0.0098
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "ExtraTree",
+      "n_features": 23,
+      "mean_cv_auc": 0.9919,
+      "std_cv_auc": 0.0093
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "ExtraTree",
+      "n_features": 24,
+      "mean_cv_auc": 0.9915,
+      "std_cv_auc": 0.0086
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "ExtraTree",
+      "n_features": 25,
+      "mean_cv_auc": 0.993,
+      "std_cv_auc": 0.0101
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "ExtraTree",
+      "n_features": 26,
+      "mean_cv_auc": 0.9934,
+      "std_cv_auc": 0.0075
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "GradientBoosting",
+      "n_features": 1,
+      "mean_cv_auc": 0.9452,
+      "std_cv_auc": 0.0587
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "GradientBoosting",
+      "n_features": 2,
+      "mean_cv_auc": 0.9699,
+      "std_cv_auc": 0.0217
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "GradientBoosting",
+      "n_features": 3,
+      "mean_cv_auc": 0.9875,
+      "std_cv_auc": 0.0101
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "GradientBoosting",
+      "n_features": 4,
+      "mean_cv_auc": 0.9777,
+      "std_cv_auc": 0.0213
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "GradientBoosting",
+      "n_features": 5,
+      "mean_cv_auc": 0.979,
+      "std_cv_auc": 0.0176
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "GradientBoosting",
+      "n_features": 6,
+      "mean_cv_auc": 0.9838,
+      "std_cv_auc": 0.0185
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "GradientBoosting",
+      "n_features": 7,
+      "mean_cv_auc": 0.9771,
+      "std_cv_auc": 0.0222
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "GradientBoosting",
+      "n_features": 8,
+      "mean_cv_auc": 0.9746,
+      "std_cv_auc": 0.0293
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "GradientBoosting",
+      "n_features": 9,
+      "mean_cv_auc": 0.9757,
+      "std_cv_auc": 0.0206
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "GradientBoosting",
+      "n_features": 10,
+      "mean_cv_auc": 0.989,
+      "std_cv_auc": 0.0109
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "GradientBoosting",
+      "n_features": 11,
+      "mean_cv_auc": 0.9897,
+      "std_cv_auc": 0.0132
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "GradientBoosting",
+      "n_features": 12,
+      "mean_cv_auc": 0.9877,
+      "std_cv_auc": 0.0153
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "GradientBoosting",
+      "n_features": 13,
+      "mean_cv_auc": 0.9889,
+      "std_cv_auc": 0.0145
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "GradientBoosting",
+      "n_features": 14,
+      "mean_cv_auc": 0.9871,
+      "std_cv_auc": 0.0134
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "GradientBoosting",
+      "n_features": 15,
+      "mean_cv_auc": 0.9837,
+      "std_cv_auc": 0.0187
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "GradientBoosting",
+      "n_features": 16,
+      "mean_cv_auc": 0.9886,
+      "std_cv_auc": 0.0127
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "GradientBoosting",
+      "n_features": 17,
+      "mean_cv_auc": 0.9872,
+      "std_cv_auc": 0.0119
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "GradientBoosting",
+      "n_features": 18,
+      "mean_cv_auc": 0.9812,
+      "std_cv_auc": 0.0191
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "GradientBoosting",
+      "n_features": 19,
+      "mean_cv_auc": 0.9776,
+      "std_cv_auc": 0.0227
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "GradientBoosting",
+      "n_features": 20,
+      "mean_cv_auc": 0.9589,
+      "std_cv_auc": 0.0508
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "GradientBoosting",
+      "n_features": 21,
+      "mean_cv_auc": 0.9366,
+      "std_cv_auc": 0.0598
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "GradientBoosting",
+      "n_features": 22,
+      "mean_cv_auc": 0.9422,
+      "std_cv_auc": 0.0571
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "GradientBoosting",
+      "n_features": 23,
+      "mean_cv_auc": 0.9372,
+      "std_cv_auc": 0.0615
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "GradientBoosting",
+      "n_features": 24,
+      "mean_cv_auc": 0.9401,
+      "std_cv_auc": 0.058
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "GradientBoosting",
+      "n_features": 25,
+      "mean_cv_auc": 0.9372,
+      "std_cv_auc": 0.0603
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "GradientBoosting",
+      "n_features": 26,
+      "mean_cv_auc": 0.9368,
+      "std_cv_auc": 0.0601
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "SVM",
+      "n_features": 1,
+      "mean_cv_auc": 0.9384,
+      "std_cv_auc": 0.0586
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "SVM",
+      "n_features": 2,
+      "mean_cv_auc": 0.9614,
+      "std_cv_auc": 0.0341
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "SVM",
+      "n_features": 3,
+      "mean_cv_auc": 0.9886,
+      "std_cv_auc": 0.0092
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "SVM",
+      "n_features": 4,
+      "mean_cv_auc": 0.9913,
+      "std_cv_auc": 0.0064
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "SVM",
+      "n_features": 5,
+      "mean_cv_auc": 0.9936,
+      "std_cv_auc": 0.0087
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "SVM",
+      "n_features": 6,
+      "mean_cv_auc": 0.9908,
+      "std_cv_auc": 0.0115
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "SVM",
+      "n_features": 7,
+      "mean_cv_auc": 0.9929,
+      "std_cv_auc": 0.0103
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "SVM",
+      "n_features": 8,
+      "mean_cv_auc": 0.9905,
+      "std_cv_auc": 0.014
+    },
+    {
+      "ranking": "ExtraTree",
       "classifier": "SVM",
       "n_features": 9,
-      "mean_cv_auc": 0.9904,
-      "std_cv_auc": 0.0096
+      "mean_cv_auc": 0.991,
+      "std_cv_auc": 0.0153
     },
     {
       "ranking": "ExtraTree",
       "classifier": "SVM",
       "n_features": 10,
-      "mean_cv_auc": 0.99,
-      "std_cv_auc": 0.0098
+      "mean_cv_auc": 0.9928,
+      "std_cv_auc": 0.0092
     },
     {
       "ranking": "ExtraTree",
       "classifier": "SVM",
       "n_features": 11,
-      "mean_cv_auc": 0.99,
-      "std_cv_auc": 0.0102
+      "mean_cv_auc": 0.9959,
+      "std_cv_auc": 0.0039
     },
     {
       "ranking": "ExtraTree",
       "classifier": "SVM",
       "n_features": 12,
-      "mean_cv_auc": 0.9897,
-      "std_cv_auc": 0.0088
+      "mean_cv_auc": 0.9965,
+      "std_cv_auc": 0.0024
     },
     {
       "ranking": "ExtraTree",
       "classifier": "SVM",
       "n_features": 13,
-      "mean_cv_auc": 0.9901,
-      "std_cv_auc": 0.0086
+      "mean_cv_auc": 0.9961,
+      "std_cv_auc": 0.0028
     },
     {
       "ranking": "ExtraTree",
       "classifier": "SVM",
       "n_features": 14,
-      "mean_cv_auc": 0.9904,
-      "std_cv_auc": 0.0083
+      "mean_cv_auc": 0.9965,
+      "std_cv_auc": 0.0024
     },
     {
       "ranking": "ExtraTree",
       "classifier": "SVM",
       "n_features": 15,
-      "mean_cv_auc": 0.9904,
-      "std_cv_auc": 0.0083
+      "mean_cv_auc": 0.9969,
+      "std_cv_auc": 0.0028
     },
     {
       "ranking": "ExtraTree",
       "classifier": "SVM",
       "n_features": 16,
-      "mean_cv_auc": 0.9904,
-      "std_cv_auc": 0.0083
+      "mean_cv_auc": 0.9962,
+      "std_cv_auc": 0.004
     },
     {
       "ranking": "ExtraTree",
       "classifier": "SVM",
       "n_features": 17,
-      "mean_cv_auc": 0.9947,
-      "std_cv_auc": 0.0052
+      "mean_cv_auc": 0.9952,
+      "std_cv_auc": 0.0046
     },
     {
       "ranking": "ExtraTree",
       "classifier": "SVM",
       "n_features": 18,
-      "mean_cv_auc": 0.9915,
+      "mean_cv_auc": 0.9945,
+      "std_cv_auc": 0.0058
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "SVM",
+      "n_features": 19,
+      "mean_cv_auc": 0.9949,
       "std_cv_auc": 0.0066
     },
     {
       "ranking": "ExtraTree",
       "classifier": "SVM",
-      "n_features": 19,
-      "mean_cv_auc": 0.9922,
-      "std_cv_auc": 0.007
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "SVM",
       "n_features": 20,
-      "mean_cv_auc": 0.9922,
-      "std_cv_auc": 0.0075
+      "mean_cv_auc": 0.9957,
+      "std_cv_auc": 0.0077
     },
     {
       "ranking": "ExtraTree",
       "classifier": "SVM",
       "n_features": 21,
-      "mean_cv_auc": 0.9925,
-      "std_cv_auc": 0.0081
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "SVM",
-      "n_features": 22,
-      "mean_cv_auc": 0.9915,
-      "std_cv_auc": 0.0091
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "SVM",
-      "n_features": 23,
-      "mean_cv_auc": 0.9915,
-      "std_cv_auc": 0.0091
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "SVM",
-      "n_features": 24,
-      "mean_cv_auc": 0.9922,
+      "mean_cv_auc": 0.995,
       "std_cv_auc": 0.0082
     },
     {
       "ranking": "ExtraTree",
       "classifier": "SVM",
+      "n_features": 22,
+      "mean_cv_auc": 0.9949,
+      "std_cv_auc": 0.0074
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "SVM",
+      "n_features": 23,
+      "mean_cv_auc": 0.9949,
+      "std_cv_auc": 0.0074
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "SVM",
+      "n_features": 24,
+      "mean_cv_auc": 0.9939,
+      "std_cv_auc": 0.0078
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "SVM",
       "n_features": 25,
-      "mean_cv_auc": 0.9922,
-      "std_cv_auc": 0.0076
+      "mean_cv_auc": 0.9944,
+      "std_cv_auc": 0.0112
     },
     {
       "ranking": "ExtraTree",
       "classifier": "SVM",
       "n_features": 26,
-      "mean_cv_auc": 0.9918,
-      "std_cv_auc": 0.008
+      "mean_cv_auc": 0.9947,
+      "std_cv_auc": 0.0105
     },
     {
       "ranking": "ExtraTree",
       "classifier": "KNN",
       "n_features": 1,
-      "mean_cv_auc": 0.9566,
-      "std_cv_auc": 0.025
+      "mean_cv_auc": 0.932,
+      "std_cv_auc": 0.0275
     },
     {
       "ranking": "ExtraTree",
       "classifier": "KNN",
       "n_features": 2,
-      "mean_cv_auc": 0.9743,
-      "std_cv_auc": 0.0098
+      "mean_cv_auc": 0.9431,
+      "std_cv_auc": 0.0323
     },
     {
       "ranking": "ExtraTree",
       "classifier": "KNN",
       "n_features": 3,
-      "mean_cv_auc": 0.9575,
-      "std_cv_auc": 0.0283
+      "mean_cv_auc": 0.9345,
+      "std_cv_auc": 0.0606
     },
     {
       "ranking": "ExtraTree",
       "classifier": "KNN",
       "n_features": 4,
-      "mean_cv_auc": 0.9596,
-      "std_cv_auc": 0.0277
+      "mean_cv_auc": 0.9392,
+      "std_cv_auc": 0.0554
     },
     {
       "ranking": "ExtraTree",
       "classifier": "KNN",
       "n_features": 5,
-      "mean_cv_auc": 0.9474,
-      "std_cv_auc": 0.0295
+      "mean_cv_auc": 0.9786,
+      "std_cv_auc": 0.0265
     },
     {
       "ranking": "ExtraTree",
       "classifier": "KNN",
       "n_features": 6,
-      "mean_cv_auc": 0.9798,
-      "std_cv_auc": 0.0239
+      "mean_cv_auc": 0.9641,
+      "std_cv_auc": 0.0344
     },
     {
       "ranking": "ExtraTree",
       "classifier": "KNN",
       "n_features": 7,
-      "mean_cv_auc": 0.9774,
-      "std_cv_auc": 0.0166
+      "mean_cv_auc": 0.9775,
+      "std_cv_auc": 0.0203
     },
     {
       "ranking": "ExtraTree",
       "classifier": "KNN",
       "n_features": 8,
-      "mean_cv_auc": 0.9868,
-      "std_cv_auc": 0.0119
+      "mean_cv_auc": 0.9775,
+      "std_cv_auc": 0.0203
     },
     {
       "ranking": "ExtraTree",
       "classifier": "KNN",
       "n_features": 9,
-      "mean_cv_auc": 0.9865,
-      "std_cv_auc": 0.0087
+      "mean_cv_auc": 0.9878,
+      "std_cv_auc": 0.0097
     },
     {
       "ranking": "ExtraTree",
       "classifier": "KNN",
       "n_features": 10,
-      "mean_cv_auc": 0.9821,
-      "std_cv_auc": 0.0116
+      "mean_cv_auc": 0.9853,
+      "std_cv_auc": 0.0109
     },
     {
       "ranking": "ExtraTree",
       "classifier": "KNN",
       "n_features": 11,
-      "mean_cv_auc": 0.9821,
-      "std_cv_auc": 0.0116
+      "mean_cv_auc": 0.9894,
+      "std_cv_auc": 0.0106
     },
     {
       "ranking": "ExtraTree",
       "classifier": "KNN",
       "n_features": 12,
-      "mean_cv_auc": 0.9827,
-      "std_cv_auc": 0.0129
+      "mean_cv_auc": 0.9894,
+      "std_cv_auc": 0.0112
     },
     {
       "ranking": "ExtraTree",
       "classifier": "KNN",
       "n_features": 13,
-      "mean_cv_auc": 0.9884,
-      "std_cv_auc": 0.0066
+      "mean_cv_auc": 0.9893,
+      "std_cv_auc": 0.0117
     },
     {
       "ranking": "ExtraTree",
       "classifier": "KNN",
       "n_features": 14,
-      "mean_cv_auc": 0.9875,
-      "std_cv_auc": 0.0052
+      "mean_cv_auc": 0.9863,
+      "std_cv_auc": 0.011
     },
     {
       "ranking": "ExtraTree",
       "classifier": "KNN",
       "n_features": 15,
-      "mean_cv_auc": 0.9875,
-      "std_cv_auc": 0.0052
+      "mean_cv_auc": 0.9734,
+      "std_cv_auc": 0.0153
     },
     {
       "ranking": "ExtraTree",
       "classifier": "KNN",
       "n_features": 16,
-      "mean_cv_auc": 0.9864,
-      "std_cv_auc": 0.0131
+      "mean_cv_auc": 0.976,
+      "std_cv_auc": 0.0162
     },
     {
       "ranking": "ExtraTree",
       "classifier": "KNN",
       "n_features": 17,
-      "mean_cv_auc": 0.9815,
-      "std_cv_auc": 0.0227
+      "mean_cv_auc": 0.9755,
+      "std_cv_auc": 0.0152
     },
     {
       "ranking": "ExtraTree",
       "classifier": "KNN",
       "n_features": 18,
-      "mean_cv_auc": 0.9772,
-      "std_cv_auc": 0.0191
+      "mean_cv_auc": 0.9753,
+      "std_cv_auc": 0.017
     },
     {
       "ranking": "ExtraTree",
       "classifier": "KNN",
       "n_features": 19,
-      "mean_cv_auc": 0.9758,
-      "std_cv_auc": 0.0181
+      "mean_cv_auc": 0.981,
+      "std_cv_auc": 0.0163
     },
     {
       "ranking": "ExtraTree",
       "classifier": "KNN",
       "n_features": 20,
-      "mean_cv_auc": 0.9772,
-      "std_cv_auc": 0.0201
+      "mean_cv_auc": 0.9718,
+      "std_cv_auc": 0.02
     },
     {
       "ranking": "ExtraTree",
       "classifier": "KNN",
       "n_features": 21,
       "mean_cv_auc": 0.9752,
-      "std_cv_auc": 0.0243
+      "std_cv_auc": 0.01
     },
     {
       "ranking": "ExtraTree",
       "classifier": "KNN",
       "n_features": 22,
-      "mean_cv_auc": 0.9737,
-      "std_cv_auc": 0.0169
+      "mean_cv_auc": 0.9714,
+      "std_cv_auc": 0.0117
     },
     {
       "ranking": "ExtraTree",
       "classifier": "KNN",
       "n_features": 23,
-      "mean_cv_auc": 0.9737,
-      "std_cv_auc": 0.0169
+      "mean_cv_auc": 0.9714,
+      "std_cv_auc": 0.0117
     },
     {
       "ranking": "ExtraTree",
       "classifier": "KNN",
       "n_features": 24,
-      "mean_cv_auc": 0.9777,
-      "std_cv_auc": 0.012
+      "mean_cv_auc": 0.9652,
+      "std_cv_auc": 0.0097
     },
     {
       "ranking": "ExtraTree",
       "classifier": "KNN",
       "n_features": 25,
-      "mean_cv_auc": 0.9731,
-      "std_cv_auc": 0.0184
+      "mean_cv_auc": 0.9668,
+      "std_cv_auc": 0.0154
     },
     {
       "ranking": "ExtraTree",
       "classifier": "KNN",
       "n_features": 26,
-      "mean_cv_auc": 0.9757,
-      "std_cv_auc": 0.0156
+      "mean_cv_auc": 0.9738,
+      "std_cv_auc": 0.0127
     },
     {
       "ranking": "ExtraTree",
       "classifier": "XGBoost",
       "n_features": 1,
-      "mean_cv_auc": 0.9766,
-      "std_cv_auc": 0.0181
+      "mean_cv_auc": 0.9391,
+      "std_cv_auc": 0.0453
     },
     {
       "ranking": "ExtraTree",
       "classifier": "XGBoost",
       "n_features": 2,
-      "mean_cv_auc": 0.9868,
-      "std_cv_auc": 0.0093
+      "mean_cv_auc": 0.9744,
+      "std_cv_auc": 0.022
     },
     {
       "ranking": "ExtraTree",
       "classifier": "XGBoost",
       "n_features": 3,
-      "mean_cv_auc": 0.99,
-      "std_cv_auc": 0.0113
+      "mean_cv_auc": 0.9704,
+      "std_cv_auc": 0.0235
     },
     {
       "ranking": "ExtraTree",
       "classifier": "XGBoost",
       "n_features": 4,
-      "mean_cv_auc": 0.9896,
-      "std_cv_auc": 0.0084
+      "mean_cv_auc": 0.976,
+      "std_cv_auc": 0.0221
     },
     {
       "ranking": "ExtraTree",
       "classifier": "XGBoost",
       "n_features": 5,
-      "mean_cv_auc": 0.9818,
-      "std_cv_auc": 0.011
+      "mean_cv_auc": 0.9677,
+      "std_cv_auc": 0.0125
     },
     {
       "ranking": "ExtraTree",
       "classifier": "XGBoost",
       "n_features": 6,
-      "mean_cv_auc": 0.9798,
+      "mean_cv_auc": 0.9575,
+      "std_cv_auc": 0.0232
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "XGBoost",
+      "n_features": 7,
+      "mean_cv_auc": 0.9647,
+      "std_cv_auc": 0.0244
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "XGBoost",
+      "n_features": 8,
+      "mean_cv_auc": 0.9684,
+      "std_cv_auc": 0.0231
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "XGBoost",
+      "n_features": 9,
+      "mean_cv_auc": 0.9681,
+      "std_cv_auc": 0.0223
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "XGBoost",
+      "n_features": 10,
+      "mean_cv_auc": 0.9866,
+      "std_cv_auc": 0.0153
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "XGBoost",
+      "n_features": 11,
+      "mean_cv_auc": 0.9863,
+      "std_cv_auc": 0.0164
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "XGBoost",
+      "n_features": 12,
+      "mean_cv_auc": 0.9799,
+      "std_cv_auc": 0.0237
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "XGBoost",
+      "n_features": 13,
+      "mean_cv_auc": 0.9851,
+      "std_cv_auc": 0.0164
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "XGBoost",
+      "n_features": 14,
+      "mean_cv_auc": 0.9812,
+      "std_cv_auc": 0.0214
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "XGBoost",
+      "n_features": 15,
+      "mean_cv_auc": 0.9821,
+      "std_cv_auc": 0.0202
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "XGBoost",
+      "n_features": 16,
+      "mean_cv_auc": 0.9849,
       "std_cv_auc": 0.0179
     },
     {
       "ranking": "ExtraTree",
       "classifier": "XGBoost",
-      "n_features": 7,
-      "mean_cv_auc": 0.9833,
-      "std_cv_auc": 0.0185
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "XGBoost",
-      "n_features": 8,
-      "mean_cv_auc": 0.9834,
-      "std_cv_auc": 0.0166
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "XGBoost",
-      "n_features": 9,
-      "mean_cv_auc": 0.9826,
-      "std_cv_auc": 0.0182
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "XGBoost",
-      "n_features": 10,
-      "mean_cv_auc": 0.9823,
-      "std_cv_auc": 0.0173
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "XGBoost",
-      "n_features": 11,
-      "mean_cv_auc": 0.982,
-      "std_cv_auc": 0.0165
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "XGBoost",
-      "n_features": 12,
-      "mean_cv_auc": 0.9844,
-      "std_cv_auc": 0.0174
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "XGBoost",
-      "n_features": 13,
-      "mean_cv_auc": 0.9867,
-      "std_cv_auc": 0.0111
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "XGBoost",
-      "n_features": 14,
-      "mean_cv_auc": 0.9867,
-      "std_cv_auc": 0.0111
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "XGBoost",
-      "n_features": 15,
-      "mean_cv_auc": 0.9896,
-      "std_cv_auc": 0.0095
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "XGBoost",
-      "n_features": 16,
-      "mean_cv_auc": 0.9878,
-      "std_cv_auc": 0.0097
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "XGBoost",
       "n_features": 17,
-      "mean_cv_auc": 0.9874,
-      "std_cv_auc": 0.0126
+      "mean_cv_auc": 0.9845,
+      "std_cv_auc": 0.016
     },
     {
       "ranking": "ExtraTree",
       "classifier": "XGBoost",
       "n_features": 18,
-      "mean_cv_auc": 0.9866,
-      "std_cv_auc": 0.0138
+      "mean_cv_auc": 0.9825,
+      "std_cv_auc": 0.0158
     },
     {
       "ranking": "ExtraTree",
       "classifier": "XGBoost",
       "n_features": 19,
-      "mean_cv_auc": 0.9839,
-      "std_cv_auc": 0.0137
+      "mean_cv_auc": 0.9804,
+      "std_cv_auc": 0.0233
     },
     {
       "ranking": "ExtraTree",
       "classifier": "XGBoost",
       "n_features": 20,
-      "mean_cv_auc": 0.985,
-      "std_cv_auc": 0.0136
+      "mean_cv_auc": 0.9764,
+      "std_cv_auc": 0.0363
     },
     {
       "ranking": "ExtraTree",
       "classifier": "XGBoost",
       "n_features": 21,
-      "mean_cv_auc": 0.9857,
-      "std_cv_auc": 0.0128
+      "mean_cv_auc": 0.9774,
+      "std_cv_auc": 0.0338
     },
     {
       "ranking": "ExtraTree",
       "classifier": "XGBoost",
       "n_features": 22,
-      "mean_cv_auc": 0.986,
-      "std_cv_auc": 0.0131
+      "mean_cv_auc": 0.9748,
+      "std_cv_auc": 0.0395
     },
     {
       "ranking": "ExtraTree",
       "classifier": "XGBoost",
       "n_features": 23,
-      "mean_cv_auc": 0.986,
-      "std_cv_auc": 0.0131
+      "mean_cv_auc": 0.9748,
+      "std_cv_auc": 0.0395
     },
     {
       "ranking": "ExtraTree",
       "classifier": "XGBoost",
       "n_features": 24,
-      "mean_cv_auc": 0.9849,
-      "std_cv_auc": 0.0135
+      "mean_cv_auc": 0.9773,
+      "std_cv_auc": 0.0301
     },
     {
       "ranking": "ExtraTree",
       "classifier": "XGBoost",
       "n_features": 25,
-      "mean_cv_auc": 0.9857,
-      "std_cv_auc": 0.0126
+      "mean_cv_auc": 0.9738,
+      "std_cv_auc": 0.034
     },
     {
       "ranking": "ExtraTree",
       "classifier": "XGBoost",
       "n_features": 26,
-      "mean_cv_auc": 0.984,
-      "std_cv_auc": 0.0142
+      "mean_cv_auc": 0.9754,
+      "std_cv_auc": 0.0323
     },
     {
       "ranking": "ExtraTree",
       "classifier": "LogisticRegression",
       "n_features": 1,
-      "mean_cv_auc": 0.9664,
-      "std_cv_auc": 0.016
+      "mean_cv_auc": 0.9756,
+      "std_cv_auc": 0.0248
     },
     {
       "ranking": "ExtraTree",
       "classifier": "LogisticRegression",
       "n_features": 2,
-      "mean_cv_auc": 0.9856,
-      "std_cv_auc": 0.0105
+      "mean_cv_auc": 0.9784,
+      "std_cv_auc": 0.0215
     },
     {
       "ranking": "ExtraTree",
       "classifier": "LogisticRegression",
       "n_features": 3,
-      "mean_cv_auc": 0.9856,
-      "std_cv_auc": 0.0138
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "LogisticRegression",
-      "n_features": 4,
-      "mean_cv_auc": 0.9853,
-      "std_cv_auc": 0.0135
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "LogisticRegression",
-      "n_features": 5,
-      "mean_cv_auc": 0.9838,
-      "std_cv_auc": 0.0143
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "LogisticRegression",
-      "n_features": 6,
-      "mean_cv_auc": 0.9841,
-      "std_cv_auc": 0.017
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "LogisticRegression",
-      "n_features": 7,
-      "mean_cv_auc": 0.9834,
+      "mean_cv_auc": 0.9882,
       "std_cv_auc": 0.0149
     },
     {
       "ranking": "ExtraTree",
       "classifier": "LogisticRegression",
-      "n_features": 8,
-      "mean_cv_auc": 0.9855,
-      "std_cv_auc": 0.0155
+      "n_features": 4,
+      "mean_cv_auc": 0.9953,
+      "std_cv_auc": 0.0077
     },
     {
       "ranking": "ExtraTree",
       "classifier": "LogisticRegression",
-      "n_features": 9,
-      "mean_cv_auc": 0.9852,
-      "std_cv_auc": 0.016
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "LogisticRegression",
-      "n_features": 10,
-      "mean_cv_auc": 0.9848,
-      "std_cv_auc": 0.0153
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "LogisticRegression",
-      "n_features": 11,
-      "mean_cv_auc": 0.9856,
-      "std_cv_auc": 0.014
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "LogisticRegression",
-      "n_features": 12,
-      "mean_cv_auc": 0.9859,
-      "std_cv_auc": 0.0165
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "LogisticRegression",
-      "n_features": 13,
-      "mean_cv_auc": 0.9877,
-      "std_cv_auc": 0.0151
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "LogisticRegression",
-      "n_features": 14,
-      "mean_cv_auc": 0.9881,
-      "std_cv_auc": 0.0144
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "LogisticRegression",
-      "n_features": 15,
-      "mean_cv_auc": 0.9884,
-      "std_cv_auc": 0.0137
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "LogisticRegression",
-      "n_features": 16,
-      "mean_cv_auc": 0.9884,
-      "std_cv_auc": 0.0137
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "LogisticRegression",
-      "n_features": 17,
-      "mean_cv_auc": 0.9896,
-      "std_cv_auc": 0.0084
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "LogisticRegression",
-      "n_features": 18,
-      "mean_cv_auc": 0.9896,
-      "std_cv_auc": 0.0084
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "LogisticRegression",
-      "n_features": 19,
-      "mean_cv_auc": 0.9903,
-      "std_cv_auc": 0.0087
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "LogisticRegression",
-      "n_features": 20,
-      "mean_cv_auc": 0.9903,
-      "std_cv_auc": 0.0079
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "LogisticRegression",
-      "n_features": 21,
-      "mean_cv_auc": 0.9903,
-      "std_cv_auc": 0.0079
-    },
-    {
-      "ranking": "ExtraTree",
-      "classifier": "LogisticRegression",
-      "n_features": 22,
-      "mean_cv_auc": 0.9899,
+      "n_features": 5,
+      "mean_cv_auc": 0.994,
       "std_cv_auc": 0.0094
     },
     {
       "ranking": "ExtraTree",
       "classifier": "LogisticRegression",
+      "n_features": 6,
+      "mean_cv_auc": 0.9913,
+      "std_cv_auc": 0.0138
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "LogisticRegression",
+      "n_features": 7,
+      "mean_cv_auc": 0.9917,
+      "std_cv_auc": 0.014
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "LogisticRegression",
+      "n_features": 8,
+      "mean_cv_auc": 0.9944,
+      "std_cv_auc": 0.0104
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "LogisticRegression",
+      "n_features": 9,
+      "mean_cv_auc": 0.993,
+      "std_cv_auc": 0.0114
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "LogisticRegression",
+      "n_features": 10,
+      "mean_cv_auc": 0.9928,
+      "std_cv_auc": 0.0089
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "LogisticRegression",
+      "n_features": 11,
+      "mean_cv_auc": 0.9935,
+      "std_cv_auc": 0.0082
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "LogisticRegression",
+      "n_features": 12,
+      "mean_cv_auc": 0.9926,
+      "std_cv_auc": 0.0084
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "LogisticRegression",
+      "n_features": 13,
+      "mean_cv_auc": 0.993,
+      "std_cv_auc": 0.0079
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "LogisticRegression",
+      "n_features": 14,
+      "mean_cv_auc": 0.9937,
+      "std_cv_auc": 0.0071
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "LogisticRegression",
+      "n_features": 15,
+      "mean_cv_auc": 0.9945,
+      "std_cv_auc": 0.0069
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "LogisticRegression",
+      "n_features": 16,
+      "mean_cv_auc": 0.9938,
+      "std_cv_auc": 0.0073
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "LogisticRegression",
+      "n_features": 17,
+      "mean_cv_auc": 0.9938,
+      "std_cv_auc": 0.0073
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "LogisticRegression",
+      "n_features": 18,
+      "mean_cv_auc": 0.9938,
+      "std_cv_auc": 0.0073
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "LogisticRegression",
+      "n_features": 19,
+      "mean_cv_auc": 0.9912,
+      "std_cv_auc": 0.0131
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "LogisticRegression",
+      "n_features": 20,
+      "mean_cv_auc": 0.9882,
+      "std_cv_auc": 0.0172
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "LogisticRegression",
+      "n_features": 21,
+      "mean_cv_auc": 0.9882,
+      "std_cv_auc": 0.0172
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "LogisticRegression",
+      "n_features": 22,
+      "mean_cv_auc": 0.9878,
+      "std_cv_auc": 0.0172
+    },
+    {
+      "ranking": "ExtraTree",
+      "classifier": "LogisticRegression",
       "n_features": 23,
-      "mean_cv_auc": 0.9903,
-      "std_cv_auc": 0.0087
+      "mean_cv_auc": 0.9881,
+      "std_cv_auc": 0.0166
     },
     {
       "ranking": "ExtraTree",
       "classifier": "LogisticRegression",
       "n_features": 24,
-      "mean_cv_auc": 0.9903,
-      "std_cv_auc": 0.0087
+      "mean_cv_auc": 0.9874,
+      "std_cv_auc": 0.0172
     },
     {
       "ranking": "ExtraTree",
       "classifier": "LogisticRegression",
       "n_features": 25,
-      "mean_cv_auc": 0.9917,
-      "std_cv_auc": 0.0081
+      "mean_cv_auc": 0.9897,
+      "std_cv_auc": 0.0188
     },
     {
       "ranking": "ExtraTree",
       "classifier": "LogisticRegression",
       "n_features": 26,
-      "mean_cv_auc": 0.992,
-      "std_cv_auc": 0.0089
+      "mean_cv_auc": 0.9897,
+      "std_cv_auc": 0.0188
     },
     {
       "ranking": "ExtraTree",
       "classifier": "LDA",
       "n_features": 1,
-      "mean_cv_auc": 0.9664,
-      "std_cv_auc": 0.016
+      "mean_cv_auc": 0.9756,
+      "std_cv_auc": 0.0248
     },
     {
       "ranking": "ExtraTree",
       "classifier": "LDA",
       "n_features": 2,
-      "mean_cv_auc": 0.984,
-      "std_cv_auc": 0.009
+      "mean_cv_auc": 0.9784,
+      "std_cv_auc": 0.0215
     },
     {
       "ranking": "ExtraTree",
       "classifier": "LDA",
       "n_features": 3,
-      "mean_cv_auc": 0.9846,
-      "std_cv_auc": 0.012
+      "mean_cv_auc": 0.9876,
+      "std_cv_auc": 0.0186
     },
     {
       "ranking": "ExtraTree",
       "classifier": "LDA",
       "n_features": 4,
-      "mean_cv_auc": 0.9836,
-      "std_cv_auc": 0.012
+      "mean_cv_auc": 0.9936,
+      "std_cv_auc": 0.0086
     },
     {
       "ranking": "ExtraTree",
       "classifier": "LDA",
       "n_features": 5,
-      "mean_cv_auc": 0.9832,
-      "std_cv_auc": 0.0123
+      "mean_cv_auc": 0.992,
+      "std_cv_auc": 0.0134
     },
     {
       "ranking": "ExtraTree",
       "classifier": "LDA",
       "n_features": 6,
-      "mean_cv_auc": 0.9827,
-      "std_cv_auc": 0.0167
+      "mean_cv_auc": 0.9897,
+      "std_cv_auc": 0.0172
     },
     {
       "ranking": "ExtraTree",
       "classifier": "LDA",
       "n_features": 7,
-      "mean_cv_auc": 0.9834,
-      "std_cv_auc": 0.0151
+      "mean_cv_auc": 0.991,
+      "std_cv_auc": 0.0153
     },
     {
       "ranking": "ExtraTree",
       "classifier": "LDA",
       "n_features": 8,
-      "mean_cv_auc": 0.9849,
-      "std_cv_auc": 0.0145
+      "mean_cv_auc": 0.9904,
+      "std_cv_auc": 0.0166
     },
     {
       "ranking": "ExtraTree",
       "classifier": "LDA",
       "n_features": 9,
-      "mean_cv_auc": 0.9852,
-      "std_cv_auc": 0.0145
+      "mean_cv_auc": 0.9892,
+      "std_cv_auc": 0.0154
     },
     {
       "ranking": "ExtraTree",
       "classifier": "LDA",
       "n_features": 10,
-      "mean_cv_auc": 0.9852,
-      "std_cv_auc": 0.0132
+      "mean_cv_auc": 0.9884,
+      "std_cv_auc": 0.0143
     },
     {
       "ranking": "ExtraTree",
       "classifier": "LDA",
       "n_features": 11,
-      "mean_cv_auc": 0.9856,
-      "std_cv_auc": 0.0132
+      "mean_cv_auc": 0.9888,
+      "std_cv_auc": 0.0162
     },
     {
       "ranking": "ExtraTree",
       "classifier": "LDA",
       "n_features": 12,
-      "mean_cv_auc": 0.9849,
-      "std_cv_auc": 0.013
+      "mean_cv_auc": 0.9889,
+      "std_cv_auc": 0.0129
     },
     {
       "ranking": "ExtraTree",
       "classifier": "LDA",
       "n_features": 13,
-      "mean_cv_auc": 0.987,
-      "std_cv_auc": 0.0133
+      "mean_cv_auc": 0.991,
+      "std_cv_auc": 0.0107
     },
     {
       "ranking": "ExtraTree",
       "classifier": "LDA",
       "n_features": 14,
-      "mean_cv_auc": 0.9852,
-      "std_cv_auc": 0.0146
+      "mean_cv_auc": 0.9934,
+      "std_cv_auc": 0.0057
     },
     {
       "ranking": "ExtraTree",
       "classifier": "LDA",
       "n_features": 15,
-      "mean_cv_auc": 0.9866,
-      "std_cv_auc": 0.0134
+      "mean_cv_auc": 0.9916,
+      "std_cv_auc": 0.0089
     },
     {
       "ranking": "ExtraTree",
       "classifier": "LDA",
       "n_features": 16,
-      "mean_cv_auc": 0.9866,
-      "std_cv_auc": 0.0134
+      "mean_cv_auc": 0.9887,
+      "std_cv_auc": 0.0098
     },
     {
       "ranking": "ExtraTree",
       "classifier": "LDA",
       "n_features": 17,
-      "mean_cv_auc": 0.9888,
-      "std_cv_auc": 0.0114
+      "mean_cv_auc": 0.9887,
+      "std_cv_auc": 0.0104
     },
     {
       "ranking": "ExtraTree",
       "classifier": "LDA",
       "n_features": 18,
-      "mean_cv_auc": 0.9884,
-      "std_cv_auc": 0.0121
+      "mean_cv_auc": 0.9833,
+      "std_cv_auc": 0.0158
     },
     {
       "ranking": "ExtraTree",
       "classifier": "LDA",
       "n_features": 19,
-      "mean_cv_auc": 0.9871,
-      "std_cv_auc": 0.0109
+      "mean_cv_auc": 0.9822,
+      "std_cv_auc": 0.0165
     },
     {
       "ranking": "ExtraTree",
       "classifier": "LDA",
       "n_features": 20,
-      "mean_cv_auc": 0.9885,
-      "std_cv_auc": 0.0104
+      "mean_cv_auc": 0.9808,
+      "std_cv_auc": 0.017
     },
     {
       "ranking": "ExtraTree",
       "classifier": "LDA",
       "n_features": 21,
-      "mean_cv_auc": 0.9886,
-      "std_cv_auc": 0.0106
+      "mean_cv_auc": 0.9725,
+      "std_cv_auc": 0.0308
     },
     {
       "ranking": "ExtraTree",
       "classifier": "LDA",
       "n_features": 22,
-      "mean_cv_auc": 0.9885,
-      "std_cv_auc": 0.0106
+      "mean_cv_auc": 0.9718,
+      "std_cv_auc": 0.0294
     },
     {
       "ranking": "ExtraTree",
       "classifier": "LDA",
       "n_features": 23,
-      "mean_cv_auc": 0.9893,
-      "std_cv_auc": 0.0092
+      "mean_cv_auc": 0.9763,
+      "std_cv_auc": 0.027
     },
     {
       "ranking": "ExtraTree",
       "classifier": "LDA",
       "n_features": 24,
-      "mean_cv_auc": 0.9889,
-      "std_cv_auc": 0.0099
+      "mean_cv_auc": 0.9792,
+      "std_cv_auc": 0.0187
     },
     {
       "ranking": "ExtraTree",
       "classifier": "LDA",
       "n_features": 25,
-      "mean_cv_auc": 0.9903,
-      "std_cv_auc": 0.0077
+      "mean_cv_auc": 0.9831,
+      "std_cv_auc": 0.0164
     },
     {
       "ranking": "ExtraTree",
       "classifier": "LDA",
       "n_features": 26,
-      "mean_cv_auc": 0.9899,
-      "std_cv_auc": 0.0083
+      "mean_cv_auc": 0.9831,
+      "std_cv_auc": 0.0164
     },
     {
       "ranking": "ExtraTree",
       "classifier": "MLP",
       "n_features": 1,
-      "mean_cv_auc": 0.9664,
-      "std_cv_auc": 0.016
+      "mean_cv_auc": 0.9756,
+      "std_cv_auc": 0.0248
     },
     {
       "ranking": "ExtraTree",
       "classifier": "MLP",
       "n_features": 2,
-      "mean_cv_auc": 0.9829,
-      "std_cv_auc": 0.0104
+      "mean_cv_auc": 0.9784,
+      "std_cv_auc": 0.0215
     },
     {
       "ranking": "ExtraTree",
       "classifier": "MLP",
       "n_features": 3,
-      "mean_cv_auc": 0.9842,
-      "std_cv_auc": 0.0143
+      "mean_cv_auc": 0.9901,
+      "std_cv_auc": 0.0097
     },
     {
       "ranking": "ExtraTree",
       "classifier": "MLP",
       "n_features": 4,
-      "mean_cv_auc": 0.9832,
-      "std_cv_auc": 0.0124
+      "mean_cv_auc": 0.991,
+      "std_cv_auc": 0.0153
     },
     {
       "ranking": "ExtraTree",
       "classifier": "MLP",
       "n_features": 5,
-      "mean_cv_auc": 0.9826,
-      "std_cv_auc": 0.0133
+      "mean_cv_auc": 0.9882,
+      "std_cv_auc": 0.0237
     },
     {
       "ranking": "ExtraTree",
       "classifier": "MLP",
       "n_features": 6,
-      "mean_cv_auc": 0.9804,
-      "std_cv_auc": 0.0138
+      "mean_cv_auc": 0.9874,
+      "std_cv_auc": 0.0234
     },
     {
       "ranking": "ExtraTree",
       "classifier": "MLP",
       "n_features": 7,
-      "mean_cv_auc": 0.9875,
-      "std_cv_auc": 0.012
+      "mean_cv_auc": 0.9891,
+      "std_cv_auc": 0.0201
     },
     {
       "ranking": "ExtraTree",
       "classifier": "MLP",
       "n_features": 8,
-      "mean_cv_auc": 0.9876,
-      "std_cv_auc": 0.0118
+      "mean_cv_auc": 0.9894,
+      "std_cv_auc": 0.0194
     },
     {
       "ranking": "ExtraTree",
       "classifier": "MLP",
       "n_features": 9,
-      "mean_cv_auc": 0.9868,
-      "std_cv_auc": 0.0112
+      "mean_cv_auc": 0.9887,
+      "std_cv_auc": 0.0199
     },
     {
       "ranking": "ExtraTree",
       "classifier": "MLP",
       "n_features": 10,
-      "mean_cv_auc": 0.9885,
-      "std_cv_auc": 0.0108
+      "mean_cv_auc": 0.9938,
+      "std_cv_auc": 0.0125
     },
     {
       "ranking": "ExtraTree",
       "classifier": "MLP",
       "n_features": 11,
-      "mean_cv_auc": 0.9886,
-      "std_cv_auc": 0.0098
+      "mean_cv_auc": 0.9961,
+      "std_cv_auc": 0.0079
     },
     {
       "ranking": "ExtraTree",
       "classifier": "MLP",
       "n_features": 12,
-      "mean_cv_auc": 0.9904,
-      "std_cv_auc": 0.0101
+      "mean_cv_auc": 0.9956,
+      "std_cv_auc": 0.007
     },
     {
       "ranking": "ExtraTree",
       "classifier": "MLP",
       "n_features": 13,
-      "mean_cv_auc": 0.9907,
-      "std_cv_auc": 0.0103
+      "mean_cv_auc": 0.9948,
+      "std_cv_auc": 0.0065
     },
     {
       "ranking": "ExtraTree",
       "classifier": "MLP",
       "n_features": 14,
-      "mean_cv_auc": 0.9907,
-      "std_cv_auc": 0.0089
+      "mean_cv_auc": 0.9952,
+      "std_cv_auc": 0.0065
     },
     {
       "ranking": "ExtraTree",
       "classifier": "MLP",
       "n_features": 15,
-      "mean_cv_auc": 0.9901,
-      "std_cv_auc": 0.009
+      "mean_cv_auc": 0.995,
+      "std_cv_auc": 0.0083
     },
     {
       "ranking": "ExtraTree",
       "classifier": "MLP",
       "n_features": 16,
-      "mean_cv_auc": 0.9904,
-      "std_cv_auc": 0.0087
+      "mean_cv_auc": 0.9957,
+      "std_cv_auc": 0.0077
     },
     {
       "ranking": "ExtraTree",
       "classifier": "MLP",
       "n_features": 17,
-      "mean_cv_auc": 0.9922,
-      "std_cv_auc": 0.0073
+      "mean_cv_auc": 0.9943,
+      "std_cv_auc": 0.0089
     },
     {
       "ranking": "ExtraTree",
       "classifier": "MLP",
       "n_features": 18,
       "mean_cv_auc": 0.9939,
-      "std_cv_auc": 0.0072
+      "std_cv_auc": 0.0087
     },
     {
       "ranking": "ExtraTree",
       "classifier": "MLP",
       "n_features": 19,
-      "mean_cv_auc": 0.9929,
-      "std_cv_auc": 0.0075
+      "mean_cv_auc": 0.9906,
+      "std_cv_auc": 0.0144
     },
     {
       "ranking": "ExtraTree",
       "classifier": "MLP",
       "n_features": 20,
-      "mean_cv_auc": 0.9925,
-      "std_cv_auc": 0.0078
+      "mean_cv_auc": 0.9896,
+      "std_cv_auc": 0.0164
     },
     {
       "ranking": "ExtraTree",
       "classifier": "MLP",
       "n_features": 21,
-      "mean_cv_auc": 0.9911,
-      "std_cv_auc": 0.0097
+      "mean_cv_auc": 0.9893,
+      "std_cv_auc": 0.0177
     },
     {
       "ranking": "ExtraTree",
       "classifier": "MLP",
       "n_features": 22,
-      "mean_cv_auc": 0.9907,
-      "std_cv_auc": 0.0101
+      "mean_cv_auc": 0.9895,
+      "std_cv_auc": 0.0138
     },
     {
       "ranking": "ExtraTree",
       "classifier": "MLP",
       "n_features": 23,
-      "mean_cv_auc": 0.9914,
-      "std_cv_auc": 0.0095
+      "mean_cv_auc": 0.9884,
+      "std_cv_auc": 0.0161
     },
     {
       "ranking": "ExtraTree",
       "classifier": "MLP",
       "n_features": 24,
-      "mean_cv_auc": 0.9903,
-      "std_cv_auc": 0.0113
+      "mean_cv_auc": 0.9878,
+      "std_cv_auc": 0.0171
     },
     {
       "ranking": "ExtraTree",
       "classifier": "MLP",
       "n_features": 25,
-      "mean_cv_auc": 0.9935,
-      "std_cv_auc": 0.0068
+      "mean_cv_auc": 0.9877,
+      "std_cv_auc": 0.021
     },
     {
       "ranking": "ExtraTree",
       "classifier": "MLP",
       "n_features": 26,
-      "mean_cv_auc": 0.9929,
-      "std_cv_auc": 0.0075
+      "mean_cv_auc": 0.9889,
+      "std_cv_auc": 0.0176
     }
   ]
 }

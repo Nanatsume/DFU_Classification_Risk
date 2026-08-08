@@ -22,7 +22,8 @@ import tensorflow as tf
 from sklearn.metrics import f1_score, confusion_matrix, roc_auc_score, classification_report
 
 from dfu_common import (
-    CONFIG, SEED, make_logger, load_preprocessed_inaoe, create_fold_splits,
+    CONFIG, SEED, make_logger, load_preprocessed_inaoe, get_inaoe_patient_ids,
+    create_patient_fold_splits,
     DFUModelTrainer, base_model_creators,
 )
 
@@ -58,10 +59,15 @@ def main():
     with open(rq1_path) as f:
         rq1 = json.load(f)
 
-    entry = rq1.get('S2_best')
-    if entry is None:
-        log("❌ S2_best not found in rq1_results.json.")
+    # Overall RQ1 winner = whichever of S1_best / S2_best has the higher mean
+    # AUC-ROC, not S2 by default — S1 can legitimately win (see RQ1 answer).
+    candidates = [e for e in (rq1.get('S1_best'), rq1.get('S2_best')) if e is not None]
+    if not candidates:
+        log("❌ Neither S1_best nor S2_best found in rq1_results.json.")
         return
+    entry = max(candidates, key=lambda e: e['cv_metrics']['mean']['auc'])
+    log(f"✓ Overall RQ1 winner: {entry['combo_id']} "
+        f"(AUC={entry['cv_metrics']['mean']['auc']:.4f})")
 
     combo_id       = entry['combo_id']
     backbone       = entry['backbone']
@@ -92,8 +98,9 @@ def main():
 
     data_path = DATA_SOURCE[input_strategy]
     images, labels = load_preprocessed_inaoe(data_path, log=log)
-    fold_indices, test_indices = create_fold_splits(
-        images, labels,
+    patient_ids = get_inaoe_patient_ids(data_path)
+    fold_indices, test_indices = create_patient_fold_splits(
+        images, labels, patient_ids,
         n_splits=CONFIG['n_folds'],
         test_split=CONFIG['test_split'],
         random_state=SEED,

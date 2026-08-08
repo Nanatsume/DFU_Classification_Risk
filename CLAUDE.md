@@ -244,10 +244,15 @@ fold it into the sentence instead of announcing it.
 
 ## 13. Citation Style
 
-- Follow Mahidol University thesis template (muthesis2021.cls): **name-year** `\cite{}` style
-- Inline citations: "Author \& Author (Year)~\cite{key}" when the author is the subject
-- Parenthetical: use `~\cite{key}` at the end of the sentence when the citation is supporting evidence
-- Do not use numbered citations [1] — that is the advisor's institutional style, not ours
+- This project uses **numbered** `\cite{}` style (`\usepackage[numbers,sort&compress]{natbib}` in
+  `main.tex`), producing bracketed reference numbers such as [1]. This is a deliberate deviation
+  from the Mahidol muthesis2021.cls name-year default, adopted for this document, and should stay
+  consistent across all chapters.
+- Inline citations still name the author in prose when the author is the subject, as in
+  "Khandakar et al. (2021)~\cite{key}", which renders as "Khandakar et al. (2021) [3]". Keep this
+  hybrid form, author name in text plus a numbered mark, rather than switching to a bare number.
+- Parenthetical: use `~\cite{key}` at the end of the sentence when the citation is supporting
+  evidence rather than the subject of the sentence.
 
 ---
 
@@ -428,6 +433,6 @@ needs marking on first definition, use `\emph{}` once and sparingly, never `\tex
 - **Language**: English (academic)
 - **LaTeX template**: muthesis2021.cls
 - **Main files**: `chapter1.tex`, `chapter2.tex`, `chapter3.tex`, `abstract.tex`
-- **Key models**: EfficientNetB0, ResNet50, ConvNeXt-Tiny (proposed); GLCM+HOG+BPNN (baseline)
-- **Key methods**: Transfer learning, 5-fold CV, Optuna, Grad-CAM, Grad-CAM++, Eigen-CAM
+- **Key models**: EfficientNetB0, ResNet50, ConvNeXt-Tiny (proposed); GLCM+LBP+HOG+geometric features with a selected classifier from 10 candidates (baseline, following Khandakar et al.)
+- **Key methods**: Transfer learning, 5-fold CV, GPyOpt Bayesian optimisation, Grad-CAM, Grad-CAM++, Eigen-CAM
 - **Dataset**: 300 diabetic patients, Buddhachinaraj Hospital, Phitsanulok, Thailand

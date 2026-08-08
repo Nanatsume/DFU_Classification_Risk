@@ -15,7 +15,8 @@ from sklearn.metrics import roc_auc_score
 import tensorflow as tf
 
 from dfu_common import (
-    CONFIG, SEED, make_logger, load_preprocessed_inaoe, create_fold_splits,
+    CONFIG, SEED, make_logger, load_preprocessed_inaoe, get_inaoe_patient_ids,
+    create_patient_fold_splits,
     base_model_creators, DFUModelTrainer, ALL_STRATEGIES, StrategyTuner,
 )
 
@@ -38,9 +39,10 @@ def compute_fold_metrics(y_true, y_pred) -> dict:
     sens = tp / (tp + fn) if (tp + fn) > 0 else 0.0
     spec = tn / (tn + fp) if (tn + fp) > 0 else 0.0
     prec = tp / (tp + fp) if (tp + fp) > 0 else 0.0
+    npv  = tn / (tn + fn) if (tn + fn) > 0 else 0.0
     f1   = 2 * prec * sens / (prec + sens) if (prec + sens) > 0 else 0.0
     acc  = (tp + tn) / (tp + tn + fp + fn) if (tp + tn + fp + fn) > 0 else 0.0
-    return {'auc': auc, 'sens': sens, 'spec': spec, 'prec': prec, 'f1': f1, 'acc': acc}
+    return {'auc': auc, 'sens': sens, 'spec': spec, 'prec': prec, 'npv': npv, 'f1': f1, 'acc': acc}
 
 
 def main():
@@ -77,8 +79,9 @@ def main():
         CONFIG['batch_size_default'] = 64
 
     images, labels = load_preprocessed_inaoe(DATA_SOURCE[input_s], log=log)
-    fold_indices, _ = create_fold_splits(
-        images, labels, n_splits=CONFIG['n_folds'],
+    patient_ids = get_inaoe_patient_ids(DATA_SOURCE[input_s])
+    fold_indices, _ = create_patient_fold_splits(
+        images, labels, patient_ids, n_splits=CONFIG['n_folds'],
         test_split=CONFIG['test_split'], random_state=SEED,
     )
 
@@ -180,7 +183,7 @@ def main():
         log(f"  Fold {fi+1}:  AUC={m['auc']:.4f}  Sens={m['sens']:.4f}  "
             f"Spec={m['spec']:.4f}  F1={m['f1']:.4f}")
 
-    keys  = ['auc', 'sens', 'spec', 'prec', 'f1', 'acc']
+    keys  = ['auc', 'sens', 'spec', 'prec', 'npv', 'f1', 'acc']
     mean_m = {k: float(np.mean([f[k] for f in per_fold])) for k in keys}
     std_m  = {k: float(np.std( [f[k] for f in per_fold])) for k in keys}
 
