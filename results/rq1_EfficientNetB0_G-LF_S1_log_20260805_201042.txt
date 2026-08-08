@@ -1,0 +1,225 @@
+[2026-08-05 20:10:42] === Log file: ./results/rq1_EfficientNetB0_G-LF_S1_log_20260805_201042.txt ===
+[2026-08-05 20:10:42] 
+################################################################################
+# COMBO: EfficientNetB0_G-LF_S1
+################################################################################
+
+[2026-08-05 20:10:42] Loaded INAOE: 334 images, shape=(334, 224, 224, 3), CT=90, DM=244
+[2026-08-05 20:10:42] 
+================================================================================
+StrategyTuner: EfficientNetB0_G-LF_S1/G-LF (10 trials × fold1)
+================================================================================
+[2026-08-05 20:10:43] 
+================================================================================
+G-LF — EfficientNetB0_G-LF_S1_trial1_fold1
+================================================================================
+[2026-08-05 20:10:43]   Block 1/5: unfreezing 16 layers, budget 10 epochs
+[2026-08-05 20:10:57]   Block 2/5: unfreezing 102 layers, budget 10 epochs
+[2026-08-05 20:11:18]   Block 3/5: unfreezing 73 layers, budget 10 epochs
+[2026-08-05 20:11:45]   Block 4/5: unfreezing 39 layers, budget 10 epochs
+[2026-08-05 20:12:19]   Block 5/5: unfreezing 4 layers, budget 10 epochs
+[2026-08-05 20:12:54]   G-LF done. Total epochs used: 50
+[2026-08-05 20:12:57]   Trial 1: fold1 AUC=0.9046  params={'dropout_rate': 0.15503043695984914, 'l2_reg': 0.00791507439765621, 'dense_units_1': 512, 'dense_units_2': 32, 'batch_size': 64, 'optimizer': 'adam', 'lr': 0.0002440060709081752}
+[2026-08-05 20:12:58] 
+================================================================================
+G-LF — EfficientNetB0_G-LF_S1_trial2_fold1
+================================================================================
+[2026-08-05 20:12:58]   Block 1/5: unfreezing 16 layers, budget 10 epochs
+[2026-08-05 20:13:11]   Block 2/5: unfreezing 102 layers, budget 10 epochs
+[2026-08-05 20:13:32]   Block 3/5: unfreezing 73 layers, budget 10 epochs
+[2026-08-05 20:14:00]   Block 4/5: unfreezing 39 layers, budget 10 epochs
+[2026-08-05 20:14:34]   Block 5/5: unfreezing 4 layers, budget 10 epochs
+[2026-08-05 20:15:11]   G-LF done. Total epochs used: 50
+[2026-08-05 20:15:15]   Trial 2: fold1 AUC=0.8076  params={'dropout_rate': 0.3228119563599944, 'l2_reg': 0.05112443931364687, 'dense_units_1': 512, 'dense_units_2': 128, 'batch_size': 64, 'optimizer': 'adam', 'lr': 7.864749246304417e-05}
+[2026-08-05 20:15:16] 
+================================================================================
+G-LF — EfficientNetB0_G-LF_S1_trial3_fold1
+================================================================================
+[2026-08-05 20:15:16]   Block 1/5: unfreezing 16 layers, budget 10 epochs
+[2026-08-05 20:15:30]   Block 2/5: unfreezing 102 layers, budget 10 epochs
+[2026-08-05 20:15:51]   Block 3/5: unfreezing 73 layers, budget 10 epochs
+[2026-08-05 20:16:19]   Block 4/5: unfreezing 39 layers, budget 10 epochs
+[2026-08-05 20:16:48]   Block 5/5: unfreezing 4 layers, budget 10 epochs
+[2026-08-05 20:17:18]   G-LF done. Total epochs used: 42
+[2026-08-05 20:17:24]   Trial 3: fold1 AUC=0.7039  params={'dropout_rate': 0.3242561910239515, 'l2_reg': 4.483218858527927e-06, 'dense_units_1': 512, 'dense_units_2': 32, 'batch_size': 64, 'optimizer': 'adam', 'lr': 2.3406492014301736e-05}
+[2026-08-05 20:17:32] 
+================================================================================
+G-LF — EfficientNetB0_G-LF_S1_trial4_fold1
+================================================================================
+[2026-08-05 20:17:32]   Block 1/5: unfreezing 16 layers, budget 10 epochs
+[2026-08-05 20:17:47]   Block 2/5: unfreezing 102 layers, budget 10 epochs
+[2026-08-05 20:18:08]   Block 3/5: unfreezing 73 layers, budget 10 epochs
+[2026-08-05 20:18:38]   Block 4/5: unfreezing 39 layers, budget 10 epochs
+[2026-08-05 20:19:14]   Block 5/5: unfreezing 4 layers, budget 10 epochs
+[2026-08-05 20:19:51]   G-LF done. Total epochs used: 50
+[2026-08-05 20:19:58]   Trial 4: fold1 AUC=0.8799  params={'dropout_rate': 0.1807134530360879, 'l2_reg': 0.012162026611857476, 'dense_units_1': 512, 'dense_units_2': 32, 'batch_size': 64, 'optimizer': 'adam', 'lr': 0.0002134700541668737}
+[2026-08-05 20:20:01] 
+================================================================================
+G-LF — EfficientNetB0_G-LF_S1_trial5_fold1
+================================================================================
+[2026-08-05 20:20:02]   Block 1/5: unfreezing 16 layers, budget 10 epochs
+[2026-08-05 20:20:16]   Block 2/5: unfreezing 102 layers, budget 10 epochs
+[2026-08-05 20:20:39]   Block 3/5: unfreezing 73 layers, budget 10 epochs
+[2026-08-05 20:21:08]   Block 4/5: unfreezing 39 layers, budget 10 epochs
+[2026-08-05 20:21:38]   Block 5/5: unfreezing 4 layers, budget 10 epochs
+[2026-08-05 20:22:16]   G-LF done. Total epochs used: 46
+[2026-08-05 20:22:24]   Trial 5: fold1 AUC=0.8092  params={'dropout_rate': 0.1, 'l2_reg': 0.0027124307428668176, 'dense_units_1': 512, 'dense_units_2': 32, 'batch_size': 64, 'optimizer': 'adam', 'lr': 0.00037016701366515936}
+[2026-08-05 20:22:27] 
+================================================================================
+G-LF — EfficientNetB0_G-LF_S1_trial6_fold1
+================================================================================
+[2026-08-05 20:22:27]   Block 1/5: unfreezing 16 layers, budget 10 epochs
+[2026-08-05 20:22:42]   Block 2/5: unfreezing 102 layers, budget 10 epochs
+[2026-08-05 20:23:06]   Block 3/5: unfreezing 73 layers, budget 10 epochs
+[2026-08-05 20:23:36]   Block 4/5: unfreezing 39 layers, budget 10 epochs
+[2026-08-05 20:24:13]   Block 5/5: unfreezing 4 layers, budget 10 epochs
+[2026-08-05 20:24:51]   G-LF done. Total epochs used: 50
+[2026-08-05 20:25:00]   Trial 6: fold1 AUC=0.8914  params={'dropout_rate': 0.1, 'l2_reg': 0.006737186139534578, 'dense_units_1': 512, 'dense_units_2': 32, 'batch_size': 64, 'optimizer': 'adam', 'lr': 0.00014832776952828947}
+[2026-08-05 20:25:04] 
+================================================================================
+G-LF — EfficientNetB0_G-LF_S1_trial7_fold1
+================================================================================
+[2026-08-05 20:25:04]   Block 1/5: unfreezing 16 layers, budget 10 epochs
+[2026-08-05 20:25:19]   Block 2/5: unfreezing 102 layers, budget 10 epochs
+[2026-08-05 20:25:44]   Block 3/5: unfreezing 73 layers, budget 10 epochs
+[2026-08-05 20:26:16]   Block 4/5: unfreezing 39 layers, budget 10 epochs
+[2026-08-05 20:26:48]   Block 5/5: unfreezing 4 layers, budget 10 epochs
+[2026-08-05 20:27:27]   G-LF done. Total epochs used: 46
+[2026-08-05 20:27:38]   Trial 7: fold1 AUC=0.8799  params={'dropout_rate': 0.4, 'l2_reg': 0.006769268595247786, 'dense_units_1': 512, 'dense_units_2': 32, 'batch_size': 64, 'optimizer': 'adam', 'lr': 0.00020404025377459116}
+[2026-08-05 20:27:40] 
+================================================================================
+G-LF — EfficientNetB0_G-LF_S1_trial8_fold1
+================================================================================
+[2026-08-05 20:27:40]   Block 1/5: unfreezing 16 layers, budget 10 epochs
+[2026-08-05 20:27:58]   Block 2/5: unfreezing 102 layers, budget 10 epochs
+[2026-08-05 20:28:23]   Block 3/5: unfreezing 73 layers, budget 10 epochs
+[2026-08-05 20:28:54]   Block 4/5: unfreezing 39 layers, budget 10 epochs
+[2026-08-05 20:29:26]   Block 5/5: unfreezing 4 layers, budget 10 epochs
+[2026-08-05 20:30:00]   G-LF done. Total epochs used: 43
+[2026-08-05 20:30:13]   Trial 8: fold1 AUC=0.8602  params={'dropout_rate': 0.1, 'l2_reg': 0.012110995469829508, 'dense_units_1': 512, 'dense_units_2': 32, 'batch_size': 64, 'optimizer': 'adam', 'lr': 0.0006797151757541585}
+[2026-08-05 20:30:15] 
+================================================================================
+G-LF — EfficientNetB0_G-LF_S1_trial9_fold1
+================================================================================
+[2026-08-05 20:30:15]   Block 1/5: unfreezing 16 layers, budget 10 epochs
+[2026-08-05 20:30:32]   Block 2/5: unfreezing 102 layers, budget 10 epochs
+[2026-08-05 20:30:58]   Block 3/5: unfreezing 73 layers, budget 10 epochs
+[2026-08-05 20:31:31]   Block 4/5: unfreezing 39 layers, budget 10 epochs
+[2026-08-05 20:32:10]   Block 5/5: unfreezing 4 layers, budget 10 epochs
+[2026-08-05 20:32:51]   G-LF done. Total epochs used: 50
+[2026-08-05 20:33:04]   Trial 9: fold1 AUC=0.6990  params={'dropout_rate': 0.1, 'l2_reg': 0.024332392327061896, 'dense_units_1': 512, 'dense_units_2': 32, 'batch_size': 64, 'optimizer': 'adam', 'lr': 3.5141712723692775e-05}
+[2026-08-05 20:33:08] 
+================================================================================
+G-LF — EfficientNetB0_G-LF_S1_trial10_fold1
+================================================================================
+[2026-08-05 20:33:08]   Block 1/5: unfreezing 16 layers, budget 10 epochs
+[2026-08-05 20:33:26]   Block 2/5: unfreezing 102 layers, budget 10 epochs
+[2026-08-05 20:33:52]   Block 3/5: unfreezing 73 layers, budget 10 epochs
+[2026-08-05 20:34:25]   Block 4/5: unfreezing 39 layers, budget 10 epochs
+[2026-08-05 20:35:07]   Block 5/5: unfreezing 4 layers, budget 10 epochs
+[2026-08-05 20:35:49]   G-LF done. Total epochs used: 50
+[2026-08-05 20:36:04]   Trial 10: fold1 AUC=0.8355  params={'dropout_rate': 0.1, 'l2_reg': 0.007805151738309275, 'dense_units_1': 512, 'dense_units_2': 32, 'batch_size': 64, 'optimizer': 'adam', 'lr': 0.0002447441343563397}
+[2026-08-05 20:36:04] 
+✓ Best fold1 AUC: 0.904605
+[2026-08-05 20:36:04] Best params: {'dropout_rate': 0.15503043695984914, 'l2_reg': 0.00791507439765621, 'dense_units_1': 512, 'dense_units_2': 32, 'batch_size': 64, 'optimizer': 'adam', 'lr': 0.0002440060709081752}
+[2026-08-05 20:36:18] ✓ best_params → ./results/rq1/EfficientNetB0_G-LF_S1/best_params.json
+[2026-08-05 20:36:18] 
+================================================================================
+FOLD 1/5: EfficientNetB0_G-LF_S1
+================================================================================
+[2026-08-05 20:36:18] Train: 212  Val: 54
+[2026-08-05 20:36:19] 
+================================================================================
+G-LF — EfficientNetB0_G-LF_S1_Fold1
+================================================================================
+[2026-08-05 20:36:19]   Block 1/5: unfreezing 16 layers, budget 10 epochs
+[2026-08-05 20:36:38]   Block 2/5: unfreezing 102 layers, budget 10 epochs
+[2026-08-05 20:37:06]   Block 3/5: unfreezing 73 layers, budget 10 epochs
+[2026-08-05 20:37:42]   Block 4/5: unfreezing 39 layers, budget 10 epochs
+[2026-08-05 20:38:25]   Block 5/5: unfreezing 4 layers, budget 10 epochs
+[2026-08-05 20:39:07]   G-LF done. Total epochs used: 50
+[2026-08-05 20:39:10] Model saved to ./results/rq1/EfficientNetB0_G-LF_S1/fold1_final.keras
+[2026-08-05 20:39:10] ✓ Fold 1 complete  epochs={'phase1': 50, 'phase2': None}
+[2026-08-05 20:39:25] 
+================================================================================
+FOLD 2/5: EfficientNetB0_G-LF_S1
+================================================================================
+[2026-08-05 20:39:25] Train: 212  Val: 54
+[2026-08-05 20:39:26] 
+================================================================================
+G-LF — EfficientNetB0_G-LF_S1_Fold2
+================================================================================
+[2026-08-05 20:39:26]   Block 1/5: unfreezing 16 layers, budget 10 epochs
+[2026-08-05 20:39:48]   Block 2/5: unfreezing 102 layers, budget 10 epochs
+[2026-08-05 20:40:18]   Block 3/5: unfreezing 73 layers, budget 10 epochs
+[2026-08-05 20:40:58]   Block 4/5: unfreezing 39 layers, budget 10 epochs
+[2026-08-05 20:41:49]   Block 5/5: unfreezing 4 layers, budget 10 epochs
+[2026-08-05 20:42:39]   G-LF done. Total epochs used: 50
+[2026-08-05 20:42:42] Model saved to ./results/rq1/EfficientNetB0_G-LF_S1/fold2_final.keras
+[2026-08-05 20:42:42] ✓ Fold 2 complete  epochs={'phase1': 50, 'phase2': None}
+[2026-08-05 20:42:59] 
+================================================================================
+FOLD 3/5: EfficientNetB0_G-LF_S1
+================================================================================
+[2026-08-05 20:42:59] Train: 212  Val: 54
+[2026-08-05 20:43:00] 
+================================================================================
+G-LF — EfficientNetB0_G-LF_S1_Fold3
+================================================================================
+[2026-08-05 20:43:00]   Block 1/5: unfreezing 16 layers, budget 10 epochs
+[2026-08-05 20:43:25]   Block 2/5: unfreezing 102 layers, budget 10 epochs
+[2026-08-05 20:44:00]   Block 3/5: unfreezing 73 layers, budget 10 epochs
+[2026-08-05 20:44:42]   Block 4/5: unfreezing 39 layers, budget 10 epochs
+[2026-08-05 20:45:32]   Block 5/5: unfreezing 4 layers, budget 10 epochs
+[2026-08-05 20:46:25]   G-LF done. Total epochs used: 50
+[2026-08-05 20:46:29] Model saved to ./results/rq1/EfficientNetB0_G-LF_S1/fold3_final.keras
+[2026-08-05 20:46:29] ✓ Fold 3 complete  epochs={'phase1': 50, 'phase2': None}
+[2026-08-05 20:46:48] 
+================================================================================
+FOLD 4/5: EfficientNetB0_G-LF_S1
+================================================================================
+[2026-08-05 20:46:48] Train: 214  Val: 52
+[2026-08-05 20:46:49] 
+================================================================================
+G-LF — EfficientNetB0_G-LF_S1_Fold4
+================================================================================
+[2026-08-05 20:46:49]   Block 1/5: unfreezing 16 layers, budget 10 epochs
+[2026-08-05 20:47:14]   Block 2/5: unfreezing 102 layers, budget 10 epochs
+[2026-08-05 20:47:50]   Block 3/5: unfreezing 73 layers, budget 10 epochs
+[2026-08-05 20:48:38]   Block 4/5: unfreezing 39 layers, budget 10 epochs
+[2026-08-05 20:49:36]   Block 5/5: unfreezing 4 layers, budget 10 epochs
+[2026-08-05 20:50:32]   G-LF done. Total epochs used: 50
+[2026-08-05 20:50:37] Model saved to ./results/rq1/EfficientNetB0_G-LF_S1/fold4_final.keras
+[2026-08-05 20:50:37] ✓ Fold 4 complete  epochs={'phase1': 50, 'phase2': None}
+[2026-08-05 20:50:56] 
+================================================================================
+FOLD 5/5: EfficientNetB0_G-LF_S1
+================================================================================
+[2026-08-05 20:50:56] Train: 214  Val: 52
+[2026-08-05 20:50:57] 
+================================================================================
+G-LF — EfficientNetB0_G-LF_S1_Fold5
+================================================================================
+[2026-08-05 20:50:57]   Block 1/5: unfreezing 16 layers, budget 10 epochs
+[2026-08-05 20:51:26]   Block 2/5: unfreezing 102 layers, budget 10 epochs
+[2026-08-05 20:52:07]   Block 3/5: unfreezing 73 layers, budget 10 epochs
+[2026-08-05 20:53:04]   Block 4/5: unfreezing 39 layers, budget 10 epochs
+[2026-08-05 20:54:07]   Block 5/5: unfreezing 4 layers, budget 10 epochs
+[2026-08-05 20:55:09]   G-LF done. Total epochs used: 50
+[2026-08-05 20:55:14] Model saved to ./results/rq1/EfficientNetB0_G-LF_S1/fold5_final.keras
+[2026-08-05 20:55:14] ✓ Fold 5 complete  epochs={'phase1': 50, 'phase2': None}
+[2026-08-05 20:55:37]   Fold 1:  AUC=0.9243  Sens=1.0000  Spec=0.3125  F1=0.8736
+[2026-08-05 20:55:37]   Fold 2:  AUC=0.9804  Sens=1.0000  Spec=0.4286  F1=0.9091
+[2026-08-05 20:55:37]   Fold 3:  AUC=0.7089  Sens=0.9000  Spec=0.2143  F1=0.8276
+[2026-08-05 20:55:37]   Fold 4:  AUC=0.8853  Sens=1.0000  Spec=0.0714  F1=0.8539
+[2026-08-05 20:55:37]   Fold 5:  AUC=0.8008  Sens=0.9211  Spec=0.4286  F1=0.8642
+[2026-08-05 20:55:37] 
+  Mean:  AUC=0.8599±0.0955  Sens=0.9642±0.0443  Spec=0.2911±0.1359
+[2026-08-05 20:55:37]   Avg epochs: phase1=50, phase2=None
+[2026-08-05 20:55:37] 
+✓ Metrics → ./results/rq1/EfficientNetB0_G-LF_S1/metrics.json
+[2026-08-05 20:55:37] 
+################################################################################
+# EfficientNetB0_G-LF_S1 COMPLETE
+################################################################################
+

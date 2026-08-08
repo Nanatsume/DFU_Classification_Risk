@@ -1,0 +1,52 @@
+[2026-08-08 00:52:31] === Log file: ./results/rq1_final_eval_log_20260808_005231.txt ===
+[2026-08-08 00:52:31] ✓ Overall RQ1 winner: ConvNeXt-Tiny_LP-FT_S1 (AUC=0.9403)
+[2026-08-08 00:52:31] 
+################################################################################
+[2026-08-08 00:52:31] # RQ1 Final Eval: ConvNeXt-Tiny_LP-FT_S1
+[2026-08-08 00:52:31] # Strategy: LP-FT  |  Phase1 epochs: 50  |  Phase2 epochs: 47
+[2026-08-08 00:52:31] ################################################################################
+[2026-08-08 00:52:32] Loaded INAOE: 334 images, shape=(334, 224, 224, 3), CT=90, DM=244
+[2026-08-08 00:52:32] Full train : 266  (DM=194, CT=72)
+[2026-08-08 00:52:32] Test set   : 68  (DM=50,  CT=18)
+[2026-08-08 00:52:33] 
+================================================================================
+PHASE 1: Frozen Backbone [50 epochs, full set] — ConvNeXt-Tiny_LP-FT_S1_final
+================================================================================
+[2026-08-08 00:52:33] Augmentation: rotation ±10°
+[2026-08-08 00:53:57] Phase 1 done (fixed 50 epochs).
+[2026-08-08 00:53:58] 
+================================================================================
+PHASE 2: Fine-tuning [47 epochs, full set] — ConvNeXt-Tiny_LP-FT_S1_final
+================================================================================
+[2026-08-08 00:53:58] Unfroze all 133 backbone layers (Full Fine-tuning)
+[2026-08-08 00:53:58] Augmentation: rotation ±10°
+[2026-08-08 00:59:42] Phase 2 done (fixed 47 epochs).
+[2026-08-08 00:59:44] Model saved to ./model_checkpoints/ConvNeXt-Tiny_LP-FT_S1_final_retrain.keras
+[2026-08-08 00:59:44] ✓ Model saved → ./model_checkpoints/ConvNeXt-Tiny_LP-FT_S1_final_retrain.keras
+[2026-08-08 00:59:53] 
+================================================================================
+[2026-08-08 00:59:53] TEST SET EVALUATION — ConvNeXt-Tiny_LP-FT_S1  threshold=0.5000
+[2026-08-08 00:59:53] ================================================================================
+[2026-08-08 00:59:53]   sensitivity   : 0.9800
+[2026-08-08 00:59:53]   specificity   : 0.9444
+[2026-08-08 00:59:53]   auc_roc       : 0.9911
+[2026-08-08 00:59:53]   ppv           : 0.9800
+[2026-08-08 00:59:53]   npv           : 0.9444
+[2026-08-08 00:59:53]   f1            : 0.9800
+[2026-08-08 00:59:53] 
+Confusion Matrix:
+[[17  1]
+ [ 1 49]]
+[2026-08-08 00:59:53] 
+Classification Report:
+              precision    recall  f1-score   support
+
+          CT     0.9444    0.9444    0.9444        18
+          DM     0.9800    0.9800    0.9800        50
+
+    accuracy                         0.9706        68
+   macro avg     0.9622    0.9622    0.9622        68
+weighted avg     0.9706    0.9706    0.9706        68
+
+[2026-08-08 00:59:53] 
+✓ Test probs → ./results/S2_best_test_probs.npy
