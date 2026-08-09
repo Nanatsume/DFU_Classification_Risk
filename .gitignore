@@ -43,3 +43,7 @@ __pycache__/
 # Jupyter checkpoints
 .ipynb_checkpoints/
 rq1_run_all.log
+
+# Personal Obsidian vault files (not project content)
+Untitled.base
+.obsidian/
