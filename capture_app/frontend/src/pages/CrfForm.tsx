@@ -144,7 +144,7 @@ export default function CrfForm() {
   }
 
   return (
-    <div className="pb-36">
+    <div className="pb-36 print:pb-0">
       <div className="bg-foreground mb-6 px-4 py-6 text-[#e8eef1]">
         <div className="mx-auto flex max-w-[1600px] flex-wrap items-center justify-between gap-4">
           <div>
@@ -368,8 +368,12 @@ export default function CrfForm() {
         </section>
       </main>
 
-      {/* sticky summary dock */}
-      <div className="bg-foreground fixed inset-x-0 bottom-0 z-20 border-t-4 border-primary text-[#e8eef1] shadow-[0_-6px_24px_rgba(19,36,48,.22)]">
+      {/* sticky summary dock — position:fixed elements don't respect page breaks when printed,
+          the browser re-renders them at the same viewport position on every printed page, so
+          this would otherwise cut across/overlap the form content mid-page (that's the bug
+          reported: "พิมพ์ออกมาไม่เหมือนที่โชว์"). Hide it for print — it's a UI control (buttons,
+          live scoring), not part of the CRF-07 content that's meant to end up on paper. */}
+      <div className="bg-foreground fixed inset-x-0 bottom-0 z-20 border-t-4 border-primary text-[#e8eef1] shadow-[0_-6px_24px_rgba(19,36,48,.22)] print:hidden">
         <div className="mx-auto flex max-w-[1600px] flex-wrap items-center gap-4.5 px-4 py-2.5">
           {SIDES.map((s) => (
             <div key={s.k} className="flex items-center gap-2.5 border-l-[3px] pl-2.5" style={{ borderLeftColor: s.k === 'L' ? '#4fb3c4' : '#c98ab5' }}>

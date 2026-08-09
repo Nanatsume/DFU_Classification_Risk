@@ -40,7 +40,7 @@ export function Navbar() {
   const active = ALIAS[here] || here
 
   return (
-    <nav className="bg-sidebar text-sidebar-foreground border-b-[3px] border-primary">
+    <nav className="bg-sidebar text-sidebar-foreground border-b-[3px] border-primary print:hidden">
       <div className="flex w-full flex-wrap items-center gap-1.5 px-6 py-2.5">
         <span className="mr-3.5 text-sm font-bold text-white whitespace-nowrap">
           🦶 DFU Data Collection
