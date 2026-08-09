@@ -261,9 +261,11 @@ export default function Capture() {
           ) : (
             <div className="mx-auto max-w-lg space-y-2 text-left">
               {pendingCases().map((c) => (
-                <div key={c.research_id} className="bg-secondary flex flex-wrap items-center gap-3 rounded-md border px-3.5 py-2.5">
+                // เหตุผลเดียวกับที่แก้ใน Roi.tsx: flex-col บนจอมือถือ (แต่ละส่วนเต็มแถวตัวเอง)
+                // กันข้อความไทยถูกบีบแคบจนตัดขึ้นบรรทัดใหม่ทีละพยางค์ — sm+ กลับไปแถวเดียว
+                <div key={c.research_id} className="bg-secondary flex flex-col gap-2 rounded-md border px-3.5 py-2.5 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3">
                   <span className="text-primary font-mono font-bold">{c.research_id}</span>
-                  <span className="text-muted-foreground min-w-0 flex-1 text-[11.5px]">{c.nurse || '—'} · {iwgdfText(c)}</span>
+                  <span className="text-muted-foreground text-[11.5px] sm:min-w-0 sm:flex-1">{c.nurse || '—'} · {iwgdfText(c)}</span>
                   <Button size="sm" onClick={() => startSession(c.research_id, mode === 'live')}>ถ่ายภาพเคสนี้</Button>
                 </div>
               ))}

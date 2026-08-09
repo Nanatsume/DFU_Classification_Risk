@@ -92,10 +92,14 @@ export default function Roi() {
               return (
                 <div
                   key={c.research_id}
-                  className="bg-secondary flex flex-wrap items-center gap-3 rounded-md border px-3.5 py-2.5"
+                  // จอมือถือ: เรียงเป็นคอลัมน์ (ทุกส่วนเต็มความกว้างแถวตัวเอง) — เดิมใช้ flex-wrap
+                  // + min-w-0 อย่างเดียว ทำให้ข้อความไทยถูกบีบแคบจนตัดขึ้นบรรทัดใหม่ทีละพยางค์
+                  // (ตัวอักษรไทยไม่มีช่องว่างแบ่งคำ ยิ่งพื้นที่แคบยิ่งตัดมั่ว) จอ sm+ กลับไปเป็นแถว
+                  // เดียวแบบเดิม
+                  className="bg-secondary flex flex-col gap-2 rounded-md border px-3.5 py-2.5 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3"
                 >
                   <span className="text-primary font-mono font-bold">{c.research_id}</span>
-                  <span className="text-muted-foreground min-w-0 flex-1 text-[12.5px]">
+                  <span className="text-muted-foreground text-[12.5px] sm:min-w-0 sm:flex-1">
                     {c.nurse || '—'} · IWGDF ซ้าย {c.iwgdf?.L ?? '—'} · ขวา {c.iwgdf?.R ?? '—'}
                   </span>
                   <span className="text-[11px]">
@@ -107,29 +111,31 @@ export default function Roi() {
                       ขวา: {ROI_STATUS_TEXT[statusR]}
                     </span>
                   </span>
-                  {anyNeeded ? (
-                    <Button size="sm" asChild>
-                      <a
-                        href={`via/index.html?rid=${encodeURIComponent(c.research_id)}`}
-                        target="_blank"
-                        rel="noreferrer"
+                  <div className="flex gap-2">
+                    {anyNeeded ? (
+                      <Button size="sm" asChild>
+                        <a
+                          href={`via/index.html?rid=${encodeURIComponent(c.research_id)}`}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          {anyDone ? 'เปิด ROI →' : 'ทำ ROI →'}
+                        </a>
+                      </Button>
+                    ) : (
+                      <Badge variant="secondary">ไม่ต้องทำ</Badge>
+                    )}
+                    {anyDone && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="text-destructive hover:text-destructive"
+                        onClick={() => setDeleteTarget(c.research_id)}
                       >
-                        {anyDone ? 'เปิด ROI →' : 'ทำ ROI →'}
-                      </a>
-                    </Button>
-                  ) : (
-                    <Badge variant="secondary">ไม่ต้องทำ</Badge>
-                  )}
-                  {anyDone && (
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="text-destructive hover:text-destructive"
-                      onClick={() => setDeleteTarget(c.research_id)}
-                    >
-                      ลบ ROI
-                    </Button>
-                  )}
+                        ลบ ROI
+                      </Button>
+                    )}
+                  </div>
                 </div>
               )
             })}
