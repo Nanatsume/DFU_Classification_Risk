@@ -108,12 +108,42 @@ class LoginReq(BaseModel):
     password: str
 
 
+# ---- brute-force lockout ----
+# In-memory, keyed by client IP — resets on server restart, which is fine here (a restart is
+# also how the password itself gets rotated, e.g. before/after a temporary tunnel session). Not
+# meant to replace a real rate limiter for a permanently internet-facing deployment, but a solid
+# step up from the old bare time.sleep(1) for the "expose briefly via a tunnel" case.
+_failed_attempts: dict[str, list[float]] = {}
+LOCKOUT_MAX_ATTEMPTS = 5
+LOCKOUT_WINDOW_SECONDS = 300  # failures older than this stop counting toward a lockout
+
+
+def _client_key(request: Request) -> str:
+    return request.client.host if request.client else "unknown"
+
+
+def _is_locked_out(key: str) -> bool:
+    now = time.time()
+    attempts = [t for t in _failed_attempts.get(key, []) if now - t < LOCKOUT_WINDOW_SECONDS]
+    _failed_attempts[key] = attempts
+    return len(attempts) >= LOCKOUT_MAX_ATTEMPTS
+
+
+def _record_failure(key: str) -> None:
+    _failed_attempts.setdefault(key, []).append(time.time())
+
+
 @router.post("/login")
-def login(req: LoginReq, response: Response):
+def login(req: LoginReq, request: Request, response: Response):
+    key = _client_key(request)
+    if _is_locked_out(key):
+        raise HTTPException(429, f"too many failed attempts — try again in {LOCKOUT_WINDOW_SECONDS // 60} minutes")
     stored = db.get_setting("password_hash")
     if not stored or not _verify(req.password, stored):
-        time.sleep(1)  # trivial brute-force deterrent — local-network threat model, not internet-facing
+        _record_failure(key)
+        time.sleep(2)  # brute-force deterrent, on top of the lockout above
         raise HTTPException(401, "wrong password")
+    _failed_attempts.pop(key, None)
     token, _ = _new_session()
     response.set_cookie(SESSION_COOKIE, token, httponly=True, samesite="lax",
                          max_age=SESSION_TTL_HOURS * 3600)

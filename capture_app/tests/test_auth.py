@@ -87,3 +87,31 @@ def test_session_valid_false_and_purged_once_expired(authmod):
     assert authmod._session_valid("expired-token") is False
     # _session_valid() deletes an expired session as a side effect once it notices
     assert authmod.db.get_session("expired-token") is None
+
+
+def test_lockout_not_triggered_below_threshold(authmod):
+    authmod._failed_attempts.clear()
+    for _ in range(authmod.LOCKOUT_MAX_ATTEMPTS - 1):
+        authmod._record_failure("1.2.3.4")
+    assert authmod._is_locked_out("1.2.3.4") is False
+
+
+def test_lockout_triggered_at_threshold(authmod):
+    authmod._failed_attempts.clear()
+    for _ in range(authmod.LOCKOUT_MAX_ATTEMPTS):
+        authmod._record_failure("1.2.3.4")
+    assert authmod._is_locked_out("1.2.3.4") is True
+
+
+def test_lockout_is_per_client_key(authmod):
+    authmod._failed_attempts.clear()
+    for _ in range(authmod.LOCKOUT_MAX_ATTEMPTS):
+        authmod._record_failure("1.2.3.4")
+    assert authmod._is_locked_out("5.6.7.8") is False
+
+
+def test_lockout_old_failures_outside_window_do_not_count(authmod):
+    authmod._failed_attempts.clear()
+    old = authmod.time.time() - authmod.LOCKOUT_WINDOW_SECONDS - 1
+    authmod._failed_attempts["1.2.3.4"] = [old] * authmod.LOCKOUT_MAX_ATTEMPTS
+    assert authmod._is_locked_out("1.2.3.4") is False

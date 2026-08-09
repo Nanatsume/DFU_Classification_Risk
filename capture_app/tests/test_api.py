@@ -70,6 +70,21 @@ def test_login_correct_password_sets_cookie_and_session_true(client):
     assert client.get("/api/session").json()["authenticated"] is True
 
 
+def test_login_locked_out_after_repeated_failures(client):
+    """Starlette's TestClient reports its own host as 'testclient' — pre-fill that key's
+    failure count directly (avoids five real 2s sleeps just to reach the threshold)."""
+    import auth
+    key = "testclient"
+    auth._failed_attempts.pop(key, None)
+    try:
+        for _ in range(auth.LOCKOUT_MAX_ATTEMPTS):
+            auth._record_failure(key)
+        r = client.post("/api/login", json={"password": "test-password-123"})  # correct password, still locked out
+        assert r.status_code == 429
+    finally:
+        auth._failed_attempts.pop(key, None)
+
+
 def test_logout_clears_session(auth_client):
     assert auth_client.get("/api/session").json()["authenticated"] is True
     r = auth_client.post("/api/logout", json={})
