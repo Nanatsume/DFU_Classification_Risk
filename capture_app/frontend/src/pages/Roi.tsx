@@ -92,10 +92,10 @@ export default function Roi() {
               return (
                 <div
                   key={c.research_id}
-                  className="bg-secondary flex items-center gap-3 rounded-md border px-3.5 py-2.5"
+                  className="bg-secondary flex flex-wrap items-center gap-3 rounded-md border px-3.5 py-2.5"
                 >
                   <span className="text-primary font-mono font-bold">{c.research_id}</span>
-                  <span className="text-muted-foreground flex-1 text-[12.5px]">
+                  <span className="text-muted-foreground min-w-0 flex-1 text-[12.5px]">
                     {c.nurse || '—'} · IWGDF ซ้าย {c.iwgdf?.L ?? '—'} · ขวา {c.iwgdf?.R ?? '—'}
                   </span>
                   <span className="text-[11px]">

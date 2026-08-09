@@ -144,7 +144,10 @@ export default function CrfForm() {
   }
 
   return (
-    <div className="pb-36 print:pb-0">
+    // เผื่อพื้นที่ด้านล่างมากขึ้นบนจอมือถือ — แถบสรุปด้านล่าง (sticky dock) มีเนื้อหาเยอะกว่าจะพอดี
+    // แถวเดียวแบบจอคอม พอ wrap เป็นหลายแถวบนจอแคบก็จะสูงขึ้นมาก ถ้าเผื่อพื้นที่ไม่พอ แถบจะไปทับ
+    // เนื้อหาท้ายฟอร์มได้ (ตัวเลขนี้ประมาณคร่าวๆ ยังไม่เคยเห็นบนมือถือจริง อาจต้องปรับอีกทีหลังลองจริง)
+    <div className="pb-[260px] sm:pb-36 print:pb-0">
       <div className="bg-foreground mb-6 px-4 py-6 text-[#e8eef1]">
         <div className="mx-auto flex max-w-[1600px] flex-wrap items-center justify-between gap-4">
           <div>
@@ -395,10 +398,12 @@ export default function CrfForm() {
               </div>
             </div>
           ))}
-          <div className="text-[#f0b2bb] text-xs" title={missing.join(' · ')}>
+          <div className="text-[#f0b2bb] w-full text-xs sm:w-auto" title={missing.join(' · ')}>
             {missing.length ? `ยังไม่ครบ ${missing.length} รายการ` : ''}
           </div>
-          <div className="ml-auto flex flex-wrap gap-2">
+          {/* จอมือถือ: ปุ่มเรียงกริด 2 คอลัมน์เต็มแถว กดง่ายกว่าปุ่มแถวเดียวบีบกันจนเล็ก
+              จอใหญ่ (sm+): กลับไปเป็นแถวเดียวชิดขวาเหมือนเดิม */}
+          <div className="mt-1 grid w-full grid-cols-2 gap-2 sm:mt-0 sm:ml-auto sm:flex sm:w-auto sm:flex-wrap">
             <Button type="button" variant="outline" className="border-[#47606f] bg-transparent text-[#dce7ec] hover:bg-[#1d3241]" asChild>
               <a href="index.html">หน้าแรก</a>
             </Button>
@@ -411,7 +416,7 @@ export default function CrfForm() {
             <Button type="button" variant="outline" className="border-[#47606f] bg-transparent text-[#dce7ec] hover:bg-[#1d3241]" onClick={onClear}>
               ล้างฟอร์ม
             </Button>
-            <Button type="button" disabled={saving} onClick={onSave}>บันทึกข้อมูล</Button>
+            <Button type="button" className="col-span-2 sm:col-span-1" disabled={saving} onClick={onSave}>บันทึกข้อมูล</Button>
           </div>
         </div>
       </div>

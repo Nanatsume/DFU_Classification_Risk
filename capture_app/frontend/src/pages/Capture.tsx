@@ -261,9 +261,9 @@ export default function Capture() {
           ) : (
             <div className="mx-auto max-w-lg space-y-2 text-left">
               {pendingCases().map((c) => (
-                <div key={c.research_id} className="bg-secondary flex items-center gap-3 rounded-md border px-3.5 py-2.5">
+                <div key={c.research_id} className="bg-secondary flex flex-wrap items-center gap-3 rounded-md border px-3.5 py-2.5">
                   <span className="text-primary font-mono font-bold">{c.research_id}</span>
-                  <span className="text-muted-foreground flex-1 text-[11.5px]">{c.nurse || '—'} · {iwgdfText(c)}</span>
+                  <span className="text-muted-foreground min-w-0 flex-1 text-[11.5px]">{c.nurse || '—'} · {iwgdfText(c)}</span>
                   <Button size="sm" onClick={() => startSession(c.research_id, mode === 'live')}>ถ่ายภาพเคสนี้</Button>
                 </div>
               ))}
@@ -345,7 +345,7 @@ export default function Capture() {
                   {qc.status === 'failed' && <span className="text-destructive">✗ preprocessing ล้มเหลว: {qc.error || ''} — ควรถ่ายใหม่</span>}
                 </span>
               </div>
-              <div className="grid grid-cols-2 gap-4.5">
+              <div className="grid grid-cols-1 gap-4.5 sm:grid-cols-2">
                 {(['L', 'R'] as const).map((side) => (
                   <Card key={side} className="overflow-hidden p-0">
                     <div className="flex items-center gap-2.5 border-b px-4 py-3">
