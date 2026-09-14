@@ -7,10 +7,11 @@ Route contracts are unchanged from the file-based version except for two additio
   - GET/POST /api/nurses  the nurse-name dropdown now comes from the `nurses` table instead of a
                           hardcoded JS array, so it can be edited without a code change
 
-Research IDs are minted by db.next_research_id() (server.py's /api/session/new calls it) and
-counted across both CRF-only and photographed-only cases — a case whose form is filled at the
-clinic must not have its id reused by the capture station later that day. See db.py for the
-authoritative counter (replaces the old dual committed_max()/crf_max() file-scan).
+Research IDs are minted when the form is SAVED, not when it is opened: POST /api/crf with no
+`pid` mints the next id inside the same transaction that writes the form (db.save_crf). Opening
+the form page and walking away therefore burns no id. Ids are counted across both CRF-only and
+photographed-only cases — a case whose form is filled at the clinic must not have its id reused
+by the capture station later that day. See db.py for the authoritative counter.
 """
 from __future__ import annotations
 
@@ -37,7 +38,7 @@ def crf_max() -> int:
 
 
 class CrfRecord(BaseModel):
-    pid: str
+    pid: str = ""      # empty = new case, server mints the id
     nurse: str = ""
     nurse2: str = ""
     savedAt: str = ""
@@ -60,18 +61,21 @@ def get_record(pid: str):
 
 @router.post("")
 def save_record(rec: CrfRecord):
-    """Create or overwrite one case. Overwrite is intended — editing a case is normal."""
-    if not rec.pid.startswith("P"):
+    """Create or overwrite one case. Overwrite is intended — editing a case is normal.
+
+    Omit `pid` to create a new case: the server mints the research id and returns it in the saved
+    record, which is the only place the client learns it. Sending a `pid` edits that case."""
+    if rec.pid and not rec.pid.startswith("P"):
         raise HTTPException(400, "pid must look like P0001")
     saved_at = rec.savedAt or now_iso()
     data = rec.data or {}
-    db.save_crf(
-        pid=rec.pid, nurse=rec.nurse, nurse2=rec.nurse2, saved_at=saved_at,
+    pid = db.save_crf(
+        pid=rec.pid or None, nurse=rec.nurse, nurse2=rec.nurse2, saved_at=saved_at,
         fields=data.get("fields", {}), derived=data.get("derived", {}),
         schema_version=SCHEMA_VERSION,
     )
-    db.log_audit(rec.pid, "crf_save")
-    return db.get_crf(rec.pid)
+    db.log_audit(pid, "crf_save")
+    return db.get_crf(pid)
 
 
 def _has_photos(pid: str) -> bool:

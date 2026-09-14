@@ -41,7 +41,8 @@ npm run build        # production build -> ../static/ (what the backend actually
 
 1. **เข้าสู่ระบบ** — one shared team password (not per-nurse accounts; the CRF form's own
    nurse/nurse2 fields handle attribution).
-2. **กรอกฟอร์มใหม่** (CRF-07) — server mints the next Research ID (`P0001`, `P0002`, ...). Answers
+2. **กรอกฟอร์มใหม่** (CRF-07) — the server mints the next Research ID (`P0001`, `P0002`, ...) when the
+   form is **saved**, not when it is opened, so an abandoned half-filled form costs no id. Answers
    for LOPS (monofilament), PAD (ABI/TBI), deformity, and history are scored live into an IWGDF
    category (0–3) and a Positive/Negative label per foot.
 3. **ถ่ายภาพ** — a case must have a saved form first (409 otherwise). Capturing **podoscope**
@@ -122,8 +123,8 @@ Full per-endpoint detail (payload/response/who calls it) is in
 | POST   | `/api/login` / `/api/logout` | shared team password session                       |
 | GET    | `/api/session`             | is the current cookie valid — no auth needed          |
 | GET    | `/api/cases`               | cases that have a CRF form, with capture status       |
-| POST   | `/api/session/new`         | mint next Research ID                                 |
-| GET/POST/DELETE `/api/crf[/{pid}]` | CRF-07 form CRUD                              |
+| POST   | `/api/session/new`         | reserve an id up front — no longer used by the UI     |
+| GET/POST/DELETE `/api/crf[/{pid}]` | CRF-07 form CRUD; POST without `pid` mints the id |
 | GET/POST `/api/nurses`     | nurse-name dropdown source                            |
 | POST   | `/api/capture`             | grab one modality, write raw (409 without a CRF form) |
 | POST   | `/api/preprocess`          | segment + L/R + CLAHE the podoscope raw               |
@@ -134,7 +135,7 @@ Full per-endpoint detail (payload/response/who calls it) is in
 
 ## Tests
 
-Backend (pytest, isolated SQLite DB per test — never touches the real `data/`), 51 tests:
+Backend (pytest, isolated SQLite DB per test — never touches the real `data/`), 66 tests:
 
 ```bash
 pip install -r requirements.txt -r requirements-dev.txt   # first time only

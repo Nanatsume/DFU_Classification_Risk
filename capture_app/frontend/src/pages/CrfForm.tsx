@@ -88,8 +88,8 @@ export default function CrfForm() {
     [fields],
   )
   const missing = useMemo(
-    () => overallMissing(pid, fields, nurse, nurse2, evals),
-    [pid, fields, nurse, nurse2, evals],
+    () => overallMissing(fields, nurse, nurse2, evals),
+    [fields, nurse, nurse2, evals],
   )
   const dupNurse = !!nurse && nurse === nurse2
 
@@ -111,12 +111,9 @@ export default function CrfForm() {
           alert('โหลดเคส ' + editPid + ' ไม่สำเร็จ — เริ่มเคสใหม่แทน')
         }
       }
-      try {
-        const s = await api<{ research_id: string }>('/api/session/new', {})
-        setPid(s.research_id)
-      } catch {
-        setPidNote('ขอรหัสวิจัยจากเซิร์ฟเวอร์ไม่ได้ — ตรวจสอบการเชื่อมต่อ')
-      }
+      // New case: no id is requested here on purpose. The server mints it when the form is
+      // saved, so opening this page and walking away costs nothing.
+      setPidNote('ระบบจะออกรหัสให้อัตโนมัติเมื่อกดบันทึก')
     })()
   }, [])
 
@@ -130,8 +127,10 @@ export default function CrfForm() {
       derived: { L: toDerived(evals.L), R: toDerived(evals.R) },
     }
     try {
-      await api('/api/crf', { pid, nurse, nurse2, savedAt: new Date().toISOString(), data })
-      location.href = 'crf-detail.html?pid=' + encodeURIComponent(pid)
+      // pid is '' for a new case — the server mints it and returns the saved record; that
+      // response is the only place the client learns the id.
+      const saved = await api<CrfRecord>('/api/crf', { pid, nurse, nurse2, savedAt: new Date().toISOString(), data })
+      location.href = 'crf-detail.html?pid=' + encodeURIComponent(saved.pid)
     } catch {
       alert('บันทึกไม่สำเร็จ — ตรวจสอบว่าต่อกับเซิร์ฟเวอร์อยู่แล้วลองอีกครั้ง')
       setSaving(false)
@@ -156,7 +155,7 @@ export default function CrfForm() {
           </div>
           <div>
             <div className="font-mono text-[11px] tracking-[0.14em] text-[#7fb3b8] uppercase">รหัสวิจัย</div>
-            <div className="mt-1 rounded bg-[#1d3241] px-3 py-1.5 font-mono text-base text-[#8fdae4]">{pid || '…'}</div>
+            <div className="mt-1 rounded bg-[#1d3241] px-3 py-1.5 font-mono text-base text-[#8fdae4]">{pid || 'ออกให้เมื่อบันทึก'}</div>
             {pidNote && <div className="mt-1 font-mono text-[10.5px] text-[#5f8f97]">{pidNote}</div>}
           </div>
         </div>

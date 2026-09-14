@@ -43,6 +43,29 @@ def test_save_crf_creates_case_row_too(tmp_db):
     assert tmp_db.next_research_id() == "P0008"
 
 
+def test_save_crf_mints_when_pid_is_none(tmp_db):
+    """A new case has no id until its form is written; save_crf mints inside the same transaction
+    and returns it, so an id can never exist without the form it belongs to."""
+    pid = tmp_db.save_crf(None, "A", "B", "t", fields={}, derived={}, schema_version="1.0")
+    assert pid == "P0001"
+    assert tmp_db.get_crf("P0001") is not None
+    assert tmp_db.save_crf(None, "A", "B", "t", fields={}, derived={}, schema_version="1.0") == "P0002"
+
+
+def test_save_crf_returns_the_pid_it_was_given(tmp_db):
+    assert tmp_db.save_crf("P0042", "A", "B", "t", fields={}, derived={},
+                           schema_version="1.0") == "P0042"
+
+
+def test_deleted_form_does_not_free_its_id(tmp_db):
+    """delete_crf leaves the `cases` row on purpose — that row is what stops a second patient
+    from being handed an id that already appears in the audit log."""
+    tmp_db.save_crf(None, "A", "B", "t", fields={}, derived={}, schema_version="1.0")
+    tmp_db.delete_crf("P0001")
+    assert tmp_db.save_crf(None, "A", "B", "t", fields={}, derived={},
+                           schema_version="1.0") == "P0002"
+
+
 def test_save_crf_overwrites_on_conflict(tmp_db):
     tmp_db.save_crf("P0001", "A", "B", "t1", fields={"note": "first"}, derived={}, schema_version="1.0")
     tmp_db.save_crf("P0001", "A", "B", "t2", fields={"note": "second"}, derived={}, schema_version="1.0")

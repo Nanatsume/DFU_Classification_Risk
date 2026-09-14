@@ -239,34 +239,34 @@ describe('overallMissing', () => {
   const evalBoth = (fields: Fields) => ({ L: evalSide(fields, 'L' as const), R: evalSide(fields, 'R' as const) })
 
   it('a fully completed form with distinct nurses has no missing items', () => {
-    const missing = overallMissing('P0001', fullFields, 'Nurse A', 'Nurse B', evalBoth(fullFields))
+    const missing = overallMissing(fullFields, 'Nurse A', 'Nurse B', evalBoth(fullFields))
     expect(missing).toEqual([])
   })
 
-  it('flags a missing research id', () => {
-    const missing = overallMissing('', fullFields, 'Nurse A', 'Nurse B', evalBoth(fullFields))
-    expect(missing).toContain('รหัสวิจัย')
+  it('never asks for a research id — the server mints it on save', () => {
+    const missing = overallMissing(fullFields, 'Nurse A', 'Nurse B', evalBoth(fullFields))
+    expect(missing).not.toContain('รหัสวิจัย')
   })
 
   it('flags missing CKD answer', () => {
     const fields = { ...fullFields, ckd: undefined }
-    const missing = overallMissing('P0001', fields, 'Nurse A', 'Nurse B', evalBoth(fields))
+    const missing = overallMissing(fields, 'Nurse A', 'Nurse B', evalBoth(fields))
     expect(missing).toContain('ไตวายระยะสุดท้าย (CKD stage 5)')
   })
 
   it('flags missing nurse(s)', () => {
-    const missing = overallMissing('P0001', fullFields, '', '', evalBoth(fullFields))
+    const missing = overallMissing(fullFields, '', '', evalBoth(fullFields))
     expect(missing).toContain('พยาบาลผู้ตรวจ')
   })
 
   it('flags duplicate nurse selection', () => {
-    const missing = overallMissing('P0001', fullFields, 'Same Person', 'Same Person', evalBoth(fullFields))
+    const missing = overallMissing(fullFields, 'Same Person', 'Same Person', evalBoth(fullFields))
     expect(missing).toContain('พยาบาลผู้ตรวจซ้ำกัน')
   })
 
   it('propagates per-side missing items with a Thai side label prefix', () => {
     const fields = { ...fullFields, abi_L: undefined }
-    const missing = overallMissing('P0001', fields, 'A', 'B', evalBoth(fields))
+    const missing = overallMissing(fields, 'A', 'B', evalBoth(fields))
     expect(missing).toContain('เท้าซ้าย: ABI')
   })
 })

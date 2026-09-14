@@ -1,6 +1,6 @@
 ---
 name: api-post-session-new
-description: "POST /api/session/new — mints and reserves the next research id (P0001, P0002, ...)"
+description: "POST /api/session/new — reserves the next research id up front; no longer used by the UI (ids are minted on save)"
 metadata:
   type: reference
 ---
@@ -9,7 +9,7 @@ metadata:
 
 **Method**: POST — ต้อง auth
 
-**เรียกใช้จากไฟล์ไหนบ้าง**: [[pages-CrfForm]] (ตอนเปิดฟอร์มใหม่ ไม่ใช่โหมดแก้ไข)
+**เรียกใช้จากไฟล์ไหนบ้าง**: **ไม่มีหน้าไหนเรียกแล้ว** — [[pages-CrfForm]] เคยเรียกตอนเปิดฟอร์มใหม่ แต่เลิกแล้ว เพราะการจองรหัสตั้งแต่เปิดหน้าทำให้เกิดเคสเปล่าทุกครั้งที่เปิดแล้วปิดทิ้ง ตอนนี้รหัสถูก mint ตอนกดบันทึกแทน (ดู [[api-post-crf]]) endpoint นี้เก็บไว้เผื่อ client ภายนอก/ทดสอบ
 
 **ส่งข้อมูลอะไรไป (payload)**: ไม่มี body
 

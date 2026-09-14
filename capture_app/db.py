@@ -174,14 +174,23 @@ def upsert_case(research_id: str, created_at: Optional[str] = None) -> None:
         )
 
 
+def _next_rid(conn: sqlite3.Connection) -> str:
+    """High-water mark over `cases`, inside a caller-supplied transaction. `cases` (not
+    `crf_forms`) is the basis on purpose: deleting a form leaves its case row behind, and that row
+    is what stops the id from ever being handed out a second time."""
+    row = conn.execute(
+        "SELECT MAX(CAST(SUBSTR(research_id, 2) AS INTEGER)) AS m FROM cases "
+        "WHERE research_id GLOB 'P[0-9]*'"
+    ).fetchone()
+    return f"P{(row['m'] or 0) + 1:04d}"
+
+
 def next_research_id() -> str:
+    """Peek at the id the next case would get. Callers that actually create a case must mint
+    inside their own transaction (see save_crf) — this is a read-only preview and two concurrent
+    callers will see the same value."""
     with tx() as conn:
-        row = conn.execute(
-            "SELECT MAX(CAST(SUBSTR(research_id, 2) AS INTEGER)) AS m FROM cases "
-            "WHERE research_id GLOB 'P[0-9]*'"
-        ).fetchone()
-        n = (row["m"] or 0) + 1
-        return f"P{n:04d}"
+        return _next_rid(conn)
 
 
 def list_cases_with_status() -> list[dict]:
@@ -242,11 +251,20 @@ def _crf_row_to_dict(row: sqlite3.Row) -> dict:
     }
 
 
-def save_crf(pid: str, nurse: str, nurse2: str, saved_at: str, fields: dict, derived: dict,
-             schema_version: str) -> None:
-    """fields_json and derived_json are written together in one statement — derived is a cache of
+def save_crf(pid: Optional[str], nurse: str, nurse2: str, saved_at: str, fields: dict,
+             derived: dict, schema_version: str) -> str:
+    """Create or overwrite one case's form, returning its research id.
+
+    `pid` is None/empty for a brand-new case: the id is minted *inside this transaction*, so the
+    id only ever comes into existence together with the form it belongs to. Abandoning a
+    half-filled form therefore costs nothing — nothing was reserved. Minting in the same
+    transaction as the INSERT is also what makes two nurses saving at the same moment safe; a
+    mint-then-insert in two steps would hand both of them the same number.
+
+    fields_json and derived_json are written together in one statement — derived is a cache of
     evalSide() output and must never drift out of sync with fields."""
     with tx() as conn:
+        pid = pid or _next_rid(conn)
         conn.execute(
             "INSERT INTO cases(research_id, created_at) VALUES (?, ?) "
             "ON CONFLICT(research_id) DO NOTHING",
@@ -264,6 +282,7 @@ def save_crf(pid: str, nurse: str, nurse2: str, saved_at: str, fields: dict, der
             (pid, nurse, nurse2, saved_at, json.dumps(fields, ensure_ascii=False),
              json.dumps(derived, ensure_ascii=False), schema_version),
         )
+    return pid
 
 
 def delete_crf(pid: str) -> bool:

@@ -119,6 +119,39 @@ def test_crf_save_and_get(auth_client):
     assert r.json()["pid"] == "P0001"
 
 
+def test_crf_save_without_pid_mints_the_id(auth_client):
+    """The form page sends no pid for a new case — the server mints it and hands it back in the
+    saved record, which is the only place the client learns it."""
+    payload = {k: v for k, v in crf_payload("P0001").items() if k != "pid"}
+    r = auth_client.post("/api/crf", json=payload)
+    assert r.status_code == 200
+    assert r.json()["pid"] == "P0001"
+    assert auth_client.get("/api/crf/P0001").status_code == 200
+
+
+def test_crf_save_without_pid_advances_each_time(auth_client):
+    payload = {k: v for k, v in crf_payload("P0001").items() if k != "pid"}
+    ids = [auth_client.post("/api/crf", json=payload).json()["pid"] for _ in range(3)]
+    assert ids == ["P0001", "P0002", "P0003"]
+
+
+def test_opening_a_form_without_saving_burns_no_id(auth_client):
+    """Regression: the form page used to reserve an id on mount, so abandoning a half-filled form
+    left a case row with no form behind and the next patient got a gap in the sequence."""
+    before = auth_client.get("/api/health").json()["next_id"]
+    payload = {k: v for k, v in crf_payload("P0001").items() if k != "pid"}
+    assert auth_client.get("/api/health").json()["next_id"] == before
+    assert auth_client.post("/api/crf", json=payload).json()["pid"] == before
+
+
+def test_crf_save_with_pid_still_edits_that_case(auth_client):
+    """Sending a pid is the edit path and must not mint anything new."""
+    auth_client.post("/api/crf", json=crf_payload("P0001"))
+    r = auth_client.post("/api/crf", json=crf_payload("P0001"))
+    assert r.json()["pid"] == "P0001"
+    assert [row["pid"] for row in auth_client.get("/api/crf").json()] == ["P0001"]
+
+
 def test_crf_get_missing_pid_404(auth_client):
     r = auth_client.get("/api/crf/P9999")
     assert r.status_code == 404
