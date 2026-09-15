@@ -36,6 +36,15 @@ def client(tmp_path, monkeypatch):
     monkeypatch.setattr(db, "DATA_DIR", tmp_path)
     monkeypatch.setattr(db, "DB_PATH", tmp_path / "app.db")
     monkeypatch.setenv("APP_PASSWORD", "test-password-123")
+    # Point the demo folder at an empty directory so SimulatedSource falls back to the small
+    # sample/P001.png. The committed rig captures are 1920x1080 and tripled the suite's runtime
+    # the moment they existed — tests should exercise the path, not the megapixels.
+    #
+    # setattr, not setenv: capture_source reads DEMO_IMAGE_DIR once at import, and it is already
+    # imported by the time this fixture runs (only `server` is re-imported below).
+    import capture_source
+
+    monkeypatch.setattr(capture_source, "DEMO_IMAGE_DIR", str(tmp_path / "no-demo-images"))
     monkeypatch.setenv("PYTHONIOENCODING", "utf-8")
 
     # server.py (and its `import db` inside) must be (re)imported now, against the patched path.

@@ -244,7 +244,7 @@ def test_camera_status_says_plainly_when_it_is_simulated(auth_client):
     against a real case."""
     body = auth_client.get("/api/camera").json()
     assert body["mode"] == "sim"
-    assert "จำลอง" in body["error"]
+    assert "จำลอง" in body["error"] or "ทดสอบ" in body["error"]
 
 
 def test_camera_status_reports_a_connected_camera(auth_client, monkeypatch):
@@ -283,6 +283,50 @@ def test_camera_status_reports_an_unplugged_camera_with_what_it_did_see(auth_cli
 
 def test_camera_status_requires_login(client):
     assert client.get("/api/camera").status_code == 401
+
+
+def test_camera_mode_can_be_switched_at_runtime(auth_client):
+    """Switching from the browser is what makes the demo usable: the person who wants to see the
+    pipeline run is in the app, not at a terminal with the server's environment."""
+    body = auth_client.post("/api/camera/mode", json={"mode": "usb"}).json()
+    assert body["mode"] == "usb"
+    body = auth_client.post("/api/camera/mode", json={"mode": "sim"}).json()
+    assert body["mode"] == "sim"
+    assert auth_client.get("/api/camera").json()["mode"] == "sim"
+
+
+def test_camera_mode_rejects_anything_else(auth_client):
+    assert auth_client.post("/api/camera/mode", json={"mode": "pretend"}).status_code == 400
+
+
+def test_demo_mode_says_how_many_real_rig_images_it_will_serve(auth_client, monkeypatch):
+    """conftest points DEMO_IMAGE_DIR at an empty folder to keep the suite fast, so this one opts
+    back in to the committed rig captures."""
+    import capture_source
+    from pathlib import Path
+
+    monkeypatch.setattr(capture_source, "DEMO_IMAGE_DIR",
+                        str(Path(capture_source._HERE) / "sample" / "demo"))
+    body = auth_client.post("/api/camera/mode", json={"mode": "sim"}).json()
+    assert body["demo_images"] >= 1
+    assert "ทดสอบ" in body["error"]
+
+
+def test_demo_source_walks_through_the_images_rather_than_repeating_one(tmp_path, monkeypatch):
+    """Pressing capture twice in demo mode should show two different feet — otherwise the panel
+    looks stuck rather than like a second case."""
+    import capture_source
+
+    for i, colour in enumerate((10, 200)):
+        import numpy as np
+        from PIL import Image
+        Image.fromarray(np.full((8, 8, 3), colour, dtype=np.uint8)).save(tmp_path / f"{i}.png")
+    monkeypatch.setattr(capture_source, "DEMO_IMAGE_DIR", str(tmp_path))
+
+    src = capture_source.SimulatedSource()
+    first, second, third = (src.grab("podoscope", "P0001") for _ in range(3))
+    assert first != second
+    assert third == first          # wraps around rather than running out
 
 
 # ---------- backup status ----------

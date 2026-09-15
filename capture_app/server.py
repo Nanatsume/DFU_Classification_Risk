@@ -44,8 +44,8 @@ from pydantic import BaseModel
 
 import auth
 import db
-from capture_source import (CaptureError, UsbCameraSource, get_source,
-                            list_video_devices, resolve_podoscope_index)
+from capture_source import (CaptureError, SimulatedSource, UsbCameraSource, demo_images,
+                            get_source, list_video_devices, resolve_podoscope_index)
 from preprocessing import preprocess_foot_image
 from crf_store import router as crf_router
 from roi_store import router as roi_router
@@ -124,6 +124,10 @@ class CommitReq(BaseModel):
 
 class StartCaseReq(BaseModel):
     hn: str
+
+
+class CameraModeReq(BaseModel):
+    mode: str            # "sim" | "usb"
 
 
 @app.get("/api/health")
@@ -215,8 +219,13 @@ def camera_status():
     """
     simulated = not isinstance(SOURCE, UsbCameraSource)
     if simulated:
+        n = len(demo_images())
         return {"mode": "sim", "connected": True, "name": None, "devices": [],
-                "error": "โหมดจำลอง — ภาพที่ได้เป็นไฟล์ตัวอย่าง ไม่ใช่ภาพจากกล้องจริง"}
+                "demo_images": n,
+                "error": ("โหมดทดสอบ — ใช้ภาพจากกล้องโพโดสโคปที่ถ่ายไว้แล้ว "
+                          f"{n} ภาพ ไม่ใช่ภาพผู้ป่วยที่อยู่ตรงหน้า"
+                          if n else
+                          "โหมดจำลอง — ภาพที่ได้เป็นไฟล์ตัวอย่าง ไม่ใช่ภาพจากกล้องจริง")}
 
     devices = list_video_devices()
     try:
@@ -227,6 +236,28 @@ def camera_status():
     name = devices[index] if index < len(devices) else f"index {index}"
     return {"mode": "usb", "connected": True, "name": name, "index": index,
             "devices": devices, "error": None}
+
+
+@app.post("/api/camera/mode", dependencies=[require_session])
+def set_camera_mode(req: CameraModeReq):
+    """Switch between the real camera and the demo images without restarting the server.
+
+    The demo source serves real captures from the podoscope rig (sample/demo), so the whole path
+    — capture, segmentation, the L/R panel — can be exercised and looked at on a machine with no
+    camera attached. Switching at runtime rather than through an env var is what makes that
+    usable: the person who wants to see it is in the browser, not at a terminal.
+
+    Deliberately not persisted. A restart always comes back on whatever CAPTURE_SOURCE says, so
+    an afternoon of demoing cannot quietly leave the clinic station in simulation the next
+    morning — which is precisely how a demo footprint got filed against a real case before.
+    """
+    global SOURCE
+    mode = req.mode.strip().lower()
+    if mode not in ("sim", "usb"):
+        raise HTTPException(400, "mode must be 'sim' or 'usb'")
+    SOURCE = UsbCameraSource() if mode == "usb" else SimulatedSource()
+    db.log_audit(None, "camera_mode", mode)
+    return camera_status()
 
 
 @app.get("/api/unfinished", dependencies=[require_session])

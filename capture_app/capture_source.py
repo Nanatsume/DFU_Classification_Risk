@@ -29,19 +29,48 @@ class CaptureSource:
         raise NotImplementedError
 
 
-SAMPLE_PODO = os.path.join(os.path.dirname(os.path.abspath(__file__)), "sample", "P001.png")
+_HERE = os.path.dirname(os.path.abspath(__file__))
+SAMPLE_PODO = os.path.join(_HERE, "sample", "P001.png")
+# Real captures from the podoscope rig, committed so the demo shows what the pipeline actually
+# does with the hospital's own images rather than with a stand-in. Served in filename order, one
+# per capture, wrapping around — so repeated presses walk through the set instead of returning the
+# same frame. Point DEMO_IMAGE_DIR elsewhere to try a different batch without touching the code.
+DEMO_IMAGE_DIR = os.environ.get("DEMO_IMAGE_DIR", os.path.join(_HERE, "sample", "demo"))
+
+
+def demo_images() -> list[str]:
+    if not os.path.isdir(DEMO_IMAGE_DIR):
+        return []
+    return sorted(
+        os.path.join(DEMO_IMAGE_DIR, f)
+        for f in os.listdir(DEMO_IMAGE_DIR)
+        if f.lower().endswith((".png", ".jpg", ".jpeg"))
+    )
 
 
 class SimulatedSource(CaptureSource):
-    """Stands in for the USB cameras with no hardware. The podoscope returns a real sample
-    footprint so the preprocessing pipeline produces meaningful output for QC and the demo;
-    the thermal returns a labelled placeholder."""
+    """Stands in for the USB cameras with no hardware.
+
+    The podoscope returns a real photograph — one of the rig captures under sample/demo if any are
+    present, otherwise the older single sample — so preprocessing produces meaningful output and
+    the QC panel shows real segmented feet. The thermal returns a labelled placeholder.
+    """
+
+    def __init__(self) -> None:
+        self._next = 0
 
     def grab(self, modality: str, rid: str) -> bytes:
         from PIL import Image, ImageDraw
-        if modality == "podoscope" and os.path.exists(SAMPLE_PODO):
-            with open(SAMPLE_PODO, "rb") as f:
-                return f.read()
+        if modality == "podoscope":
+            images = demo_images()
+            if images:
+                path = images[self._next % len(images)]
+                self._next += 1
+                with open(path, "rb") as f:
+                    return f.read()
+            if os.path.exists(SAMPLE_PODO):
+                with open(SAMPLE_PODO, "rb") as f:
+                    return f.read()
         W, H = 640, 480
         img = Image.new("RGB", (W, H), (11, 15, 22))
         d = ImageDraw.Draw(img)

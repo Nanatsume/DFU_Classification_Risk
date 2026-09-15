@@ -102,6 +102,7 @@ type CameraStatus = {
   connected: boolean
   name: string | null
   devices: string[]
+  demo_images?: number
   error: string | null
 }
 
@@ -111,10 +112,12 @@ type CameraStatus = {
  *  exactly like working — a photograph of a foot appears, just not this patient's — and an
  *  unplugged camera only says so after a patient has already been positioned. It polls so the
  *  strip turns green by itself when the cable goes in, rather than needing the page reloaded. */
-function CameraStrip({ status, onRecheck, checking }: {
+function CameraStrip({ status, onRecheck, checking, onSetMode, switching }: {
   status: CameraStatus | null
   onRecheck: () => void
   checking: boolean
+  onSetMode: (mode: 'sim' | 'usb') => void
+  switching: boolean
 }) {
   if (!status) return null
 
@@ -133,14 +136,27 @@ function CameraStrip({ status, onRecheck, checking }: {
       <div className="flex flex-wrap items-center gap-2.5">
         <span className={`h-2.5 w-2.5 shrink-0 rounded-full ${tone.dot}`} />
         <span className={`text-[13.5px] font-bold ${tone.text}`}>{headline}</span>
-        <Button size="sm" variant="outline" className="ml-auto" onClick={onRecheck} disabled={checking}>
-          {checking ? 'กำลังตรวจ…' : 'ตรวจใหม่'}
-        </Button>
+        <div className="ml-auto flex gap-2">
+          {status.mode === 'usb' ? (
+            <Button size="sm" variant="outline" onClick={() => onSetMode('sim')} disabled={switching}>
+              ใช้ภาพทดสอบ
+            </Button>
+          ) : (
+            <Button size="sm" variant="outline" onClick={() => onSetMode('usb')} disabled={switching}>
+              กลับไปใช้กล้องจริง
+            </Button>
+          )}
+          <Button size="sm" variant="outline" onClick={onRecheck} disabled={checking}>
+            {checking ? 'กำลังตรวจ…' : 'ตรวจใหม่'}
+          </Button>
+        </div>
       </div>
       {status.mode === 'sim' && (
         <p className="text-muted-foreground mt-1.5 text-[11.5px]">
-          ภาพที่ได้เป็นไฟล์ตัวอย่าง ไม่ใช่ภาพผู้ป่วย — ใช้ทดลองระบบเท่านั้น
-          ถ้าจะเก็บข้อมูลจริงต้องรันเซิร์ฟเวอร์ด้วย <code className="font-mono">CAPTURE_SOURCE=usb</code>
+          {status.demo_images
+            ? `กดถ่ายแล้วจะได้ภาพจากกล้องโพโดสโคปที่ถ่ายเก็บไว้ (${status.demo_images} ภาพ วนไปเรื่อยๆ) แล้วรัน preprocessing จริง — ใช้ดูผลได้โดยไม่ต้องมีผู้ป่วย`
+            : 'ภาพที่ได้เป็นไฟล์ตัวอย่าง ไม่ใช่ภาพผู้ป่วย'}
+          {' '}อย่าใช้เก็บข้อมูลจริง
         </p>
       )}
       {status.mode === 'usb' && !status.connected && (
@@ -168,6 +184,7 @@ export default function Capture() {
   const [camera, setCamera] = useState<CameraStatus | null>(null)
   const [checkingCamera, setCheckingCamera] = useState(false)
   const [unfinished, setUnfinished] = useState<UnfinishedCase[]>([])
+  const [switchingMode, setSwitchingMode] = useState(false)
   const [shots, setShots] = useState<Record<Modality, boolean>>({ podoscope: false, thermal: false })
   const [previews, setPreviews] = useState<Record<Modality, string | null>>({ podoscope: null, thermal: null })
   const [qc, setQc] = useState<{ status: 'idle' | 'running' | 'ok' | 'failed'; left?: string; right?: string; error?: string }>({ status: 'idle' })
@@ -244,6 +261,17 @@ export default function Capture() {
     return () => clearInterval(t)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  async function setCameraMode(mode: 'sim' | 'usb') {
+    setSwitchingMode(true)
+    try {
+      setCamera(await api<CameraStatus>('/api/camera/mode', { mode }))
+    } catch {
+      alert('สลับโหมดไม่สำเร็จ')
+    } finally {
+      setSwitchingMode(false)
+    }
+  }
 
   async function refreshUnfinished() {
     try {
@@ -372,7 +400,13 @@ export default function Capture() {
         </div>
       </div>
 
-      <CameraStrip status={camera} onRecheck={() => checkCamera(true)} checking={checkingCamera} />
+      <CameraStrip
+        status={camera}
+        onRecheck={() => checkCamera(true)}
+        checking={checkingCamera}
+        onSetMode={setCameraMode}
+        switching={switchingMode}
+      />
 
       {!session ? (
         <Card className="mb-4.5 p-5">
