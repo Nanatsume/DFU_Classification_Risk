@@ -39,8 +39,9 @@ npm run build        # production build -> ../static/ (what the backend actually
 
 ## Flow
 
-1. **เข้าสู่ระบบ** — one shared team password (not per-nurse accounts; the CRF form's own
-   nurse/nurse2 fields handle attribution).
+1. **เข้าสู่ระบบ** — one shared team password. Note that nothing here records *who* examined a
+   patient or took a photograph: the study site asked that staff names not be stored, so the
+   rosters and the nurse/photographer fields were removed outright.
 2. **ถ่ายภาพ** (at the clinic) — type the patient's **HN** and press เริ่มเคส. The server mints the
    Research ID (`P0001`, `P0002`, ...) there and then, so every file is named for the research id
    from its first write and no hospital number ever reaches a filename. Capturing **podoscope**
@@ -69,8 +70,8 @@ npm run build        # production build -> ../static/ (what the backend actually
 
 ```
 data/
-  app.db            SQLite — source of truth for cases, CRF forms, captures, preprocessing,
-                     commits, ROI annotations, nurses, sessions, settings, audit log
+  app.db            SQLite — source of truth for cases (incl. the HN), CRF forms, captures,
+                     preprocessing, commits, ROI annotations, sessions, settings, audit log
   podo/P0001/
     raw/            P0001_podo.png                        raw podoscope (source of truth)
     preprocessing/  P0001_podo_L.png       P0001_podo_R.png        S1, 224×224, training input
