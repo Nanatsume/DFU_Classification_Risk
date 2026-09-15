@@ -89,6 +89,14 @@ function toDisplay(x: CommitRecord | ManifestRow): DisplayRow {
   }
 }
 
+type UnfinishedCase = {
+  research_id: string
+  hn: string
+  created_at: string
+  has_podo: boolean
+  has_thermal: boolean
+}
+
 type CameraStatus = {
   mode: 'usb' | 'sim'
   connected: boolean
@@ -159,6 +167,7 @@ export default function Capture() {
   const [starting, setStarting] = useState(false)
   const [camera, setCamera] = useState<CameraStatus | null>(null)
   const [checkingCamera, setCheckingCamera] = useState(false)
+  const [unfinished, setUnfinished] = useState<UnfinishedCase[]>([])
   const [shots, setShots] = useState<Record<Modality, boolean>>({ podoscope: false, thermal: false })
   const [previews, setPreviews] = useState<Record<Modality, string | null>>({ podoscope: null, thermal: null })
   const [qc, setQc] = useState<{ status: 'idle' | 'running' | 'ok' | 'failed'; left?: string; right?: string; error?: string }>({ status: 'idle' })
@@ -219,6 +228,7 @@ export default function Capture() {
       const res = await api<{ research_id: string }>('/api/session/start', { hn: value })
       setSession({ rid: res.research_id, startedAt: nowISO(), caseInfo: null, hn: value })
       setHn('')
+      refreshUnfinished()
     } catch {
       alert('เริ่มเคสไม่สำเร็จ — ตรวจสอบการเชื่อมต่อแล้วลองใหม่')
     } finally {
@@ -228,11 +238,20 @@ export default function Capture() {
 
   // Poll while this page is open: plugging the camera in should be enough, without a reload.
   useEffect(() => {
+    refreshUnfinished()
     checkCamera()
     const t = setInterval(() => checkCamera(), 5000)
     return () => clearInterval(t)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  async function refreshUnfinished() {
+    try {
+      setUnfinished(await api<UnfinishedCase[]>('/api/unfinished'))
+    } catch {
+      setUnfinished([])
+    }
+  }
 
   async function checkCamera(manual = false) {
     if (manual) setCheckingCamera(true)
@@ -243,6 +262,10 @@ export default function Capture() {
     } finally {
       if (manual) setCheckingCamera(false)
     }
+  }
+
+  function resumeCase(c: UnfinishedCase) {
+    setSession({ rid: c.research_id, startedAt: c.created_at, caseInfo: null, hn: c.hn })
   }
 
   async function startSession(rid: string, liveMode: boolean) {
@@ -323,6 +346,7 @@ export default function Capture() {
     setJustCommittedRid(rid)
     setJustCommittedNeedsRoi(needsRoi)
     setSession(null)
+    await refreshUnfinished()
     await refreshSaved(mode === 'live')
     await refreshCasesAndPicker(mode === 'live')
   }
@@ -352,6 +376,35 @@ export default function Capture() {
 
       {!session ? (
         <Card className="mb-4.5 p-5">
+          {unfinished.length > 0 && (
+            // A case whose id and HN are already in the database but whose photographs are not
+            // done. Shown before the "new case" box on purpose: someone returning to this page
+            // almost always means to finish what they started, and starting again would mint a
+            // second id for the same patient.
+            <div className="border-cat-2 bg-cat-2/5 mx-auto mb-6 max-w-md rounded-md border border-l-[5px] p-4">
+              <div className="text-[14px] font-bold">เคสค้างอยู่ · {unfinished.length} เคส</div>
+              <p className="text-muted-foreground mt-0.5 mb-3 text-[11.5px]">
+                เริ่มเคสไว้แล้วแต่ยังถ่ายไม่ครบ — กดถ่ายต่อได้เลย ไม่ต้องกรอก HN ใหม่
+              </p>
+              <div className="space-y-2">
+                {unfinished.map((c) => {
+                  const t = new Date(c.created_at)
+                  return (
+                    <div key={c.research_id} className="bg-card flex flex-col gap-2 rounded border px-3 py-2 sm:flex-row sm:items-center sm:gap-3">
+                      <span className="text-primary font-mono text-[13px] font-bold">{c.research_id}</span>
+                      <span className="font-mono text-[12.5px] font-semibold text-[#a8762c]">HN {c.hn}</span>
+                      <span className="text-muted-foreground text-[11px] sm:min-w-0 sm:flex-1">
+                        {isNaN(t.getTime()) ? '' : t.toLocaleString('th-TH', { dateStyle: 'short', timeStyle: 'short' })}
+                        {' · '}{c.has_podo ? 'podo ✓' : 'podo —'}{' · '}{c.has_thermal ? 'thermal ✓' : 'thermal —'}
+                      </span>
+                      <Button size="sm" onClick={() => resumeCase(c)}>ถ่ายต่อ</Button>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          )}
+
           <div className="mx-auto max-w-md">
             <div className="text-[15px] font-bold">เริ่มเคสใหม่</div>
             <p className="text-muted-foreground mt-1 mb-3 text-[12.5px] leading-relaxed">

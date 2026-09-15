@@ -25,7 +25,7 @@ DEVICES = [
 
 @pytest.fixture()
 def devices(monkeypatch):
-    monkeypatch.setattr(cs, "list_video_devices", lambda: list(DEVICES))
+    monkeypatch.setattr(cs, "enumerate_video_devices", lambda: (list(DEVICES), None))
     monkeypatch.setattr(cs, "PODO_CAMERA_INDEX", "")
     monkeypatch.setattr(cs, "PODO_CAMERA_NAME", "Logi C615")
     return DEVICES
@@ -44,7 +44,8 @@ def test_does_not_fall_back_to_a_virtual_camera(devices, monkeypatch):
     """Regression guard: when the podoscope is unplugged the answer is an error, never index 0 or
     the first camera that happens to open. A silent fallback would file the laptop webcam's view
     of the room as a patient's foot."""
-    monkeypatch.setattr(cs, "list_video_devices", lambda: [d for d in DEVICES if "C615" not in d])
+    monkeypatch.setattr(cs, "enumerate_video_devices",
+                        lambda: ([d for d in DEVICES if "C615" not in d], None))
     with pytest.raises(cs.CaptureError) as e:
         cs.resolve_podoscope_index()
     assert "Logi C615" in str(e.value)
@@ -58,17 +59,23 @@ def test_explicit_index_overrides_the_name_lookup(devices, monkeypatch):
 
 def test_explicit_index_works_without_device_enumeration(monkeypatch):
     """The escape hatch has to work on a machine where pygrabber is missing — that is its job."""
-    monkeypatch.setattr(cs, "list_video_devices", list)
+    monkeypatch.setattr(cs, "enumerate_video_devices", lambda: ([], "pygrabber is not installed"))
     monkeypatch.setattr(cs, "PODO_CAMERA_INDEX", "2")
     assert cs.resolve_podoscope_index() == 2
 
 
 def test_no_enumeration_and_no_index_is_an_actionable_error(monkeypatch):
-    monkeypatch.setattr(cs, "list_video_devices", list)
+    """The reason is carried through rather than flattened into "no cameras". Enumeration failing
+    (COM not initialised on a FastAPI worker thread, say) and no camera being attached produce the
+    same empty list, and telling someone to plug in a camera that is already plugged in wastes the
+    minute when a patient is waiting."""
+    monkeypatch.setattr(cs, "enumerate_video_devices",
+                        lambda: ([], "OSError: CoInitialize has not been called"))
     monkeypatch.setattr(cs, "PODO_CAMERA_INDEX", "")
     with pytest.raises(cs.CaptureError) as e:
         cs.resolve_podoscope_index()
     assert "PODO_CAMERA_INDEX" in str(e.value)
+    assert "CoInitialize" in str(e.value)        # the real cause survives to the message
 
 
 def test_get_source_honours_capture_source_env(monkeypatch):

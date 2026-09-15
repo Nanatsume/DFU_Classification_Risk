@@ -280,6 +280,36 @@ def list_pending_crf() -> list[dict]:
              "has_podo": bool(r["has_podo"]), "has_thermal": bool(r["has_thermal"])} for r in rows]
 
 
+def list_unfinished_captures() -> list[dict]:
+    """Cases started at the clinic whose photographs are not complete yet.
+
+    Without this such a case is invisible: it has no CRF form, so it misses the transcription
+    queue, and it has no form either, so it misses the capture page's other picker. The case is
+    real — an id was minted and an HN recorded — but the only handle on it lived in the browser
+    tab's memory, so a refresh stranded it with a patient's HN attached and no way back to it.
+    """
+    with tx() as conn:
+        rows = conn.execute(
+            """
+            SELECT c.research_id, c.hn, c.created_at,
+                   EXISTS(SELECT 1 FROM captures WHERE research_id=c.research_id AND modality='podoscope') AS has_podo,
+                   EXISTS(SELECT 1 FROM captures WHERE research_id=c.research_id AND modality='thermal') AS has_thermal
+            FROM cases c
+            LEFT JOIN crf_forms f ON f.research_id = c.research_id
+            WHERE f.research_id IS NULL
+              AND c.hn IS NOT NULL AND c.hn != ''
+              AND NOT (
+                EXISTS(SELECT 1 FROM captures WHERE research_id=c.research_id AND modality='podoscope')
+                AND EXISTS(SELECT 1 FROM captures WHERE research_id=c.research_id AND modality='thermal')
+              )
+            ORDER BY c.created_at DESC
+            """
+        ).fetchall()
+    return [{"research_id": r["research_id"], "hn": r["hn"] or "",
+             "created_at": r["created_at"],
+             "has_podo": bool(r["has_podo"]), "has_thermal": bool(r["has_thermal"])} for r in rows]
+
+
 def list_cases_with_status() -> list[dict]:
     """Feeds GET /api/cases — every case that has a CRF form, joined with capture status."""
     with tx() as conn:

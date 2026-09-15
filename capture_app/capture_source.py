@@ -13,6 +13,8 @@ radiometric temperature array (see UsbCameraSource.grab).
 from __future__ import annotations
 import io
 import os
+import threading
+from typing import Optional
 from datetime import datetime, timezone, timedelta
 
 TZ = timezone(timedelta(hours=7))
@@ -80,23 +82,76 @@ PODO_HEIGHT = int(os.environ.get("PODO_CAMERA_HEIGHT", "1080"))
 # This unit hands back black frames for the first several reads while auto-exposure settles;
 # measured here ~8 is enough, 20 is comfortable and costs well under a second.
 PODO_WARMUP_FRAMES = int(os.environ.get("PODO_CAMERA_WARMUP", "20"))
-# A lens cap, an unlit podoscope box, or a virtual camera's placeholder all yield a near-uniform
-# frame. Std-dev of a real foot image is far above this.
-BLANK_FRAME_STD = float(os.environ.get("PODO_CAMERA_BLANK_STD", "3.0"))
+# A lens cap, an unlit podoscope box, or a virtual camera's placeholder all yield a frame with
+# nothing in it. Both thresholds are measured, not guessed — the first version used std < 3.0,
+# picked out of the air, and sailed straight past a capture taken with the lens cap still on:
+#
+#     lens cap on          std  4.0   mean   3.2      <- must be refused
+#     real foot on the rig std 61.3   mean  ~90       <- must pass
+#
+# std alone is the weaker signal (sensor noise in a dark frame produces some), so mean brightness
+# is checked too. Both sit far from either measurement rather than just above the bad one.
+BLANK_FRAME_STD = float(os.environ.get("PODO_CAMERA_BLANK_STD", "15.0"))
+BLANK_FRAME_MEAN = float(os.environ.get("PODO_CAMERA_BLANK_MEAN", "12.0"))
+
+
+def _enumerate_on_com_thread() -> list[str]:
+    """Enumerate DirectShow devices on a thread that owns a COM apartment.
+
+    DirectShow needs CoInitialize() on the calling thread. FastAPI serves sync endpoints from a
+    worker pool where it has not been called, so this raised "CoInitialize has not been called"
+    there while working perfectly from a script — an empty camera list on a machine that could
+    plainly see the camera. Doing it on a dedicated thread rather than calling CoInitialize on the
+    pool thread keeps the apartment state out of threads that later run other work (OpenCV's own
+    DSHOW backend among them).
+    """
+    import comtypes
+    from pygrabber.dshow_graph import FilterGraph
+
+    comtypes.CoInitialize()
+    try:
+        return list(FilterGraph().get_input_devices())
+    finally:
+        comtypes.CoUninitialize()
+
+
+def enumerate_video_devices() -> tuple[list[str], Optional[str]]:
+    """(device names, why the list is empty). Never raises.
+
+    The reason matters: "no cameras attached" and "we could not ask" look identical from an empty
+    list, and telling a nurse to plug in a camera that is already plugged in wastes the one minute
+    when a patient is waiting.
+    """
+    try:
+        import comtypes  # noqa: F401
+        from pygrabber.dshow_graph import FilterGraph  # noqa: F401
+    except ImportError:
+        return [], ("pygrabber/comtypes is not installed (Windows only) — "
+                    "set PODO_CAMERA_INDEX to bypass the name lookup")
+
+    out: dict = {}
+
+    def run() -> None:
+        try:
+            out["devices"] = _enumerate_on_com_thread()
+        except Exception as e:                       # noqa: BLE001 — reported, not swallowed
+            out["error"] = f"{type(e).__name__}: {e}"
+
+    t = threading.Thread(target=run, daemon=True, name="camera-enumerate")
+    t.start()
+    t.join(timeout=10)
+    if t.is_alive():
+        return [], "camera enumeration timed out after 10s"
+    if "error" in out:
+        return [], out["error"]
+    return out.get("devices", []), None
 
 
 def list_video_devices() -> list[str]:
     """DirectShow device names, indexed the same way `cv2.VideoCapture(i, CAP_DSHOW)` indexes
-    them. Returns [] when the backend is unavailable (not Windows, or pygrabber not installed) —
-    callers must read that as "cannot verify", not as "no cameras attached"."""
-    try:
-        from pygrabber.dshow_graph import FilterGraph
-    except ImportError:
-        return []
-    try:
-        return list(FilterGraph().get_input_devices())
-    except Exception:
-        return []
+    them. Empty when they could not be enumerated — use enumerate_video_devices() when the reason
+    matters."""
+    return enumerate_video_devices()[0]
 
 
 def resolve_podoscope_index() -> int:
@@ -106,11 +161,11 @@ def resolve_podoscope_index() -> int:
     changes the index underneath a long-running server, and the lookup costs milliseconds."""
     if PODO_CAMERA_INDEX.strip():
         return int(PODO_CAMERA_INDEX)
-    devices = list_video_devices()
+    devices, why = enumerate_video_devices()
     if not devices:
         raise CaptureError(
-            "Cannot enumerate cameras to identify the podoscope (pygrabber not installed, or not "
-            "on Windows). Set PODO_CAMERA_INDEX to the camera's cv2 index to bypass the lookup."
+            f"ไม่สามารถอ่านรายชื่อกล้องจากเครื่องได้ ({why or 'ไม่ทราบสาเหตุ'}) — "
+            "ตั้ง PODO_CAMERA_INDEX เพื่อข้ามการค้นหาตามชื่อ"
         )
     wanted = PODO_CAMERA_NAME.lower()
     for i, name in enumerate(devices):
@@ -172,10 +227,14 @@ class UsbCameraSource(CaptureSource):
                     "Unplug it, plug it back in, and retry."
                 )
 
-            if float(np.asarray(frame).std()) < BLANK_FRAME_STD:
+            arr = np.asarray(frame)
+            std, mean = float(arr.std()), float(arr.mean())
+            if std < BLANK_FRAME_STD or mean < BLANK_FRAME_MEAN:
                 raise CaptureError(
-                    f"Camera [{index}] ({PODO_CAMERA_NAME}) returned a blank frame — check the "
-                    "lens cover and that the podoscope light is on."
+                    f"ภาพที่ได้จากกล้อง [{index}] ({PODO_CAMERA_NAME}) ว่างเปล่า "
+                    f"(std={std:.1f} ต่ำกว่า {BLANK_FRAME_STD}, ความสว่างเฉลี่ย={mean:.1f} "
+                    f"ต่ำกว่า {BLANK_FRAME_MEAN}) — ตรวจว่าเปิดฝาเลนส์แล้ว "
+                    "และไฟของกล่องโพโดสโคปติดอยู่ แล้วถ่ายใหม่"
                 )
 
             h, w = frame.shape[:2]

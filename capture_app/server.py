@@ -229,6 +229,17 @@ def camera_status():
             "devices": devices, "error": None}
 
 
+@app.get("/api/unfinished", dependencies=[require_session])
+def unfinished():
+    """Cases started with an HN whose photographs are not finished — the resume list.
+
+    The capture session used to live only in the page's memory, so closing the tab or reloading
+    left the case stranded: an id and a patient's HN in the database, and nothing in the UI that
+    could reach it again.
+    """
+    return db.list_unfinished_captures()
+
+
 @app.get("/api/pending", dependencies=[require_session])
 def pending():
     """The transcription queue — photographed, CRF not filled in yet."""

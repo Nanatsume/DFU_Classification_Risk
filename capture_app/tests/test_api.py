@@ -200,6 +200,42 @@ def test_capture_reports_thermal_not_implemented_distinctly(auth_client, monkeyp
     assert "SDK" in r.json()["detail"]
 
 
+def test_unfinished_lists_a_started_case_with_no_photographs(auth_client):
+    """The bug this closes: a case started at the clinic had an id and a patient's HN in the
+    database, but no CRF form and no captures — so it appeared in neither the transcription queue
+    nor the capture picker, and the only handle on it was the browser tab's memory. Reloading the
+    page stranded it."""
+    rid = auth_client.post("/api/session/start", json={"hn": "4242"}).json()["research_id"]
+    assert auth_client.get("/api/pending").json() == []       # no photographs -> not transcribable
+    assert auth_client.get("/api/cases").json() == []         # no form -> not in the other picker
+    rows = auth_client.get("/api/unfinished").json()
+    assert [r["research_id"] for r in rows] == [rid]
+    assert rows[0]["hn"] == "4242" and rows[0]["has_podo"] is False
+
+
+def test_unfinished_keeps_a_partly_photographed_case(auth_client):
+    rid = auth_client.post("/api/session/start", json={"hn": "4243"}).json()["research_id"]
+    auth_client.post("/api/capture", json={"rid": rid, "modality": "podoscope"})
+    rows = auth_client.get("/api/unfinished").json()
+    assert rows[0]["has_podo"] is True and rows[0]["has_thermal"] is False
+
+
+def test_unfinished_drops_a_case_once_both_modalities_are_captured(auth_client):
+    rid = auth_client.post("/api/session/start", json={"hn": "4244"}).json()["research_id"]
+    for m in ("podoscope", "thermal"):
+        auth_client.post("/api/capture", json={"rid": rid, "modality": m})
+    assert auth_client.get("/api/unfinished").json() == []
+    # ...and it has moved on to the queue that wants a form written for it
+    assert [r["research_id"] for r in auth_client.get("/api/pending").json()] == [rid]
+
+
+def test_unfinished_ignores_cases_with_no_hn(auth_client):
+    """A form typed without photographs is not something to resume at the podoscope — there is no
+    patient to match it to."""
+    auth_client.post("/api/crf", json={k: v for k, v in crf_payload("P0001").items() if k != "pid"})
+    assert auth_client.get("/api/unfinished").json() == []
+
+
 # ---------- camera status ----------
 
 def test_camera_status_says_plainly_when_it_is_simulated(auth_client):
