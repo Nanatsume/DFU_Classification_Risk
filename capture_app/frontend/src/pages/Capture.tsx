@@ -89,12 +89,76 @@ function toDisplay(x: CommitRecord | ManifestRow): DisplayRow {
   }
 }
 
+type CameraStatus = {
+  mode: 'usb' | 'sim'
+  connected: boolean
+  name: string | null
+  devices: string[]
+  error: string | null
+}
+
+/** Whether the podoscope is actually there, shown before anyone presses capture.
+ *
+ *  Both ways this goes wrong are invisible from this screen otherwise. Running in sim mode looks
+ *  exactly like working — a photograph of a foot appears, just not this patient's — and an
+ *  unplugged camera only says so after a patient has already been positioned. It polls so the
+ *  strip turns green by itself when the cable goes in, rather than needing the page reloaded. */
+function CameraStrip({ status, onRecheck, checking }: {
+  status: CameraStatus | null
+  onRecheck: () => void
+  checking: boolean
+}) {
+  if (!status) return null
+
+  const tone =
+    status.mode === 'sim' ? { bg: 'bg-cat-2/10', border: 'border-l-cat-2', text: 'text-cat-2', dot: 'bg-cat-2' }
+    : status.connected ? { bg: 'bg-cat-0/10', border: 'border-l-cat-0', text: 'text-cat-0', dot: 'bg-cat-0' }
+    : { bg: 'bg-destructive/10', border: 'border-l-destructive', text: 'text-destructive', dot: 'bg-destructive' }
+
+  const headline =
+    status.mode === 'sim' ? 'โหมดจำลอง — ไม่ได้ใช้กล้องจริง'
+    : status.connected ? `กล้องพร้อมใช้งาน · ${status.name}`
+    : 'ยังไม่พบกล้องโพโดสโคป'
+
+  return (
+    <div className={`mb-4 rounded-md border border-l-[5px] px-4 py-3 ${tone.bg} ${tone.border}`}>
+      <div className="flex flex-wrap items-center gap-2.5">
+        <span className={`h-2.5 w-2.5 shrink-0 rounded-full ${tone.dot}`} />
+        <span className={`text-[13.5px] font-bold ${tone.text}`}>{headline}</span>
+        <Button size="sm" variant="outline" className="ml-auto" onClick={onRecheck} disabled={checking}>
+          {checking ? 'กำลังตรวจ…' : 'ตรวจใหม่'}
+        </Button>
+      </div>
+      {status.mode === 'sim' && (
+        <p className="text-muted-foreground mt-1.5 text-[11.5px]">
+          ภาพที่ได้เป็นไฟล์ตัวอย่าง ไม่ใช่ภาพผู้ป่วย — ใช้ทดลองระบบเท่านั้น
+          ถ้าจะเก็บข้อมูลจริงต้องรันเซิร์ฟเวอร์ด้วย <code className="font-mono">CAPTURE_SOURCE=usb</code>
+        </p>
+      )}
+      {status.mode === 'usb' && !status.connected && (
+        <div className="mt-1.5 space-y-1">
+          <p className="text-muted-foreground text-[11.5px]">
+            เสียบสาย USB ของกล้องโพโดสโคป แถบนี้จะเปลี่ยนเป็นสีเขียวเองภายในไม่กี่วินาที
+          </p>
+          {status.devices.length > 0 && (
+            <p className="text-muted-foreground font-mono text-[10.5px]">
+              กล้องที่เครื่องมองเห็นตอนนี้: {status.devices.join(' · ')}
+            </p>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
+
 export default function Capture() {
   const [mode, setMode] = useState<'checking' | 'live' | 'demo'>('checking')
   const [cases, setCases] = useState<CaseRow[]>([])
   const [session, setSession] = useState<{ rid: string; startedAt: string; caseInfo: CaseRow | null; hn?: string } | null>(null)
   const [hn, setHn] = useState('')
   const [starting, setStarting] = useState(false)
+  const [camera, setCamera] = useState<CameraStatus | null>(null)
+  const [checkingCamera, setCheckingCamera] = useState(false)
   const [shots, setShots] = useState<Record<Modality, boolean>>({ podoscope: false, thermal: false })
   const [previews, setPreviews] = useState<Record<Modality, string | null>>({ podoscope: null, thermal: null })
   const [qc, setQc] = useState<{ status: 'idle' | 'running' | 'ok' | 'failed'; left?: string; right?: string; error?: string }>({ status: 'idle' })
@@ -159,6 +223,25 @@ export default function Capture() {
       alert('เริ่มเคสไม่สำเร็จ — ตรวจสอบการเชื่อมต่อแล้วลองใหม่')
     } finally {
       setStarting(false)
+    }
+  }
+
+  // Poll while this page is open: plugging the camera in should be enough, without a reload.
+  useEffect(() => {
+    checkCamera()
+    const t = setInterval(() => checkCamera(), 5000)
+    return () => clearInterval(t)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  async function checkCamera(manual = false) {
+    if (manual) setCheckingCamera(true)
+    try {
+      setCamera(await api<CameraStatus>('/api/camera'))
+    } catch {
+      setCamera(null)   // not logged in, or the server is down — the page shows nothing rather than lying
+    } finally {
+      if (manual) setCheckingCamera(false)
     }
   }
 
@@ -264,6 +347,8 @@ export default function Capture() {
           <div className="text-muted-foreground text-[11.5px]">โรงพยาบาลพุทธชินราช พิษณุโลก · คณะ ICT มหาวิทยาลัยมหิดล</div>
         </div>
       </div>
+
+      <CameraStrip status={camera} onRecheck={() => checkCamera(true)} checking={checkingCamera} />
 
       {!session ? (
         <Card className="mb-4.5 p-5">

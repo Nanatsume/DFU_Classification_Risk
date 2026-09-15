@@ -200,6 +200,55 @@ def test_capture_reports_thermal_not_implemented_distinctly(auth_client, monkeyp
     assert "SDK" in r.json()["detail"]
 
 
+# ---------- camera status ----------
+
+def test_camera_status_says_plainly_when_it_is_simulated(auth_client):
+    """The whole point: sim mode is indistinguishable from working once a photograph appears, so
+    it has to be visible before anyone presses capture. It was not, and a demo footprint got filed
+    against a real case."""
+    body = auth_client.get("/api/camera").json()
+    assert body["mode"] == "sim"
+    assert "จำลอง" in body["error"]
+
+
+def test_camera_status_reports_a_connected_camera(auth_client, monkeypatch):
+    import capture_source
+    import server as server_mod
+
+    monkeypatch.setattr(server_mod, "SOURCE", capture_source.UsbCameraSource())
+    monkeypatch.setattr(server_mod, "list_video_devices",
+                        lambda: ["FHD Webcam", "Logi C615 HD WebCam"])
+    monkeypatch.setattr(server_mod, "resolve_podoscope_index", lambda: 1)
+    body = auth_client.get("/api/camera").json()
+    assert body["mode"] == "usb" and body["connected"] is True
+    assert body["name"] == "Logi C615 HD WebCam"
+    assert body["error"] is None
+
+
+def test_camera_status_reports_an_unplugged_camera_with_what_it_did_see(auth_client, monkeypatch):
+    """Listing the cameras it found instead is what turns "not working" into something the person
+    at the machine can act on."""
+    import capture_source
+    import server as server_mod
+
+    seen = ["FHD Webcam", "OBS Virtual Camera"]
+
+    def missing():
+        raise capture_source.CaptureError("No camera matching 'Logi C615' is connected.")
+
+    monkeypatch.setattr(server_mod, "SOURCE", capture_source.UsbCameraSource())
+    monkeypatch.setattr(server_mod, "list_video_devices", lambda: seen)
+    monkeypatch.setattr(server_mod, "resolve_podoscope_index", missing)
+    body = auth_client.get("/api/camera").json()
+    assert body["connected"] is False
+    assert "Logi C615" in body["error"]
+    assert body["devices"] == seen
+
+
+def test_camera_status_requires_login(client):
+    assert client.get("/api/camera").status_code == 401
+
+
 # ---------- backup status ----------
 
 def test_backup_status_unconfigured_when_no_file(auth_client):

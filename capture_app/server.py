@@ -44,7 +44,8 @@ from pydantic import BaseModel
 
 import auth
 import db
-from capture_source import CaptureError, get_source
+from capture_source import (CaptureError, UsbCameraSource, get_source,
+                            list_video_devices, resolve_podoscope_index)
 from preprocessing import preprocess_foot_image
 from crf_store import router as crf_router
 from roi_store import router as roi_router
@@ -198,6 +199,34 @@ def case_detail(rid: str):
     if not db.case_exists(rid):
         raise HTTPException(404, f"no case {rid}")
     return {"research_id": rid, "hn": db.get_hn(rid) or ""}
+
+
+@app.get("/api/camera", dependencies=[require_session])
+def camera_status():
+    """Is the podoscope camera actually there, and are we even in real-camera mode.
+
+    Exists because both failure modes are silent from the capture screen. Running in `sim` looks
+    identical to working — you press the button and get a photograph of a foot, just not this
+    patient's foot — and a camera that is merely unplugged only announces itself after someone has
+    already positioned a patient and pressed capture. Both are now visible before the first press.
+
+    Cheap enough to poll: enumerating DirectShow devices takes milliseconds, and re-checking is
+    what lets the page go green on its own when the cable goes in.
+    """
+    simulated = not isinstance(SOURCE, UsbCameraSource)
+    if simulated:
+        return {"mode": "sim", "connected": True, "name": None, "devices": [],
+                "error": "โหมดจำลอง — ภาพที่ได้เป็นไฟล์ตัวอย่าง ไม่ใช่ภาพจากกล้องจริง"}
+
+    devices = list_video_devices()
+    try:
+        index = resolve_podoscope_index()
+    except CaptureError as e:
+        return {"mode": "usb", "connected": False, "name": None,
+                "devices": devices, "error": str(e)}
+    name = devices[index] if index < len(devices) else f"index {index}"
+    return {"mode": "usb", "connected": True, "name": name, "index": index,
+            "devices": devices, "error": None}
 
 
 @app.get("/api/pending", dependencies=[require_session])
