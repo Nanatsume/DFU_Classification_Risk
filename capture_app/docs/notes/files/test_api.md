@@ -12,7 +12,7 @@ metadata:
 **Functions/Variables (global scope)**: (ทดสอบทั้งหมด 23 ฟังก์ชัน ไม่ export อะไรออกไปให้ไฟล์อื่น import) กลุ่มหลัก ๆ:
 - health/session ไม่ต้อง auth: `test_health_does_not_require_auth`, `test_session_does_not_require_auth`, `test_protected_routes_401_without_a_session`
 - login/logout: `test_login_wrong_password_401`, `test_login_correct_password_sets_cookie_and_session_true`, `test_logout_clears_session`
-- id minting: `test_session_new_mints_p0001_first`, `test_session_new_advances_each_call`
+- id minting: `test_start_case_returns_an_id_and_records_the_hn`, `test_session_new_is_gone`
 - CRF CRUD: `test_crf_save_and_get`, `test_crf_get_missing_pid_404`, `test_crf_save_rejects_bad_pid_format`, `test_crf_list_newest_first`, `test_crf_delete_without_photos_succeeds`, `test_crf_delete_missing_404`
 - nurses: `test_nurses_seeded_and_addable`
 - capture/preprocess/commit: `test_capture_without_crf_form_is_409`, `test_capture_bad_modality_400`, `test_full_capture_flow`, `test_preprocess_full_and_original_images_share_dimensions`, `test_commit_without_any_capture_is_404`, `test_commit_partial_status_when_only_one_modality_captured`

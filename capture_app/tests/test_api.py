@@ -46,7 +46,6 @@ def test_session_does_not_require_auth(client):
 def test_protected_routes_401_without_a_session(client):
     for method, path, body in [
         ("get", "/api/cases", None),
-        ("post", "/api/session/new", {}),
         ("get", "/api/crf", None),
         ("get", "/api/roi", None),
         ("get", "/api/manifest", None),
@@ -93,15 +92,17 @@ def test_logout_clears_session(auth_client):
 
 # ---------- id minting ----------
 
-def test_session_new_mints_p0001_first(auth_client):
-    r = auth_client.post("/api/session/new", json={})
-    assert r.status_code == 200
-    assert r.json()["research_id"] == "P0001"
+def test_session_new_is_gone(auth_client):
+    """Reserving an id up front is how the orphan cases kept appearing: a cached page on a phone
+    called this on every load and burned a number each time, with nothing to show for it. No page
+    uses it any more, so the route is removed rather than left listening.
 
-
-def test_session_new_advances_each_call(auth_client):
-    ids = [auth_client.post("/api/session/new", json={}).json()["research_id"] for _ in range(3)]
-    assert ids == ["P0001", "P0002", "P0003"]
+    405 rather than 404 because the static-file mount at "/" answers the unmatched path and
+    rejects the method. What matters is that it no longer mints anything.
+    """
+    before = auth_client.get("/api/health").json()["next_id"]
+    assert auth_client.post("/api/session/new", json={}).status_code in (404, 405)
+    assert auth_client.get("/api/health").json()["next_id"] == before
 
 
 # ---------- photograph-first capture (HN) ----------

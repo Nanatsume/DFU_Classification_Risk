@@ -30,7 +30,7 @@ def test_upsert_case_is_idempotent(tmp_db):
 
 
 def test_save_crf_creates_case_row_too(tmp_db):
-    """save_crf() must upsert into `cases` even if /api/session/new was never called for this id
+    """save_crf() must upsert into `cases` even for an id that was never minted through the app
     (e.g. a legacy/manually-entered id) — otherwise next_research_id()'s counter never sees it."""
     tmp_db.save_crf("P0007", "2026-01-01T00:00:00+07:00",
                      fields={"ckd": "no"}, derived={"L": {}, "R": {}}, schema_version="1.0")

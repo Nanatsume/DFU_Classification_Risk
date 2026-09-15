@@ -171,18 +171,6 @@ def cases():
     return db.list_cases_with_status()
 
 
-@app.post("/api/session/new", dependencies=[require_session])
-def session_new():
-    """Mints and reserves a research id with no HN attached.
-
-    Kept for tooling and tests. The clinic flow uses /api/session/start instead: photographs are
-    taken first, against a hospital number, and the CRF is transcribed afterwards.
-    """
-    rid = db.next_research_id()
-    db.upsert_case(rid)
-    return {"research_id": rid, "started_at": now_iso()}
-
-
 @app.post("/api/session/start", dependencies=[require_session])
 def session_start(req: StartCaseReq):
     """Begin a case at the clinic: hospital number in, research id out, ready to photograph.

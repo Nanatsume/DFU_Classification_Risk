@@ -164,7 +164,10 @@ Full per-endpoint detail (payload/response/who calls it) is in
 | POST   | `/api/login` / `/api/logout` | shared team password session                       |
 | GET    | `/api/session`             | is the current cookie valid — no auth needed          |
 | GET    | `/api/cases`               | cases that have a CRF form, with capture status       |
-| POST   | `/api/session/new`         | reserve an id up front — no longer used by the UI     |
+| POST   | `/api/session/start`       | HN in, research id out — begins a case at the clinic  |
+| GET    | `/api/pending`             | photographed cases still awaiting CRF transcription   |
+| GET    | `/api/case/{rid}`          | a case's HN, for the transcription form               |
+| GET/DELETE | `/api/hn`              | how many HNs remain / drop them all (de-identify)     |
 | GET/POST/DELETE `/api/crf[/{pid}]` | CRF-07 form CRUD; POST without `pid` mints the id |
 | GET/POST `/api/nurses`     | nurse-name dropdown source                            |
 | POST   | `/api/capture`             | grab one modality, write raw (409 without a CRF form) |
