@@ -103,14 +103,45 @@ of truth for the podoscope pipeline. Current settings (the tunable knobs):
 Thermal has no preprocessing here — this pipeline is optical/pressure-specific. Thermal is stored
 raw (+ radiometric later).
 
-## The camera is the only thing left
+## Cameras
 
 All capture goes through `CaptureSource.grab(modality, rid) -> PNG bytes` in `capture_source.py`.
+Choose one with `CAPTURE_SOURCE`; the default is `sim`, so the real camera is never used by
+accident.
 
-- `SimulatedSource` — podoscope returns `sample/P001.png`, thermal returns a placeholder. Active now.
-- `UsbCameraSource` — **TODO**. Implement `grab()` and run with `CAPTURE_SOURCE=usb`. Nothing else
-  changes. podoscope: `cv2.VideoCapture`; thermal: vendor SDK (colourised frame for the PNG **and**
-  the radiometric array saved to `thermal/{rid}/radiometric/`).
+- `CAPTURE_SOURCE=sim` — `SimulatedSource`. Podoscope returns `sample/P001.png` (a real footprint,
+  so preprocessing produces meaningful output), thermal returns a placeholder. No hardware needed.
+- `CAPTURE_SOURCE=usb` — `UsbCameraSource`. **Podoscope works** (tested against a Logitech C615:
+  1920×1080 MJPG, ~190 ms/frame, ~1–2.5 MB PNG). **Thermal still raises `NotImplementedError`** —
+  the radiometric device is on order.
+
+### Picking the right camera
+
+The podoscope camera is selected **by name, on every capture**, not by a fixed index. This is not
+over-engineering: a typical workstation enumerates the built-in webcam, a Windows Hello IR sensor,
+and several *virtual* cameras (OBS, Logi Capture, NVIDIA Broadcast, LSVCam). A virtual camera
+opens cleanly and returns frames, so `isOpened()` and `read()` both succeed while the "photo" is a
+software placeholder — and DirectShow indices shift whenever one of them starts or a USB device is
+replugged. Index-based selection fails silently, filing the wrong image under a real research id.
+
+| env var | default | what it does |
+|---|---|---|
+| `PODO_CAMERA_NAME` | `Logi C615` | case-insensitive substring match against the device list |
+| `PODO_CAMERA_INDEX` | *(unset)* | explicit cv2 index; wins over the name lookup. Escape hatch for machines without `pygrabber` |
+| `PODO_CAMERA_WIDTH` / `_HEIGHT` | `1920` / `1080` | requested capture size; a smaller actual size is logged, not fatal |
+| `PODO_CAMERA_WARMUP` | `20` | frames discarded before the keeper — this camera returns black frames until auto-exposure settles |
+
+If no matching camera is attached, capture fails with a message naming every camera it *did* see,
+rather than quietly falling back to whichever device happens to be at index 0.
+
+Capture also refuses a near-uniform frame (lens cap on, podoscope light off, virtual-camera
+placeholder) instead of storing a blank image against a patient.
+
+To see what a machine enumerates:
+
+```bash
+python -c "import capture_source; print(capture_source.list_video_devices())"
+```
 
 ## API
 
@@ -135,7 +166,7 @@ Full per-endpoint detail (payload/response/who calls it) is in
 
 ## Tests
 
-Backend (pytest, isolated SQLite DB per test — never touches the real `data/`), 66 tests:
+Backend (pytest, isolated SQLite DB per test — never touches the real `data/`), 79 tests:
 
 ```bash
 pip install -r requirements.txt -r requirements-dev.txt   # first time only
@@ -149,10 +180,61 @@ cd frontend
 npm test
 ```
 
+## Moving this to another machine
+
+Nothing in the code is tied to a particular machine — no absolute paths, no hardcoded hostnames.
+What does *not* travel is `.venv/` (absolute paths inside) and `data/` (both are gitignored), so:
+
+```bash
+git clone <repo> && cd capture_app
+python -m venv .venv && .venv\Scripts\activate    # Python 3.12; 'source .venv/bin/activate' on POSIX
+pip install -r requirements.txt
+python migrate_to_sqlite.py                          # creates data/ + app.db; safe to re-run
+set DFU_DATA_DIR=D:\dfu-data                         # optional but recommended — see below
+set APP_PASSWORD=your-team-password
+set CAPTURE_SOURCE=usb                               # omit to stay on the simulator
+uvicorn server:app --host 127.0.0.1 --port 8000
+```
+
+`npm` is **not** needed on the target machine: the built frontend is committed in `static/` and the
+backend serves it directly. Only rebuild (`cd frontend && npm install && npm run build`) if you
+change the UI source.
+
+Check the camera before the first clinic:
+
+```bash
+python -c "import capture_source as c; print(c.list_video_devices()); print('podoscope ->', c.resolve_podoscope_index())"
+```
+
+`requirements.txt` pins exact versions on purpose — the segmentation in `preprocessing.py` is
+sensitive to numpy/scipy/opencv versions, and a fresh install months from now must reproduce the
+pipeline the collected images were validated against.
+
+### Where the data lives
+
+`DFU_DATA_DIR` relocates everything the app owns — `app.db` and the whole image tree. Unset, it
+defaults to `./data` inside the checkout, which is fine for development and wrong for real
+collection. Point it at a drive that gets backed up.
+
+> With WAL enabled, a backup must copy `app.db` **and** its `-wal`/`-shm` sidecars, or run
+> `PRAGMA wal_checkpoint(TRUNCATE)` first — copying `app.db` alone can lose recent commits.
+
+### Thai-locale Windows
+
+The hospital workstation runs a Thai code page (cp874) console. `preprocessing.py` (exported from
+the research notebook) prints `✓ ÷ ├ 📂`, which cp874 cannot encode — that used to kill `import
+server` outright and crash every podoscope capture. `stdio_utf8.force_utf8_stdio()` now runs first
+thing in `server.py` and `migrate_to_sqlite.py`, so no `PYTHONIOENCODING` workaround is needed.
+`tests/test_console_encoding.py` guards it in a real subprocess (pytest's own output capture hides
+the bug, which is how it survived this long).
+
 ## Before real collection
 
-1. Implement `UsbCameraSource.grab()` (the one TODO) once the devices are on the PC.
-2. Lock PNG resolution to the podoscope's native output.
-3. Point `DATA_DIR` at a folder that auto-backs-up to a second drive (remember: with WAL enabled,
-   back up `app.db` *and* its `-wal`/`-shm` sidecar files, or `PRAGMA wal_checkpoint(TRUNCATE)` first).
+1. ~~Implement `UsbCameraSource.grab()`~~ — done for the podoscope; **thermal still TODO** when the
+   radiometric device arrives (colourised frame for the PNG **and** the temperature array saved to
+   `thermal/{rid}/radiometric/`).
+2. Confirm `PODO_CAMERA_WIDTH/HEIGHT` matches the podoscope's native output once it is mounted in
+   its final rig — the C615 defaults here are the tested maximum, not necessarily the right framing.
+3. Set `DFU_DATA_DIR` to a backed-up folder (see above).
 4. Dry-run 2–3 test cases and load them into training.
+5. Revisit `auth.py`'s note on TLS before ever serving beyond `127.0.0.1`.

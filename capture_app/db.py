@@ -21,12 +21,19 @@ import sqlite3
 from contextlib import contextmanager
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
+import os
 from typing import Iterator, Optional
 
 TZ = timezone(timedelta(hours=7))  # Asia/Bangkok
 
 BASE = Path(__file__).resolve().parent
-DATA_DIR = BASE / "data"
+# DFU_DATA_DIR relocates every byte the app owns — app.db and the image tree both live under it.
+# Set it to a folder that is backed up (an external/second drive at the hospital); the default
+# keeps everything inside the checkout, which is convenient for development and wrong for real
+# collection. server.py reads the same variable so the two never disagree.
+# NOTE with WAL enabled, a backup must copy app.db AND its -wal/-shm sidecars, or run
+# `PRAGMA wal_checkpoint(TRUNCATE)` first — copying app.db alone can lose recent commits.
+DATA_DIR = Path(os.environ["DFU_DATA_DIR"]).expanduser() if os.environ.get("DFU_DATA_DIR") else BASE / "data"
 DB_PATH = DATA_DIR / "app.db"
 
 SCHEMA = """

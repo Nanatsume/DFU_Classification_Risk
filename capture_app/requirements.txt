@@ -1,9 +1,25 @@
-fastapi
-uvicorn[standard]
-pillow
-numpy
-scipy
-opencv-python-headless   # podoscope preprocessing (HMRF-EM, CLAHE); headless = no GUI deps
-# For real USB capture later:
-# opencv-python          # if you need the GUI build for the podoscope webcam
-# <thermal-sdk>          # thermal radiometric device SDK (vendor-specific)
+# Pinned deliberately. This app is the data-collection front end of a research study: the
+# podoscope segmentation in preprocessing.py is numerically sensitive to numpy/scipy/opencv
+# versions, so a fresh `pip install` on the hospital workstation months from now must reproduce
+# the same pipeline as the machine the images were validated on. Bump versions on purpose, with
+# a re-run of the pipeline over the sample image to confirm the output is unchanged — never by
+# accident on a new install.
+#
+# Versions below are the ones this app has actually been run and tested against (Python 3.12).
+fastapi==0.141.1
+uvicorn[standard]==0.52.1
+pillow==12.3.0
+numpy==2.5.1
+scipy==1.18.0
+opencv-python-headless==5.0.0.93   # podoscope preprocessing AND USB capture; headless = no GUI
+                                   # deps, which VideoCapture does not need
+
+# Real USB capture (CAPTURE_SOURCE=usb). Windows-only: it reads the DirectShow device list so the
+# podoscope can be picked by NAME rather than by a numeric index that silently shifts whenever a
+# virtual camera (OBS, Logi Capture, NVIDIA Broadcast) starts. Without it, capture still works but
+# PODO_CAMERA_INDEX must be set by hand. See capture_source.py.
+pygrabber==0.2 ; sys_platform == "win32"
+
+# Thermal is not wired up yet — the radiometric device is on order. When it arrives, add its
+# vendor SDK here and implement UsbCameraSource._grab_thermal().
+# <thermal-sdk>

@@ -26,6 +26,11 @@ Set APP_PASSWORD in the environment to choose the shared team login password; if
 one-time random password is generated and printed to the console on first boot.
 """
 from __future__ import annotations
+
+from stdio_utf8 import force_utf8_stdio
+
+force_utf8_stdio()  # must run before `import preprocessing` — see stdio_utf8.py
+
 import json
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
@@ -49,7 +54,7 @@ SCHEMA_VERSION = "2.0"
 TZ = timezone(timedelta(hours=7))  # Asia/Bangkok
 
 BASE = Path(__file__).resolve().parent
-DATA_DIR = BASE / "data"
+DATA_DIR = db.DATA_DIR      # single definition, honours DFU_DATA_DIR — see db.py
 STATIC_DIR = BASE / "static"
 META_DIR = DATA_DIR / "meta"
 MODALITIES = ("podoscope", "thermal")

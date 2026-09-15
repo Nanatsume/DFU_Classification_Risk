@@ -14,6 +14,10 @@ missed.
 """
 from __future__ import annotations
 
+from stdio_utf8 import force_utf8_stdio
+
+force_utf8_stdio()  # this script prints Thai/✓ progress lines — see stdio_utf8.py
+
 import csv
 import json
 
