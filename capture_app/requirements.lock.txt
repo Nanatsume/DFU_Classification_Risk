@@ -1,0 +1,35 @@
+# GENERATED — do not hand-edit. Regenerate with: python tools/lock_requirements.py
+#
+# Exact versions of EVERY package, direct and transitive, as actually installed on the machine
+# this app was developed and tested on (Python 3.12). requirements.txt states intent; this file
+# reproduces the tested environment byte for byte, which is what a second machine needs.
+#
+# Why this file exists: pinning only the 6 direct dependencies is not enough. Re-resolving them
+# today already picks starlette 1.6.0 where this app was tested on 1.4.1, plus newer pydantic,
+# anyio and click — a silent drift under an unchanged FastAPI pin.
+#
+# Generated 2026-09-15 from the tested venv.
+annotated-doc==0.0.5
+annotated-types==0.8.0
+anyio==4.14.2
+click==8.4.2
+comtypes==1.4.16 ; sys_platform == "win32"
+fastapi==0.141.1
+h11==0.16.0
+httptools==0.8.0
+idna==3.18
+numpy==2.5.1
+opencv-python-headless==5.0.0.93
+pillow==12.3.0
+pydantic==2.13.4
+pydantic_core==2.46.4
+pygrabber==0.2 ; sys_platform == "win32"
+python-dotenv==1.2.2
+PyYAML==6.0.3
+scipy==1.18.0
+starlette==1.4.1
+typing-inspection==0.4.2
+typing_extensions==4.16.0
+uvicorn==0.52.1
+watchfiles==1.2.0
+websockets==17.0.1

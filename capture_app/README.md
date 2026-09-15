@@ -183,32 +183,60 @@ npm test
 ## Moving this to another machine
 
 Nothing in the code is tied to a particular machine — no absolute paths, no hardcoded hostnames.
-What does *not* travel is `.venv/` (absolute paths inside) and `data/` (both are gitignored), so:
+What does *not* travel is `.venv/` (absolute paths inside) and `data/` (both gitignored). One
+command rebuilds both:
 
-```bash
-git clone <repo> && cd capture_app
-python -m venv .venv && .venv\Scripts\activate    # Python 3.12; 'source .venv/bin/activate' on POSIX
-pip install -r requirements.txt
-python migrate_to_sqlite.py                          # creates data/ + app.db; safe to re-run
-set DFU_DATA_DIR=D:\dfu-data                         # optional but recommended — see below
-set APP_PASSWORD=your-team-password
-set CAPTURE_SOURCE=usb                               # omit to stay on the simulator
-uvicorn server:app --host 127.0.0.1 --port 8000
+```powershell
+git clone <repo>
+cd capture_app
+powershell -ExecutionPolicy Bypass -File setup.ps1
+```
+
+`setup.ps1` finds Python 3.12, creates the venv, installs the **exact tested versions**, creates
+the database, **runs the whole test suite to prove the install is good**, and prints the cameras
+it can see. It is safe to re-run: an existing venv is reused and the migration is idempotent.
+
+Then start it:
+
+```powershell
+$env:APP_PASSWORD  = "your-team-password"
+$env:CAPTURE_SOURCE = "usb"              # omit to stay on the simulator
+$env:DFU_DATA_DIR   = "D:\dfu-data"      # optional — see "Where the data lives"
+.venv\Scripts\python.exe -m uvicorn server:app --host 127.0.0.1 --port 8000
 ```
 
 `npm` is **not** needed on the target machine: the built frontend is committed in `static/` and the
 backend serves it directly. Only rebuild (`cd frontend && npm install && npm run build`) if you
 change the UI source.
 
-Check the camera before the first clinic:
+Check the cameras any time — before the first clinic, or when capture picks the wrong image:
 
 ```bash
-python -c "import capture_source as c; print(c.list_video_devices()); print('podoscope ->', c.resolve_podoscope_index())"
+python tools/check_cameras.py
 ```
 
-`requirements.txt` pins exact versions on purpose — the segmentation in `preprocessing.py` is
-sensitive to numpy/scipy/opencv versions, and a fresh install months from now must reproduce the
-pipeline the collected images were validated against.
+### Why there are lock files
+
+`requirements.txt` states *intent* (six direct dependencies). `requirements.lock.txt` pins **every**
+package, transitive ones included, to the versions this app was actually tested on — and that is
+what `setup.ps1` installs.
+
+Pinning only the direct dependencies is not enough. Re-resolving `requirements.txt` the day the
+lock was written already produced **starlette 1.6.0 where the app was tested on 1.4.1**, plus newer
+pydantic, anyio and click — all under an unchanged FastAPI pin. That kind of drift is silent, and
+the segmentation in `preprocessing.py` is numerically sensitive to numpy/scipy/opencv, so a fresh
+install months from now must reproduce the pipeline the collected images were validated against.
+
+Regenerate the locks after deliberately upgrading something (then re-run the tests, and re-run the
+pipeline over `sample/P001.png` to confirm the output is unchanged):
+
+```bash
+.venv\Scripts\python.exe tools/lock_requirements.py
+```
+
+> **Note for Windows PowerShell 5.1**: `setup.ps1` is saved as UTF-8 **with BOM** on purpose. Without
+> it, 5.1 decodes `.ps1` files using the system ANSI code page — cp874 on a Thai-locale machine —
+> which mangles the non-ASCII characters in the file and breaks the parse. Keep the BOM if you edit it.
 
 ### Where the data lives
 
