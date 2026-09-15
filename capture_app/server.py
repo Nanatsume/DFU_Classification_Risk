@@ -151,6 +151,36 @@ def health():
             "crf_count": db.crf_max()}
 
 
+@app.get("/api/backup-status", dependencies=[require_session])
+def backup_status():
+    """What tools/backup.py wrote on its last run, for the banner on the home page.
+
+    A backup you believe in but which stopped running three weeks ago is worse than no backup at
+    all, so the state is surfaced where someone sees it daily rather than left in a log file. The
+    server only reports the file; it never runs or schedules a backup itself.
+    """
+    path = DATA_DIR / "backup_status.json"
+    if not path.exists():
+        return {"configured": False}
+    try:
+        status = json.loads(path.read_text(encoding="utf-8"))
+    except (ValueError, OSError) as e:
+        return {"configured": True, "ok": False, "error": f"unreadable status file: {e}"}
+
+    age_hours = None
+    updated = status.get("updated_at")
+    if updated:
+        try:
+            age = datetime.now(TZ) - datetime.fromisoformat(updated)
+            age_hours = round(age.total_seconds() / 3600, 1)
+        except ValueError:
+            pass
+    # 36h rather than 24h: a nightly job that runs late, or a laptop that was closed at 02:00,
+    # should not cry wolf the next morning.
+    return {"configured": True, "stale": age_hours is not None and age_hours > 36,
+            "age_hours": age_hours, **status}
+
+
 @app.get("/api/cases", dependencies=[require_session])
 def cases():
     """Cases that have a CRF form, with capture status — feeds the capture station's picker.

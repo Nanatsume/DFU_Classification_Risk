@@ -3,14 +3,62 @@ import { api } from '@/lib/api'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 
+type BackupStatus = {
+  configured: boolean
+  ok?: boolean
+  stale?: boolean
+  age_hours?: number | null
+  cases?: number
+  error?: string
+  updated_at?: string
+}
+
+/** A backup nobody checks is a backup that has already stopped working. This banner is the only
+ *  place that state is visible day to day, so it only appears when something needs attention —
+ *  a healthy, recent backup says nothing and stays out of the way. */
+function BackupBanner({ status }: { status: BackupStatus | null }) {
+  if (!status || !status.configured) return null
+  const bad = status.ok === false
+  const stale = status.stale
+  if (!bad && !stale) return null
+
+  const when =
+    status.age_hours == null
+      ? 'ไม่ทราบเวลา'
+      : status.age_hours < 48
+        ? `${Math.round(status.age_hours)} ชั่วโมงที่แล้ว`
+        : `${Math.round(status.age_hours / 24)} วันที่แล้ว`
+
+  return (
+    <div className="mx-auto max-w-[1600px] px-4 pb-4">
+      <div className="rounded border-l-[5px] border-l-[#b4472e] bg-[#2a1a15] px-4 py-3 text-[13px] text-[#f0d6cd]">
+        <div className="font-bold">
+          {bad ? 'การสำรองข้อมูลล้มเหลว' : 'ข้อมูลไม่ได้ถูกสำรองมานานแล้ว'}
+        </div>
+        <div className="mt-1 text-[#d3b3a8]">
+          {bad
+            ? status.error || 'ไม่ทราบสาเหตุ'
+            : `สำรองครั้งล่าสุดเมื่อ ${when} — ตรวจสอบว่า rclone ยังเชื่อมต่อ OneDrive ได้อยู่`}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function Home() {
   const [crfCount, setCrfCount] = useState<number | null>(null)
+  const [backup, setBackup] = useState<BackupStatus | null>(null)
 
   useEffect(() => {
     api<Record<string, unknown>[]>('/api/crf')
       .then((rows) => setCrfCount(rows.length))
       .catch(() => {
         /* not logged in yet / server unreachable — leave blank */
+      })
+    api<BackupStatus>('/api/backup-status')
+      .then(setBackup)
+      .catch(() => {
+        /* same — the banner simply stays hidden */
       })
   }, [])
 
@@ -33,6 +81,8 @@ export default function Home() {
           </p>
         </div>
       </div>
+
+      <BackupBanner status={backup} />
 
       <div className="mx-auto grid max-w-[1600px] grid-cols-1 gap-4 px-4 pb-10 sm:grid-cols-2">
         <Card className="border-l-primary flex flex-col border-l-[5px] p-5">

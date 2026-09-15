@@ -105,6 +105,57 @@ def test_session_new_advances_each_call(auth_client):
     assert ids == ["P0001", "P0002", "P0003"]
 
 
+# ---------- backup status ----------
+
+def test_backup_status_unconfigured_when_no_file(auth_client):
+    assert auth_client.get("/api/backup-status").json() == {"configured": False}
+
+
+def test_backup_status_reports_a_recent_backup_as_fresh(auth_client, tmp_path):
+    import json
+    from datetime import datetime, timedelta, timezone
+    now = datetime.now(timezone(timedelta(hours=7))).isoformat()
+    (tmp_path / "backup_status.json").write_text(
+        json.dumps({"updated_at": now, "ok": True, "cases": 12}), encoding="utf-8")
+    body = auth_client.get("/api/backup-status").json()
+    assert body["configured"] is True and body["ok"] is True
+    assert body["stale"] is False
+    assert body["cases"] == 12
+
+
+def test_backup_status_flags_a_backup_that_stopped_running(auth_client, tmp_path):
+    """The failure this guards against is silence: a job that died weeks ago while everyone
+    assumed the data was safe."""
+    import json
+    from datetime import datetime, timedelta, timezone
+    old = (datetime.now(timezone(timedelta(hours=7))) - timedelta(days=9)).isoformat()
+    (tmp_path / "backup_status.json").write_text(
+        json.dumps({"updated_at": old, "ok": True}), encoding="utf-8")
+    body = auth_client.get("/api/backup-status").json()
+    assert body["stale"] is True
+    assert body["age_hours"] > 200
+
+
+def test_backup_status_does_not_cry_wolf_the_morning_after(auth_client, tmp_path):
+    """A nightly job that ran late, or a laptop closed at 02:00, is not a problem yet."""
+    import json
+    from datetime import datetime, timedelta, timezone
+    recent = (datetime.now(timezone(timedelta(hours=7))) - timedelta(hours=30)).isoformat()
+    (tmp_path / "backup_status.json").write_text(
+        json.dumps({"updated_at": recent, "ok": True}), encoding="utf-8")
+    assert auth_client.get("/api/backup-status").json()["stale"] is False
+
+
+def test_backup_status_survives_a_corrupt_status_file(auth_client, tmp_path):
+    (tmp_path / "backup_status.json").write_text("{not json", encoding="utf-8")
+    body = auth_client.get("/api/backup-status").json()
+    assert body["ok"] is False and "unreadable" in body["error"]
+
+
+def test_backup_status_requires_login(client):
+    assert client.get("/api/backup-status").status_code == 401
+
+
 # ---------- CRF CRUD ----------
 
 def test_crf_save_and_get(auth_client):

@@ -5,9 +5,9 @@ paired **Podoscope + Thermal** foot images per patient, a **CRF-07 case record f
 computes the IWGDF risk category live, and **ROI annotation** (VIA 2) for later XAI/Grad-CAM
 work. FastAPI + SQLite backend, React + Vite (multi-page) + Tailwind + shadcn/ui frontend.
 
-Runs today with a **simulated camera** (the podoscope returns a real sample footprint so
-preprocessing produces meaningful output). When the USB cameras arrive, the **only** code to
-write is one capture class (`capture_source.py`).
+Podoscope capture over USB works (tested on a Logitech C615); **thermal** is the one piece still
+waiting on hardware, and raises `NotImplementedError` until the radiometric device arrives. A
+simulated source runs the whole flow with no hardware at all — see [Cameras](#cameras).
 
 For a full file-by-file / API / feature breakdown, see **[`docs/notes/index.md`](docs/notes/index.md)**
 (Obsidian-linked notes — open the `docs/notes/` folder as a vault to browse with clickable links
@@ -166,7 +166,7 @@ Full per-endpoint detail (payload/response/who calls it) is in
 
 ## Tests
 
-Backend (pytest, isolated SQLite DB per test — never touches the real `data/`), 79 tests:
+Backend (pytest, isolated SQLite DB per test — never touches the real `data/`), 92 tests:
 
 ```bash
 pip install -r requirements.txt -r requirements-dev.txt   # first time only
@@ -237,6 +237,43 @@ pipeline over `sample/P001.png` to confirm the output is unchanged):
 > **Note for Windows PowerShell 5.1**: `setup.ps1` is saved as UTF-8 **with BOM** on purpose. Without
 > it, 5.1 decodes `.ps1` files using the system ANSI code page — cp874 on a Thai-locale machine —
 > which mangles the non-ASCII characters in the file and breaks the parse. Keep the BOM if you edit it.
+
+### Backing it up to OneDrive
+
+`tools/backup.py` uploads everything the app owns to an encrypted cloud remote through rclone.
+`tools/setup_backup.ps1` installs rclone, walks through the one-time sign-in, and registers a
+nightly scheduled task:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File tools\setup_backup.ps1
+.venv\Scripts\python.exe toolsackup.py --dry-run     # check it end to end
+```
+
+The rclone config file it produces is portable — copy it to the second machine and backups work
+there without signing in again.
+
+What goes up: `app.db` (including the hand-drawn ROI annotations, the one thing here that cannot
+be recomputed), plus `podo/`, `thermal/` and `meta/`. The preprocessed images travel too rather
+than being regenerated on restore: regenerating costs about a minute per image and the result
+needs a human to QC it again.
+
+Three properties worth keeping if you change any of this:
+
+- **The live database is never synced in place.** A file-sync client can copy `app.db` mid-write
+  or restore an older copy over a newer one, and with WAL that corrupts it. `backup.py` writes a
+  consistent snapshot with sqlite3's backup API and uploads only the snapshot. Never point
+  `DFU_DATA_DIR` inside a OneDrive/Drive/Dropbox folder.
+- **Uploads use `rclone copy`, never `sync`.** The remote only ever gains files, so a case cannot
+  disappear from the cloud because something happened to it locally. `app.db` legitimately changes
+  every run, and `--backup-dir` keeps each previous version under `archive/<timestamp>/`, so a
+  database corrupted today is still recoverable from yesterday.
+- **Failure is visible.** Every run writes `backup_status.json`, `/api/backup-status` serves it,
+  and the home page shows a banner when the last backup failed or is more than 36 hours old. A
+  backup everyone believes in but which stopped three weeks ago is worse than none.
+
+The rclone remote is encrypted (`crypt`), so filenames and contents are unreadable in the cloud.
+**Keep both crypt passwords somewhere safe and offline — without them the backup cannot be
+restored by anyone, including you.**
 
 ### Where the data lives
 
