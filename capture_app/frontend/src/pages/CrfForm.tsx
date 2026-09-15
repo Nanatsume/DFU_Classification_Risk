@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { api } from '@/lib/api'
 import { DEFORM, MF_SITES, SIDES, evalSide, overallMissing, toDerived, type Fields, type Side } from '@/lib/crfScoring'
+import { clearDraft, draftAnswerCount, isEmptyDraft, readDraft, writeDraft } from '@/lib/crfDraft'
 import type { CrfRecord } from '@/lib/crfTypes'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
@@ -80,6 +81,10 @@ export default function CrfForm() {
   const [nurse2, setNurse2] = useState('')
   const [note, setNote] = useState('')
   const [saving, setSaving] = useState(false)
+  const [isEdit, setIsEdit] = useState(false)
+  // Drafts are only written once the initial load has settled, so the empty state React starts
+  // with cannot overwrite a real draft before it has been offered to the nurse.
+  const [draftReady, setDraftReady] = useState(false)
 
   const setF = (key: string, v: string | boolean) => setFields((f) => ({ ...f, [key]: v }))
 
@@ -100,6 +105,7 @@ export default function CrfForm() {
       if (editPid) {
         try {
           const rec = await api<CrfRecord>('/api/crf/' + encodeURIComponent(editPid))
+          setIsEdit(true)
           setPid(rec.pid)
           setPidNote('กำลังแก้ไขเคสที่บันทึกไว้')
           setNurse(rec.nurse || '')
@@ -114,8 +120,37 @@ export default function CrfForm() {
       // New case: no id is requested here on purpose. The server mints it when the form is
       // saved, so opening this page and walking away costs nothing.
       setPidNote('ระบบจะออกรหัสให้อัตโนมัติเมื่อกดบันทึก')
+
+      // Offer back anything a previous session left unsaved — a reload, or a phone browser
+      // dropping a backgrounded tab, would otherwise lose the whole examination.
+      const draft = readDraft()
+      if (draft && !isEmptyDraft(draft)) {
+        const when = new Date(draft.savedAt).toLocaleString('th-TH', {
+          dateStyle: 'short', timeStyle: 'short',
+        })
+        const prompt =
+          `พบฟอร์มที่กรอกค้างไว้ ${draftAnswerCount(draft)} ช่อง (${when})` +
+          '\n\nต้องการกรอกต่อจากเดิมหรือไม่?' +
+          '\nกดยกเลิกเพื่อเริ่มเคสใหม่ — ข้อมูลที่ค้างไว้จะถูกลบทิ้ง'
+        if (confirm(prompt)) {
+          setFields(draft.fields as Fields)
+          setNurse(draft.nurse)
+          setNurse2(draft.nurse2)
+          setNote(draft.note)
+        } else {
+          clearDraft()
+        }
+      }
+      setDraftReady(true)
     })()
   }, [])
+
+  // Autosave. Cheap enough to run on every keystroke — the payload is a few hundred bytes, and
+  // debouncing would risk losing the last edits at exactly the moment the tab is evicted.
+  useEffect(() => {
+    if (!draftReady || isEdit) return
+    writeDraft({ fields, nurse, nurse2, note })
+  }, [draftReady, isEdit, fields, nurse, nurse2, note])
 
   async function onSave() {
     if (missing.length && !confirm(`ยังกรอกไม่ครบ ${missing.length} รายการ:\n${missing.slice(0, 8).join(' · ')}\n\nบันทึกเลยหรือไม่?`)) return
@@ -130,6 +165,7 @@ export default function CrfForm() {
       // pid is '' for a new case — the server mints it and returns the saved record; that
       // response is the only place the client learns the id.
       const saved = await api<CrfRecord>('/api/crf', { pid, nurse, nurse2, savedAt: new Date().toISOString(), data })
+      clearDraft()  // only once the server has it — a failed save must keep the draft
       location.href = 'crf-detail.html?pid=' + encodeURIComponent(saved.pid)
     } catch {
       alert('บันทึกไม่สำเร็จ — ตรวจสอบว่าต่อกับเซิร์ฟเวอร์อยู่แล้วลองอีกครั้ง')
@@ -140,6 +176,7 @@ export default function CrfForm() {
     if (!confirm('ล้างข้อมูลที่กรอกในฟอร์มนี้?')) return
     setFields({})
     setNote('')
+    clearDraft()
   }
 
   return (
