@@ -37,9 +37,20 @@ DATA_DIR = Path(os.environ["DFU_DATA_DIR"]).expanduser() if os.environ.get("DFU_
 DB_PATH = DATA_DIR / "app.db"
 
 SCHEMA = """
+-- `hn` is the hospital number, and the only directly identifying value this app holds. It is
+-- here because the workflow demands it: the nurses have no time to fill a 30-field form during
+-- the clinic, so photographs are taken against an HN and the CRF is transcribed later from the
+-- hospital's own annual-checkup record, which is filed by HN and carries no research id.
+--
+-- It is deliberately confined to this one column. It never reaches the image filenames, the
+-- meta/*.json mirrors, fields_json, the CSV exports, or the cloud backup (tools/backup.py blanks
+-- it in the snapshot it uploads). Keeping it at all is a considered trade: transcription by hand
+-- goes wrong sometimes, and without the HN a suspect value can never be checked against the
+-- source again. clear_all_hn() de-identifies the database once collection is finished.
 CREATE TABLE IF NOT EXISTS cases (
     research_id TEXT PRIMARY KEY,
-    created_at  TEXT NOT NULL
+    created_at  TEXT NOT NULL,
+    hn          TEXT
 );
 
 -- No examining-nurse columns, by request of the study site: staff names are personal data the
@@ -131,6 +142,12 @@ def tx() -> Iterator[sqlite3.Connection]:
         conn.close()
 
 
+def _add_hn_column(conn: sqlite3.Connection) -> None:
+    """`cases.hn` for databases created before photograph-first capture existed."""
+    if "hn" not in {r["name"] for r in conn.execute("PRAGMA table_info(cases)")}:
+        conn.execute("ALTER TABLE cases ADD COLUMN hn TEXT")
+
+
 def _drop_staff_name_storage(conn: sqlite3.Connection) -> None:
     """Remove staff names from a database created before the site asked us to stop storing them.
 
@@ -165,6 +182,7 @@ def _drop_staff_name_storage(conn: sqlite3.Connection) -> None:
 def init_db() -> None:
     with tx() as conn:
         conn.executescript(SCHEMA)
+        _add_hn_column(conn)
         _drop_staff_name_storage(conn)
 
 
@@ -176,6 +194,46 @@ def upsert_case(research_id: str, created_at: Optional[str] = None) -> None:
             "ON CONFLICT(research_id) DO NOTHING",
             (research_id, created_at or now_iso()),
         )
+
+
+def start_case_with_hn(hn: str) -> str:
+    """Mint a research id for a patient who is about to be photographed, and record their HN.
+
+    Minting here rather than when the form is later filled in is what keeps the HN out of the
+    filesystem: the images are named for the research id from the very first write, so no file
+    on disk, in a backup, or in a folder listing ever carries a hospital number.
+    """
+    with tx() as conn:
+        rid = _next_rid(conn)
+        conn.execute("INSERT INTO cases(research_id, created_at, hn) VALUES (?, ?, ?)",
+                     (rid, now_iso(), hn.strip()))
+        return rid
+
+
+def case_exists(research_id: str) -> bool:
+    with tx() as conn:
+        return conn.execute("SELECT 1 FROM cases WHERE research_id=?",
+                            (research_id,)).fetchone() is not None
+
+
+def get_hn(research_id: str) -> Optional[str]:
+    with tx() as conn:
+        row = conn.execute("SELECT hn FROM cases WHERE research_id=?", (research_id,)).fetchone()
+    return (row["hn"] or None) if row else None
+
+
+def count_cases_with_hn() -> int:
+    with tx() as conn:
+        return conn.execute(
+            "SELECT COUNT(*) AS n FROM cases WHERE hn IS NOT NULL AND hn != ''").fetchone()["n"]
+
+
+def clear_all_hn() -> int:
+    """Drop every hospital number, leaving a dataset with no direct identifier in it. Meant for
+    the end of data collection, once no transcription remains to be checked against source."""
+    with tx() as conn:
+        cur = conn.execute("UPDATE cases SET hn=NULL WHERE hn IS NOT NULL AND hn != ''")
+        return cur.rowcount
 
 
 def _next_rid(conn: sqlite3.Connection) -> str:
@@ -195,6 +253,31 @@ def next_research_id() -> str:
     callers will see the same value."""
     with tx() as conn:
         return _next_rid(conn)
+
+
+def list_pending_crf() -> list[dict]:
+    """Cases that have been photographed but whose CRF has not been transcribed yet.
+
+    This is the working queue for the researcher sitting down afterwards with the hospital's own
+    record: the HN is what they look the patient up by, and the timestamp is what tells two
+    patients with adjacent HNs apart.
+    """
+    with tx() as conn:
+        rows = conn.execute(
+            """
+            SELECT c.research_id, c.hn, c.created_at,
+                   EXISTS(SELECT 1 FROM captures WHERE research_id=c.research_id AND modality='podoscope') AS has_podo,
+                   EXISTS(SELECT 1 FROM captures WHERE research_id=c.research_id AND modality='thermal') AS has_thermal
+            FROM cases c
+            LEFT JOIN crf_forms f ON f.research_id = c.research_id
+            WHERE f.research_id IS NULL
+              AND EXISTS(SELECT 1 FROM captures WHERE research_id=c.research_id)
+            ORDER BY c.created_at DESC
+            """
+        ).fetchall()
+    return [{"research_id": r["research_id"], "hn": r["hn"] or "",
+             "created_at": r["created_at"],
+             "has_podo": bool(r["has_podo"]), "has_thermal": bool(r["has_thermal"])} for r in rows]
 
 
 def list_cases_with_status() -> list[dict]:

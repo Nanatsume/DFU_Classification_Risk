@@ -81,6 +81,7 @@ export default function CrfForm() {
   // Drafts are only written once the initial load has settled, so the empty state React starts
   // with cannot overwrite a real draft before it has been offered to the nurse.
   const [draftReady, setDraftReady] = useState(false)
+  const [hn, setHn] = useState('')
 
   const setF = (key: string, v: string | boolean) => setFields((f) => ({ ...f, [key]: v }))
 
@@ -109,6 +110,24 @@ export default function CrfForm() {
           alert('โหลดเคส ' + editPid + ' ไม่สำเร็จ — เริ่มเคสใหม่แทน')
         }
       }
+      // ?pid= — transcribing the form for a case that was photographed at the clinic. The id
+      // already exists (it was minted when the photographs were taken), so it is shown rather
+      // than promised, along with the HN the transcriber needs to find the hospital's record.
+      const forPid = new URLSearchParams(location.search).get('pid')
+      if (forPid) {
+        setPid(forPid)
+        setIsEdit(true)   // a real case already exists; do not draft over it
+        try {
+          const row = await api<{ hn: string }>('/api/case/' + encodeURIComponent(forPid))
+          setHn(row.hn || '')
+          setPidNote(row.hn ? 'กรอกจากผลตรวจของ HN ' + row.hn : 'เคสนี้ถ่ายภาพไว้แล้ว')
+        } catch {
+          setPidNote('เคสนี้ถ่ายภาพไว้แล้ว')
+        }
+        setDraftReady(true)
+        return
+      }
+
       // New case: no id is requested here on purpose. The server mints it when the form is
       // saved, so opening this page and walking away costs nothing.
       setPidNote('ระบบจะออกรหัสให้อัตโนมัติเมื่อกดบันทึก')
@@ -183,6 +202,9 @@ export default function CrfForm() {
           <div>
             <div className="font-mono text-[11px] tracking-[0.14em] text-[#7fb3b8] uppercase">รหัสวิจัย</div>
             <div className="mt-1 rounded bg-[#1d3241] px-3 py-1.5 font-mono text-base text-[#8fdae4]">{pid || 'ออกให้เมื่อบันทึก'}</div>
+            {hn && (
+              <div className="mt-1 font-mono text-[11px] text-[#e2b96b]">HN {hn}</div>
+            )}
             {pidNote && <div className="mt-1 font-mono text-[10.5px] text-[#5f8f97]">{pidNote}</div>}
           </div>
         </div>

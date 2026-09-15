@@ -3,6 +3,7 @@ import { api, ApiError } from '@/lib/api'
 import type { CaseRow, CommitRecord, ManifestRow, Modality } from '@/lib/captureTypes'
 import { categoryToLabel } from '@/lib/roiStatus'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
 import {
@@ -91,7 +92,9 @@ function toDisplay(x: CommitRecord | ManifestRow): DisplayRow {
 export default function Capture() {
   const [mode, setMode] = useState<'checking' | 'live' | 'demo'>('checking')
   const [cases, setCases] = useState<CaseRow[]>([])
-  const [session, setSession] = useState<{ rid: string; startedAt: string; caseInfo: CaseRow | null } | null>(null)
+  const [session, setSession] = useState<{ rid: string; startedAt: string; caseInfo: CaseRow | null; hn?: string } | null>(null)
+  const [hn, setHn] = useState('')
+  const [starting, setStarting] = useState(false)
   const [shots, setShots] = useState<Record<Modality, boolean>>({ podoscope: false, thermal: false })
   const [previews, setPreviews] = useState<Record<Modality, string | null>>({ podoscope: null, thermal: null })
   const [qc, setQc] = useState<{ status: 'idle' | 'running' | 'ok' | 'failed'; left?: string; right?: string; error?: string }>({ status: 'idle' })
@@ -141,6 +144,24 @@ export default function Capture() {
     })()
   }, [])
 
+  /** Clinic entry point: hospital number in, research id out, ready to photograph.
+   *  The nurses have no time to fill the CRF with a patient in front of them, so the form is
+   *  transcribed later from the hospital's own record — which is filed by HN. */
+  async function startFromHn() {
+    const value = hn.trim()
+    if (!value) { alert('กรอก HN ของผู้ป่วยก่อน'); return }
+    setStarting(true)
+    try {
+      const res = await api<{ research_id: string }>('/api/session/start', { hn: value })
+      setSession({ rid: res.research_id, startedAt: nowISO(), caseInfo: null, hn: value })
+      setHn('')
+    } catch {
+      alert('เริ่มเคสไม่สำเร็จ — ตรวจสอบการเชื่อมต่อแล้วลองใหม่')
+    } finally {
+      setStarting(false)
+    }
+  }
+
   async function startSession(rid: string, liveMode: boolean) {
     if (!rid) return
     let info = findCase(rid)
@@ -162,7 +183,7 @@ export default function Capture() {
         src = res.url + '?t=' + Date.now()
       } catch (e) {
         if (e instanceof ApiError && e.status === 409) {
-          alert('เคส ' + session.rid + ' ยังไม่มีแบบฟอร์ม CRF — กรอกฟอร์มก่อนจึงจะถ่ายภาพได้')
+          alert('เคส ' + session.rid + ' ยังไม่ได้เริ่มไว้ในระบบ — กลับไปกรอก HN แล้วกดเริ่มเคสใหม่')
           return
         }
         throw e
@@ -245,8 +266,37 @@ export default function Capture() {
       </div>
 
       {!session ? (
-        <Card className="mb-4.5 p-5 text-center">
-          <p className="text-muted-foreground mb-4 text-sm">เลือกเคสที่กรอกแบบฟอร์ม CRF แล้วและยังไม่ได้ถ่ายภาพ</p>
+        <Card className="mb-4.5 p-5">
+          <div className="mx-auto max-w-md">
+            <div className="text-[15px] font-bold">เริ่มเคสใหม่</div>
+            <p className="text-muted-foreground mt-1 mb-3 text-[12.5px] leading-relaxed">
+              กรอก HN ของผู้ป่วยแล้วกดเริ่ม ระบบจะออกรหัสวิจัยให้ทันทีเพื่อถ่ายภาพได้เลย
+              ส่วนแบบฟอร์ม CRF ค่อยกรอกทีหลังตอนว่าง โดยใช้ HN นี้ไปเปิดดูผลตรวจประจำปีของโรงพยาบาล
+            </p>
+            <div className="flex flex-col gap-2 sm:flex-row">
+              <Input
+                value={hn}
+                onChange={(e) => setHn(e.target.value)}
+                onKeyDown={(e) => { if (e.key === 'Enter') startFromHn() }}
+                placeholder="HN ผู้ป่วย"
+                inputMode="numeric"
+                autoCapitalize="none"
+                autoCorrect="off"
+                spellCheck={false}
+                className="font-mono"
+              />
+              <Button onClick={startFromHn} disabled={starting || !hn.trim()}>
+                {starting ? 'กำลังเริ่ม…' : 'เริ่มเคส'}
+              </Button>
+            </div>
+            <p className="text-muted-foreground mt-2 text-[11px]">
+              HN ใช้เพื่อจับคู่รูปกับผลตรวจของโรงพยาบาลเท่านั้น ไม่ถูกใส่ในชื่อไฟล์ ไม่ออกไปกับไฟล์ CSV
+              และไม่ถูกอัปขึ้นคลาวด์
+            </p>
+          </div>
+
+          <div className="mt-6 border-t pt-4 text-center">
+          <p className="text-muted-foreground mb-4 text-sm">หรือเลือกเคสที่กรอกแบบฟอร์มไว้แล้วแต่ยังไม่ได้ถ่ายภาพ</p>
           {mode === 'checking' ? (
             <div className="text-muted-foreground text-sm">กำลังตรวจสอบ…</div>
           ) : pendingCases().length === 0 ? (
@@ -267,10 +317,11 @@ export default function Capture() {
             </div>
           )}
           <p className="mt-3.5">
-            <a href="crf-form.html" target="_blank" rel="noreferrer" className="text-primary text-[11.5px] font-semibold hover:underline">
-              เปิดแบบฟอร์ม CRF เพื่อลงทะเบียนเคสใหม่ →
+            <a href="crf-list.html" className="text-primary text-[11.5px] font-semibold hover:underline">
+              ดูเคสที่ถ่ายแล้วรอกรอกฟอร์ม →
             </a>
           </p>
+          </div>
         </Card>
       ) : (
         <>
@@ -281,7 +332,9 @@ export default function Capture() {
                 <span className="text-primary font-mono text-3xl font-extrabold">{session.rid}</span>
               </div>
               <div className="bg-cat-1/10 text-cat-1 rounded-md border border-current/30 px-3.5 py-2 text-xs">
-                {session.caseInfo
+                {session.hn
+                  ? `HN ${session.hn} — ตรวจสอบว่าเป็นผู้ป่วยคนถูกก่อนถ่าย`
+                  : session.caseInfo
                   ? `${iwgdfText(session.caseInfo)} — ตรวจสอบว่าเป็นผู้ป่วยคนถูกก่อนถ่าย`
                   : 'ไม่พบข้อมูลฟอร์มของเคสนี้ในรายการ — ตรวจสอบรหัสให้ตรงกับแบบฟอร์มก่อนถ่าย'}
               </div>

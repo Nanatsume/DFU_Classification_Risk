@@ -136,12 +136,21 @@ function CellCat({ g }: { g?: DerivedSide }) {
   )
 }
 
+type PendingCase = {
+  research_id: string
+  hn: string
+  created_at: string
+  has_podo: boolean
+  has_thermal: boolean
+}
+
 export default function CrfList() {
   const [records, setRecords] = useState<CrfRecord[]>([])
   const [captured, setCaptured] = useState<Set<string>>(new Set())
   const [roiCounts, setRoiCounts] = useState<Record<string, { L: number; R: number }>>({})
   const [toast, setToast] = useState('')
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null)
+  const [pending, setPending] = useState<PendingCase[]>([])
 
   async function loadAll() {
     try {
@@ -167,6 +176,12 @@ export default function CrfList() {
       setRoiCounts({})
     }
   }
+
+  useEffect(() => {
+    api<PendingCase[]>('/api/pending')
+      .then(setPending)
+      .catch(() => setPending([]))
+  }, [])
 
   useEffect(() => {
     loadAll()
@@ -237,6 +252,38 @@ export default function CrfList() {
           </Button>
         </div>
       </div>
+
+      {pending.length > 0 && (
+        // The transcription queue. These cases were photographed at the clinic and their CRF has
+        // not been filled in yet — the researcher works through this list afterwards, looking each
+        // patient up in the hospital's own annual-checkup record by HN.
+        <div className="border-cat-2 bg-cat-2/5 mb-4 rounded-md border border-l-[5px] p-4">
+          <div className="text-[14px] font-bold">รอกรอกแบบฟอร์ม · {pending.length} เคส</div>
+          <p className="text-muted-foreground mt-0.5 mb-3 text-[12px]">
+            ถ่ายภาพไว้แล้วแต่ยังไม่ได้กรอก CRF — ใช้ HN เปิดดูผลตรวจประจำปีของโรงพยาบาลแล้วกรอกตาม
+          </p>
+          <div className="space-y-2">
+            {pending.map((c) => {
+              const t = new Date(c.created_at)
+              return (
+                <div key={c.research_id} className="bg-card flex flex-col gap-2 rounded border px-3.5 py-2.5 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3">
+                  <span className="text-primary font-mono font-bold">{c.research_id}</span>
+                  <span className="font-mono text-[13px] font-semibold text-[#a8762c]">HN {c.hn || '—'}</span>
+                  <span className="text-muted-foreground text-[11.5px] sm:min-w-0 sm:flex-1">
+                    ถ่ายเมื่อ {isNaN(t.getTime()) ? '—' : t.toLocaleString('th-TH', { dateStyle: 'short', timeStyle: 'short' })}
+                    {' · '}
+                    {c.has_podo ? 'podoscope ✓' : 'podoscope —'}{' · '}
+                    {c.has_thermal ? 'thermal ✓' : 'thermal —'}
+                  </span>
+                  <Button size="sm" asChild>
+                    <a href={'crf-form.html?pid=' + encodeURIComponent(c.research_id)}>กรอกฟอร์มเคสนี้</a>
+                  </Button>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      )}
 
       {toast && (
         <div className="bg-cat-0/10 border-cat-0 text-cat-0 mb-3.5 rounded-md border px-3.5 py-2.5 text-sm">

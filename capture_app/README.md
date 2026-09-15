@@ -41,13 +41,22 @@ npm run build        # production build -> ../static/ (what the backend actually
 
 1. **เข้าสู่ระบบ** — one shared team password (not per-nurse accounts; the CRF form's own
    nurse/nurse2 fields handle attribution).
-2. **กรอกฟอร์มใหม่** (CRF-07) — the server mints the next Research ID (`P0001`, `P0002`, ...) when the
-   form is **saved**, not when it is opened, so an abandoned half-filled form costs no id. Answers
-   for LOPS (monofilament), PAD (ABI/TBI), deformity, and history are scored live into an IWGDF
-   category (0–3) and a Positive/Negative label per foot.
-3. **ถ่ายภาพ** — a case must have a saved form first (409 otherwise). Capturing **podoscope**
-   auto-runs the preprocessing pipeline and shows the segmented left/right feet for QC on the
-   spot; then capture **thermal**; **ยืนยันและบันทึก** commits the case.
+2. **ถ่ายภาพ** (at the clinic) — type the patient's **HN** and press เริ่มเคส. The server mints the
+   Research ID (`P0001`, `P0002`, ...) there and then, so every file is named for the research id
+   from its first write and no hospital number ever reaches a filename. Capturing **podoscope**
+   auto-runs the preprocessing pipeline and shows the segmented left/right feet for QC on the spot;
+   then capture **thermal**; **ยืนยันและบันทึก** commits the case.
+
+   The nurses have no time to fill a 30-field form with a patient in front of them, which is why
+   the photographs come first and the form follows. See "Hospital numbers" below.
+3. **กรอกฟอร์มทีหลัง** (CRF-07) — the history page lists every photographed case whose form is not
+   filled in yet, with its HN. Look the patient up in the hospital's own annual-checkup record by
+   that HN, transcribe the answers, and save against the same Research ID. Answers for LOPS
+   (monofilament), PAD (ABI/TBI), deformity, and history are scored live into an IWGDF category
+   (0–3) and a Positive/Negative label per foot.
+
+   A form can also be started without photographs (the id is then minted on save, so an abandoned
+   half-filled form costs no id).
 4. **ทำ ROI** — mark pressure-at-risk regions in VIA 2 on the full-resolution preprocessed image.
    Only feet with a Positive (or not-yet-determined) label need marking — a Negative foot has no
    LOPS/PAD by definition, so there's nothing to mark; those cases still show up in the picker,
@@ -166,7 +175,7 @@ Full per-endpoint detail (payload/response/who calls it) is in
 
 ## Tests
 
-Backend (pytest, isolated SQLite DB per test — never touches the real `data/`), 92 tests:
+Backend (pytest, isolated SQLite DB per test — never touches the real `data/`), 98 tests:
 
 ```bash
 pip install -r requirements.txt -r requirements-dev.txt   # first time only
@@ -274,6 +283,25 @@ Three properties worth keeping if you change any of this:
 The rclone remote is encrypted (`crypt`), so filenames and contents are unreadable in the cloud.
 **Keep both crypt passwords somewhere safe and offline — without them the backup cannot be
 restored by anyone, including you.**
+
+### Hospital numbers
+
+`cases.hn` is the only directly identifying value this app stores, and it exists because the
+workflow demands it: photographs are taken against an HN at the clinic, and the CRF is transcribed
+afterwards from the hospital's own annual-checkup record — which is filed by HN and carries no
+research id. The HN is the only thing linking the two.
+
+It is confined to that one column on purpose. It does **not** appear in image filenames, the
+`meta/*.json` mirrors, `fields_json`, either CSV export, or the cloud backup (`tools/backup.py`
+blanks it in the snapshot it uploads, then VACUUMs, so the cloud copy is pseudonymous even before
+the remote's own encryption).
+
+Keeping it at all is a considered trade rather than an oversight. The CRF is transcribed by hand,
+and transcription goes wrong sometimes; without the HN a suspect value can never be checked against
+the source again. When collection is finished and no such check remains, `DELETE /api/hn` drops
+every hospital number at once and the dataset holds no direct identifier. That is irreversible.
+
+`GET /api/hn` reports how many cases still carry one.
 
 ### Where the data lives
 

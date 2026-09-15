@@ -9,7 +9,8 @@ Run it from Task Scheduler once a night; `tools/setup_backup.ps1` registers that
 WHAT IS BACKED UP
     app.db          every case, CRF form, commit, audit row -- and the hand-drawn ROI
                     annotations, which are the only thing here a person cannot reproduce by
-                    re-running something.
+                    re-running something. Hospital numbers are stripped from the copy that is
+                    uploaded (see snapshot_database) so the cloud never holds an identifier.
     podo/           raw captures (the source of truth) and their preprocessed siblings. The
                     preprocessed files are nominally a regenerable cache, but regenerating costs
                     about a minute per image and the result needs a human to QC it again, so they
@@ -91,6 +92,26 @@ def snapshot_database(data_dir: Path, staging: Path) -> Path:
             dst.close()
     finally:
         src.close()
+
+    # Blank the hospital numbers in the copy that leaves this machine. cases.hn is the one
+    # directly identifying value the app holds; it exists so a transcribed CRF can be checked
+    # against the hospital's own record, which is a local task. The cloud copy has no use for it,
+    # and without it the uploaded dataset is pseudonymous rather than identifiable — a materially
+    # different thing to be holding in someone else's storage, encrypted remote or not.
+    scrubbed = sqlite3.connect(str(out))
+    try:
+        cols = {r[1] for r in scrubbed.execute("PRAGMA table_info(cases)")}
+        if "hn" in cols:
+            n = scrubbed.execute(
+                "UPDATE cases SET hn=NULL WHERE hn IS NOT NULL AND hn != ''").rowcount
+            scrubbed.commit()
+            if n:
+                log(f"removed {n} hospital number(s) from the snapshot before upload")
+        scrubbed.execute("VACUUM")  # so the blanked values are not recoverable from free pages
+        scrubbed.commit()
+    finally:
+        scrubbed.close()
+
     log(f"database snapshot: {out.stat().st_size / 1024:.0f} KB")
     return out
 

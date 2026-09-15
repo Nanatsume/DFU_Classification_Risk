@@ -121,6 +121,10 @@ class CommitReq(BaseModel):
     rid: str
 
 
+class StartCaseReq(BaseModel):
+    hn: str
+
+
 @app.get("/api/health")
 def health():
     """Unauthenticated — every page's LIVE/DEMO probe and the login page itself call this
@@ -169,20 +173,78 @@ def cases():
 
 @app.post("/api/session/new", dependencies=[require_session])
 def session_new():
-    """Mints the next research id and reserves it immediately (a case can exist with neither a
-    CRF form nor a photo yet, right after this call) so the id counter stays monotonic even if
-    the form is abandoned before saving."""
+    """Mints and reserves a research id with no HN attached.
+
+    Kept for tooling and tests. The clinic flow uses /api/session/start instead: photographs are
+    taken first, against a hospital number, and the CRF is transcribed afterwards.
+    """
     rid = db.next_research_id()
     db.upsert_case(rid)
     return {"research_id": rid, "started_at": now_iso()}
+
+
+@app.post("/api/session/start", dependencies=[require_session])
+def session_start(req: StartCaseReq):
+    """Begin a case at the clinic: hospital number in, research id out, ready to photograph.
+
+    The nurses cannot fill a 30-field form while a patient is in front of them, so the CRF is
+    transcribed later from the hospital's own annual-checkup record — which is filed by HN and
+    carries no research id. The HN entered here is the only thing linking the two, and it stays
+    in the database: the images are named for the research id from the first write, so no
+    hospital number ever reaches a filename, a folder listing, or a backup.
+    """
+    hn = req.hn.strip()
+    if not hn:
+        raise HTTPException(400, "ต้องกรอก HN ก่อนจึงจะถ่ายภาพได้")
+    rid = db.start_case_with_hn(hn)
+    db.log_audit(rid, "case_start")
+    return {"research_id": rid, "hn": hn, "started_at": now_iso()}
+
+
+@app.get("/api/case/{rid}", dependencies=[require_session])
+def case_detail(rid: str):
+    """The bits of a case the transcription form needs — chiefly the HN to look the patient up
+    by in the hospital's own record."""
+    if not db.case_exists(rid):
+        raise HTTPException(404, f"no case {rid}")
+    return {"research_id": rid, "hn": db.get_hn(rid) or ""}
+
+
+@app.get("/api/pending", dependencies=[require_session])
+def pending():
+    """The transcription queue — photographed, CRF not filled in yet."""
+    return db.list_pending_crf()
+
+
+@app.get("/api/hn", dependencies=[require_session])
+def hn_status():
+    """How many cases still carry a hospital number, for the de-identification control."""
+    return {"remaining": db.count_cases_with_hn()}
+
+
+@app.delete("/api/hn", dependencies=[require_session])
+def clear_hn():
+    """Drop every hospital number at once — the end-of-collection de-identification step.
+
+    Irreversible by design: after this the dataset holds no direct identifier, and no transcribed
+    value can be checked against the hospital record again. That is the point, but it is why the
+    UI asks twice.
+    """
+    n = db.clear_all_hn()
+    db.log_audit(None, "hn_cleared", str(n))
+    return {"cleared": n}
 
 
 @app.post("/api/capture", dependencies=[require_session])
 def capture(req: CaptureReq):
     if req.modality not in MODALITIES:
         raise HTTPException(400, f"modality must be one of {MODALITIES}")
-    if not db.has_crf(req.rid):
-        raise HTTPException(409, f"no CRF form for {req.rid} yet — fill in the case record form first")
+    # The gate used to be "this case must already have a CRF form". Photograph-first capture
+    # inverts that: the case is created by /api/session/start with an HN, and the form arrives
+    # later. What must still be true is that the id was issued by us and is tied to a patient —
+    # otherwise the image has nothing identifying whose foot it is.
+    if not db.case_exists(req.rid):
+        raise HTTPException(409, f"ยังไม่ได้เริ่มเคส {req.rid} — กรอก HN แล้วกดเริ่มเคสก่อน")
     png = SOURCE.grab(req.modality, req.rid)
     p = raw_path(req.rid, req.modality)
     p.parent.mkdir(parents=True, exist_ok=True)

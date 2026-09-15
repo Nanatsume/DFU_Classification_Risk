@@ -104,6 +104,68 @@ def test_session_new_advances_each_call(auth_client):
     assert ids == ["P0001", "P0002", "P0003"]
 
 
+# ---------- photograph-first capture (HN) ----------
+
+def test_start_case_returns_an_id_and_records_the_hn(auth_client):
+    r = auth_client.post("/api/session/start", json={"hn": " 12345678 "})
+    assert r.status_code == 200
+    body = r.json()
+    assert body["research_id"] == "P0001"
+    assert body["hn"] == "12345678"          # trimmed
+    assert auth_client.get("/api/case/P0001").json()["hn"] == "12345678"
+
+
+def test_start_case_requires_an_hn(auth_client):
+    """The HN is the only link back to the hospital's record; a blank one makes the photographs
+    unmatchable, so it is refused rather than defaulted."""
+    assert auth_client.post("/api/session/start", json={"hn": "   "}).status_code == 400
+
+
+def test_capture_no_longer_needs_a_crf_form_first(auth_client):
+    """The clinic photographs first and transcribes the form later — the old 409 gate would have
+    made that impossible."""
+    rid = auth_client.post("/api/session/start", json={"hn": "555"}).json()["research_id"]
+    r = auth_client.post("/api/capture", json={"rid": rid, "modality": "podoscope"})
+    assert r.status_code == 200
+
+
+def test_capture_still_refuses_an_id_we_never_issued(auth_client):
+    """Dropping the CRF gate must not mean anything goes: an unknown id has no patient attached,
+    so the image would have nothing identifying whose foot it is."""
+    r = auth_client.post("/api/capture", json={"rid": "P9999", "modality": "podoscope"})
+    assert r.status_code == 409
+
+
+def test_pending_lists_photographed_cases_without_a_form(auth_client):
+    rid = auth_client.post("/api/session/start", json={"hn": "777"}).json()["research_id"]
+    assert auth_client.get("/api/pending").json() == []      # no photograph yet
+    auth_client.post("/api/capture", json={"rid": rid, "modality": "podoscope"})
+    pending = auth_client.get("/api/pending").json()
+    assert [p["research_id"] for p in pending] == [rid]
+    assert pending[0]["hn"] == "777" and pending[0]["has_podo"] is True
+
+    payload = {k: v for k, v in crf_payload(rid).items()}
+    auth_client.post("/api/crf", json=payload)
+    assert auth_client.get("/api/pending").json() == []      # transcribed, so out of the queue
+
+
+def test_hn_can_be_cleared_for_de_identification(auth_client):
+    rid = auth_client.post("/api/session/start", json={"hn": "999"}).json()["research_id"]
+    assert auth_client.get("/api/hn").json()["remaining"] == 1
+    assert auth_client.delete("/api/hn").json()["cleared"] == 1
+    assert auth_client.get("/api/hn").json()["remaining"] == 0
+    assert auth_client.get("/api/case/" + rid).json()["hn"] == ""
+
+
+def test_hn_never_reaches_the_saved_form(auth_client):
+    """The HN lives in exactly one column. If it leaked into fields_json it would travel into the
+    CSV exports and the cloud backup with everything else."""
+    rid = auth_client.post("/api/session/start", json={"hn": "24681357"}).json()["research_id"]
+    auth_client.post("/api/crf", json=crf_payload(rid))
+    body = auth_client.get("/api/crf/" + rid).json()
+    assert "24681357" not in json.dumps(body, ensure_ascii=False)
+
+
 # ---------- backup status ----------
 
 def test_backup_status_unconfigured_when_no_file(auth_client):
