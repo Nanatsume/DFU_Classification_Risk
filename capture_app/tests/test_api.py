@@ -167,6 +167,39 @@ def test_hn_never_reaches_the_saved_form(auth_client):
     assert "24681357" not in json.dumps(body, ensure_ascii=False)
 
 
+def test_capture_reports_a_missing_camera_instead_of_a_500(auth_client, monkeypatch):
+    """The message names the camera and says what to do about it. Escaping as a 500 would reduce
+    that to "Internal Server Error" on the one screen where someone can act on it -- which is what
+    happened the first time the app was run in usb mode with the podoscope unplugged."""
+    import capture_source
+    import server as server_mod
+
+    class Unplugged:
+        def grab(self, modality, rid):
+            raise capture_source.CaptureError(
+                "No camera matching 'Logi C615' is connected. Plug the podoscope in.")
+
+    monkeypatch.setattr(server_mod, "SOURCE", Unplugged())
+    rid = auth_client.post("/api/session/start", json={"hn": "1"}).json()["research_id"]
+    r = auth_client.post("/api/capture", json={"rid": rid, "modality": "podoscope"})
+    assert r.status_code == 503
+    assert "Logi C615" in r.json()["detail"]
+
+
+def test_capture_reports_thermal_not_implemented_distinctly(auth_client, monkeypatch):
+    import server as server_mod
+
+    class ThermalPending:
+        def grab(self, modality, rid):
+            raise NotImplementedError("Thermal capture needs the vendor SDK (device on order).")
+
+    monkeypatch.setattr(server_mod, "SOURCE", ThermalPending())
+    rid = auth_client.post("/api/session/start", json={"hn": "2"}).json()["research_id"]
+    r = auth_client.post("/api/capture", json={"rid": rid, "modality": "thermal"})
+    assert r.status_code == 501          # not 503: waiting on hardware, not a camera to plug in
+    assert "SDK" in r.json()["detail"]
+
+
 # ---------- backup status ----------
 
 def test_backup_status_unconfigured_when_no_file(auth_client):

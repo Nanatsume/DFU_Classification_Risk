@@ -44,7 +44,7 @@ from pydantic import BaseModel
 
 import auth
 import db
-from capture_source import get_source
+from capture_source import CaptureError, get_source
 from preprocessing import preprocess_foot_image
 from crf_store import router as crf_router
 from roi_store import router as roi_router
@@ -235,7 +235,15 @@ def capture(req: CaptureReq):
     # otherwise the image has nothing identifying whose foot it is.
     if not db.case_exists(req.rid):
         raise HTTPException(409, f"ยังไม่ได้เริ่มเคส {req.rid} — กรอก HN แล้วกดเริ่มเคสก่อน")
-    png = SOURCE.grab(req.modality, req.rid)
+    try:
+        png = SOURCE.grab(req.modality, req.rid)
+    except CaptureError as e:
+        # These carry a message written for the nurse standing at the podoscope — which camera is
+        # missing, what is holding it, to check the lens cover. Letting it escape as a 500 turns
+        # all of that into "Internal Server Error" on the one screen where it is actionable.
+        raise HTTPException(503, str(e))
+    except NotImplementedError as e:
+        raise HTTPException(501, str(e))   # thermal, until the device arrives
     p = raw_path(req.rid, req.modality)
     p.parent.mkdir(parents=True, exist_ok=True)
     p.write_bytes(png)
