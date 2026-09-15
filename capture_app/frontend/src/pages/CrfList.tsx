@@ -43,7 +43,7 @@ function patientLevelIwgdf(rec: CrfRecord): { category: number | ''; label: stri
 }
 
 /* ---------- CSV #1: raw form, column order follows the CRF-07 sections (ก LOPS → ข PAD →
-   ค Deformity → ง History/CKD → จ Notes/nurses) exactly as printed on the paper form — for the
+   ค Deformity → ง History/CKD → จ Notes) exactly as printed on the paper form — for the
    teammate who needs to read/verify this against the original questionnaire. Deformity collapses
    to one yes/no column per side instead of all 13 checkbox items (too wide) — the specific types
    are not lost, they're still in the saved record (GET /api/crf/{pid} or data/app.db), just not
@@ -56,7 +56,7 @@ const RAW_FORM_COLUMNS: string[] = [
   ...SIDES.flatMap((s) => [`abi_${s.k}`, `tbi_${s.k}`]),                            // ข PAD
   ...SIDES.map((s) => `deformity_${s.k}`),                                          // ค Deformity (yes/no, collapsed)
   ...SIDES.flatMap((s) => [`ulcer_${s.k}`, `amp_${s.k}`]), 'ckd',                   // ง History/CKD
-  'note', 'nurse', 'nurse2',                                                        // จ Notes/nurses
+  'note',                                                                           // จ Notes
   ...SIDES.flatMap((s) => [                                                         // สรุปผล IWGDF ต่อข้าง (คำนวณ)
     `lops_${s.k}`, `pad_${s.k}`, `history_${s.k}`, `iwgdf_category_${s.k}`, `iwgdf_label_${s.k}`,
   ]),
@@ -69,8 +69,6 @@ function flattenRawForm(rec: CrfRecord): Record<string, unknown> {
   const row: Record<string, unknown> = { pid: rec.pid, savedAt: rec.savedAt }
   RAW_FORM_COLUMNS.forEach((col) => {
     if (col === 'pid' || col === 'savedAt' || derivedOnly.has(col)) return
-    if (col === 'nurse') { row.nurse = rec.nurse; return }
-    if (col === 'nurse2') { row.nurse2 = rec.nurse2; return }
     row[col] = fields[col] ?? ''
   })
   SIDES.forEach((s) => {
@@ -258,7 +256,6 @@ export default function CrfList() {
                 <TableHead>รหัสวิจัย</TableHead>
                 <TableHead>วันที่บันทึก</TableHead>
                 <TableHead>เวลา</TableHead>
-                <TableHead>พยาบาลผู้ตรวจ</TableHead>
                 <TableHead>เท้าซ้าย</TableHead>
                 <TableHead>เท้าขวา</TableHead>
                 <TableHead>ภาพ</TableHead>
@@ -283,11 +280,6 @@ export default function CrfList() {
                     </TableCell>
                     <TableCell className="text-muted-foreground">
                       {dt ? dt.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }) + ' น.' : '–'}
-                    </TableCell>
-                    <TableCell>
-                      {[r.nurse, r.nurse2].filter(Boolean).map((n) => (
-                        <div key={n} className="whitespace-nowrap">{n}</div>
-                      ))}
                     </TableCell>
                     <TableCell><CellCat g={r.data?.derived?.L} /></TableCell>
                     <TableCell><CellCat g={r.data?.derived?.R} /></TableCell>

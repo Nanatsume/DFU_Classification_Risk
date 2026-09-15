@@ -42,8 +42,6 @@ def migrate_crf() -> int:
         data = rec.get("data") or {}
         db.save_crf(
             pid=pid,
-            nurse=rec.get("nurse", ""),
-            nurse2=rec.get("nurse2", ""),
             saved_at=rec.get("savedAt", ""),
             fields=data.get("fields", {}),
             derived=data.get("derived", {}),
@@ -104,7 +102,6 @@ def migrate_manifest() -> int:
                 research_id=rid,
                 status=row.get("status", ""),
                 committed_at=row.get("captured_at", ""),
-                operator="",
             )
             n += 1
     return n
@@ -151,7 +148,7 @@ def main() -> None:
     with db.tx() as conn:
         counts = {t: conn.execute(f"SELECT COUNT(*) AS n FROM {t}").fetchone()["n"]
                   for t in ("cases", "crf_forms", "captures", "preprocessing", "commits",
-                            "roi_annotations", "nurses")}
+                            "roi_annotations")}
     print("\nDB row counts:")
     for t, c in counts.items():
         print(f"  {t:16s} {c}")

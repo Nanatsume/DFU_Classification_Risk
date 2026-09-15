@@ -3,12 +3,12 @@ data folder per test (see conftest.client / conftest.auth_client). This is the s
 was hand-verified with curl during development — codified so it can't silently regress.
 """
 
+import json
+
 import numpy as np
 from PIL import Image
 
 CRF_PAYLOAD_TEMPLATE = {
-    "nurse": "กรรณิการ์ ทองพูล",
-    "nurse2": "ธนกฤต อินทรสุวรรณ",
     "data": {
         "fields": {
             "ckd": "no",
@@ -48,7 +48,6 @@ def test_protected_routes_401_without_a_session(client):
         ("get", "/api/cases", None),
         ("post", "/api/session/new", {}),
         ("get", "/api/crf", None),
-        ("get", "/api/nurses", None),
         ("get", "/api/roi", None),
         ("get", "/api/manifest", None),
     ]:
@@ -231,23 +230,149 @@ def test_crf_delete_missing_404(auth_client):
     assert auth_client.delete("/api/crf/P9999").status_code == 404
 
 
+# ---------- backup status ----------
+
+def test_backup_status_unconfigured_when_no_file(auth_client):
+    assert auth_client.get("/api/backup-status").json() == {"configured": False}
+
+
+def test_backup_status_reports_a_recent_backup_as_fresh(auth_client, tmp_path):
+    import json
+    from datetime import datetime, timedelta, timezone
+    now = datetime.now(timezone(timedelta(hours=7))).isoformat()
+    (tmp_path / "backup_status.json").write_text(
+        json.dumps({"updated_at": now, "ok": True, "cases": 12}), encoding="utf-8")
+    body = auth_client.get("/api/backup-status").json()
+    assert body["configured"] is True and body["ok"] is True
+    assert body["stale"] is False
+    assert body["cases"] == 12
+
+
+def test_backup_status_flags_a_backup_that_stopped_running(auth_client, tmp_path):
+    """The failure this guards against is silence: a job that died weeks ago while everyone
+    assumed the data was safe."""
+    import json
+    from datetime import datetime, timedelta, timezone
+    old = (datetime.now(timezone(timedelta(hours=7))) - timedelta(days=9)).isoformat()
+    (tmp_path / "backup_status.json").write_text(
+        json.dumps({"updated_at": old, "ok": True}), encoding="utf-8")
+    body = auth_client.get("/api/backup-status").json()
+    assert body["stale"] is True
+    assert body["age_hours"] > 200
+
+
+def test_backup_status_does_not_cry_wolf_the_morning_after(auth_client, tmp_path):
+    """A nightly job that ran late, or a laptop closed at 02:00, is not a problem yet."""
+    import json
+    from datetime import datetime, timedelta, timezone
+    recent = (datetime.now(timezone(timedelta(hours=7))) - timedelta(hours=30)).isoformat()
+    (tmp_path / "backup_status.json").write_text(
+        json.dumps({"updated_at": recent, "ok": True}), encoding="utf-8")
+    assert auth_client.get("/api/backup-status").json()["stale"] is False
+
+
+def test_backup_status_survives_a_corrupt_status_file(auth_client, tmp_path):
+    (tmp_path / "backup_status.json").write_text("{not json", encoding="utf-8")
+    body = auth_client.get("/api/backup-status").json()
+    assert body["ok"] is False and "unreadable" in body["error"]
+
+
+def test_backup_status_requires_login(client):
+    assert client.get("/api/backup-status").status_code == 401
+
+
+# ---------- CRF CRUD ----------
+
+def test_crf_save_and_get(auth_client):
+    r = auth_client.post("/api/crf", json=crf_payload("P0001"))
+    assert r.status_code == 200
+    body = r.json()
+    assert body["data"]["derived"]["L"]["label"] == "Negative"
+    assert body["data"]["derived"]["R"]["label"] == "Positive"
+
+    r = auth_client.get("/api/crf/P0001")
+    assert r.status_code == 200
+    assert r.json()["pid"] == "P0001"
+
+
+def test_crf_save_without_pid_mints_the_id(auth_client):
+    """The form page sends no pid for a new case — the server mints it and hands it back in the
+    saved record, which is the only place the client learns it."""
+    payload = {k: v for k, v in crf_payload("P0001").items() if k != "pid"}
+    r = auth_client.post("/api/crf", json=payload)
+    assert r.status_code == 200
+    assert r.json()["pid"] == "P0001"
+    assert auth_client.get("/api/crf/P0001").status_code == 200
+
+
+def test_crf_save_without_pid_advances_each_time(auth_client):
+    payload = {k: v for k, v in crf_payload("P0001").items() if k != "pid"}
+    ids = [auth_client.post("/api/crf", json=payload).json()["pid"] for _ in range(3)]
+    assert ids == ["P0001", "P0002", "P0003"]
+
+
+def test_opening_a_form_without_saving_burns_no_id(auth_client):
+    """Regression: the form page used to reserve an id on mount, so abandoning a half-filled form
+    left a case row with no form behind and the next patient got a gap in the sequence."""
+    before = auth_client.get("/api/health").json()["next_id"]
+    payload = {k: v for k, v in crf_payload("P0001").items() if k != "pid"}
+    assert auth_client.get("/api/health").json()["next_id"] == before
+    assert auth_client.post("/api/crf", json=payload).json()["pid"] == before
+
+
+def test_crf_save_with_pid_still_edits_that_case(auth_client):
+    """Sending a pid is the edit path and must not mint anything new."""
+    auth_client.post("/api/crf", json=crf_payload("P0001"))
+    r = auth_client.post("/api/crf", json=crf_payload("P0001"))
+    assert r.json()["pid"] == "P0001"
+    assert [row["pid"] for row in auth_client.get("/api/crf").json()] == ["P0001"]
+
+
+def test_crf_get_missing_pid_404(auth_client):
+    r = auth_client.get("/api/crf/P9999")
+    assert r.status_code == 404
+
+
+def test_crf_save_rejects_bad_pid_format(auth_client):
+    r = auth_client.post("/api/crf", json=crf_payload("not-a-pid"))
+    assert r.status_code == 400
+
+
+def test_crf_list_newest_first(auth_client):
+    auth_client.post("/api/crf", json=crf_payload("P0001"))
+    auth_client.post("/api/crf", json=crf_payload("P0002"))
+    rows = auth_client.get("/api/crf").json()
+    assert [r["pid"] for r in rows] == ["P0002", "P0001"]
+
+
+def test_crf_delete_without_photos_succeeds(auth_client):
+    auth_client.post("/api/crf", json=crf_payload("P0001"))
+    r = auth_client.delete("/api/crf/P0001")
+    assert r.status_code == 200
+    assert auth_client.get("/api/crf/P0001").status_code == 404
+
+
+def test_crf_delete_missing_404(auth_client):
+    assert auth_client.delete("/api/crf/P9999").status_code == 404
+
+
 # ---------- nurses ----------
 
-def test_nurses_seeded_and_addable(auth_client):
-    names = auth_client.get("/api/nurses").json()
-    assert "กรรณิการ์ ทองพูล" in names
-    auth_client.post("/api/nurses", json={"name": "พยาบาลทดสอบ"})
-    assert "พยาบาลทดสอบ" in auth_client.get("/api/nurses").json()
+def test_staff_name_endpoints_are_gone(auth_client):
+    """The study site asked that staff names not be stored, so the rosters and the endpoints that
+    served them were removed rather than merely hidden from the UI. A 404 here is the point: a
+    dropdown that still answers is a dropdown someone will wire back up."""
+    assert auth_client.get("/api/nurses").status_code == 404
+    assert auth_client.get("/api/operators").status_code == 404
 
 
-def test_operators_seeded_with_nurses_and_team_and_addable(auth_client):
-    """Photographer dropdown = the same 4 nurses + the 3 research-team members, seeded directly
-    in db.py (no add-via-web-form UI for this one, by design)."""
-    names = auth_client.get("/api/operators").json()
-    assert "กรรณิการ์ ทองพูล" in names  # a nurse
-    assert "ณัฐพงศ์ ภักดีบุญ" in names  # a research-team member
-    auth_client.post("/api/operators", json={"name": "ผู้ถ่ายทดสอบ"})
-    assert "ผู้ถ่ายทดสอบ" in auth_client.get("/api/operators").json()
+def test_saved_form_stores_no_staff_names(auth_client):
+    payload = {k: v for k, v in crf_payload("P0001").items() if k != "pid"}
+    payload["nurse"] = "ควรถูกเพิกเฉย"      # a stale client must not be able to smuggle one back in
+    payload["nurse2"] = "ควรถูกเพิกเฉย"
+    body = auth_client.post("/api/crf", json=payload).json()
+    assert "nurse" not in body and "nurse2" not in body
+    assert "nurse" not in json.dumps(body, ensure_ascii=False)
 
 
 # ---------- the capture gate: no CRF form -> 409 ----------

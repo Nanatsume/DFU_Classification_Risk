@@ -16,8 +16,6 @@
 
 export type CrfDraft = {
   fields: Record<string, unknown>
-  nurse: string
-  nurse2: string
   note: string
   savedAt: string
 }
@@ -73,11 +71,11 @@ export function clearDraft(): void {
 
 /** True when the draft holds nothing a nurse would mind losing — used to avoid prompting to
  *  restore a form that was opened and immediately closed. */
-export function isEmptyDraft(draft: Pick<CrfDraft, 'fields' | 'nurse' | 'nurse2' | 'note'>): boolean {
+export function isEmptyDraft(draft: Pick<CrfDraft, 'fields' | 'note'>): boolean {
   const filled = Object.values(draft.fields ?? {}).filter(
     (v) => v !== '' && v !== null && v !== undefined && v !== false,
   )
-  return filled.length === 0 && !draft.nurse && !draft.nurse2 && !(draft.note ?? '').trim()
+  return filled.length === 0 && !(draft.note ?? '').trim()
 }
 
 /** How many answers the draft holds, for the restore prompt — "12 ช่อง" tells the nurse whether

@@ -1,6 +1,11 @@
-"""Shared-password login for capture_app — one team password, not per-nurse accounts (decided
-with the user: per-record attribution already lives in the CRF form's own nurse/nurse2 fields,
-so a session only needs to prove "an authenticated person", not "which person").
+"""Shared-password login for capture_app — one team password, not per-nurse accounts.
+
+This was originally justified by the CRF form carrying its own nurse/nurse2 fields, so a session
+only needed to prove "an authenticated person" rather than "which person". Those fields are gone:
+the study site asked that staff names not be stored at all. Nothing in this app now records who
+examined a patient or took a photograph, and the shared login is no longer a trade-off against
+per-record attribution — there is simply no attribution anywhere. That is the site's decision to
+make, but anyone adding an audit or data-quality requirement later should start here.
 
 This protects every data-bearing endpoint (require_session as a route dependency) but the static
 HTML shell itself stays reachable pre-login the way StaticFiles(html=True) already serves it —

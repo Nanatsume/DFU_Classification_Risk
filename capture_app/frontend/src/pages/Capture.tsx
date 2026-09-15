@@ -5,7 +5,6 @@ import { categoryToLabel } from '@/lib/roiStatus'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import {
   Dialog,
   DialogContent,
@@ -16,8 +15,8 @@ import {
 const RECORDS_KEY = 'capture_records'
 
 const DEMO_CASES: CaseRow[] = [
-  { research_id: 'P0001', nurse: 'พว. สมหญิง ใจดี', iwgdf: { L: 2, R: 1 }, has_podo: false, has_thermal: false },
-  { research_id: 'P0002', nurse: 'พว. อรุณี ศรีสุข', iwgdf: { L: 0, R: 0 }, has_podo: false, has_thermal: false },
+  { research_id: 'P0001', iwgdf: { L: 2, R: 1 }, has_podo: false, has_thermal: false },
+  { research_id: 'P0002', iwgdf: { L: 0, R: 0 }, has_podo: false, has_thermal: false },
 ]
 
 const pad = (n: number, l: number) => String(n).padStart(l, '0')
@@ -95,8 +94,6 @@ export default function Capture() {
   const [session, setSession] = useState<{ rid: string; startedAt: string; caseInfo: CaseRow | null } | null>(null)
   const [shots, setShots] = useState<Record<Modality, boolean>>({ podoscope: false, thermal: false })
   const [previews, setPreviews] = useState<Record<Modality, string | null>>({ podoscope: null, thermal: null })
-  const [operator, setOperator] = useState('')
-  const [operators, setOperators] = useState<string[]>([])
   const [qc, setQc] = useState<{ status: 'idle' | 'running' | 'ok' | 'failed'; left?: string; right?: string; error?: string }>({ status: 'idle' })
   const [saved, setSaved] = useState<DisplayRow[]>([])
   const [modalRec, setModalRec] = useState<unknown>(null)
@@ -126,7 +123,6 @@ export default function Capture() {
   }
 
   useEffect(() => {
-    api<string[]>('/api/operators').then(setOperators).catch(() => setOperators([]))
     ;(async () => {
       let liveMode = false
       try {
@@ -209,11 +205,11 @@ export default function Capture() {
     const needsRoi = !session.caseInfo || lLabel !== 'Negative' || rLabel !== 'Negative'
     let rec: CommitRecord
     if (mode === 'live') {
-      rec = await api<CommitRecord>('/api/commit', { rid, operator })
+      rec = await api<CommitRecord>('/api/commit', { rid })
     } else {
       const prepro = shots.podoscope ? { L: `${rid}_podo_L.png`, R: `${rid}_podo_R.png` } : null
       rec = {
-        schema_version: 'demo', research_id: rid, captured_at: nowISO(), operator,
+        schema_version: 'demo', research_id: rid, captured_at: nowISO(),
         podoscope: { raw: `${rid}_podo.png`, preprocessing: prepro },
         thermal: { image: `${rid}_thermal.png`, radiometric: null },
         status: 'complete', app_version: 'demo',
@@ -223,7 +219,6 @@ export default function Capture() {
     setJustCommittedRid(rid)
     setJustCommittedNeedsRoi(needsRoi)
     setSession(null)
-    setOperator('')
     await refreshSaved(mode === 'live')
     await refreshCasesAndPicker(mode === 'live')
   }
@@ -265,7 +260,7 @@ export default function Capture() {
                 // กันข้อความไทยถูกบีบแคบจนตัดขึ้นบรรทัดใหม่ทีละพยางค์ — sm+ กลับไปแถวเดียว
                 <div key={c.research_id} className="bg-secondary flex flex-col gap-2 rounded-md border px-3.5 py-2.5 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3">
                   <span className="text-primary font-mono font-bold">{c.research_id}</span>
-                  <span className="text-muted-foreground text-[11.5px] sm:min-w-0 sm:flex-1">{c.nurse || '—'} · {iwgdfText(c)}</span>
+                  <span className="text-muted-foreground text-[11.5px] sm:min-w-0 sm:flex-1">{iwgdfText(c)}</span>
                   <Button size="sm" onClick={() => startSession(c.research_id, mode === 'live')}>ถ่ายภาพเคสนี้</Button>
                 </div>
               ))}
@@ -287,16 +282,9 @@ export default function Capture() {
               </div>
               <div className="bg-cat-1/10 text-cat-1 rounded-md border border-current/30 px-3.5 py-2 text-xs">
                 {session.caseInfo
-                  ? `${session.caseInfo.nurse || '—'} · ${iwgdfText(session.caseInfo)} — ตรวจสอบว่าเป็นผู้ป่วยคนถูกก่อนถ่าย`
+                  ? `${iwgdfText(session.caseInfo)} — ตรวจสอบว่าเป็นผู้ป่วยคนถูกก่อนถ่าย`
                   : 'ไม่พบข้อมูลฟอร์มของเคสนี้ในรายการ — ตรวจสอบรหัสให้ตรงกับแบบฟอร์มก่อนถ่าย'}
               </div>
-              <label className="text-muted-foreground flex items-center gap-2 text-[12.5px]">
-                ผู้ถ่ายภาพ
-                <Select value={operator} onValueChange={setOperator}>
-                  <SelectTrigger className="h-8 w-44"><SelectValue placeholder="— เลือกชื่อ —" /></SelectTrigger>
-                  <SelectContent>{operators.map((n) => <SelectItem key={n} value={n}>{n}</SelectItem>)}</SelectContent>
-                </Select>
-              </label>
               <div className="text-muted-foreground ml-auto text-right text-[11.5px]">
                 เริ่ม {timeTH(session.startedAt)}<br />1 คน = 1 podoscope + 1 thermal
               </div>

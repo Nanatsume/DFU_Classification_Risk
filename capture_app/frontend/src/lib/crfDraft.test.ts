@@ -28,10 +28,9 @@ beforeEach(() => {
 
 describe('round trip', () => {
   it('gives back what was written', () => {
-    writeDraft({ fields: { ckd: 'no', mf_L_hallux: 'y' }, nurse: 'A', nurse2: 'B', note: 'hi' })
+    writeDraft({ fields: { ckd: 'no', mf_L_hallux: 'y' }, note: 'hi' })
     const draft = readDraft()
     expect(draft?.fields).toEqual({ ckd: 'no', mf_L_hallux: 'y' })
-    expect(draft?.nurse).toBe('A')
     expect(draft?.note).toBe('hi')
   })
 
@@ -40,7 +39,7 @@ describe('round trip', () => {
   })
 
   it('clearDraft removes it', () => {
-    writeDraft({ fields: { ckd: 'no' }, nurse: '', nurse2: '', note: '' })
+    writeDraft({ fields: { ckd: 'no' }, note: '' })
     clearDraft()
     expect(readDraft()).toBeNull()
   })
@@ -48,19 +47,19 @@ describe('round trip', () => {
 
 describe('age', () => {
   it('keeps a draft from earlier today', () => {
-    writeDraft({ fields: { ckd: 'no' }, nurse: '', nurse2: '', note: '' })
+    writeDraft({ fields: { ckd: 'no' }, note: '' })
     const inThreeHours = new Date(Date.now() + 3 * 3600_000)
     expect(readDraft(inThreeHours)).not.toBeNull()
   })
 
   it('discards one older than a week', () => {
-    writeDraft({ fields: { ckd: 'no' }, nurse: '', nurse2: '', note: '' })
+    writeDraft({ fields: { ckd: 'no' }, note: '' })
     const inTenDays = new Date(Date.now() + 10 * 86_400_000)
     expect(readDraft(inTenDays)).toBeNull()
   })
 
   it('offering a stale draft could attach an old examination to the wrong patient', () => {
-    writeDraft({ fields: { ckd: 'no' }, nurse: '', nurse2: '', note: '' })
+    writeDraft({ fields: { ckd: 'no' }, note: '' })
     readDraft(new Date(Date.now() + 10 * 86_400_000))
     expect(localStorage.getItem(KEY)).toBeNull() // and it is purged, not merely hidden
   })
@@ -94,12 +93,12 @@ describe('corrupt or hostile storage', () => {
         throw new Error('QuotaExceededError')
       },
     })
-    expect(() => writeDraft({ fields: { ckd: 'no' }, nurse: '', nurse2: '', note: '' })).not.toThrow()
+    expect(() => writeDraft({ fields: { ckd: 'no' }, note: '' })).not.toThrow()
   })
 })
 
 describe('isEmptyDraft', () => {
-  const blank = { fields: {}, nurse: '', nurse2: '', note: '' }
+  const blank = { fields: {}, note: '' }
 
   it('a freshly opened form counts as empty, so no restore prompt appears', () => {
     expect(isEmptyDraft(blank)).toBe(true)
@@ -111,10 +110,6 @@ describe('isEmptyDraft', () => {
 
   it('one real answer is enough to be worth restoring', () => {
     expect(isEmptyDraft({ ...blank, fields: { ckd: 'no' } })).toBe(false)
-  })
-
-  it('a nurse chosen but nothing else still counts', () => {
-    expect(isEmptyDraft({ ...blank, nurse: 'ธนกฤต อินทรสุวรรณ' })).toBe(false)
   })
 
   it('whitespace in the note does not count', () => {

@@ -6,7 +6,6 @@ import type { CrfRecord } from '@/lib/crfTypes'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Textarea } from '@/components/ui/textarea'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 function Seg({ value, onChange, options, disabled }: {
   value: string | undefined
@@ -75,10 +74,7 @@ const TBI_OPTS = [
 export default function CrfForm() {
   const [pid, setPid] = useState('')
   const [pidNote, setPidNote] = useState('')
-  const [nurses, setNurses] = useState<string[]>([])
   const [fields, setFields] = useState<Fields>({})
-  const [nurse, setNurse] = useState('')
-  const [nurse2, setNurse2] = useState('')
   const [note, setNote] = useState('')
   const [saving, setSaving] = useState(false)
   const [isEdit, setIsEdit] = useState(false)
@@ -93,13 +89,11 @@ export default function CrfForm() {
     [fields],
   )
   const missing = useMemo(
-    () => overallMissing(fields, nurse, nurse2, evals),
-    [fields, nurse, nurse2, evals],
+    () => overallMissing(fields, evals),
+    [fields, evals],
   )
-  const dupNurse = !!nurse && nurse === nurse2
 
   useEffect(() => {
-    api<string[]>('/api/nurses').then(setNurses).catch(() => setNurses([]))
     ;(async () => {
       const editPid = new URLSearchParams(location.search).get('edit')
       if (editPid) {
@@ -108,8 +102,6 @@ export default function CrfForm() {
           setIsEdit(true)
           setPid(rec.pid)
           setPidNote('กำลังแก้ไขเคสที่บันทึกไว้')
-          setNurse(rec.nurse || '')
-          setNurse2(rec.nurse2 || '')
           setNote((rec.data?.fields?.note as string) || '')
           setFields(rec.data?.fields || {})
           return
@@ -134,8 +126,6 @@ export default function CrfForm() {
           '\nกดยกเลิกเพื่อเริ่มเคสใหม่ — ข้อมูลที่ค้างไว้จะถูกลบทิ้ง'
         if (confirm(prompt)) {
           setFields(draft.fields as Fields)
-          setNurse(draft.nurse)
-          setNurse2(draft.nurse2)
           setNote(draft.note)
         } else {
           clearDraft()
@@ -149,8 +139,8 @@ export default function CrfForm() {
   // debouncing would risk losing the last edits at exactly the moment the tab is evicted.
   useEffect(() => {
     if (!draftReady || isEdit) return
-    writeDraft({ fields, nurse, nurse2, note })
-  }, [draftReady, isEdit, fields, nurse, nurse2, note])
+    writeDraft({ fields, note })
+  }, [draftReady, isEdit, fields, note])
 
   async function onSave() {
     if (missing.length && !confirm(`ยังกรอกไม่ครบ ${missing.length} รายการ:\n${missing.slice(0, 8).join(' · ')}\n\nบันทึกเลยหรือไม่?`)) return
@@ -158,13 +148,13 @@ export default function CrfForm() {
     const data = {
       form: 'CRF-07',
       savedAt: new Date().toISOString(),
-      fields: { ...fields, note, nurse, nurse2 },
+      fields: { ...fields, note },
       derived: { L: toDerived(evals.L), R: toDerived(evals.R) },
     }
     try {
       // pid is '' for a new case — the server mints it and returns the saved record; that
       // response is the only place the client learns the id.
-      const saved = await api<CrfRecord>('/api/crf', { pid, nurse, nurse2, savedAt: new Date().toISOString(), data })
+      const saved = await api<CrfRecord>('/api/crf', { pid, savedAt: new Date().toISOString(), data })
       clearDraft()  // only once the server has it — a failed save must keep the draft
       location.href = 'crf-detail.html?pid=' + encodeURIComponent(saved.pid)
     } catch {
@@ -378,31 +368,6 @@ export default function CrfForm() {
             <label className="mb-0.5 block text-[13.5px] font-semibold">หมายเหตุ</label>
             <div className="text-muted-foreground mb-2 text-xs">บันทึกสิ่งที่ตรวจพบเพิ่มเติม หรือเหตุผลที่ปรับประเภทความเสี่ยงเอง</div>
             <Textarea value={note} onChange={(e) => setNote(e.target.value)} className="min-h-[84px]" />
-          </Card>
-          <Card className="p-4">
-            <div className="mb-0.5 text-[13.5px] font-semibold">พยาบาลผู้ตรวจ</div>
-            <div className="text-muted-foreground mb-2.5 text-xs">เลือกชื่อผู้ตรวจทั้งสองคนที่ร่วมตรวจและบันทึกข้อมูลครั้งนี้</div>
-            <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2">
-              <div>
-                <label className="text-muted-foreground mb-1 block text-xs">คนที่ 1</label>
-                <Select value={nurse} onValueChange={setNurse}>
-                  <SelectTrigger className="w-full"><SelectValue placeholder="— เลือกชื่อ —" /></SelectTrigger>
-                  <SelectContent>{nurses.map((n) => <SelectItem key={n} value={n}>{n}</SelectItem>)}</SelectContent>
-                </Select>
-              </div>
-              <div>
-                <label className="text-muted-foreground mb-1 block text-xs">คนที่ 2</label>
-                <Select value={nurse2} onValueChange={setNurse2}>
-                  <SelectTrigger className="w-full"><SelectValue placeholder="— เลือกชื่อ —" /></SelectTrigger>
-                  <SelectContent>{nurses.map((n) => <SelectItem key={n} value={n}>{n}</SelectItem>)}</SelectContent>
-                </Select>
-              </div>
-            </div>
-            {dupNurse && (
-              <div className="bg-cat-1/10 border-cat-1 text-cat-1 mt-2.5 rounded-md border px-2.5 py-2 text-xs">
-                เลือกชื่อซ้ำกันทั้งสองช่อง กรุณาเลือกคนละคน
-              </div>
-            )}
           </Card>
         </section>
       </main>

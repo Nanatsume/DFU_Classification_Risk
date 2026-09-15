@@ -4,8 +4,6 @@ Route contracts are unchanged from the file-based version except for two additio
   - GET /api/crf/{pid}   single-record fetch (the split multi-page frontend no longer preloads
                           every record into one in-memory array, so each page fetches only what
                           it needs)
-  - GET/POST /api/nurses  the nurse-name dropdown now comes from the `nurses` table instead of a
-                          hardcoded JS array, so it can be edited without a code change
 
 Research IDs are minted when the form is SAVED, not when it is opened: POST /api/crf with no
 `pid` mints the next id inside the same transaction that writes the form (db.save_crf). Opening
@@ -26,7 +24,6 @@ SCHEMA_VERSION = "1.0"
 TZ = timezone(timedelta(hours=7))  # Asia/Bangkok
 
 router = APIRouter(prefix="/api/crf", tags=["crf"])
-nurses_router = APIRouter(prefix="/api/nurses", tags=["nurses"])
 
 
 def now_iso() -> str:
@@ -39,8 +36,6 @@ def crf_max() -> int:
 
 class CrfRecord(BaseModel):
     pid: str = ""      # empty = new case, server mints the id
-    nurse: str = ""
-    nurse2: str = ""
     savedAt: str = ""
     data: dict
 
@@ -70,7 +65,7 @@ def save_record(rec: CrfRecord):
     saved_at = rec.savedAt or now_iso()
     data = rec.data or {}
     pid = db.save_crf(
-        pid=rec.pid or None, nurse=rec.nurse, nurse2=rec.nurse2, saved_at=saved_at,
+        pid=rec.pid or None, saved_at=saved_at,
         fields=data.get("fields", {}), derived=data.get("derived", {}),
         schema_version=SCHEMA_VERSION,
     )
@@ -93,22 +88,3 @@ def delete_record(pid: str):
     db.delete_crf(pid)
     db.log_audit(pid, "crf_delete")
     return {"deleted": pid}
-
-
-# ---------- nurses (dropdown source) ----------
-class NurseReq(BaseModel):
-    name: str
-
-
-@nurses_router.get("")
-def list_nurses():
-    return db.list_nurses()
-
-
-@nurses_router.post("")
-def add_nurse(req: NurseReq):
-    name = req.name.strip()
-    if not name:
-        raise HTTPException(400, "name required")
-    db.add_nurse(name)
-    return db.list_nurses()

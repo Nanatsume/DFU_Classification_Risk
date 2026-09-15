@@ -16,7 +16,6 @@ import { DeleteConfirmDialog } from '@/components/DeleteConfirmDialog'
 
 interface CaseRow {
   research_id: string
-  nurse: string
   iwgdf: { L: number | null; R: number | null }
   has_podo: boolean
   has_thermal: boolean
@@ -100,7 +99,7 @@ export default function Roi() {
                 >
                   <span className="text-primary font-mono font-bold">{c.research_id}</span>
                   <span className="text-muted-foreground text-[12.5px] sm:min-w-0 sm:flex-1">
-                    {c.nurse || '—'} · IWGDF ซ้าย {c.iwgdf?.L ?? '—'} · ขวา {c.iwgdf?.R ?? '—'}
+                    IWGDF ซ้าย {c.iwgdf?.L ?? '—'} · ขวา {c.iwgdf?.R ?? '—'}
                   </span>
                   <span className="text-[11px]">
                     <span className={statusL === 'done' ? 'text-cat-0' : statusL === 'pending' ? 'text-cat-1' : 'text-muted-foreground'}>

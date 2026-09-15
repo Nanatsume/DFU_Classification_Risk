@@ -209,8 +209,6 @@ export default function CrfDetail() {
                 dt.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }) +
                 ' น.'
               : ''}
-            {' · พยาบาลผู้ตรวจ '}
-            {[f.nurse, f.nurse2].filter(Boolean).join(' และ ') || 'ไม่ได้ระบุ'}
           </div>
         </div>
         <div className="flex flex-wrap items-center gap-2">

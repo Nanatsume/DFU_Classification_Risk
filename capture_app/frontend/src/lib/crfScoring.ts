@@ -168,18 +168,15 @@ export function toDerived(r: SideEval): DerivedSide {
 }
 
 /** Every non-scoring "is the form complete enough to save" check, mirrors render()'s `need` list.
- * The research id is deliberately NOT checked: it is minted by the server when the form is saved,
- * so it is never something the nurse can leave blank. */
+ * Neither the research id nor any staff name is checked: the id is minted by the server on save,
+ * and examining-nurse names are no longer collected at all (the study site asked that staff
+ * personal data not be stored). */
 export function overallMissing(
   fields: Fields,
-  nurse: string,
-  nurse2: string,
   evals: Record<Side, SideEval>,
 ): string[] {
   const need: string[] = []
   if (!fields.ckd) need.push('ไตวายระยะสุดท้าย (CKD stage 5)')
-  if (!nurse || !nurse2) need.push('พยาบาลผู้ตรวจ')
-  if (nurse && nurse === nurse2) need.push('พยาบาลผู้ตรวจซ้ำกัน')
   SIDES.forEach((s) => evals[s.k].missing.forEach((m) => need.push(s.th + ': ' + m)))
   return need
 }

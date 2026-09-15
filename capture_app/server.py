@@ -11,7 +11,7 @@ forms, ROI annotations, commit status, sessions):
       thermal/P0001/radiometric/P0001_thermal.tiff                    (once the SDK is wired)
       meta/P0001.json          non-authoritative mirror of the commit record, for manual inspection
       app.db                   SQLite — cases, crf_forms, captures, preprocessing, commits,
-                                roi_annotations, nurses, sessions, settings, audit_log
+                                roi_annotations, sessions, settings, audit_log
 
 Podoscope capture auto-runs the preprocessing pipeline (preprocessing.py) and saves the L/R
 result for QC and reuse. The raw image is the source of truth; the preprocessed files are a cache
@@ -46,7 +46,7 @@ import auth
 import db
 from capture_source import get_source
 from preprocessing import preprocess_foot_image
-from crf_store import router as crf_router, nurses_router
+from crf_store import router as crf_router
 from roi_store import router as roi_router
 
 APP_VERSION = "2.0"
@@ -119,27 +119,6 @@ class RidReq(BaseModel):
 
 class CommitReq(BaseModel):
     rid: str
-    operator: str = ""
-
-
-class OperatorReq(BaseModel):
-    name: str
-
-
-@app.get("/api/operators", dependencies=[require_session])
-def operators():
-    """Photographer dropdown source for capture.html — nurses + research team, seeded directly
-    (see db.SEED_OPERATORS); deliberately no "add via web form" UI for this, same as /api/nurses."""
-    return db.list_operators()
-
-
-@app.post("/api/operators", dependencies=[require_session])
-def add_operator(req: OperatorReq):
-    name = req.name.strip()
-    if not name:
-        raise HTTPException(400, "name required")
-    db.add_operator(name)
-    return db.list_operators()
 
 
 @app.get("/api/health")
@@ -269,7 +248,6 @@ def commit(req: CommitReq):
         "schema_version": SCHEMA_VERSION,
         "research_id": req.rid,
         "captured_at": captured_at,
-        "operator": req.operator,
         "podoscope": {
             "raw": rel(podo_raw) if podo_raw.exists() else None,
             "preprocessing": prepro or None,
@@ -287,7 +265,7 @@ def commit(req: CommitReq):
     (META_DIR / f"{req.rid}.json").write_text(json.dumps(record, ensure_ascii=False, indent=2),
                                                 encoding="utf-8")
     db.upsert_case(req.rid)
-    db.save_commit(req.rid, status, captured_at, req.operator)
+    db.save_commit(req.rid, status, captured_at)
     db.log_audit(req.rid, "commit", status)
     return record
 
@@ -299,7 +277,6 @@ def manifest():
 
 app.include_router(auth.router)
 app.include_router(crf_router, dependencies=[require_session])
-app.include_router(nurses_router, dependencies=[require_session])
 app.include_router(roi_router, dependencies=[require_session])
 
 # ----- front-end (mounted last so /api/* wins) -----

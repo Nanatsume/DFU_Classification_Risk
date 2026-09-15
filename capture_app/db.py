@@ -42,10 +42,12 @@ CREATE TABLE IF NOT EXISTS cases (
     created_at  TEXT NOT NULL
 );
 
+-- No examining-nurse columns, by request of the study site: staff names are personal data the
+-- site does not want stored. Nothing in the app records who performed an examination or took a
+-- photograph. See the note in auth.py — the shared login used to be justified by these fields
+-- carrying attribution instead, and that justification no longer holds.
 CREATE TABLE IF NOT EXISTS crf_forms (
     research_id    TEXT PRIMARY KEY REFERENCES cases(research_id),
-    nurse          TEXT,
-    nurse2         TEXT,
     saved_at       TEXT,
     fields_json    TEXT,
     derived_json   TEXT,
@@ -70,8 +72,7 @@ CREATE TABLE IF NOT EXISTS preprocessing (
 CREATE TABLE IF NOT EXISTS commits (
     research_id  TEXT PRIMARY KEY REFERENCES cases(research_id),
     status       TEXT,
-    committed_at TEXT,
-    operator     TEXT
+    committed_at TEXT
 );
 
 CREATE TABLE IF NOT EXISTS roi_annotations (
@@ -79,19 +80,6 @@ CREATE TABLE IF NOT EXISTS roi_annotations (
     saved_at     TEXT,
     summary_json TEXT,
     project_json TEXT
-);
-
-CREATE TABLE IF NOT EXISTS nurses (
-    name TEXT PRIMARY KEY
-);
-
--- Separate from `nurses` (which is scoped to CRF exam nurse dropdown only) — the photographer
--- field in capture.html can be any of the 4 nurses OR a research team member, so it needs its
--- own roster rather than reusing/extending nurses. Deliberately no "add via web form" UI for
--- either table (see docs/notes) — names are added directly against this table when the roster
--- changes, since it's a small fixed list, not user-facing data entry.
-CREATE TABLE IF NOT EXISTS operators (
-    name TEXT PRIMARY KEY
 );
 
 CREATE TABLE IF NOT EXISTS sessions (
@@ -113,21 +101,6 @@ CREATE TABLE IF NOT EXISTS audit_log (
     detail      TEXT
 );
 """
-
-SEED_NURSES = [
-    "กรรณิการ์ ทองพูล",
-    "พิมพ์ลภัส ศรีสมบูรณ์",
-    "ธนกฤต อินทรสุวรรณ",
-    "สุภาวดี แก้วประเสริฐ",
-]
-
-# ผู้ถ่ายภาพ = พยาบาลทั้ง 4 คนข้างบน + ทีมวิจัยอีก 3 คน (ณัฐพงศ์ = หัวหน้าโครงการ)
-SEED_OPERATORS = SEED_NURSES + [
-    "ณัฐพงศ์ ภักดีบุญ",
-    "ณบุญ วงศ์วิทย์",
-    "กนธีร์ คลังทอง",
-]
-
 
 def now_iso() -> str:
     return datetime.now(TZ).replace(microsecond=0).isoformat()
@@ -158,17 +131,41 @@ def tx() -> Iterator[sqlite3.Connection]:
         conn.close()
 
 
+def _drop_staff_name_storage(conn: sqlite3.Connection) -> None:
+    """Remove staff names from a database created before the site asked us to stop storing them.
+
+    Runs on every boot and is idempotent: the columns and tables are dropped only if still there.
+    Dropping rather than blanking is deliberate — a column that exists will eventually be filled
+    again, and "we do not collect this" should be true of the schema, not just of the UI.
+    """
+    cols = {r["name"] for r in conn.execute("PRAGMA table_info(crf_forms)")}
+    for col in ("nurse", "nurse2"):
+        if col in cols:
+            conn.execute(f"ALTER TABLE crf_forms DROP COLUMN {col}")
+    if "operator" in {r["name"] for r in conn.execute("PRAGMA table_info(commits)")}:
+        conn.execute("ALTER TABLE commits DROP COLUMN operator")
+    for table in ("nurses", "operators"):
+        conn.execute(f"DROP TABLE IF EXISTS {table}")
+
+    # The old form posted the names inside the answers blob as well as into their own columns,
+    # so dropping the columns alone leaves them sitting in fields_json. Strip them there too —
+    # this is the copy that a restored backup or a second machine would otherwise keep.
+    for rid, blob in conn.execute("SELECT research_id, fields_json FROM crf_forms").fetchall():
+        try:
+            fields = json.loads(blob or "{}")
+        except ValueError:
+            continue
+        if any(k in fields for k in ("nurse", "nurse2")):
+            for k in ("nurse", "nurse2"):
+                fields.pop(k, None)
+            conn.execute("UPDATE crf_forms SET fields_json=? WHERE research_id=?",
+                         (json.dumps(fields, ensure_ascii=False), rid))
+
+
 def init_db() -> None:
     with tx() as conn:
         conn.executescript(SCHEMA)
-        existing = {r["name"] for r in conn.execute("SELECT name FROM nurses")}
-        for n in SEED_NURSES:
-            if n not in existing:
-                conn.execute("INSERT OR IGNORE INTO nurses(name) VALUES (?)", (n,))
-        existing_ops = {r["name"] for r in conn.execute("SELECT name FROM operators")}
-        for n in SEED_OPERATORS:
-            if n not in existing_ops:
-                conn.execute("INSERT OR IGNORE INTO operators(name) VALUES (?)", (n,))
+        _drop_staff_name_storage(conn)
 
 
 # ---------- cases / id minting ----------
@@ -205,7 +202,7 @@ def list_cases_with_status() -> list[dict]:
     with tx() as conn:
         rows = conn.execute(
             """
-            SELECT c.research_id, f.nurse, f.derived_json,
+            SELECT c.research_id, f.derived_json,
                    EXISTS(SELECT 1 FROM captures WHERE research_id=c.research_id AND modality='podoscope') AS has_podo,
                    EXISTS(SELECT 1 FROM captures WHERE research_id=c.research_id AND modality='thermal') AS has_thermal
             FROM cases c JOIN crf_forms f ON f.research_id = c.research_id
@@ -217,7 +214,6 @@ def list_cases_with_status() -> list[dict]:
         derived = json.loads(r["derived_json"]) if r["derived_json"] else {}
         out.append({
             "research_id": r["research_id"],
-            "nurse": r["nurse"] or "",
             "iwgdf": {"L": (derived.get("L") or {}).get("category"),
                       "R": (derived.get("R") or {}).get("category")},
             "has_podo": bool(r["has_podo"]),
@@ -247,8 +243,6 @@ def list_crf() -> list[dict]:
 def _crf_row_to_dict(row: sqlite3.Row) -> dict:
     return {
         "pid": row["research_id"],
-        "nurse": row["nurse"] or "",
-        "nurse2": row["nurse2"] or "",
         "savedAt": row["saved_at"] or "",
         "data": {
             "fields": json.loads(row["fields_json"]) if row["fields_json"] else {},
@@ -258,7 +252,7 @@ def _crf_row_to_dict(row: sqlite3.Row) -> dict:
     }
 
 
-def save_crf(pid: Optional[str], nurse: str, nurse2: str, saved_at: str, fields: dict,
+def save_crf(pid: Optional[str], saved_at: str, fields: dict,
              derived: dict, schema_version: str) -> str:
     """Create or overwrite one case's form, returning its research id.
 
@@ -279,14 +273,14 @@ def save_crf(pid: Optional[str], nurse: str, nurse2: str, saved_at: str, fields:
         )
         conn.execute(
             """
-            INSERT INTO crf_forms(research_id, nurse, nurse2, saved_at, fields_json, derived_json, schema_version)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO crf_forms(research_id, saved_at, fields_json, derived_json, schema_version)
+            VALUES (?, ?, ?, ?, ?)
             ON CONFLICT(research_id) DO UPDATE SET
-                nurse=excluded.nurse, nurse2=excluded.nurse2, saved_at=excluded.saved_at,
+                saved_at=excluded.saved_at,
                 fields_json=excluded.fields_json, derived_json=excluded.derived_json,
                 schema_version=excluded.schema_version
             """,
-            (pid, nurse, nurse2, saved_at, json.dumps(fields, ensure_ascii=False),
+            (pid, saved_at, json.dumps(fields, ensure_ascii=False),
              json.dumps(derived, ensure_ascii=False), schema_version),
         )
     return pid
@@ -357,7 +351,7 @@ def get_preprocessing(research_id: str) -> dict:
     return {r["side"]: r["path"] for r in rows}
 
 
-def save_commit(research_id: str, status: str, committed_at: str, operator: str) -> None:
+def save_commit(research_id: str, status: str, committed_at: str) -> None:
     with tx() as conn:
         conn.execute(
             "INSERT INTO cases(research_id, created_at) VALUES (?, ?) ON CONFLICT(research_id) DO NOTHING",
@@ -365,11 +359,11 @@ def save_commit(research_id: str, status: str, committed_at: str, operator: str)
         )
         conn.execute(
             """
-            INSERT INTO commits(research_id, status, committed_at, operator) VALUES (?, ?, ?, ?)
+            INSERT INTO commits(research_id, status, committed_at) VALUES (?, ?, ?)
             ON CONFLICT(research_id) DO UPDATE SET
-                status=excluded.status, committed_at=excluded.committed_at, operator=excluded.operator
+                status=excluded.status, committed_at=excluded.committed_at
             """,
-            (research_id, status, committed_at, operator),
+            (research_id, status, committed_at),
         )
 
 
@@ -467,28 +461,6 @@ def delete_roi(rid: str) -> bool:
     with tx() as conn:
         cur = conn.execute("DELETE FROM roi_annotations WHERE research_id=?", (rid,))
         return cur.rowcount > 0
-
-
-# ---------- nurses ----------
-def list_nurses() -> list[str]:
-    with tx() as conn:
-        return [r["name"] for r in conn.execute("SELECT name FROM nurses ORDER BY name")]
-
-
-def add_nurse(name: str) -> None:
-    with tx() as conn:
-        conn.execute("INSERT OR IGNORE INTO nurses(name) VALUES (?)", (name,))
-
-
-# ---------- operators (photographer dropdown on capture.html — nurses + research team) ----------
-def list_operators() -> list[str]:
-    with tx() as conn:
-        return [r["name"] for r in conn.execute("SELECT name FROM operators ORDER BY name")]
-
-
-def add_operator(name: str) -> None:
-    with tx() as conn:
-        conn.execute("INSERT OR IGNORE INTO operators(name) VALUES (?)", (name,))
 
 
 # ---------- settings ----------

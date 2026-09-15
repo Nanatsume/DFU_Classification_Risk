@@ -23,8 +23,6 @@ export interface CrfData {
 
 export interface CrfRecord {
   pid: string
-  nurse: string
-  nurse2: string
   savedAt: string
   data: CrfData
   schema_version?: string
