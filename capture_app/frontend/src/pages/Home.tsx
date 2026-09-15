@@ -85,32 +85,39 @@ export default function Home() {
       <BackupBanner status={backup} />
 
       <div className="mx-auto grid max-w-[1600px] grid-cols-1 gap-4 px-4 pb-10 sm:grid-cols-2">
-        <Card className="border-l-primary flex flex-col border-l-[5px] p-5">
-          <div className="text-muted-foreground font-mono text-[11px] tracking-[0.2em]">01</div>
-          <div className="text-primary my-2 text-lg font-bold">
-            แบบบันทึกข้อมูลการประเมินความเสี่ยงเท้าเบาหวาน
-          </div>
+        {/* Ordered the way the work actually happens: photographs are taken at the clinic, where
+            nobody has time for a 30-field form, and the CRF is transcribed afterwards. Presenting
+            the form first was what the old flow required; leading with it now would send a nurse
+            to the wrong page while a patient waits. */}
+        <Card className="flex flex-col border-l-[5px] border-l-[#7c3a66] p-5">
+          <div className="text-muted-foreground font-mono text-[11px] tracking-[0.2em]">01 · ที่คลินิก</div>
+          <div className="my-2 text-lg font-bold text-[#7c3a66]">ถ่ายภาพเก็บข้อมูล</div>
           <p className="text-muted-foreground mb-4 flex-1 text-[13.5px] leading-relaxed">
-            กรอกผลตรวจเท้าเบาหวานทีละเคส ระบบสรุปประเภทความเสี่ยง IWGDF และ Binary label
-            ให้จากผลที่กรอก
+            กรอก HN ของผู้ป่วยแล้วกดเริ่มเคส ระบบออกรหัสวิจัยให้ทันที
+            ถ่ายภาพฝ่าเท้าด้วยโพโดสโคปและกล้องความร้อนได้เลย ไม่ต้องกรอกแบบฟอร์มก่อน
           </p>
           <div className="flex flex-wrap gap-2">
             <Button asChild>
-              <a href="crf-form.html">บันทึกเคสใหม่</a>
+              <a href="capture.html">เริ่มถ่ายภาพ</a>
             </Button>
           </div>
         </Card>
 
-        <Card className="flex flex-col border-l-[5px] border-l-[#7c3a66] p-5">
-          <div className="text-muted-foreground font-mono text-[11px] tracking-[0.2em]">02</div>
-          <div className="my-2 text-lg font-bold text-[#7c3a66]">ถ่ายภาพเก็บข้อมูล</div>
+        <Card className="border-l-primary flex flex-col border-l-[5px] p-5">
+          <div className="text-muted-foreground font-mono text-[11px] tracking-[0.2em]">02 · ตอนว่าง</div>
+          <div className="text-primary my-2 text-lg font-bold">
+            กรอกแบบฟอร์มให้เคสที่ถ่ายไว้
+          </div>
           <p className="text-muted-foreground mb-4 flex-1 text-[13.5px] leading-relaxed">
-            ถ่ายภาพฝ่าเท้าด้วยโพโดสโคป แล้วผูกภาพเข้ากับรหัสวิจัยของเคสที่บันทึกไว้
-            ต้องกรอกแบบฟอร์มของเคสนั้นก่อนจึงจะถ่ายภาพได้
+            เปิดคิว "รอกรอกแบบฟอร์ม" ใช้ HN ของเคสนั้นไปเปิดผลตรวจประจำปีของโรงพยาบาล
+            แล้วกรอกตาม ระบบสรุปประเภทความเสี่ยง IWGDF และ Binary label ให้อัตโนมัติ
           </p>
           <div className="flex flex-wrap gap-2">
             <Button asChild>
-              <a href="capture.html">เลือกเคสที่จะถ่ายภาพ</a>
+              <a href="crf-list.html">ดูคิวรอกรอกฟอร์ม</a>
+            </Button>
+            <Button variant="outline" asChild>
+              <a href="crf-form.html">กรอกฟอร์มโดยไม่มีภาพ</a>
             </Button>
           </div>
         </Card>
@@ -132,7 +139,8 @@ export default function Home() {
           <div className="text-muted-foreground font-mono text-[11px] tracking-[0.2em]">04</div>
           <div className="my-2 text-lg font-bold text-[#2f5e7c]">ประวัติการบันทึก</div>
           <p className="text-muted-foreground mb-4 flex-1 text-[13.5px] leading-relaxed">
-            ดูภาพรวมทุกเคส — ฟอร์มที่กรอก (01), สถานะถ่ายภาพ (02), และสถานะ ROI (03) รวมไว้ในตารางเดียว
+            ดูภาพรวมทุกเคส — สถานะถ่ายภาพ (01), ฟอร์มที่กรอก (02), และสถานะ ROI (03) รวมไว้ในตารางเดียว
+            พร้อมคิวเคสที่ถ่ายแล้วรอกรอกฟอร์ม
           </p>
           <div className="flex flex-wrap gap-2">
             <Button asChild>

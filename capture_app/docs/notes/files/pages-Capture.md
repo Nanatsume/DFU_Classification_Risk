@@ -21,4 +21,4 @@ metadata:
 
 **Called by**: [[main-capture]]
 
-**Depends on**: [[lib-api]] (`api`, `ApiError`), [[lib-captureTypes]] (`CaseRow, CommitRecord, ManifestRow, Modality`), [[lib-roiStatus]] (`categoryToLabel`), shadcn `Button`/`Badge`/`Card`/`Select`/`Dialog` ([[components-ui-shadcn]]), [[api-get-operators]] — ลิงก์ไปเปิด `via/index.html?rid=` ([[_via_dfu]]) ในแท็บใหม่หลัง commit
+**Depends on**: [[lib-api]] (`api`, `ApiError`), [[lib-captureTypes]] (`CaseRow, CommitRecord, ManifestRow, Modality`), [[lib-roiStatus]] (`categoryToLabel`), shadcn `Button`/`Badge`/`Card`/`Input`/`Dialog` ([[components-ui-shadcn]]), [[api-post-session-start]] — ลิงก์ไปเปิด `via/index.html?rid=` ([[_via_dfu]]) ในแท็บใหม่หลัง commit

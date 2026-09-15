@@ -248,7 +248,7 @@ export default function CrfList() {
           <Button variant="outline" onClick={exportRawFormCsv}>CSV ทั้งหมด</Button>
           <Button variant="outline" onClick={exportTrainingCsv}>CSV สำหรับเทรนโมเดล</Button>
           <Button asChild>
-            <a href="crf-form.html">บันทึกเคสใหม่</a>
+            <a href="capture.html">เริ่มเคสใหม่ (ถ่ายภาพ)</a>
           </Button>
         </div>
       </div>
@@ -293,7 +293,7 @@ export default function CrfList() {
 
       {rows.length === 0 ? (
         <p className="text-muted-foreground py-6 text-sm">
-          ยังไม่มีเคสที่บันทึก กด "บันทึกเคสใหม่" เพื่อเริ่มกรอกฟอร์ม
+          ยังไม่มีเคสที่กรอกฟอร์ม — เริ่มจากถ่ายภาพที่คลินิกก่อน แล้วค่อยกลับมากรอกฟอร์มให้เคสนั้น
         </p>
       ) : (
         <div className="overflow-x-auto rounded-md border">

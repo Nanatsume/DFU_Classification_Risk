@@ -386,9 +386,10 @@ def has_capture(research_id: str, modality: str) -> bool:
 def save_capture(research_id: str, modality: str, raw_path: str, captured_at: str) -> None:
     with tx() as conn:
         # defensive upsert, same pattern as save_crf()/save_roi() — captures.research_id is a
-        # foreign key into cases, so this must exist first. In practice server.py always creates
-        # the case via save_crf() before a capture can happen (the 409 gate on has_crf()), but
-        # this function should not silently depend on caller ordering to avoid a FK IntegrityError.
+        # foreign key into cases, so the case must exist first. In practice it always does: the
+        # clinic flow creates it in start_case_with_hn() before any photograph is taken, and
+        # /api/capture refuses an id it never issued. This stays defensive anyway rather than
+        # depending on caller ordering for a FK IntegrityError not to happen.
         conn.execute(
             "INSERT INTO cases(research_id, created_at) VALUES (?, ?) ON CONFLICT(research_id) DO NOTHING",
             (research_id, captured_at),

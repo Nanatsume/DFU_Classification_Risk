@@ -296,12 +296,12 @@ export default function Capture() {
           </div>
 
           <div className="mt-6 border-t pt-4 text-center">
-          <p className="text-muted-foreground mb-4 text-sm">หรือเลือกเคสที่กรอกแบบฟอร์มไว้แล้วแต่ยังไม่ได้ถ่ายภาพ</p>
+          <p className="text-muted-foreground mb-4 text-sm">หรือถ่ายภาพให้เคสที่กรอกแบบฟอร์มไว้ล่วงหน้าแล้ว</p>
           {mode === 'checking' ? (
             <div className="text-muted-foreground text-sm">กำลังตรวจสอบ…</div>
           ) : pendingCases().length === 0 ? (
             <div className="text-muted-foreground text-[12.5px] italic">
-              ยังไม่มีเคสที่กรอกฟอร์มรอถ่ายภาพ — เปิดแบบฟอร์ม CRF เพื่อลงทะเบียนเคสใหม่ก่อน
+              ไม่มีเคสค้างอยู่ — ปกติใช้ช่อง HN ด้านบนเริ่มเคสใหม่ได้เลย
             </div>
           ) : (
             <div className="mx-auto max-w-lg space-y-2 text-left">

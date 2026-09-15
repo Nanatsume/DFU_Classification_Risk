@@ -167,7 +167,9 @@ def backup_status():
 @app.get("/api/cases", dependencies=[require_session])
 def cases():
     """Cases that have a CRF form, with capture status — feeds the capture station's picker.
-    A case must have a form before it can be photographed (see /api/capture)."""
+    These are the cases that can still be photographed from the picker — ones whose form was
+    filled in ahead of time. The usual clinic route does not pass through here at all: it starts
+    at /api/session/start with an HN and photographs immediately."""
     return db.list_cases_with_status()
 
 

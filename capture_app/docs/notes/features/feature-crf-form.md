@@ -11,6 +11,6 @@ metadata:
 
 **เกี่ยวข้องกับไฟล์ไหนบ้าง**: [[pages-CrfForm]], [[html-crf-form]], [[main-crf-form]], [[lib-crfScoring]] (ตรรกะคำนวณหลัก), [[lib-crfTypes]], [[crf_store]] (backend)
 
-**เกี่ยวข้องกับ API endpoint ไหนบ้าง**: [[api-get-crf-pid]] (โหมดแก้ไข), [[api-post-crf]] (บันทึก + mint รหัสวิจัย), [[api-get-nurses]] (dropdown ผู้ตรวจ)
+**เกี่ยวข้องกับ API endpoint ไหนบ้าง**: [[api-get-crf-pid]] (โหมดแก้ไข), [[api-post-crf]] (บันทึก + mint รหัสวิจัย), [[api-get-case-rid]] (โหมด `?pid=` — ดึง HN มาโชว์ให้คนกรอก)
 
-**เกี่ยวข้องกับ state ตัวไหนบ้าง**: [[db-crf_forms-table]], [[db-cases-table]] (ตัวนับรหัสวิจัย), [[db-nurses-table]], [[url-query-params]] (`?edit=`)
+**เกี่ยวข้องกับ state ตัวไหนบ้าง**: [[db-crf_forms-table]], [[db-cases-table]] (ตัวนับรหัสวิจัย + HN), [[url-query-params]] (`?edit=`, `?pid=`)

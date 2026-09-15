@@ -66,7 +66,7 @@ flowchart TD
 ```
 
 **แนวคิดหลัก 3 อย่างที่ทำให้ระบบนี้ต่างจากแอปฟอร์มทั่วไป**:
-1. **ลำดับบังคับ**: ต้องมีฟอร์ม CRF ก่อนถึงจะถ่ายภาพได้ (409 gate ใน [[api-post-capture]]) — ป้องกันภาพกำพร้าไม่มีเจ้าของ
+1. **ลำดับบังคับ**: ถ่ายภาพก่อน กรอกฟอร์มทีหลัง — เริ่มเคสด้วย HN ที่ [[api-post-session-start]] แล้วจึงถ่ายได้ (409 gate ใน [[api-post-capture]] กันเฉพาะรหัสที่ระบบไม่เคยออกให้) ป้องกันภาพกำพร้าไม่มีเจ้าของเหมือนเดิม แต่ไม่ฝืนเวลาพยาบาลหน้างาน
 2. **ภาพ 3 แบบต่อข้างเท้า**: 224×224 สำหรับเทรนโมเดล, ความละเอียดเต็ม (CLAHE) สำหรับมาร์ก ROI, สีดั้งเดิมก่อน CLAHE สำหรับ XAI/Grad-CAM overlay ในอนาคต — ดู [[preprocessing]]
 3. **นโยบายมาร์ก ROI ตามผลตรวจ**: มาร์กเฉพาะข้างที่ Positive/ยังไม่มีผล ข้าง Negative ข้ามไปเพราะไม่มี LOPS/PAD ตามนิยาม — ดู [[feature-roi]] และ [[lib-roiStatus]]
 
@@ -112,10 +112,10 @@ Method/ผู้เรียก/payload/response/ไฟล์ backend ที่ 
 [[api-get-health]] · [[api-post-login]] · [[api-post-logout]] · [[api-get-session]]
 
 **Cases / CRF forms**
-[[api-get-cases]] · [[api-post-session-new]] · [[api-get-crf-list]] · [[api-get-crf-pid]] · [[api-post-crf]] · [[api-delete-crf-pid]] · [[api-get-nurses]] · [[api-post-nurses]]
+[[api-get-cases]] · [[api-post-session-start]] · [[api-get-pending]] · [[api-get-case-rid]] · [[api-hn]] · [[api-get-crf-list]] · [[api-get-crf-pid]] · [[api-post-crf]] · [[api-delete-crf-pid]]
 
 **Capture / preprocessing / commit / files**
-[[api-post-capture]] · [[api-post-preprocess]] · [[api-post-commit]] · [[api-get-manifest]] · [[api-get-file]] · [[api-get-operators]] · [[api-post-operators]]
+[[api-post-capture]] · [[api-post-preprocess]] · [[api-post-commit]] · [[api-get-manifest]] · [[api-get-file]]
 
 **ROI**
 [[api-get-roi-list]] · [[api-get-roi-rid]] · [[api-post-roi-rid]] · [[api-delete-roi-rid]]
@@ -130,7 +130,7 @@ Method/ผู้เรียก/payload/response/ไฟล์ backend ที่ 
 [[session-cookie]]
 
 **ตาราง SQLite (`data/app.db`, เจ้าของร่วมคือ [[db]])**
-[[db-cases-table]] · [[db-crf_forms-table]] · [[db-captures-preprocessing-tables]] · [[db-commits-table]] · [[db-roi_annotations-table]] · [[db-nurses-table]] · [[db-operators-table]] · [[db-settings-audit-tables]]
+[[db-cases-table]] · [[db-crf_forms-table]] · [[db-captures-preprocessing-tables]] · [[db-commits-table]] · [[db-roi_annotations-table]] · [[db-settings-audit-tables]]
 
 **Client-side state**
 [[localstorage-capture_records]] · [[url-query-params]]

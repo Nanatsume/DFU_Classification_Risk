@@ -11,6 +11,6 @@ metadata:
 
 **เกี่ยวข้องกับไฟล์ไหนบ้าง**: [[pages-Capture]], [[html-capture]], [[main-capture]], [[lib-captureTypes]], [[lib-roiStatus]] (ตัดสินใจว่าเคสต้องทำ ROI หรือไม่หลัง commit), [[capture_source]] (backend, กล้องจำลอง/จริง), [[preprocessing]] (backend, pipeline)
 
-**เกี่ยวข้องกับ API endpoint ไหนบ้าง**: [[api-get-cases]] (picker), [[api-get-operators]] (dropdown ผู้ถ่ายภาพ), [[api-post-capture]], [[api-post-preprocess]], [[api-post-commit]], [[api-get-manifest]] (ตารางเคสที่บันทึกแล้ว)
+**เกี่ยวข้องกับ API endpoint ไหนบ้าง**: [[api-post-session-start]] (เริ่มเคสด้วย HN — ทางหลัก), [[api-get-cases]] (picker สำหรับเคสที่กรอกฟอร์มไว้ล่วงหน้า), [[api-post-capture]], [[api-post-preprocess]], [[api-post-commit]], [[api-get-manifest]] (ตารางเคสที่บันทึกแล้ว)
 
-**เกี่ยวข้องกับ state ตัวไหนบ้าง**: [[db-captures-preprocessing-tables]], [[db-commits-table]], [[db-operators-table]], [[localstorage-capture_records]] (DEMO mode), [[url-query-params]] (`?rid=`)
+**เกี่ยวข้องกับ state ตัวไหนบ้าง**: [[db-captures-preprocessing-tables]], [[db-commits-table]], [[db-cases-table]] (HN), [[localstorage-capture_records]] (DEMO mode), [[url-query-params]] (`?rid=`)

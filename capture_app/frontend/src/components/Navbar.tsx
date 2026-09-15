@@ -9,10 +9,11 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 
 const LINKS = [
+  // Order follows the working order: photograph at the clinic, transcribe the form afterwards.
   { href: 'index.html', label: 'หน้าแรก' },
-  { href: 'crf-form.html', label: 'กรอกฟอร์มใหม่' },
-  { href: 'crf-list.html', label: 'ประวัติการบันทึก' },
   { href: 'capture.html', label: 'ถ่ายภาพ' },
+  { href: 'crf-list.html', label: 'ประวัติ · คิวกรอกฟอร์ม' },
+  { href: 'crf-form.html', label: 'กรอกฟอร์ม' },
   { href: 'roi.html', label: 'ทำ ROI' },
   { href: 'gallery.html', label: 'คลังภาพ' },
 ]
