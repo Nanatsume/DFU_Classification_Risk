@@ -37,9 +37,11 @@ function StatusStrip({ status }: { status: CameraStatus | null }) {
   )
 }
 
+type Shot = { url: string; name: string }
+
 export default function CameraTest() {
   const [status, setStatus] = useState<CameraStatus | null>(null)
-  const [shots, setShots] = useState<{ url: string; at: string }[]>([])
+  const [shots, setShots] = useState<Shot[]>([])
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -47,8 +49,15 @@ export default function CameraTest() {
     try { setStatus(await api<CameraStatus>('/api/camera')) } catch { setStatus(null) }
   }
 
+  // Filenames are unique per shot (Test-<timestamp>.png), so the list itself is the source of
+  // truth — no separate in-memory record to fall out of sync with what's actually on disk.
+  async function loadShots() {
+    try { setShots(await api<Shot[]>('/api/camera-test/list?modality=podoscope')) } catch { /* leave previous list */ }
+  }
+
   useEffect(() => {
     checkCamera()
+    loadShots()
     const t = setInterval(checkCamera, 5000)
     return () => clearInterval(t)
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -58,8 +67,8 @@ export default function CameraTest() {
     setBusy(true)
     setError(null)
     try {
-      const res = await api<{ url: string }>('/api/camera-test/capture', { modality: 'podoscope' })
-      setShots((s) => [{ url: res.url + '?t=' + Date.now(), at: new Date().toLocaleTimeString('th-TH') }, ...s].slice(0, 6))
+      await api('/api/camera-test/capture', { modality: 'podoscope' })
+      await loadShots()
     } catch (e) {
       setError(e instanceof ApiError ? `ถ่ายไม่สำเร็จ (รหัส ${e.status})` : 'ถ่ายไม่สำเร็จ — ตรวจสอบการเชื่อมต่อ')
     } finally {
@@ -86,18 +95,18 @@ export default function CameraTest() {
         <Button onClick={shoot} disabled={busy}>{busy ? 'กำลังถ่าย…' : 'ถ่ายทดสอบ'}</Button>
         {shots.length > 0 && (
           <div className="mt-4 flex flex-wrap gap-3">
-            {shots.map((s, i) => (
+            {shots.slice(0, 12).map((s) => (
               <a
-                key={i}
+                key={s.name}
                 href={s.url}
                 target="_blank"
                 rel="noreferrer"
                 className="block w-28 shrink-0 overflow-hidden rounded-md border"
               >
                 <div className="bg-foreground/95 flex aspect-square items-center justify-center overflow-hidden">
-                  <img src={s.url} alt="ภาพทดสอบ" className="h-full w-full object-contain" />
+                  <img src={s.url} alt={s.name} className="h-full w-full object-contain" />
                 </div>
-                <div className="text-muted-foreground truncate px-1 py-1 text-center text-[10px]">{s.at}</div>
+                <div className="text-muted-foreground truncate px-1 py-1 text-center text-[10px]">{s.name}</div>
               </a>
             ))}
           </div>

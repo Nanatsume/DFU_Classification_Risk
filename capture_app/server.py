@@ -320,11 +320,25 @@ def camera_test_capture(req: CameraTestReq):
     except NotImplementedError as e:
         raise HTTPException(501, str(e))
     stamp = datetime.now(TZ).strftime("%Y%m%dT%H%M%S")
-    p = server_paths.camera_test_dir(req.modality) / f"{stamp}.png"
+    p = server_paths.camera_test_dir(req.modality) / f"Test-{stamp}.png"
     p.parent.mkdir(parents=True, exist_ok=True)
     p.write_bytes(png)
     db.log_audit(None, "camera_test", req.modality)
-    return {"modality": req.modality, "url": url(p)}
+    return {"modality": req.modality, "url": url(p), "name": p.stem}
+
+
+@app.get("/api/camera-test/list", dependencies=[require_session])
+def camera_test_list(modality: str):
+    """Previously taken smoke-test shots for one modality, newest first — so reopening the test
+    page shows what was already captured instead of an empty page that forgets everything the
+    moment someone navigates away."""
+    if modality not in MODALITIES:
+        raise HTTPException(400, f"modality must be one of {MODALITIES}")
+    d = server_paths.camera_test_dir(modality)
+    if not d.is_dir():
+        return []
+    files = sorted(d.glob("Test-*.png"), reverse=True)   # filenames sort chronologically
+    return [{"url": url(p), "name": p.stem} for p in files]
 
 
 # In-flight and finished preprocessing runs, keyed by research id. Segmentation takes 60-90
