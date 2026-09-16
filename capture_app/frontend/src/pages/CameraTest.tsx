@@ -18,13 +18,6 @@ type CameraStatus = {
   error: string | null
 }
 
-// The filename itself stays full precision (Test-20260916T152409) so it sorts chronologically
-// and never collides — this only shortens what's shown under the thumbnail, to just the time.
-function shortLabel(name: string): string {
-  const m = /^Test-\d{8}T(\d{2})(\d{2})(\d{2})$/.exec(name)
-  return m ? `${m[1]}:${m[2]}:${m[3]}` : name
-}
-
 function StatusStrip({ status }: { status: CameraStatus | null }) {
   if (!status) return null
   const ok = status.mode === 'usb' && status.connected
@@ -113,7 +106,7 @@ export default function CameraTest() {
                 <div className="bg-foreground/95 flex aspect-square items-center justify-center overflow-hidden">
                   <img src={s.url} alt={s.name} className="h-full w-full object-contain" />
                 </div>
-                <div className="text-muted-foreground truncate px-1 py-1 text-center text-[10px]">{shortLabel(s.name)}</div>
+                <div className="text-muted-foreground truncate px-1 py-1 text-center text-[10px]">{s.name}</div>
               </a>
             ))}
           </div>

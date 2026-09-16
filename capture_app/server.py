@@ -33,6 +33,7 @@ force_utf8_stdio()  # must run before `import preprocessing` — see stdio_utf8.
 
 import json
 import os
+import re
 import subprocess
 import sys
 import threading
@@ -319,12 +320,27 @@ def camera_test_capture(req: CameraTestReq):
         raise HTTPException(503, str(e))
     except NotImplementedError as e:
         raise HTTPException(501, str(e))
-    stamp = datetime.now(TZ).strftime("%Y%m%dT%H%M%S")
-    p = server_paths.camera_test_dir(req.modality) / f"Test-{stamp}.png"
-    p.parent.mkdir(parents=True, exist_ok=True)
+    d = server_paths.camera_test_dir(req.modality)
+    d.mkdir(parents=True, exist_ok=True)
+    p = d / f"Test-{_next_camera_test_seq(d):04d}.png"
     p.write_bytes(png)
     db.log_audit(None, "camera_test", req.modality)
     return {"modality": req.modality, "url": url(p), "name": p.stem}
+
+
+_CAMERA_TEST_NAME = re.compile(r"^Test-(\d+)$")
+
+
+def _next_camera_test_seq(d: Path) -> int:
+    """Test-1, Test-2, ... per modality folder — a plain running count is what someone glancing
+    at the page (or the folder) can actually keep track of, unlike a timestamp. Zero-padded to 4
+    digits on disk so filenames still sort the same order they were taken in."""
+    best = 0
+    for f in d.glob("Test-*.png"):
+        m = _CAMERA_TEST_NAME.match(f.stem)
+        if m:
+            best = max(best, int(m.group(1)))
+    return best + 1
 
 
 @app.get("/api/camera-test/list", dependencies=[require_session])
@@ -337,7 +353,7 @@ def camera_test_list(modality: str):
     d = server_paths.camera_test_dir(modality)
     if not d.is_dir():
         return []
-    files = sorted(d.glob("Test-*.png"), reverse=True)   # filenames sort chronologically
+    files = sorted(d.glob("Test-*.png"), reverse=True)   # zero-padded, so this sorts newest first
     return [{"url": url(p), "name": p.stem} for p in files]
 
 
