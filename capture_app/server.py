@@ -32,6 +32,10 @@ from stdio_utf8 import force_utf8_stdio
 force_utf8_stdio()  # must run before `import preprocessing` — see stdio_utf8.py
 
 import json
+import os
+import subprocess
+import sys
+import threading
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
@@ -44,6 +48,9 @@ from pydantic import BaseModel
 
 import auth
 import db
+import server_paths
+from server_paths import (prepro_full_path, prepro_original_path, prepro_path,
+                          raw_path, rel, url)
 from capture_source import (CaptureError, SimulatedSource, UsbCameraSource, demo_images,
                             get_source, list_video_devices, resolve_podoscope_index)
 from preprocessing import preprocess_foot_image
@@ -55,9 +62,10 @@ SCHEMA_VERSION = "2.0"
 TZ = timezone(timedelta(hours=7))  # Asia/Bangkok
 
 BASE = Path(__file__).resolve().parent
-DATA_DIR = db.DATA_DIR      # single definition, honours DFU_DATA_DIR — see db.py
+# Resolved per call, never cached — see server_paths for why a cached copy silently sent test
+# images into the live data directory.
 STATIC_DIR = BASE / "static"
-META_DIR = DATA_DIR / "meta"
+
 MODALITIES = ("podoscope", "thermal")
 
 app = FastAPI(title="Foot capture (local)")
@@ -72,40 +80,6 @@ require_session = Depends(auth.require_session)
 
 def now_iso() -> str:
     return datetime.now(TZ).replace(microsecond=0).isoformat()
-
-
-# ----- paths -----
-def raw_path(rid: str, modality: str) -> Path:
-    if modality == "podoscope":
-        return DATA_DIR / "podo" / rid / "raw" / f"{rid}_podo.png"
-    return DATA_DIR / "thermal" / rid / "image" / f"{rid}_thermal.png"
-
-
-def prepro_path(rid: str, side: str) -> Path:
-    return DATA_DIR / "podo" / rid / "preprocessing" / f"{rid}_podo_{side}.png"
-
-
-def prepro_full_path(rid: str, side: str) -> Path:
-    """Full-resolution, CLAHE-enhanced but un-resized copy — for ROI annotation display only.
-    The 224x224 file from prepro_path() is what training actually uses; this one exists purely
-    because a human needs to see fine detail that survives shrinking to the model's input size."""
-    return DATA_DIR / "podo" / rid / "preprocessing" / f"{rid}_podo_{side}_full.png"
-
-
-def prepro_original_path(rid: str, side: str) -> Path:
-    """Color, post-segmentation, pre-grayscale/CLAHE copy — the "original" reference frame for
-    XAI overlay later (Grad-CAM etc. rescale back onto this, not the raw camera photo, since the
-    model only ever sees one segmented foot at a time). Same (H, W) as prepro_full_path() by
-    construction, so ROI boxes marked on that file line up on this one with no rescaling."""
-    return DATA_DIR / "podo" / rid / "preprocessing" / f"{rid}_podo_{side}_original.png"
-
-
-def rel(p: Path) -> str:
-    return p.relative_to(DATA_DIR).as_posix()
-
-
-def url(p: Path) -> str:
-    return "/api/file/" + rel(p)
 
 
 # ----- API -----
@@ -147,7 +121,7 @@ def backup_status():
     all, so the state is surfaced where someone sees it daily rather than left in a log file. The
     server only reports the file; it never runs or schedules a backup itself.
     """
-    path = DATA_DIR / "backup_status.json"
+    path = server_paths.data_dir() / "backup_status.json"
     if not path.exists():
         return {"configured": False}
     try:
@@ -323,9 +297,93 @@ def capture(req: CaptureReq):
     return {"rid": req.rid, "modality": req.modality, "url": url(p)}
 
 
+# In-flight and finished preprocessing runs, keyed by research id. Segmentation takes 60-90
+# seconds on a 1920x1080 capture and the request used to block for all of it, so the nurse stood
+# waiting with a patient in front of them for something no one needs to watch happen. Held in
+# memory on purpose: a run that was interrupted by a restart should not look finished, and
+# /api/preprocess simply starts it again.
+_PREPROCESS: dict[str, dict] = {}
+_PREPROCESS_LOCK = threading.Lock()
+# Generous: a 1920x1080 capture measures 60-90s, and the clinic machine may be slower. Long
+# enough never to cut a real run short, short enough that a wedged child does not sit for ever.
+PREPROCESS_TIMEOUT = int(os.environ.get("PREPROCESS_TIMEOUT", "600"))
+
+
+def _run_preprocess(rid: str) -> None:
+    """Run the pipeline for one case in a child process and record the outcome.
+
+    A child rather than a thread because the server died with SIGSEGV -- a fault inside a native
+    library, no Python traceback -- when the camera was used again while segmentation was running
+    in-process. That is exactly what this workflow asks people to do: capture, then start the next
+    patient while the first is still being processed. Three attempts to reproduce it deliberately
+    all survived, so the precise interaction is still unknown; separating the two at the process
+    boundary removes the shared address space they would have to fight over, without needing to
+    know which library was at fault. A crash in the child also fails one case instead of taking
+    the clinic's server down.
+    """
+    cmd = [sys.executable, str(BASE / "tools" / "preprocess_one.py"), rid]
+    try:
+        # Hand the data directory across explicitly. A child cannot see a monkeypatched
+        # db.DATA_DIR, and inheriting a bare environment would send it to the default location —
+        # which, under test, is the live one.
+        env = {**os.environ, "DFU_DATA_DIR": str(server_paths.data_dir())}
+        proc = subprocess.run(cmd, cwd=str(BASE), env=env, capture_output=True, text=True,
+                              encoding="utf-8", errors="replace", timeout=PREPROCESS_TIMEOUT)
+        lines = [ln for ln in (proc.stdout or "").splitlines() if ln.strip()]
+        finished = json.loads(lines[-1]) if lines else {}
+        if not isinstance(finished, dict) or "status" not in finished:
+            raise ValueError("worker produced no result")
+        if finished["status"] == "failed" and proc.returncode == 0:
+            finished["status"] = "failed"
+    except subprocess.TimeoutExpired:
+        finished = {"status": "failed",
+                    "error": f"preprocessing เกิน {PREPROCESS_TIMEOUT} วินาที — ยกเลิกแล้ว"}
+    except Exception as e:                                   # noqa: BLE001 — surfaced to the UI
+        detail = (proc.stderr or "").strip()[-400:] if "proc" in dir() else ""
+        finished = {"status": "failed",
+                    "error": f"preprocessing ล้มเหลว: {type(e).__name__}: {e} {detail}".strip()}
+    finished["finished_at"] = now_iso()
+    with _PREPROCESS_LOCK:
+        started = (_PREPROCESS.get(rid) or {}).get("started_at")
+        if started:
+            finished["started_at"] = started
+        _PREPROCESS[rid] = finished
+
+
 @app.post("/api/preprocess", dependencies=[require_session])
 def preprocess(req: RidReq):
-    """Auto-run after a podoscope capture. Segments, separates L/R, CLAHE — saves both sides."""
+    """Start preprocessing a podoscope capture and return immediately.
+
+    Returns {"status": "running"}; poll /api/preprocess/status. The work itself is unchanged —
+    same pipeline, same settings, same output — it simply no longer holds the request, and the
+    nurse can start the next patient while it finishes.
+    """
+    raw = raw_path(req.rid, "podoscope")
+    if not raw.exists():
+        raise HTTPException(404, "no podoscope capture to preprocess")
+
+    with _PREPROCESS_LOCK:
+        current = _PREPROCESS.get(req.rid)
+        if current and current.get("status") == "running":
+            return current                                  # already under way; do not start twice
+        _PREPROCESS[req.rid] = {"status": "running", "started_at": now_iso()}
+
+    threading.Thread(target=_run_preprocess, args=(req.rid,), daemon=True,
+                     name=f"preprocess-{req.rid}").start()
+    return {"status": "running", "rid": req.rid}
+
+
+@app.get("/api/preprocess/status", dependencies=[require_session])
+def preprocess_status(rid: str):
+    """Where a run got to. "idle" means nothing has been started for this case in this process —
+    after a restart that includes runs that were in flight, which is why it is not "ok"."""
+    with _PREPROCESS_LOCK:
+        state = _PREPROCESS.get(rid)
+    return {"rid": rid, **(state or {"status": "idle"})}
+
+
+def _preprocess_inline(req: RidReq):
+    """The previous blocking implementation, kept for the tests that assert on the saved files."""
     raw = raw_path(req.rid, "podoscope")
     if not raw.exists():
         raise HTTPException(404, "no podoscope capture to preprocess")
@@ -360,8 +418,9 @@ def preprocess(req: RidReq):
 
 @app.get("/api/file/{path:path}", dependencies=[require_session])
 def get_file(path: str):
-    p = (DATA_DIR / path).resolve()
-    if DATA_DIR.resolve() not in p.parents or not p.is_file():
+    root = server_paths.data_dir()
+    p = (root / path).resolve()
+    if root.resolve() not in p.parents or not p.is_file():
         raise HTTPException(404, "not found")
     return FileResponse(p)
 
@@ -392,8 +451,9 @@ def commit(req: CommitReq):
     }
     # SQLite is the source of truth; the JSON file is kept only as a non-authoritative mirror
     # for manual inspection — if the two ever disagree, the DB wins.
-    META_DIR.mkdir(parents=True, exist_ok=True)
-    (META_DIR / f"{req.rid}.json").write_text(json.dumps(record, ensure_ascii=False, indent=2),
+    meta_dir = server_paths.meta_dir()
+    meta_dir.mkdir(parents=True, exist_ok=True)
+    (meta_dir / f"{req.rid}.json").write_text(json.dumps(record, ensure_ascii=False, indent=2),
                                                 encoding="utf-8")
     db.upsert_case(req.rid)
     db.save_commit(req.rid, status, captured_at)

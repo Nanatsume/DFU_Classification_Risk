@@ -188,6 +188,10 @@ export default function Capture() {
   const [shots, setShots] = useState<Record<Modality, boolean>>({ podoscope: false, thermal: false })
   const [previews, setPreviews] = useState<Record<Modality, string | null>>({ podoscope: null, thermal: null })
   const [qc, setQc] = useState<{ status: 'idle' | 'running' | 'ok' | 'failed'; left?: string; right?: string; error?: string }>({ status: 'idle' })
+  // Seconds since preprocessing started. A spinner with no numbers on it is why someone waited,
+  // decided the app had hung, and pressed capture again while segmentation was still running —
+  // which is when the server died. Showing the clock, and what to expect, is half the fix.
+  const [qcElapsed, setQcElapsed] = useState(0)
   const [saved, setSaved] = useState<DisplayRow[]>([])
   const [modalRec, setModalRec] = useState<unknown>(null)
   const [justCommittedRid, setJustCommittedRid] = useState<string | null>(null)
@@ -252,6 +256,12 @@ export default function Capture() {
       setStarting(false)
     }
   }
+
+  useEffect(() => {
+    if (qc.status !== 'running') return
+    const t = setInterval(() => setQcElapsed((n) => n + 1), 1000)
+    return () => clearInterval(t)
+  }, [qc.status])
 
   // Poll while this page is open: plugging the camera in should be enough, without a reload.
   useEffect(() => {
@@ -327,7 +337,13 @@ export default function Capture() {
     }
     setShots((s) => ({ ...s, [m]: true }))
     setPreviews((p) => ({ ...p, [m]: src }))
-    if (m === 'podoscope' && mode === 'live') runPreprocess(session.rid)
+    if (m === 'podoscope') {
+      // Clear the previous outcome before the new one starts. Leaving it up showed the new
+      // photograph beside the old photograph's failure message, which reads as "this capture
+      // failed" — someone retook a perfectly good image because of it.
+      setQc({ status: 'idle' })
+      if (mode === 'live') runPreprocess(session.rid)
+    }
   }
   function retake(m: Modality) {
     setShots((s) => ({ ...s, [m]: false }))
@@ -335,18 +351,40 @@ export default function Capture() {
     if (m === 'podoscope') setQc({ status: 'idle' })
   }
 
+  /** Segmentation takes 60-90 seconds on a full-resolution capture. It now runs on the server in
+   *  the background and this polls for the outcome, so the nurse can photograph the next patient
+   *  instead of watching a spinner. The pipeline itself is untouched — same settings, same
+   *  output; only the waiting moved. */
   async function runPreprocess(rid: string) {
+    type Status = { status: string; left_url?: string; right_url?: string; error?: string }
+    setQcElapsed(0)
     setQc({ status: 'running' })
     try {
-      const res = await api<{ status: string; left_url?: string; right_url?: string; error?: string }>('/api/preprocess', { rid })
-      if (res.status === 'ok') {
-        setQc({ status: 'ok', left: res.left_url + '?t=' + Date.now(), right: res.right_url + '?t=' + Date.now() })
-      } else {
-        setQc({ status: 'failed', error: res.error })
-      }
+      await api<Status>('/api/preprocess', { rid })
     } catch (e) {
       setQc({ status: 'failed', error: e instanceof Error ? e.message : String(e) })
+      return
     }
+
+    const deadline = Date.now() + 10 * 60_000     // far beyond any real run; a stuck job stops here
+    while (Date.now() < deadline) {
+      await new Promise((r) => setTimeout(r, 2000))
+      let res: Status
+      try {
+        res = await api<Status>('/api/preprocess/status?rid=' + encodeURIComponent(rid))
+      } catch {
+        continue                                   // a dropped poll is not a failed run
+      }
+      if (res.status === 'ok') {
+        setQc({ status: 'ok', left: res.left_url + '?t=' + Date.now(), right: res.right_url + '?t=' + Date.now() })
+        return
+      }
+      if (res.status === 'failed') {
+        setQc({ status: 'failed', error: res.error })
+        return
+      }
+    }
+    setQc({ status: 'failed', error: 'preprocessing ใช้เวลานานผิดปกติ — ตรวจสอบที่เซิร์ฟเวอร์' })
   }
 
   async function commit() {
@@ -555,11 +593,27 @@ export default function Capture() {
                   Preprocessing (QC) — เท้าซ้าย / ขวา
                 </h4>
                 <span className="text-muted-foreground text-xs">
-                  {qc.status === 'running' && 'กำลังประมวลผล... (segment + แยกซ้าย-ขวา + CLAHE)'}
+                  {qc.status === 'running' && (
+                    <span>
+                      กำลังประมวลผล {qcElapsed} วินาที
+                      <span className="text-muted-foreground/70"> · ปกติใช้ราว 60–90 วินาที · ถ่ายเคสถัดไปต่อได้เลย</span>
+                    </span>
+                  )}
                   {qc.status === 'ok' && '✓ แยกซ้าย-ขวาสำเร็จ — ตรวจว่าเท้าติดครบและแยกถูก'}
                   {qc.status === 'failed' && <span className="text-destructive">✗ preprocessing ล้มเหลว: {qc.error || ''} — ควรถ่ายใหม่</span>}
                 </span>
               </div>
+              {qc.status === 'running' && (
+                // Indeterminate on purpose: segmentation reports no progress of its own, and a
+                // bar that pretends to know how far along it is would be a lie that runs out
+                // before the job does. The number of seconds next to it is the honest part.
+                <div className="bg-secondary mb-4 h-1.5 overflow-hidden rounded-full">
+                  <div
+                    className="bg-primary h-full rounded-full transition-all duration-1000"
+                    style={{ width: `${Math.min(95, (qcElapsed / 90) * 100)}%` }}
+                  />
+                </div>
+              )}
               <div className="grid grid-cols-1 gap-4.5 sm:grid-cols-2">
                 {(['L', 'R'] as const).map((side) => (
                   <Card key={side} className="overflow-hidden p-0">
@@ -568,7 +622,12 @@ export default function Capture() {
                       <h3 className="text-sm font-bold">{side === 'L' ? 'ซ้าย (L)' : 'ขวา (R)'}</h3>
                     </div>
                     <div className="bg-foreground/95 flex aspect-square items-center justify-center overflow-hidden">
-                      {qc.status === 'running' && <span className="text-2xl text-white/60">⏳</span>}
+                      {qc.status === 'running' && (
+                        <span className="text-center text-white/60">
+                          <span className="block text-2xl">⏳</span>
+                          <span className="mt-1 block font-mono text-xs">{qcElapsed}s</span>
+                        </span>
+                      )}
                       {qc.status === 'failed' && <span className="text-2xl text-white/60">✗</span>}
                       {qc.status === 'ok' && (
                         <img src={side === 'L' ? qc.left : qc.right} alt="" className="h-full w-full object-contain" />

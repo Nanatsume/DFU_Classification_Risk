@@ -51,10 +51,12 @@ def client(tmp_path, monkeypatch):
     sys.modules.pop("server", None)
     server = importlib.import_module("server")
 
-    # server.py keeps its own DATA_DIR/META_DIR (separate constants, same default folder) for raw
-    # image + meta-json writes — redirect those into the same isolated tmp_path too.
-    monkeypatch.setattr(server, "DATA_DIR", tmp_path)
-    monkeypatch.setattr(server, "META_DIR", tmp_path / "meta")
+    # Nothing else to redirect: server_paths resolves db.DATA_DIR on every call, so patching it
+    # above covers the image and meta-json writes too, in this process and in the preprocessing
+    # child (server hands it across as DFU_DATA_DIR). It was not always so — server.py and
+    # server_paths each kept their own copy captured at import, the copies went stale when only
+    # db's was patched, and the suite wrote patient image files into the live data/ directory
+    # while the database went to tmp_path. One source, read late, is what stops that recurring.
 
     from fastapi.testclient import TestClient
 

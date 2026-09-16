@@ -36,6 +36,30 @@ print("✓ All libraries imported successfully")
 # 1. Color Space Conversion: RGB → YDbDr
 # ============================================================
 
+# ICM rounds in the HMRF segmentation. The default is 30 — the value this pipeline was written
+# and validated with, and the one the study protocol describes. It is exposed here only so the
+# cost of that choice can be measured on a running system without editing the method.
+#
+# Measured on a real rig capture (1920x1080), against the mask the full 30 rounds produce:
+#
+#     round  pixels still changing   IoU vs final mask
+#         1        0.661%                 0.9935
+#         4        0.260%                 0.9992
+#         8        0.188%                 0.9999
+#        12        0.179%                 1.0000
+#        30        0.176%                 1.0000   (stops on the cap, never on convergence)
+#
+# The fraction of pixels changing per round falls and then sits at ~0.176%, while the convergence
+# test asks for below 0.1% — so it can never converge and always runs the cap. Those last pixels
+# are a handful along the foot edge flipping back and forth between rounds (the IoU alternates
+# between odd and even rounds), not progress. Roughly 70% of the segmentation time buys the
+# difference between 0.9999 and 1.0000.
+#
+# Changing the default is a change to the documented method, not a tuning decision, so it stays
+# at 30 until whoever owns the protocol says otherwise.
+ICM_MAX_ITER = int(os.environ.get("PODO_ICM_MAX_ITER", "30"))
+
+
 def rgb_to_ydbdr(image_rgb: np.ndarray) -> np.ndarray:
     """
     Convert an RGB image (H, W, 3) in [0, 255] to YDbDr.
@@ -610,7 +634,7 @@ def preprocess_foot_image(image_path: str, output_dir: str = None, target_size: 
     image_rgb = np.array(img_pil)
 
     image_ydbdr = rgb_to_ydbdr(image_rgb)
-    labels = hmrf_em_segmentation(image_ydbdr, K=3, beta=1.5)
+    labels = hmrf_em_segmentation(image_ydbdr, K=3, beta=1.5, max_iter=ICM_MAX_ITER)
     foot_label = identify_foot_label(labels, image_ydbdr)
     foot_mask = create_foot_mask(labels, foot_label)
     pure_sole = get_pure_sole_image(image_rgb, foot_mask, background="black")

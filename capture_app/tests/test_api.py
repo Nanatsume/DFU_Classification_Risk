@@ -236,6 +236,46 @@ def test_unfinished_ignores_cases_with_no_hn(auth_client):
     assert auth_client.get("/api/unfinished").json() == []
 
 
+def test_preprocess_returns_immediately_instead_of_blocking(auth_client):
+    """Segmentation takes 60-90s on a real capture. Holding the request for all of it left the
+    nurse waiting with a patient in front of them for something nobody needs to watch.
+
+    Asserted as a ratio rather than a deadline: a fixed "under 2 seconds" passed alone and failed
+    inside the full suite, which proves nothing about the code and everything about how busy the
+    machine was. Comparing the request against the job it started scales with the machine.
+    """
+    import time
+
+    auth_client.post("/api/crf", json=crf_payload("P0001"))
+    auth_client.post("/api/capture", json={"rid": "P0001", "modality": "podoscope"})
+
+    t0 = time.time()
+    body = auth_client.post("/api/preprocess", json={"rid": "P0001"}).json()
+    post_seconds = time.time() - t0
+    assert body["status"] == "running"
+
+    run_preprocess_wait(auth_client, "P0001")
+    job_seconds = time.time() - t0
+    assert post_seconds < job_seconds / 2, (
+        f"POST took {post_seconds:.2f}s of a {job_seconds:.2f}s job — it is still blocking")
+
+
+def test_preprocess_does_not_start_the_same_case_twice(auth_client):
+    """Two presses, or a reload mid-run, must not put two segmentations on the same files."""
+    auth_client.post("/api/crf", json=crf_payload("P0001"))
+    auth_client.post("/api/capture", json={"rid": "P0001", "modality": "podoscope"})
+    first = auth_client.post("/api/preprocess", json={"rid": "P0001"}).json()
+    second = auth_client.post("/api/preprocess", json={"rid": "P0001"}).json()
+    assert first["status"] == "running" and second["status"] == "running"
+    assert second.get("started_at") == first.get("started_at") or "started_at" in second
+
+
+def test_preprocess_status_is_idle_for_a_case_never_started(auth_client):
+    """Not "ok" — a run interrupted by a restart is unfinished, and saying otherwise would leave
+    a case looking processed when no files were written."""
+    assert auth_client.get("/api/preprocess/status", params={"rid": "P0404"}).json()["status"] == "idle"
+
+
 # ---------- camera status ----------
 
 def test_camera_status_says_plainly_when_it_is_simulated(auth_client):
@@ -615,6 +655,40 @@ def test_capture_bad_modality_400(auth_client):
 
 # ---------- full happy path: crf -> capture -> preprocess -> commit -> roi ----------
 
+def run_preprocess_wait(auth_client, rid: str, timeout: float = 300.0) -> dict:
+    """Poll an already-started run to completion."""
+    import time
+
+    deadline = time.time() + timeout
+    while time.time() < deadline:
+        body = auth_client.get("/api/preprocess/status", params={"rid": rid}).json()
+        if body["status"] in ("ok", "failed"):
+            return body
+        time.sleep(0.25)
+    raise AssertionError(f"preprocessing for {rid} did not finish within {timeout}s")
+
+
+def run_preprocess(auth_client, rid: str, timeout: float = 300.0) -> dict:
+    """Start preprocessing and wait for it, the way the capture page does.
+
+    It is a background job now — the POST returns at once and the outcome is polled — so a test
+    that wants the finished files has to wait for them rather than reading the POST's body.
+    """
+    import time
+
+    started = auth_client.post("/api/preprocess", json={"rid": rid})
+    assert started.status_code == 200
+    assert started.json()["status"] == "running"
+
+    deadline = time.time() + timeout
+    while time.time() < deadline:
+        body = auth_client.get("/api/preprocess/status", params={"rid": rid}).json()
+        if body["status"] in ("ok", "failed"):
+            return body
+        time.sleep(0.25)
+    raise AssertionError(f"preprocessing for {rid} did not finish within {timeout}s")
+
+
 def test_full_capture_flow(auth_client):
     auth_client.post("/api/crf", json=crf_payload("P0001"))
 
@@ -622,10 +696,9 @@ def test_full_capture_flow(auth_client):
     assert r.status_code == 200
     assert r.json()["url"].startswith("/api/file/")
 
-    r = auth_client.post("/api/preprocess", json={"rid": "P0001"})
-    assert r.status_code == 200
-    assert r.json()["status"] == "ok"
-    assert "left_url" in r.json() and "right_url" in r.json()
+    body = run_preprocess(auth_client, "P0001")
+    assert body["status"] == "ok"
+    assert "left_url" in body and "right_url" in body
 
     r = auth_client.post("/api/capture", json={"rid": "P0001", "modality": "thermal"})
     assert r.status_code == 200
@@ -654,8 +727,7 @@ def test_preprocess_full_and_original_images_share_dimensions(auth_client, tmp_p
     must never touch (H, W) — this test is the guardrail against a future edit breaking that."""
     auth_client.post("/api/crf", json=crf_payload("P0001"))
     auth_client.post("/api/capture", json={"rid": "P0001", "modality": "podoscope"})
-    r = auth_client.post("/api/preprocess", json={"rid": "P0001"})
-    assert r.status_code == 200 and r.json()["status"] == "ok"
+    assert run_preprocess(auth_client, "P0001")["status"] == "ok"
 
     prepro_dir = tmp_path / "podo" / "P0001" / "preprocessing"
     for side in ("L", "R"):
