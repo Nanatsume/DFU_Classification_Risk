@@ -20,8 +20,13 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
-      - run: pip install -r requirements.txt -r requirements-dev.txt
+          # 3.12 because that is what ships: setup.ps1 requires it, and requirements.lock.txt
+          # pins the versions the app was tested against, several of which (numpy 2.5.1 among
+          # them) refuse to install on 3.11. CI on a version nobody runs proves nothing.
+          python-version: "3.12"
+      # The lock files, not the loose ones — the point of CI here is to check what a fresh
+      # machine actually gets, and requirements.txt only states intent.
+      - run: pip install -r requirements.lock.txt -r requirements-dev.lock.txt
       - run: pytest tests/ -v
         env:
           PYTHONPATH: .
