@@ -35,6 +35,15 @@ def raw_path(rid: str, modality: str) -> Path:
     return data_dir() / "thermal" / rid / "image" / f"{rid}_thermal.png"
 
 
+def camera_test_dir(modality: str) -> Path:
+    """Where a hardware smoke-test shot lands — deliberately outside podo/ and thermal/, which
+    are keyed by research id and read by the cases table, the manifest, and the backup allowlist.
+    A folder here is never mistaken for a case, never backed up, and never shows up in the
+    gallery — it exists only so someone checking that a camera still works has proof it fired,
+    without that shot becoming a phantom patient record."""
+    return data_dir() / "camera-test" / modality
+
+
 def prepro_path(rid: str, side: str) -> Path:
     return data_dir() / "podo" / rid / "preprocessing" / f"{rid}_podo_{side}.png"
 

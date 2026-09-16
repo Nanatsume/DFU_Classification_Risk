@@ -31,6 +31,7 @@ export default defineConfig({
         capture: path.resolve(import.meta.dirname, 'capture.html'),
         roi: path.resolve(import.meta.dirname, 'roi.html'),
         gallery: path.resolve(import.meta.dirname, 'gallery.html'),
+        'camera-test': path.resolve(import.meta.dirname, 'camera-test.html'),
       },
     },
   },

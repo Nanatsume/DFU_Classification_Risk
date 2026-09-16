@@ -151,7 +151,7 @@ export default function Home() {
           </div>
         </Card>
 
-        <Card className="flex flex-col border-l-[5px] border-l-[#4b5563] p-5 sm:col-span-2">
+        <Card className="flex flex-col border-l-[5px] border-l-[#4b5563] p-5">
           <div className="text-muted-foreground font-mono text-[11px] tracking-[0.2em]">05</div>
           <div className="my-2 text-lg font-bold text-[#4b5563]">คลังภาพ</div>
           <p className="text-muted-foreground mb-4 flex-1 text-[13.5px] leading-relaxed">
@@ -160,6 +160,33 @@ export default function Home() {
           <div className="flex flex-wrap gap-2">
             <Button asChild>
               <a href="gallery.html">เปิดคลังภาพ</a>
+            </Button>
+          </div>
+        </Card>
+
+        <Card className="flex flex-col border-l-[5px] border-l-[#7c3a66] p-5">
+          <div className="text-muted-foreground font-mono text-[11px] tracking-[0.2em]">06</div>
+          <div className="my-2 text-lg font-bold text-[#7c3a66]">ทดสอบการถ่าย Podoscope</div>
+          <p className="text-muted-foreground mb-4 flex-1 text-[13.5px] leading-relaxed">
+            เช็คว่ากล้องต่อและถ่ายได้จริง โดยไม่ต้องกรอก HN และไม่ออก research id — ภาพเก็บแยกไว้
+            ไม่ปนกับเคสผู้ป่วยจริง
+          </p>
+          <div className="flex flex-wrap gap-2">
+            <Button asChild>
+              <a href="camera-test.html#podoscope">ทดสอบกล้อง Podoscope</a>
+            </Button>
+          </div>
+        </Card>
+
+        <Card className="flex flex-col border-l-[5px] border-l-[#4b5563] p-5">
+          <div className="text-muted-foreground font-mono text-[11px] tracking-[0.2em]">07</div>
+          <div className="my-2 text-lg font-bold text-[#4b5563]">ทดสอบการถ่าย Thermal</div>
+          <p className="text-muted-foreground mb-4 flex-1 text-[13.5px] leading-relaxed">
+            กล้องความร้อนยังไม่ได้เชื่อมต่อกับระบบ (รออุปกรณ์และ SDK จากผู้ผลิต)
+          </p>
+          <div className="flex flex-wrap gap-2">
+            <Button asChild>
+              <a href="camera-test.html#thermal">ดูสถานะ Thermal</a>
             </Button>
           </div>
         </Card>

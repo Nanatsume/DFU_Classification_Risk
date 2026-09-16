@@ -104,6 +104,10 @@ class CameraModeReq(BaseModel):
     mode: str            # "sim" | "usb"
 
 
+class CameraTestReq(BaseModel):
+    modality: str
+
+
 @app.get("/api/health")
 def health():
     """Unauthenticated — every page's LIVE/DEMO probe and the login page itself call this
@@ -295,6 +299,32 @@ def capture(req: CaptureReq):
     db.save_capture(req.rid, req.modality, rel(p), now_iso())
     db.log_audit(req.rid, "capture", req.modality)
     return {"rid": req.rid, "modality": req.modality, "url": url(p)}
+
+
+@app.post("/api/camera-test/capture", dependencies=[require_session])
+def camera_test_capture(req: CameraTestReq):
+    """Fire the real camera with no case behind it — for staff checking that hardware still
+    works before a patient sits down, without an HN, a research id, or a row in `cases`.
+
+    Same SOURCE.grab() as /api/capture, so this proves the exact path a real capture would take,
+    but the file lands under camera-test/ (server_paths.camera_test_dir) rather than podo/ or
+    thermal/, which keeps it out of the cases table, the manifest, the gallery, and the backup
+    allowlist. A smoke test should never be able to masquerade as a patient record.
+    """
+    if req.modality not in MODALITIES:
+        raise HTTPException(400, f"modality must be one of {MODALITIES}")
+    try:
+        png = SOURCE.grab(req.modality, "camera-test")
+    except CaptureError as e:
+        raise HTTPException(503, str(e))
+    except NotImplementedError as e:
+        raise HTTPException(501, str(e))
+    stamp = datetime.now(TZ).strftime("%Y%m%dT%H%M%S")
+    p = server_paths.camera_test_dir(req.modality) / f"{stamp}.png"
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_bytes(png)
+    db.log_audit(None, "camera_test", req.modality)
+    return {"modality": req.modality, "url": url(p)}
 
 
 # In-flight and finished preprocessing runs, keyed by research id. Segmentation takes 60-90
