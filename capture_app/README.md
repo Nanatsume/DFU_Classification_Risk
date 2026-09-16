@@ -9,6 +9,12 @@ Podoscope capture over USB works (tested on a Logitech C615); **thermal** is the
 waiting on hardware, and raises `NotImplementedError` until the radiometric device arrives. A
 simulated source runs the whole flow with no hardware at all — see [Cameras](#cameras).
 
+**Picking this up on a new machine, or handing it to someone (or something) else? Start with
+[`HANDOFF.md`](HANDOFF.md)** — setup in one command, plus the traps that have already bitten:
+test runs that overwrote real patient data, a camera index that silently pointed at a virtual
+device, a server that segfaulted, and the parameters nobody may change without the study's
+supervisor.
+
 For a full file-by-file / API / feature breakdown, see **[`docs/notes/index.md`](docs/notes/index.md)**
 (Obsidian-linked notes — open the `docs/notes/` folder as a vault to browse with clickable links
 and a graph view).
