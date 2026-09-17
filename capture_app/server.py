@@ -54,6 +54,7 @@ import db
 import server_paths
 from server_paths import (prepro_full_path, prepro_original_path, prepro_path,
                           raw_path, rel, url)
+import capture_source
 from capture_source import (CaptureError, SimulatedSource, UsbCameraSource, demo_images,
                             get_source, list_video_devices, podoscope_preview,
                             resolve_podoscope_index)
@@ -110,6 +111,21 @@ class CameraModeReq(BaseModel):
 
 class CameraTestReq(BaseModel):
     modality: str
+
+
+class CameraSettingsReq(BaseModel):
+    # A partial patch, not a full settings object — the client only ever sends the field(s)
+    # someone just changed, and capture_source.save_camera_settings() merges it onto the rest.
+    auto_exposure: bool | None = None
+    exposure: int | None = None
+    auto_focus: bool | None = None
+    focus: int | None = None
+    auto_wb: bool | None = None
+    wb_temperature: int | None = None
+    brightness: int | None = None
+    contrast: int | None = None
+    saturation: int | None = None
+    gain: int | None = None
 
 
 @app.get("/api/health")
@@ -240,6 +256,28 @@ def set_camera_mode(req: CameraModeReq):
     SOURCE = UsbCameraSource() if mode == "usb" else SimulatedSource()
     db.log_audit(None, "camera_mode", mode)
     return camera_status()
+
+
+@app.get("/api/camera/settings", dependencies=[require_session])
+def get_camera_settings():
+    """Current manual-override settings (exposure, focus, white balance, ...) — whatever is
+    saved here is what every future camera open uses, real captures included. See
+    capture_source.CAMERA_SETTINGS_DEFAULTS for what "unset" means for each field."""
+    return capture_source.load_camera_settings()
+
+
+@app.post("/api/camera/settings", dependencies=[require_session])
+def set_camera_settings(req: CameraSettingsReq):
+    """Save a settings change and, if the live preview is currently open, apply it there
+    immediately — so adjusting a slider while watching the video is what "ลองใส่ๆไป" actually
+    looks like, rather than save-then-reopen-and-hope.
+    """
+    patch = {k: v for k, v in req.model_dump().items() if v is not None}
+    merged = capture_source.save_camera_settings(patch)
+    if podoscope_preview.active:
+        podoscope_preview.apply_live(merged)
+    db.log_audit(None, "camera_settings", json.dumps(patch, ensure_ascii=False))
+    return merged
 
 
 @app.get("/api/unfinished", dependencies=[require_session])

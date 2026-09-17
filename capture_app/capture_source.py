@@ -12,8 +12,10 @@ radiometric temperature array (see UsbCameraSource.grab).
 """
 from __future__ import annotations
 import io
+import json
 import os
 import threading
+from pathlib import Path
 from typing import Optional
 from datetime import datetime, timezone, timedelta
 
@@ -124,6 +126,91 @@ BLANK_FRAME_STD = float(os.environ.get("PODO_CAMERA_BLANK_STD", "15.0"))
 BLANK_FRAME_MEAN = float(os.environ.get("PODO_CAMERA_BLANK_MEAN", "12.0"))
 
 
+# ---------- manual camera settings ----------
+# The Logi C615's own auto-exposure re-meters between shots — sometimes between the two feet of
+# the same case — which is what nurses were seeing as "the lighting is different every time".
+# Measured on this exact unit (see docs/notes, or just re-run the probe): CAP_PROP_EXPOSURE and
+# CAP_PROP_GAIN both reliably move frame brightness (exposure -4 -> mean 251, -10 -> mean 15;
+# gain saturates the frame white above ~100), CAP_PROP_BRIGHTNESS is a reliable simple offset, and
+# CAP_PROP_WB_TEMPERATURE takes a Kelvin value cleanly once CAP_PROP_AUTO_WB is turned off. Focus
+# is not continuous on this camera despite the API accepting arbitrary integers 0-255: every value
+# tried except 0 and 255 silently failed to apply (cv2's own .set() returned False), so this
+# camera only really offers "near" and "far", not a focus range — hence FOCUS_NEAR/FOCUS_FAR below
+# rather than a slider bound.
+FOCUS_NEAR = 0
+FOCUS_FAR = 255
+
+# No aperture control exists to expose: a webcam's iris (if it has one at all) is fixed, unlike a
+# camera with an actual f-stop.
+CAMERA_SETTINGS_DEFAULTS = {
+    "auto_exposure": True, "exposure": -6,
+    "auto_focus": True, "focus": FOCUS_FAR,
+    "auto_wb": True, "wb_temperature": 4500,
+    "brightness": 128, "contrast": 32, "saturation": 32, "gain": 28,
+}
+
+
+def _camera_settings_path() -> Path:
+    import server_paths   # imported lazily: this module must stay importable without server.py
+    return server_paths.data_dir() / "camera_settings.json"
+
+
+def load_camera_settings() -> dict:
+    """Never cached — read fresh every time the camera is opened, the same reasoning as
+    server_paths itself: DFU_DATA_DIR can change under a test, and a cached path or cached
+    settings dict would silently keep pointing at the wrong one."""
+    p = _camera_settings_path()
+    saved = {}
+    if p.is_file():
+        try:
+            saved = json.loads(p.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            saved = {}
+    out = dict(CAMERA_SETTINGS_DEFAULTS)
+    out.update({k: v for k, v in saved.items() if k in CAMERA_SETTINGS_DEFAULTS})
+    return out
+
+
+def save_camera_settings(patch: dict) -> dict:
+    """Merge `patch` onto whatever is already saved (or the defaults) and persist. Applies to
+    every future camera open — a real capture, a camera-test shot, a new live preview — not just
+    whichever one happened to be open when the setting was changed."""
+    merged = load_camera_settings()
+    merged.update({k: v for k, v in patch.items() if k in CAMERA_SETTINGS_DEFAULTS})
+    p = _camera_settings_path()
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_text(json.dumps(merged, indent=2), encoding="utf-8")
+    return merged
+
+
+def _apply_camera_settings(cap, settings: dict) -> None:
+    """The one place a setting turns into a cap.set() call — used when a capture opens the
+    camera fresh and when the live preview applies a change someone just made mid-stream."""
+    import cv2
+    if settings.get("auto_exposure", True):
+        cap.set(cv2.CAP_PROP_AUTO_EXPOSURE, 1)
+    else:
+        # Setting CAP_PROP_EXPOSURE explicitly is what actually takes this driver out of auto —
+        # CAP_PROP_AUTO_EXPOSURE's own readback does not reliably reflect that, so it is not
+        # relied on to confirm the switch.
+        cap.set(cv2.CAP_PROP_EXPOSURE, settings.get("exposure", CAMERA_SETTINGS_DEFAULTS["exposure"]))
+    if settings.get("auto_focus", True):
+        cap.set(cv2.CAP_PROP_AUTOFOCUS, 1)
+    else:
+        cap.set(cv2.CAP_PROP_AUTOFOCUS, 0)
+        cap.set(cv2.CAP_PROP_FOCUS, settings.get("focus", CAMERA_SETTINGS_DEFAULTS["focus"]))
+    if settings.get("auto_wb", True):
+        cap.set(cv2.CAP_PROP_AUTO_WB, 1)
+    else:
+        cap.set(cv2.CAP_PROP_AUTO_WB, 0)
+        cap.set(cv2.CAP_PROP_WB_TEMPERATURE,
+                settings.get("wb_temperature", CAMERA_SETTINGS_DEFAULTS["wb_temperature"]))
+    for key, prop in (("brightness", cv2.CAP_PROP_BRIGHTNESS), ("contrast", cv2.CAP_PROP_CONTRAST),
+                      ("saturation", cv2.CAP_PROP_SATURATION), ("gain", cv2.CAP_PROP_GAIN)):
+        if key in settings:
+            cap.set(prop, settings[key])
+
+
 def _enumerate_on_com_thread() -> list[str]:
     """Enumerate DirectShow devices on a thread that owns a COM apartment.
 
@@ -229,6 +316,10 @@ def _open_podoscope(index: int):
     cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*"MJPG"))
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, PODO_WIDTH)
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, PODO_HEIGHT)
+    # Applied on every open, including a real patient capture: whatever exposure/focus/white
+    # balance someone locked in on the camera-test page is what the clinic actually shoots with,
+    # not just what the test page previews.
+    _apply_camera_settings(cap, load_camera_settings())
     return cap
 
 
@@ -288,6 +379,8 @@ class PodoscopeLivePreview:
         self._jpeg: bytes | None = None    # latest encoded frame, for the MJPEG stream
         self._index: int | None = None
         self.error: str | None = None
+        self._settings_lock = threading.Lock()
+        self._pending_settings: dict | None = None
 
     @property
     def active(self) -> bool:
@@ -317,6 +410,13 @@ class PodoscopeLivePreview:
         with self._frame_lock:
             return self._jpeg
 
+    def apply_live(self, settings: dict) -> None:
+        """Push a settings change into the running preview without reopening the camera — the
+        cv2.VideoCapture object is only ever touched from the thread that owns it (_run below),
+        so this just hands the new values across a lock rather than calling cap.set() itself."""
+        with self._settings_lock:
+            self._pending_settings = dict(settings)
+
     def capture_frame(self) -> bytes:
         """A still, at full quality, lifted from the frame the preview loop is already holding —
         no second camera handle opened."""
@@ -341,6 +441,14 @@ class PodoscopeLivePreview:
         import cv2
         try:
             while not self._stop.is_set():
+                with self._settings_lock:
+                    pending, self._pending_settings = self._pending_settings, None
+                if pending is not None:
+                    _apply_camera_settings(cap, pending)
+                    # exposure/gain/WB take a few frames to settle after a change; discard them
+                    # so the preview doesn't briefly show the old brightness as "the new value".
+                    for _ in range(5):
+                        cap.read()
                 ok, frame = cap.read()
                 if not ok or frame is None:
                     continue
