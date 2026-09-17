@@ -194,8 +194,31 @@ export default function CameraTest() {
   const [live, setLive] = useState(true)
   const [settings, setSettings] = useState<CameraSettings | null>(null)
   const [showSettings, setShowSettings] = useState(true)
-  const [modalShot, setModalShot] = useState<Shot | null>(null)
+  const [modalIndex, setModalIndex] = useState<number | null>(null)
   const patchTimer = useRef<number | null>(null)
+  const visibleShots = shots.slice(0, 12)
+  const modalShot = modalIndex !== null ? visibleShots[modalIndex] : null
+
+  function showPrev() {
+    setModalIndex((i) => (i === null ? i : (i - 1 + visibleShots.length) % visibleShots.length))
+  }
+  function showNext() {
+    setModalIndex((i) => (i === null ? i : (i + 1) % visibleShots.length))
+  }
+
+  // Left/right arrow keys flip through shots the same way the buttons do, while the dialog is
+  // open — added because clicking a thumbnail, closing, clicking the next one over is exactly
+  // the back-and-forth this was asked to remove.
+  useEffect(() => {
+    if (modalIndex === null) return
+    function onKey(e: KeyboardEvent) {
+      if (e.key === 'ArrowLeft') showPrev()
+      else if (e.key === 'ArrowRight') showNext()
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [modalIndex, visibleShots.length])
 
   async function checkCamera() {
     try { setStatus(await api<CameraStatus>('/api/camera')) } catch { setStatus(null) }
@@ -286,11 +309,11 @@ export default function CameraTest() {
         <Button onClick={shoot} disabled={busy}>{busy ? 'กำลังถ่าย…' : 'ถ่ายทดสอบ'}</Button>
         {shots.length > 0 && (
           <div className="mt-4 flex flex-wrap gap-3">
-            {shots.slice(0, 12).map((s) => (
+            {visibleShots.map((s, i) => (
               <button
                 key={s.name}
                 type="button"
-                onClick={() => setModalShot(s)}
+                onClick={() => setModalIndex(i)}
                 className="block w-28 shrink-0 cursor-pointer overflow-hidden rounded-md border text-left"
               >
                 <div className="bg-foreground/95 flex aspect-square items-center justify-center overflow-hidden">
@@ -312,17 +335,50 @@ export default function CameraTest() {
         </p>
       </Card>
 
-      <Dialog open={!!modalShot} onOpenChange={(open) => !open && setModalShot(null)}>
+      <Dialog open={modalIndex !== null} onOpenChange={(open) => !open && setModalIndex(null)}>
         <DialogContent className="max-w-[95vw] sm:max-w-[95vw]">
           <DialogHeader>
-            <DialogTitle>{modalShot?.name}</DialogTitle>
+            <DialogTitle>
+              {modalShot?.name}
+              {visibleShots.length > 1 && (
+                <span className="text-muted-foreground ml-2 text-[12px] font-normal">
+                  ({(modalIndex ?? 0) + 1} / {visibleShots.length})
+                </span>
+              )}
+            </DialogTitle>
           </DialogHeader>
           {modalShot && (
-            <img
-              src={modalShot.url}
-              alt={modalShot.name}
-              className="max-h-[90vh] w-full rounded-md object-contain"
-            />
+            <div className="relative">
+              <img
+                src={modalShot.url}
+                alt={modalShot.name}
+                className="max-h-[90vh] w-full rounded-md object-contain"
+              />
+              {visibleShots.length > 1 && (
+                <>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    onClick={showPrev}
+                    className="absolute top-1/2 left-2 -translate-y-1/2"
+                    aria-label="ภาพก่อนหน้า"
+                  >
+                    ‹
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    onClick={showNext}
+                    className="absolute top-1/2 right-2 -translate-y-1/2"
+                    aria-label="ภาพถัดไป"
+                  >
+                    ›
+                  </Button>
+                </>
+              )}
+            </div>
           )}
         </DialogContent>
       </Dialog>
