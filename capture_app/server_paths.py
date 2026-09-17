@@ -37,10 +37,11 @@ def raw_path(rid: str, modality: str) -> Path:
 
 def camera_test_dir(modality: str) -> Path:
     """Where a hardware smoke-test shot lands — deliberately outside podo/ and thermal/, which
-    are keyed by research id and read by the cases table, the manifest, and the backup allowlist.
-    A folder here is never mistaken for a case, never backed up, and never shows up in the
-    gallery — it exists only so someone checking that a camera still works has proof it fired,
-    without that shot becoming a phantom patient record."""
+    are keyed by research id and read by the cases table and the manifest. A folder here is never
+    mistaken for a case and never shows up in the gallery — it exists only so someone checking
+    that a camera still works has proof it fired, without that shot becoming a phantom patient
+    record. It is still backed up (tools/backup.py's IMAGE_DIRS includes "camera-test"), just
+    kept out of everything that assumes a folder here means a patient."""
     return data_dir() / "camera-test" / modality
 
 

@@ -312,8 +312,9 @@ def camera_test_capture(req: CameraTestReq):
 
     Same SOURCE.grab() as /api/capture, so this proves the exact path a real capture would take,
     but the file lands under camera-test/ (server_paths.camera_test_dir) rather than podo/ or
-    thermal/, which keeps it out of the cases table, the manifest, the gallery, and the backup
-    allowlist. A smoke test should never be able to masquerade as a patient record.
+    thermal/, which keeps it out of the cases table, the manifest, and the gallery. A smoke test
+    should never be able to masquerade as a patient record — it is still backed up, just under
+    its own top-level folder (see tools/backup.py's IMAGE_DIRS).
     """
     if req.modality not in MODALITIES:
         raise HTTPException(400, f"modality must be one of {MODALITIES}")

@@ -123,7 +123,7 @@ export default function CameraTest() {
         <p className="text-muted-foreground text-[13px] leading-relaxed">
           เช็คว่ากล้องต่อและถ่ายได้จริงเฉยๆ ไม่ผูกกับเคสผู้ป่วย ไม่ออก research id
           และไม่ปนกับข้อมูลจริงในหน้า "ถ่ายภาพเก็บข้อมูล" — ภาพที่ถ่ายที่นี่เก็บแยกไว้ในโฟลเดอร์
-          camera-test/ ไม่ถูกอัปโหลดขึ้น backup และไม่ถูกใช้เทรนโมเดล
+          camera-test/ ไม่ถูกใช้เทรนโมเดล แต่ยัง backup ขึ้น OneDrive เหมือนกัน (ทุก 15 นาที)
         </p>
       </div>
 

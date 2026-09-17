@@ -97,7 +97,7 @@ if ($LASTEXITCODE -ne 0) {
 Ok "reachable"
 Info "config file (copy this to the other machine): $(& $rclone config file | Select-Object -Last 1)"
 
-Step "Registering the nightly task"
+Step "Registering the backup task"
 $venvPy = Join-Path (Get-Location) ".venv\Scripts\python.exe"
 if (-not (Test-Path $venvPy)) {
     Write-Host "No .venv found - run setup.ps1 first." -ForegroundColor Red
@@ -105,13 +105,19 @@ if (-not (Test-Path $venvPy)) {
 }
 $script = Join-Path (Get-Location) "tools\backup.py"
 $action = New-ScheduledTaskAction -Execute $venvPy -Argument "`"$script`"" -WorkingDirectory (Get-Location)
-$trigger = New-ScheduledTaskTrigger -Daily -At 2am
+# Every 15 minutes rather than once a night, so a machine problem mid-clinic-day loses at most
+# 15 minutes of captures instead of up to 24 hours of them. backup.py only uploads what changed
+# (rclone copy), so an idle run costs one directory listing, not a re-upload of everything.
+# Task Scheduler's default MultipleInstances policy (IgnoreNew) already skips a run that would
+# overlap one still in progress, so a slow run just gets skipped rather than stacking up.
+$trigger = New-ScheduledTaskTrigger -Once -At (Get-Date) `
+    -RepetitionInterval (New-TimeSpan -Minutes 15) -RepetitionDuration (New-TimeSpan -Days 3650)
 $settings = New-ScheduledTaskSettingsSet -StartWhenAvailable -RunOnlyIfNetworkAvailable `
     -DontStopIfGoingOnBatteries -AllowStartIfOnBatteries
 try { Unregister-ScheduledTask -TaskName $TASK_NAME -Confirm:$false -ErrorAction Stop } catch {}
 Register-ScheduledTask -TaskName $TASK_NAME -Action $action -Trigger $trigger `
-    -Settings $settings -Description "Nightly encrypted backup of the DFU capture app data" | Out-Null
-Ok "task '$TASK_NAME' runs daily at 02:00"
+    -Settings $settings -Description "Encrypted backup of the DFU capture app data, every 15 minutes" | Out-Null
+Ok "task '$TASK_NAME' runs every 15 minutes"
 
 Write-Host ""
 Write-Host "Backup is set up." -ForegroundColor Green

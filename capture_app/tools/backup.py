@@ -17,6 +17,9 @@ WHAT IS BACKED UP
                     are backed up rather than recomputed.
     thermal/        same, once the radiometric device is wired up.
     meta/           non-authoritative mirrors; tiny, and harmless to carry along.
+    camera-test/    hardware smoke-test shots from the camera-test page (server.py's
+                    /api/camera-test/capture) -- not a case, not a patient, but still a real
+                    photograph someone took on purpose and would rather not lose.
 
 HOW IT AVOIDS THE USUAL WAYS THIS GOES WRONG
 
@@ -63,7 +66,7 @@ REMOTE = os.environ.get("DFU_BACKUP_REMOTE", "")
 RCLONE = os.environ.get("RCLONE_EXE", "rclone")
 # Folders under DATA_DIR that are worth uploading. `sessions` live in the DB, not on disk; nothing
 # else in DATA_DIR is data we could not rebuild.
-IMAGE_DIRS = ("podo", "thermal", "meta")
+IMAGE_DIRS = ("podo", "thermal", "meta", "camera-test")
 STATUS_FILENAME = "backup_status.json"
 
 
