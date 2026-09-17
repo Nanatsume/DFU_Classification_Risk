@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { PodoscopeLiveView } from '@/components/PodoscopeLiveView'
 
 type CameraStatus = {
   mode: 'usb' | 'sim'
@@ -40,45 +41,6 @@ function StatusStrip({ status }: { status: CameraStatus | null }) {
 }
 
 type Shot = { url: string; name: string }
-
-/** Live MJPEG view, `<img>` pointed at the multipart stream — the server holds one cv2 handle
- *  open for as long as this element exists and releases it the moment the element (and so the
- *  request behind it) goes away, whether that's the toggle below or navigating off the page. The
- *  crosshair is a plain overlay div, independent of the stream itself, for lining the foot up on
- *  the rig the way the OS camera app's own grid does. */
-function LiveView() {
-  const [state, setState] = useState<'connecting' | 'ok' | 'failed'>('connecting')
-  // Bust the cache on mount so toggling off and back on opens a fresh stream rather than an
-  // <img> the browser thinks is already loaded.
-  const [src] = useState(() => '/api/camera-test/preview?t=' + Date.now())
-
-  return (
-    <div className="relative mb-3 aspect-video w-full overflow-hidden rounded-md bg-black">
-      <img
-        src={src}
-        alt="วิดีโอสดจากกล้อง Podoscope"
-        className="h-full w-full object-contain"
-        onLoad={() => setState('ok')}
-        onError={() => setState('failed')}
-      />
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute top-0 bottom-0 left-1/2 w-px -translate-x-1/2 bg-white/50" />
-        <div className="absolute top-1/2 right-0 left-0 h-px -translate-y-1/2 bg-white/50" />
-      </div>
-      {state === 'connecting' && (
-        <div className="absolute inset-0 flex items-center justify-center text-[12px] text-white/70">
-          กำลังเชื่อมต่อวิดีโอสด…
-        </div>
-      )}
-      {state === 'failed' && (
-        <div className="absolute inset-0 flex items-center justify-center px-6 text-center text-[12px] text-white/80">
-          ต่อวิดีโอสดไม่ได้ — ตรวจว่าอยู่โหมดกล้องจริง (ไม่ใช่โหมดจำลอง)
-          และไม่มีโปรแกรมอื่นถือกล้องอยู่ (Logi Capture, OBS, Teams)
-        </div>
-      )}
-    </div>
-  )
-}
 
 type CameraSettings = {
   auto_exposure: boolean
@@ -306,16 +268,11 @@ export default function CameraTest() {
           <Button size="sm" variant="outline" onClick={() => setShowSettings((v) => !v)}>
             {showSettings ? 'ซ่อนตั้งค่ากล้อง' : 'ตั้งค่ากล้อง'}
           </Button>
-          {live && (
-            <span className="text-muted-foreground text-[11.5px]">
-              ขณะเปิดวิดีโอสด จะถ่ายภาพเคสผู้ป่วยจริงพร้อมกันไม่ได้ — ปิดวิดีโอสดก่อนไปถ่ายเคสจริง
-            </span>
-          )}
         </div>
         {(live || (showSettings && settings)) && (
           <div className="mb-3 flex flex-wrap items-start gap-3">
             {live && <div className="min-w-[320px] flex-1">
-              <LiveView />
+              <PodoscopeLiveView />
             </div>}
             {showSettings && settings && (
               <div className="w-full sm:w-72 sm:shrink-0">

@@ -327,7 +327,7 @@ def capture(req: CaptureReq):
     if not db.case_exists(req.rid):
         raise HTTPException(409, f"ยังไม่ได้เริ่มเคส {req.rid} — กรอก HN แล้วกดเริ่มเคสก่อน")
     try:
-        png = SOURCE.grab(req.modality, req.rid)
+        png = _grab_podoscope_or_source(req.modality, req.rid)
     except CaptureError as e:
         # These carry a message written for the nurse standing at the podoscope — which camera is
         # missing, what is holding it, to check the lens cover. Letting it escape as a 500 turns
@@ -343,27 +343,39 @@ def capture(req: CaptureReq):
     return {"rid": req.rid, "modality": req.modality, "url": url(p)}
 
 
+def _grab_podoscope_or_source(modality: str, rid: str) -> bytes:
+    """The one place that decides whether a shot comes from SOURCE.grab() or from the live
+    preview's already-open handle — shared by /api/capture and /api/camera-test/capture so a
+    patient capture and a smoke-test capture behave identically here.
+
+    While the live preview is open it already holds the only handle DirectShow will grant this
+    camera, so a still is lifted from the frame it is already holding rather than opening a
+    second one, which would fail with "another program may hold it" — self-inflicted, against
+    this app's own preview. That applies just as much to a real patient capture as to a test
+    one: a nurse framing the shot with the live view open must be able to press capture without
+    closing it first.
+    """
+    if modality == "podoscope" and podoscope_preview.active:
+        return podoscope_preview.capture_frame()
+    return SOURCE.grab(modality, rid)
+
+
 @app.post("/api/camera-test/capture", dependencies=[require_session])
 def camera_test_capture(req: CameraTestReq):
     """Fire the real camera with no case behind it — for staff checking that hardware still
     works before a patient sits down, without an HN, a research id, or a row in `cases`.
 
-    Same SOURCE.grab() as /api/capture, so this proves the exact path a real capture would take,
-    but the file lands under camera-test/ (server_paths.camera_test_dir) rather than podo/ or
-    thermal/, which keeps it out of the cases table, the manifest, and the gallery. A smoke test
-    should never be able to masquerade as a patient record — it is still backed up, just under
-    its own top-level folder (see tools/backup.py's IMAGE_DIRS).
+    Same capture path as /api/capture (see _grab_podoscope_or_source), so this proves exactly
+    what a real capture would do, but the file lands under camera-test/
+    (server_paths.camera_test_dir) rather than podo/ or thermal/, which keeps it out of the cases
+    table, the manifest, and the gallery. A smoke test should never be able to masquerade as a
+    patient record — it is still backed up, just under its own top-level folder (see
+    tools/backup.py's IMAGE_DIRS).
     """
     if req.modality not in MODALITIES:
         raise HTTPException(400, f"modality must be one of {MODALITIES}")
     try:
-        # While the live preview is open it already holds the only handle DirectShow will grant
-        # this camera, so a still is lifted from the frame it is already holding rather than
-        # opening a second one, which would fail with exactly the error this branch avoids.
-        if req.modality == "podoscope" and podoscope_preview.active:
-            png = podoscope_preview.capture_frame()
-        else:
-            png = SOURCE.grab(req.modality, "camera-test")
+        png = _grab_podoscope_or_source(req.modality, "camera-test")
     except CaptureError as e:
         raise HTTPException(503, str(e))
     except NotImplementedError as e:

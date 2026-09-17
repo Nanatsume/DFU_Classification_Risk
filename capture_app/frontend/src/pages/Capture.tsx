@@ -12,6 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import { PodoscopeLiveView } from '@/components/PodoscopeLiveView'
 
 const RECORDS_KEY = 'capture_records'
 
@@ -542,6 +543,12 @@ export default function Capture() {
                 <div className="bg-foreground/95 relative flex aspect-[4/3] items-center justify-center overflow-hidden">
                   {previews[m] ? (
                     <img src={previews[m]!} alt="" className="h-full w-full object-contain" />
+                  ) : m === 'podoscope' && mode === 'live' ? (
+                    // Live so the shot can be aimed before pressing capture, rather than
+                    // pressing blind and only finding out the framing was off afterwards.
+                    // /api/capture reuses this exact stream's frame (see server.py's
+                    // _grab_podoscope_or_source), so pressing the button below just works.
+                    <PodoscopeLiveView className="mb-0 aspect-auto h-full w-full rounded-none" />
                   ) : (
                     <div className="text-center text-[12.5px] text-white/40">
                       <span className="mb-2 block text-3xl opacity-50">{m === 'podoscope' ? '📷' : '🌡️'}</span>
