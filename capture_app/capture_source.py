@@ -207,6 +207,159 @@ def resolve_podoscope_index() -> int:
     )
 
 
+def _open_podoscope(index: int):
+    """The one place a podoscope cv2.VideoCapture gets opened and configured — used by a single
+    snapshot and by PodoscopeLivePreview's continuous reader alike, so both get the same backend,
+    fourcc, and resolution instead of two copies that could quietly drift apart."""
+    import cv2
+
+    # CAP_DSHOW: Windows' default MSMF backend is slower to open on this camera and ignores some
+    # resolution requests. Off Windows, let OpenCV choose.
+    backend = getattr(cv2, "CAP_DSHOW", 0) if os.name == "nt" else 0
+    cap = cv2.VideoCapture(index, backend)
+    if not cap.isOpened():
+        cap.release()
+        raise CaptureError(
+            f"Camera [{index}] ({PODO_CAMERA_NAME}) could not be opened — another program "
+            "may hold it (Logi Capture, OBS, Teams, or this app's own live preview). "
+            "Close that program and retry."
+        )
+    # MJPG before the size: at 1920x1080 the uncompressed YUY2 stream is bandwidth-bound, and
+    # setting the size first can leave the device pinned to a lower mode.
+    cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*"MJPG"))
+    cap.set(cv2.CAP_PROP_FRAME_WIDTH, PODO_WIDTH)
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, PODO_HEIGHT)
+    return cap
+
+
+def _validate_and_encode_podoscope(frame, index: int) -> bytes:
+    """Blank-frame guard + PNG encode, shared by a single snapshot and a frame lifted from the
+    live preview — the check that catches a lens cap or an unlit rig must apply the same way
+    regardless of which path the frame came from."""
+    import cv2
+    import numpy as np
+
+    arr = np.asarray(frame)
+    std, mean = float(arr.std()), float(arr.mean())
+    if std < BLANK_FRAME_STD or mean < BLANK_FRAME_MEAN:
+        raise CaptureError(
+            f"ภาพที่ได้จากกล้อง [{index}] ({PODO_CAMERA_NAME}) ว่างเปล่า "
+            f"(std={std:.1f} ต่ำกว่า {BLANK_FRAME_STD}, ความสว่างเฉลี่ย={mean:.1f} "
+            f"ต่ำกว่า {BLANK_FRAME_MEAN}) — ตรวจว่าเปิดฝาเลนส์แล้ว "
+            "และไฟของกล่องโพโดสโคปติดอยู่ แล้วถ่ายใหม่"
+        )
+
+    h, w = frame.shape[:2]
+    if (w, h) != (PODO_WIDTH, PODO_HEIGHT):
+        # Not fatal — the pipeline is resolution-agnostic. Logged because a silent drop to
+        # 640x480 would quietly degrade every image collected from then on.
+        print(f"[capture] warning: asked {PODO_WIDTH}x{PODO_HEIGHT}, got {w}x{h}")
+
+    ok, buf = cv2.imencode(".png", frame)
+    if not ok:
+        raise CaptureError("Captured a frame but could not encode it as PNG.")
+    return buf.tobytes()
+
+
+class PodoscopeLivePreview:
+    """Continuous background reader backing the live view on the camera-test page.
+
+    DirectShow allows only one open handle per physical camera, so a second cv2.VideoCapture
+    opened while this one is running fails with exactly the "another program may hold it" error
+    above — self-inflicted. Rather than risk that, /api/camera-test/capture asks this object for
+    its latest frame while a preview is active instead of opening its own handle (see
+    capture_frame() below). The real clinic capture path (/api/capture) is untouched by this —
+    leaving the camera-test live view open will make a real capture fail with that same "another
+    program may hold it" message until the preview is closed, which is why the camera-test page
+    carries a visible warning about it rather than this class trying to silently coordinate with
+    the patient-facing flow.
+
+    Reference-counted: the camera opens when the first viewer connects and closes when the last
+    one disconnects, so it is never left holding the device while nobody is looking at it.
+    """
+
+    def __init__(self) -> None:
+        self._lock = threading.Lock()
+        self._clients = 0
+        self._thread: threading.Thread | None = None
+        self._stop = threading.Event()
+        self._frame_lock = threading.Lock()
+        self._frame = None          # latest raw BGR frame, for capture_frame()
+        self._jpeg: bytes | None = None    # latest encoded frame, for the MJPEG stream
+        self._index: int | None = None
+        self.error: str | None = None
+
+    @property
+    def active(self) -> bool:
+        return self._clients > 0
+
+    def acquire(self) -> None:
+        with self._lock:
+            self._clients += 1
+            if self._thread is None:
+                self.error = None
+                self._stop.clear()
+                self._thread = threading.Thread(target=self._run, daemon=True, name="podoscope-preview")
+                self._thread.start()
+
+    def release(self) -> None:
+        with self._lock:
+            self._clients = max(0, self._clients - 1)
+            if self._clients == 0 and self._thread is not None:
+                self._stop.set()
+                self._thread.join(timeout=5)
+                self._thread = None
+                with self._frame_lock:
+                    self._frame = None
+                    self._jpeg = None
+
+    def latest_jpeg(self) -> bytes | None:
+        with self._frame_lock:
+            return self._jpeg
+
+    def capture_frame(self) -> bytes:
+        """A still, at full quality, lifted from the frame the preview loop is already holding —
+        no second camera handle opened."""
+        with self._frame_lock:
+            frame = None if self._frame is None else self._frame.copy()
+        if frame is None:
+            raise CaptureError("ยังไม่มีภาพจากวิดีโอสด — รอสักครู่แล้วลองใหม่")
+        return _validate_and_encode_podoscope(frame, self._index if self._index is not None else -1)
+
+    def _run(self) -> None:
+        try:
+            index = resolve_podoscope_index()
+        except CaptureError as e:
+            self.error = str(e)
+            return
+        self._index = index
+        try:
+            cap = _open_podoscope(index)
+        except CaptureError as e:
+            self.error = str(e)
+            return
+        import cv2
+        try:
+            while not self._stop.is_set():
+                ok, frame = cap.read()
+                if not ok or frame is None:
+                    continue
+                ok2, buf = cv2.imencode(".jpg", frame, [cv2.IMWRITE_JPEG_QUALITY, 70])
+                if not ok2:
+                    continue
+                with self._frame_lock:
+                    self._frame = frame
+                    self._jpeg = buf.tobytes()
+                # ~12fps: plenty to aim a static rig by, without pegging a CPU core or the
+                # localhost connection carrying it.
+                self._stop.wait(0.08)
+        finally:
+            cap.release()
+
+
+podoscope_preview = PodoscopeLivePreview()
+
+
 class UsbCameraSource(CaptureSource):
     """Real USB capture. Podoscope is implemented; thermal waits on the device's SDK.
 
@@ -225,26 +378,9 @@ class UsbCameraSource(CaptureSource):
         )
 
     def _grab_podoscope(self) -> bytes:
-        import cv2
-        import numpy as np
-
         index = resolve_podoscope_index()
-        # CAP_DSHOW: Windows' default MSMF backend is slower to open on this camera and ignores
-        # some resolution requests. Off Windows, let OpenCV choose.
-        backend = getattr(cv2, "CAP_DSHOW", 0) if os.name == "nt" else 0
-        cap = cv2.VideoCapture(index, backend)
+        cap = _open_podoscope(index)
         try:
-            if not cap.isOpened():
-                raise CaptureError(
-                    f"Camera [{index}] ({PODO_CAMERA_NAME}) could not be opened — another program "
-                    "may hold it (Logi Capture, OBS, Teams). Close that program and retry."
-                )
-            # MJPG before the size: at 1920x1080 the uncompressed YUY2 stream is bandwidth-bound,
-            # and setting the size first can leave the device pinned to a lower mode.
-            cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*"MJPG"))
-            cap.set(cv2.CAP_PROP_FRAME_WIDTH, PODO_WIDTH)
-            cap.set(cv2.CAP_PROP_FRAME_HEIGHT, PODO_HEIGHT)
-
             frame = None
             for _ in range(PODO_WARMUP_FRAMES):
                 ok, f = cap.read()
@@ -255,27 +391,7 @@ class UsbCameraSource(CaptureSource):
                     f"Camera [{index}] ({PODO_CAMERA_NAME}) opened but returned no frame. "
                     "Unplug it, plug it back in, and retry."
                 )
-
-            arr = np.asarray(frame)
-            std, mean = float(arr.std()), float(arr.mean())
-            if std < BLANK_FRAME_STD or mean < BLANK_FRAME_MEAN:
-                raise CaptureError(
-                    f"ภาพที่ได้จากกล้อง [{index}] ({PODO_CAMERA_NAME}) ว่างเปล่า "
-                    f"(std={std:.1f} ต่ำกว่า {BLANK_FRAME_STD}, ความสว่างเฉลี่ย={mean:.1f} "
-                    f"ต่ำกว่า {BLANK_FRAME_MEAN}) — ตรวจว่าเปิดฝาเลนส์แล้ว "
-                    "และไฟของกล่องโพโดสโคปติดอยู่ แล้วถ่ายใหม่"
-                )
-
-            h, w = frame.shape[:2]
-            if (w, h) != (PODO_WIDTH, PODO_HEIGHT):
-                # Not fatal — the pipeline is resolution-agnostic. Logged because a silent drop to
-                # 640x480 would quietly degrade every image collected from then on.
-                print(f"[capture] warning: asked {PODO_WIDTH}x{PODO_HEIGHT}, got {w}x{h}")
-
-            ok, buf = cv2.imencode(".png", frame)
-            if not ok:
-                raise CaptureError("Captured a frame but could not encode it as PNG.")
-            return buf.tobytes()
+            return _validate_and_encode_podoscope(frame, index)
         finally:
             cap.release()
 

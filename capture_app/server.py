@@ -31,19 +31,21 @@ from stdio_utf8 import force_utf8_stdio
 
 force_utf8_stdio()  # must run before `import preprocessing` — see stdio_utf8.py
 
+import asyncio
 import json
 import os
 import re
 import subprocess
 import sys
 import threading
+import time
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
 import numpy as np
 from PIL import Image
-from fastapi import Depends, FastAPI, HTTPException
-from fastapi.responses import FileResponse
+from fastapi import Depends, FastAPI, HTTPException, Request
+from fastapi.responses import FileResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
@@ -53,7 +55,8 @@ import server_paths
 from server_paths import (prepro_full_path, prepro_original_path, prepro_path,
                           raw_path, rel, url)
 from capture_source import (CaptureError, SimulatedSource, UsbCameraSource, demo_images,
-                            get_source, list_video_devices, resolve_podoscope_index)
+                            get_source, list_video_devices, podoscope_preview,
+                            resolve_podoscope_index)
 from preprocessing import preprocess_foot_image
 from crf_store import router as crf_router
 from roi_store import router as roi_router
@@ -315,7 +318,13 @@ def camera_test_capture(req: CameraTestReq):
     if req.modality not in MODALITIES:
         raise HTTPException(400, f"modality must be one of {MODALITIES}")
     try:
-        png = SOURCE.grab(req.modality, "camera-test")
+        # While the live preview is open it already holds the only handle DirectShow will grant
+        # this camera, so a still is lifted from the frame it is already holding rather than
+        # opening a second one, which would fail with exactly the error this branch avoids.
+        if req.modality == "podoscope" and podoscope_preview.active:
+            png = podoscope_preview.capture_frame()
+        else:
+            png = SOURCE.grab(req.modality, "camera-test")
     except CaptureError as e:
         raise HTTPException(503, str(e))
     except NotImplementedError as e:
@@ -355,6 +364,45 @@ def camera_test_list(modality: str):
         return []
     files = sorted(d.glob("Test-*.png"), reverse=True)   # zero-padded, so this sorts newest first
     return [{"url": url(p), "name": p.stem} for p in files]
+
+
+@app.get("/api/camera-test/preview", dependencies=[require_session])
+async def camera_test_preview(request: Request):
+    """MJPEG live view of the podoscope for the camera-test page.
+
+    An async generator on purpose, not a sync one: it never touches cv2 itself, only the frames
+    podoscope_preview.PodoscopeLivePreview is already producing in its own thread, so it can poll
+    request.is_disconnected() the ordinary way instead of fighting a threadpool for it. Closing
+    the <img> that consumes this (navigating away, closing the tab) ends the request, which raises
+    GeneratorExit here and runs the `finally`, releasing the camera.
+    """
+    if not isinstance(SOURCE, UsbCameraSource):
+        raise HTTPException(409, "โหมดจำลองไม่มีวิดีโอสด — สลับไปโหมดกล้องจริงก่อน (CAPTURE_SOURCE=usb)")
+    podoscope_preview.acquire()
+
+    async def frames():
+        try:
+            last = None
+            idle_since = time.monotonic()
+            while True:
+                if await request.is_disconnected():
+                    break
+                if podoscope_preview.error:
+                    break
+                jpeg = podoscope_preview.latest_jpeg()
+                if jpeg is None or jpeg is last:
+                    if jpeg is None and time.monotonic() - idle_since > 10:
+                        break   # camera never produced a first frame — give up rather than hang
+                    await asyncio.sleep(0.05)
+                    continue
+                last = jpeg
+                idle_since = time.monotonic()
+                yield b"--frame\r\nContent-Type: image/jpeg\r\n\r\n" + jpeg + b"\r\n"
+                await asyncio.sleep(0.05)
+        finally:
+            podoscope_preview.release()
+
+    return StreamingResponse(frames(), media_type="multipart/x-mixed-replace; boundary=frame")
 
 
 # In-flight and finished preprocessing runs, keyed by research id. Segmentation takes 60-90
