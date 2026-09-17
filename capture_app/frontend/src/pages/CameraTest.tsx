@@ -138,7 +138,7 @@ function CameraSettingsPanel({ settings, onPatch }: {
   onPatch: (p: Partial<CameraSettings>) => void
 }) {
   return (
-    <div className="mb-3 rounded-md border p-4">
+    <div className="h-full rounded-md border p-4">
       <div className="mb-1 text-[13px] font-bold">ตั้งค่ากล้อง</div>
       <p className="text-muted-foreground mb-3 text-[11.5px] leading-relaxed">
         แก้ปัญหาแสงไม่เท่ากันระหว่างรอบถ่าย — กล้องนี้ไม่มีรูรับแสง (f-stop) แบบกล้องถ่ายรูปจริง
@@ -310,8 +310,18 @@ export default function CameraTest() {
             </span>
           )}
         </div>
-        {live && <LiveView />}
-        {showSettings && settings && <CameraSettingsPanel settings={settings} onPatch={patchSettings} />}
+        {(live || (showSettings && settings)) && (
+          <div className="mb-3 flex flex-wrap items-start gap-3">
+            {live && <div className="min-w-[320px] flex-1">
+              <LiveView />
+            </div>}
+            {showSettings && settings && (
+              <div className="w-full sm:w-72 sm:shrink-0">
+                <CameraSettingsPanel settings={settings} onPatch={patchSettings} />
+              </div>
+            )}
+          </div>
+        )}
 
         {error && <p className="mb-2 text-[13px] text-destructive">{error}</p>}
         <Button onClick={shoot} disabled={busy}>{busy ? 'กำลังถ่าย…' : 'ถ่ายทดสอบ'}</Button>
