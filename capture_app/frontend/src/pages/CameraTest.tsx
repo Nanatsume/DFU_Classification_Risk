@@ -10,6 +10,7 @@ import { api, ApiError } from '@/lib/api'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 
 type CameraStatus = {
   mode: 'usb' | 'sim'
@@ -228,9 +229,10 @@ export default function CameraTest() {
   const [shots, setShots] = useState<Shot[]>([])
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [live, setLive] = useState(false)
+  const [live, setLive] = useState(true)
   const [settings, setSettings] = useState<CameraSettings | null>(null)
-  const [showSettings, setShowSettings] = useState(false)
+  const [showSettings, setShowSettings] = useState(true)
+  const [modalShot, setModalShot] = useState<Shot | null>(null)
   const patchTimer = useRef<number | null>(null)
 
   async function checkCamera() {
@@ -328,18 +330,17 @@ export default function CameraTest() {
         {shots.length > 0 && (
           <div className="mt-4 flex flex-wrap gap-3">
             {shots.slice(0, 12).map((s) => (
-              <a
+              <button
                 key={s.name}
-                href={s.url}
-                target="_blank"
-                rel="noreferrer"
-                className="block w-28 shrink-0 overflow-hidden rounded-md border"
+                type="button"
+                onClick={() => setModalShot(s)}
+                className="block w-28 shrink-0 cursor-pointer overflow-hidden rounded-md border text-left"
               >
                 <div className="bg-foreground/95 flex aspect-square items-center justify-center overflow-hidden">
                   <img src={s.url} alt={s.name} className="h-full w-full object-contain" />
                 </div>
                 <div className="text-muted-foreground truncate px-1 py-1 text-center text-[10px]">{s.name}</div>
-              </a>
+              </button>
             ))}
           </div>
         )}
@@ -353,6 +354,21 @@ export default function CameraTest() {
           เมนูนี้จะเปิดใช้ถ่ายทดสอบได้เมื่อกล้องมาถึงและต่อ driver เสร็จแล้ว
         </p>
       </Card>
+
+      <Dialog open={!!modalShot} onOpenChange={(open) => !open && setModalShot(null)}>
+        <DialogContent className="max-w-3xl sm:max-w-3xl">
+          <DialogHeader>
+            <DialogTitle>{modalShot?.name}</DialogTitle>
+          </DialogHeader>
+          {modalShot && (
+            <img
+              src={modalShot.url}
+              alt={modalShot.name}
+              className="max-h-[75vh] w-full rounded-md object-contain"
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

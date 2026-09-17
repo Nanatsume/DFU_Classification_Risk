@@ -1,0 +1,1 @@
+function e(e,t){return e===`Negative`?`not_needed`:t>0?`done`:`pending`}function t(e){return e==null?null:e>=1?`Positive`:`Negative`}var n={not_needed:`ไม่ต้องทำ`,pending:`ยังไม่ทำ`,done:`ทำแล้ว`};export{t as n,e as r,n as t};
