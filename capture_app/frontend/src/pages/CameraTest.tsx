@@ -313,7 +313,7 @@ export default function CameraTest() {
       </Card>
 
       <Dialog open={!!modalShot} onOpenChange={(open) => !open && setModalShot(null)}>
-        <DialogContent className="max-w-3xl sm:max-w-3xl">
+        <DialogContent className="max-w-[95vw] sm:max-w-[95vw]">
           <DialogHeader>
             <DialogTitle>{modalShot?.name}</DialogTitle>
           </DialogHeader>
@@ -321,7 +321,7 @@ export default function CameraTest() {
             <img
               src={modalShot.url}
               alt={modalShot.name}
-              className="max-h-[75vh] w-full rounded-md object-contain"
+              className="max-h-[90vh] w-full rounded-md object-contain"
             />
           )}
         </DialogContent>
